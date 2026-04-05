@@ -49,7 +49,7 @@ export default function ProductGrid() {
         >
           Filters
           {selectedCategories.length > 0 && (
-            <span className="rounded-full bg-brand-gold px-2 py-0.5 text-[11px] text-brand-navy">
+            <span className="rounded-full bg-brand-blue px-2 py-0.5 text-[11px] text-white">
               {selectedCategories.length}
             </span>
           )}
@@ -87,7 +87,7 @@ export default function ProductGrid() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="rounded-lg border border-brand-border bg-white px-3 py-2 text-[14px] text-brand-navy focus:border-brand-gold focus:outline-none focus:ring-1 focus:ring-brand-gold"
+                className="rounded-lg border border-brand-border bg-white px-3 py-2 text-[14px] text-brand-navy focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue"
               >
                 <option value="featured">Featured</option>
                 <option value="price-asc">Price: Low → High</option>
@@ -106,7 +106,7 @@ export default function ProductGrid() {
           {filtered.length === 0 && (
             <div className="py-20 text-center">
               <p className="font-body text-[16px] text-brand-text-mid">No products match your filters.</p>
-              <button onClick={() => setSelectedCategories([])} className="mt-2 font-body text-brand-gold hover:underline">
+              <button onClick={() => setSelectedCategories([])} className="mt-2 font-body text-brand-blue hover:underline">
                 Clear filters
               </button>
             </div>

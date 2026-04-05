@@ -8,7 +8,7 @@ export default function FeaturedProduct() {
   const product = products[0]
 
   return (
-    <section className="bg-brand-cream py-24">
+    <section className="bg-brand-offwhite py-24">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-16 px-6 lg:flex-row lg:gap-20 lg:px-8">
         {/* Image — no border-radius, slight shadow */}
         <motion.div
@@ -35,17 +35,17 @@ export default function FeaturedProduct() {
           transition={{ duration: 0.7, delay: 0.15 }}
           className="flex-1"
         >
-          <p className="mb-3 font-body text-[11px] font-medium tracking-[0.1em] text-brand-gold">
+          <p className="mb-3 font-body text-[11px] font-medium tracking-[0.1em] text-brand-blue">
             Featured Product
           </p>
           <h2 className="font-heading text-[48px] font-normal leading-tight text-brand-navy">
             {product.name}
           </h2>
           {/* Price as design element */}
-          <p className="mt-2 font-heading text-[64px] font-light leading-none text-brand-gold">
+          <p className="mt-2 font-heading text-[64px] font-light leading-none text-brand-blue">
             €{product.price}
           </p>
-          <span className="mt-3 inline-block rounded-full bg-brand-gold px-3 py-1 text-[12px] font-medium text-brand-navy">
+          <span className="mt-3 inline-block rounded-full bg-brand-blue px-3 py-1 text-[12px] font-medium text-white">
             Bestseller
           </span>
           <p className="mt-5 font-body text-[16px] text-brand-text-mid">{product.description}</p>

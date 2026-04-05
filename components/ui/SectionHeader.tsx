@@ -26,7 +26,7 @@ export default function SectionHeader({
       className={`mb-16 ${centered ? 'text-center' : ''}`}
     >
       {label && (
-        <p className="mb-3 font-body text-[11px] font-medium tracking-[0.1em] text-brand-gold">
+        <p className="mb-3 font-body text-[11px] font-medium tracking-[0.1em] text-brand-blue">
           {label}
         </p>
       )}

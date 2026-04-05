@@ -19,7 +19,7 @@ export default function ShopPage() {
       <div className="bg-brand-navy py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <nav aria-label="Breadcrumb" className="mb-4 font-body text-[12px] tracking-wide text-brand-text-light">
-            <a href="/" className="hover:text-brand-gold">Home</a>
+            <a href="/" className="hover:text-brand-blue">Home</a>
             <span className="mx-2 text-white/20">/</span>
             <span className="text-white">Shop</span>
           </nav>

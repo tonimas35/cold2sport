@@ -13,7 +13,7 @@ function SizeSelector({ sizes }: { sizes: string[] }) {
     <div>
       <div className="mb-3 flex items-center justify-between">
         <label className="font-body text-[13px] font-medium text-brand-text-mid">Size</label>
-        <button className="font-body text-[12px] text-brand-gold hover:underline">Size guide</button>
+        <button className="font-body text-[12px] text-brand-blue hover:underline">Size guide</button>
       </div>
       <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Select size">
         {sizes.map((size) => (
@@ -22,10 +22,10 @@ function SizeSelector({ sizes }: { sizes: string[] }) {
             onClick={() => setSelected(size)}
             role="radio"
             aria-checked={selected === size}
-            className={`rounded-lg border px-5 py-2.5 font-body text-[14px] font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${
+            className={`rounded-lg border px-5 py-2.5 font-body text-[14px] font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue ${
               selected === size
-                ? 'border-brand-gold bg-brand-gold/10 text-brand-gold'
-                : 'border-brand-border text-brand-text-mid hover:border-brand-gold/50'
+                ? 'border-brand-blue bg-brand-blue/10 text-brand-blue'
+                : 'border-brand-border text-brand-text-mid hover:border-brand-blue/50'
             }`}
           >
             {size}
@@ -49,7 +49,7 @@ function ProductGallery({ product }: { product: Product }) {
         <Image src={images[mainImage]} alt={`${product.name} — view ${mainImage + 1}`} fill priority className="object-cover" />
         {product.badge && (
           <div className="absolute left-4 top-4">
-            <span className="rounded-full bg-brand-gold px-3 py-1 text-[11px] font-medium text-brand-navy">{product.badge}</span>
+            <span className="rounded-full bg-brand-blue px-3 py-1 text-[11px] font-medium text-white">{product.badge}</span>
           </div>
         )}
       </div>
@@ -59,7 +59,7 @@ function ProductGallery({ product }: { product: Product }) {
             key={i}
             onClick={() => setMainImage(i)}
             className={`relative h-20 w-20 overflow-hidden rounded-lg border transition-all ${
-              mainImage === i ? 'border-brand-gold' : 'border-brand-border opacity-50 hover:opacity-80'
+              mainImage === i ? 'border-brand-blue' : 'border-brand-border opacity-50 hover:opacity-80'
             }`}
             aria-label={`View image ${i + 1}`}
           >
@@ -76,9 +76,9 @@ export default function ProductDetail({ product, related }: { product: Product; 
     <div className="min-h-screen bg-white pt-24">
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
         <nav aria-label="Breadcrumb" className="mb-10 font-body text-[12px] text-brand-text-light">
-          <Link href="/" className="hover:text-brand-gold">Home</Link>
+          <Link href="/" className="hover:text-brand-blue">Home</Link>
           <span className="mx-2">/</span>
-          <Link href="/shop" className="hover:text-brand-gold">Shop</Link>
+          <Link href="/shop" className="hover:text-brand-blue">Shop</Link>
           <span className="mx-2">/</span>
           <span className="text-brand-navy">{product.name}</span>
         </nav>
@@ -90,7 +90,7 @@ export default function ProductDetail({ product, related }: { product: Product; 
 
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="flex flex-col">
             <h1 className="font-heading text-[36px] font-normal text-brand-navy">{product.name}</h1>
-            <p className="mt-2 font-heading text-[48px] font-light text-brand-gold">€{product.price.toFixed(2)}</p>
+            <p className="mt-2 font-heading text-[48px] font-light text-brand-blue">€{product.price.toFixed(2)}</p>
             <p className="mt-4 font-body text-[16px] leading-relaxed text-brand-text-mid">{product.description}</p>
 
             {(product.temperature || product.autonomy) && (
@@ -102,7 +102,7 @@ export default function ProductDetail({ product, related }: { product: Product; 
                 ].map(
                   (spec) =>
                     spec.value && (
-                      <div key={spec.label} className="flex items-center rounded-lg border-l-2 border-brand-blue bg-brand-cream px-4 py-3">
+                      <div key={spec.label} className="flex items-center rounded-lg border-l-2 border-brand-blue bg-brand-offwhite px-4 py-3">
                         <span className="w-28 font-body text-[13px] font-medium text-brand-text-mid">{spec.label}</span>
                         <span className="font-heading text-[15px] text-brand-navy">{spec.value}</span>
                       </div>
@@ -123,7 +123,7 @@ export default function ProductDetail({ product, related }: { product: Product; 
             <div className="mt-6 flex flex-wrap gap-6 font-body text-[12px] text-brand-text-light">
               <span>✓ Free shipping +€75</span>
               <span>✓ 30-day returns</span>
-              <span className="text-brand-gold">✓ Official FCB partner</span>
+              <span className="text-brand-blue">✓ Official FCB partner</span>
             </div>
           </motion.div>
         </div>
@@ -139,9 +139,9 @@ export default function ProductDetail({ product, related }: { product: Product; 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.3, delay: i * 0.04 }}
-                className="rounded-2xl bg-brand-cream p-5"
+                className="rounded-2xl bg-brand-offwhite p-5"
               >
-                <div className="mb-2 h-[2px] w-6 bg-brand-gold" />
+                <div className="mb-2 h-[2px] w-6 bg-brand-blue" />
                 <p className="font-body text-[14px] font-medium text-brand-navy">{benefit}</p>
               </motion.div>
             ))}

@@ -48,16 +48,16 @@ export default function FeaturesGrid() {
             } ${i === 1 ? 'md:px-12' : i === 0 ? 'md:pr-12' : 'md:pl-12'}`}
           >
             {/* Decorative number */}
-            <span className="font-heading text-[80px] font-light leading-none text-brand-gold/[0.15]">
+            <span className="font-heading text-[80px] font-light leading-none text-brand-blue/[0.15]">
               {f.num}
             </span>
-            {/* Gold accent line */}
-            <div className="mt-4 h-[2px] w-8 bg-brand-gold" />
+            {/* Blue accent line */}
+            <div className="mt-4 h-[2px] w-8 bg-brand-blue" />
             <h3 className="mt-5 font-heading text-[22px] font-normal text-brand-navy">
               {f.title}
             </h3>
             <p className="mt-3 font-body text-[16px] text-brand-text-mid">{f.body}</p>
-            <span className="mt-6 inline-block rounded-full border border-brand-gold px-4 py-1.5 font-body text-[13px] font-medium text-brand-gold">
+            <span className="mt-6 inline-block rounded-full border border-brand-blue px-4 py-1.5 font-body text-[13px] font-medium text-brand-blue">
               {f.stat}
             </span>
           </motion.div>

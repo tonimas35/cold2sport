@@ -35,7 +35,7 @@ export default function Navbar() {
     <>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-brand-gold focus:px-4 focus:py-2 focus:text-brand-navy"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-brand-blue focus:px-4 focus:py-2 focus:text-white"
       >
         Skip to content
       </a>
@@ -82,7 +82,7 @@ export default function Navbar() {
             <span className="text-[11px] font-medium text-white/50">ES | EN | CA</span>
             <Link
               href="/shop"
-              className="rounded-full bg-brand-gold px-5 py-2 text-[13px] font-medium text-brand-navy transition-all duration-300 hover:bg-[#d4ad80]"
+              className="rounded-full bg-brand-blue px-5 py-2 text-[13px] font-medium text-white transition-all duration-300 hover:bg-brand-blue-light"
             >
               Shop Now
             </Link>
@@ -123,7 +123,7 @@ export default function Navbar() {
                   <Link
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className="font-heading text-2xl font-light text-white hover:text-brand-gold"
+                    className="font-heading text-2xl font-light text-white hover:text-brand-blue"
                   >
                     {link.label}
                   </Link>
@@ -137,7 +137,7 @@ export default function Navbar() {
               >
                 <Link
                   href="/shop"
-                  className="rounded-full bg-brand-gold px-8 py-3 text-base font-medium text-brand-navy"
+                  className="rounded-full bg-brand-blue px-8 py-3 text-base font-medium text-white"
                 >
                   Shop Now
                 </Link>

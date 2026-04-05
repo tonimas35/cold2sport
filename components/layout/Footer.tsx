@@ -34,7 +34,7 @@ function FooterColumn({ title, links }: { title: string; links: { label: string;
           <li key={link.label}>
             <Link
               href={link.href}
-              className="font-body text-[14px] text-white/60 transition-colors duration-300 hover:text-brand-gold"
+              className="font-body text-[14px] text-white/60 transition-colors duration-300 hover:text-brand-blue"
             >
               {link.label}
             </Link>
@@ -52,7 +52,7 @@ function SocialIcon({ href, label, children }: { href: string; label: string; ch
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="text-white/40 transition-colors duration-300 hover:text-brand-gold"
+      className="text-white/40 transition-colors duration-300 hover:text-brand-blue"
     >
       {children}
     </a>

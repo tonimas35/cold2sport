@@ -6,7 +6,7 @@ import { news } from '@/lib/news'
 
 const categoryStyle: Record<string, string> = {
   Partnership: 'bg-brand-navy text-white',
-  Ambassador: 'bg-brand-gold text-brand-navy',
+  Ambassador: 'bg-brand-blue text-white',
   Technology: 'border border-brand-blue text-brand-blue bg-transparent',
 }
 
@@ -26,10 +26,10 @@ const fadeUp = {
 
 export default function NewsSection() {
   return (
-    <section id="news" className="bg-brand-cream py-24">
+    <section id="news" className="bg-brand-offwhite py-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mb-16 text-center">
-          <p className="mb-3 font-body text-[11px] font-medium tracking-[0.1em] text-brand-gold">Latest news</p>
+          <p className="mb-3 font-body text-[11px] font-medium tracking-[0.1em] text-brand-blue">Latest news</p>
           <h2 className="font-heading text-[48px] font-normal text-brand-navy">Stay updated</h2>
         </div>
         <motion.div
@@ -43,7 +43,7 @@ export default function NewsSection() {
             <motion.article
               key={item.slug}
               variants={fadeUp}
-              className="group overflow-hidden rounded-2xl border border-brand-border bg-white transition-all duration-300 hover:border-brand-gold hover:-translate-y-1"
+              className="group overflow-hidden rounded-2xl border border-brand-border bg-white transition-all duration-300 hover:border-brand-blue hover:-translate-y-1"
             >
               <div className="relative aspect-video overflow-hidden">
                 <Image
@@ -68,7 +68,7 @@ export default function NewsSection() {
                 <p className="mt-2 line-clamp-2 font-body text-[14px] text-brand-text-mid">
                   {item.excerpt}
                 </p>
-                <p className="mt-4 font-body text-[14px] font-medium text-brand-gold">
+                <p className="mt-4 font-body text-[14px] font-medium text-brand-blue">
                   Read more →
                 </p>
               </div>

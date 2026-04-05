@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 type ButtonProps = {
-  variant?: 'primary' | 'dark' | 'gold' | 'outline-white' | 'outline-gold' | 'outline-dark'
+  variant?: 'primary' | 'dark' | 'blue' | 'outline-white' | 'outline-blue' | 'outline-dark'
   size?: 'sm' | 'md' | 'lg'
   href?: string
   children: React.ReactNode
@@ -11,11 +11,11 @@ type ButtonProps = {
 }
 
 const variantStyles = {
-  primary: 'bg-brand-gold text-brand-navy hover:bg-[#d4ad80]',
+  primary: 'bg-brand-blue text-white hover:bg-[#0088c2]',
   dark: 'bg-brand-navy text-white hover:bg-brand-navy/90',
-  gold: 'bg-brand-gold text-brand-navy hover:bg-[#d4ad80]',
+  blue: 'bg-brand-blue text-white hover:bg-[#0088c2]',
   'outline-white': 'border border-white/30 text-white hover:bg-white/10',
-  'outline-gold': 'border border-brand-gold/40 text-brand-gold hover:bg-brand-gold/10',
+  'outline-blue': 'border border-brand-blue/40 text-brand-blue hover:bg-brand-blue/10',
   'outline-dark': 'border border-brand-navy/20 text-brand-navy hover:bg-brand-navy hover:text-white',
 }
 
@@ -34,7 +34,7 @@ export default function Button({
   onClick,
   type = 'button',
 }: ButtonProps) {
-  const classes = `inline-flex items-center justify-center gap-2 rounded-full font-body font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`
+  const classes = `inline-flex items-center justify-center gap-2 rounded-full font-body font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`
 
   if (href) {
     return (

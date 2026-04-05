@@ -32,19 +32,19 @@ export default function Hero() {
           animate="animate"
           className="flex-[1.2] text-center lg:text-left"
         >
-          {/* Eyebrow badge — gold border */}
-          <motion.div variants={fadeUp} className="mb-8 inline-flex items-center gap-2 rounded-full border border-brand-gold/40 bg-brand-gold/[0.08] px-4 py-2">
-            <span className="text-[11px] font-medium tracking-[0.1em] text-brand-gold">
+          {/* Eyebrow badge — blue border */}
+          <motion.div variants={fadeUp} className="mb-8 inline-flex items-center gap-2 rounded-full border border-brand-blue/40 bg-brand-blue/[0.08] px-4 py-2">
+            <span className="text-[11px] font-medium tracking-[0.1em] text-brand-blue">
               Official Recovery Partner of FC Barcelona
             </span>
           </motion.div>
 
-          {/* H1 — light weight, gold accent */}
+          {/* H1 — light weight, blue accent */}
           <motion.h1 variants={fadeUp} className="font-heading leading-[1.05]">
             <span className="block text-[56px] font-light text-white sm:text-[72px] lg:text-[88px]">
               Recover
             </span>
-            <span className="block text-[56px] font-semibold text-brand-gold sm:text-[72px] lg:text-[88px]">
+            <span className="block text-[56px] font-semibold text-brand-blue sm:text-[72px] lg:text-[88px]">
               Faster.
             </span>
           </motion.h1>
@@ -54,11 +54,11 @@ export default function Hero() {
             BioFresh Tech phase-change cooling. Sustained 10–15°C for 60+ minutes. No ice. No freezer.
           </motion.p>
 
-          {/* CTAs — gold primary, outline secondary */}
+          {/* CTAs — blue primary, outline secondary */}
           <motion.div variants={fadeUp} className="mt-10 flex flex-wrap justify-center gap-4 lg:justify-start">
             <a
               href="/shop"
-              className="rounded-full bg-brand-gold px-8 py-4 text-[15px] font-medium text-brand-navy transition-all duration-300 hover:bg-[#d4ad80]"
+              className="rounded-full bg-brand-blue px-8 py-4 text-[15px] font-medium text-white transition-all duration-300 hover:bg-[#007bb0]"
             >
               Shop Now
             </a>
@@ -111,24 +111,24 @@ export default function Hero() {
             className="mx-auto w-full max-w-sm rounded-2xl object-cover lg:max-w-md"
             style={{ mixBlendMode: 'normal' }}
           />
-          {/* Floating spec cards — gold tinted borders */}
+          {/* Floating spec cards — blue tinted borders */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 1.1, duration: 0.5 }}
-            className="absolute -left-4 bottom-20 rounded-xl border border-brand-gold/30 bg-brand-navy/85 px-5 py-3 backdrop-blur-sm lg:left-0"
+            className="absolute -left-4 bottom-20 rounded-xl border border-brand-blue/30 bg-brand-navy/85 px-5 py-3 backdrop-blur-sm lg:left-0"
           >
             <p className="font-body text-[11px] font-medium tracking-[0.1em] text-brand-text-light">Temperature</p>
-            <p className="font-heading text-xl font-light text-brand-gold">10–15°C</p>
+            <p className="font-heading text-xl font-light text-brand-blue">10–15°C</p>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 1.3, duration: 0.5 }}
-            className="absolute -right-4 top-16 rounded-xl border border-brand-gold/30 bg-brand-navy/85 px-5 py-3 backdrop-blur-sm lg:right-0"
+            className="absolute -right-4 top-16 rounded-xl border border-brand-blue/30 bg-brand-navy/85 px-5 py-3 backdrop-blur-sm lg:right-0"
           >
             <p className="font-body text-[11px] font-medium tracking-[0.1em] text-brand-text-light">Autonomy</p>
-            <p className="font-heading text-xl font-light text-brand-gold">+60 min</p>
+            <p className="font-heading text-xl font-light text-brand-blue">+60 min</p>
           </motion.div>
         </motion.div>
       </div>

@@ -24,7 +24,7 @@ export default function ProductFilters({
         {selectedCategories.length > 0 && (
           <button
             onClick={onClearAll}
-            className="font-body text-[12px] font-medium text-brand-gold hover:text-[#b8894f]"
+            className="font-body text-[12px] font-medium text-brand-blue hover:text-[#0088c2]"
           >
             Clear all
           </button>
@@ -37,13 +37,13 @@ export default function ProductFilters({
           {categories.map((cat) => (
             <label
               key={cat}
-              className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 font-body text-[14px] text-brand-text-mid transition-colors hover:bg-brand-cream hover:text-brand-navy"
+              className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 font-body text-[14px] text-brand-text-mid transition-colors hover:bg-brand-offwhite hover:text-brand-navy"
             >
               <input
                 type="checkbox"
                 checked={selectedCategories.includes(cat)}
                 onChange={() => onToggleCategory(cat)}
-                className="h-4 w-4 rounded border-brand-border text-brand-gold focus:ring-brand-gold"
+                className="h-4 w-4 rounded border-brand-border text-brand-blue focus:ring-brand-blue"
               />
               <span className="flex-1">{cat}</span>
               <span className="text-[12px] text-brand-text-light">({productCounts[cat] || 0})</span>

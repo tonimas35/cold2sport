@@ -1,13 +1,13 @@
 type BadgeProps = {
   children: React.ReactNode
-  variant?: 'gold' | 'blue' | 'gray' | 'dark'
+  variant?: 'blue' | 'outline-blue' | 'gray' | 'dark'
   className?: string
 }
 
 const variantStyles = {
-  gold: 'bg-brand-gold text-brand-navy',
-  blue: 'border border-brand-blue text-brand-blue bg-transparent',
-  gray: 'bg-brand-cream text-brand-text-mid',
+  blue: 'bg-brand-blue text-white',
+  'outline-blue': 'border border-brand-blue text-brand-blue bg-transparent',
+  gray: 'bg-brand-offwhite text-brand-text-mid',
   dark: 'bg-brand-navy text-white',
 }
 

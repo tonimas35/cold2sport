@@ -14,7 +14,9 @@ export default function TrustBar() {
           {doubled.map((name, i) => (
             <span
               key={`${name}-${i}`}
-              className="font-heading text-[14px] font-normal tracking-wide text-white/40 transition-opacity duration-300 hover:text-white/90"
+              className={`font-heading text-[14px] font-normal tracking-wide transition-opacity duration-300 hover:text-white/90 ${
+                name === 'FC Barcelona' ? 'text-brand-blue' : 'text-white/40'
+              }`}
             >
               {name}
               {i < doubled.length - 1 && (

@@ -10,11 +10,11 @@ const config: Config = {
       colors: {
         brand: {
           navy: '#111e21',
-          'navy-deep': '#0d1a1d',
-          white: '#ffffff',
-          cream: '#f9f6f1',
-          gold: '#cda274',
+          'navy-deep': '#0a1518',
           blue: '#009bdb',
+          'blue-light': '#00b8e6',
+          white: '#ffffff',
+          offwhite: '#f5f7f8',
           text: '#111e21',
           'text-mid': '#4a5568',
           'text-light': '#94a3b8',
@@ -27,7 +27,7 @@ const config: Config = {
         serif: ['var(--font-dm-serif)', 'serif'],
       },
       animation: {
-        'marquee': 'marquee 35s linear infinite',
+        marquee: 'marquee 35s linear infinite',
       },
       keyframes: {
         marquee: {

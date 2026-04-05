@@ -30,17 +30,17 @@ export default function AmbassadorSection() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="flex flex-1 flex-col justify-center bg-brand-cream px-8 py-16 sm:px-12 lg:px-20 lg:py-24"
+          className="flex flex-1 flex-col justify-center bg-brand-offwhite px-8 py-16 sm:px-12 lg:px-20 lg:py-24"
         >
-          {/* Gold accent line */}
-          <div className="h-[2px] w-10 bg-brand-gold" />
+          {/* Blue accent line */}
+          <div className="h-[2px] w-10 bg-brand-blue" />
 
           <blockquote className="mt-8 font-serif text-[32px] italic leading-[1.4] text-brand-navy sm:text-[38px]">
             &ldquo;My greatest hope is to help athletes to reduce muscle pain after matches with a more effective solution than the thermal models used so far.&rdquo;
           </blockquote>
 
           <div className="mt-8">
-            <p className="font-heading text-[16px] font-semibold tracking-[0.05em] text-brand-gold">
+            <p className="font-heading text-[16px] font-semibold tracking-[0.05em] text-brand-blue">
               Andres Iniesta
             </p>
             <p className="mt-1 font-body text-[13px] text-brand-text-light">

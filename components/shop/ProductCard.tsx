@@ -15,23 +15,23 @@ export default function ProductCard({ product }: { product: Product }) {
     >
       <Link
         href={`/shop/${product.slug}`}
-        className="group block overflow-hidden rounded-2xl border border-brand-border bg-white transition-all duration-300 hover:-translate-y-1 hover:border-brand-gold"
+        className="group block overflow-hidden rounded-2xl border border-brand-border bg-white transition-all duration-300 hover:-translate-y-1 hover:border-brand-blue"
       >
-        <div className="relative aspect-square overflow-hidden">
+        <div className="relative aspect-square overflow-hidden bg-brand-offwhite">
           <Image
             src={product.image}
             alt={`${product.name} — ${product.category} by Cold2Sport`}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-contain transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute left-3 top-3">
-            <span className="rounded-full bg-brand-cream px-3 py-1 text-[11px] font-medium text-brand-text-mid">
+            <span className="rounded-full bg-brand-offwhite px-3 py-1 text-[11px] font-medium text-brand-text-mid">
               {product.category}
             </span>
           </div>
           {product.badge && (
             <div className="absolute right-3 top-3">
-              <span className="rounded-full bg-brand-gold px-3 py-1 text-[11px] font-medium text-brand-navy">
+              <span className="rounded-full bg-brand-blue px-3 py-1 text-[11px] font-medium text-white">
                 {product.badge}
               </span>
             </div>
@@ -45,7 +45,7 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
         <div className="p-5">
           <h3 className="font-heading text-[16px] font-normal text-brand-navy">{product.name}</h3>
-          <p className="mt-1.5 font-heading text-[18px] font-semibold text-brand-gold">
+          <p className="mt-1.5 font-heading text-[18px] font-semibold text-brand-blue">
             €{product.price.toFixed(2)}
           </p>
           {(product.temperature || product.autonomy) && (
