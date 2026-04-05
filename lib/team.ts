@@ -8,24 +8,24 @@ export type TeamMember = {
 
 export const team: TeamMember[] = [
   {
+    name: 'Rafael Matamoros',
+    role: 'Co-Founder',
+    bio: 'Seasoned entrepreneur with deep expertise in sports technology and business development. Co-founded Cold2Sport to bring cutting-edge phase-change cooling to professional athletes worldwide.',
+    image: 'https://cold2sport.com/wp-content/uploads/2019/04/Diseno-sin-titulo-3-1.png',
+    linkedin: '#',
+  },
+  {
     name: 'Isaac Cuenca',
-    role: 'Founder & CEO',
-    bio: 'Former FC Barcelona, Ajax and Valencia CF winger. After a career-altering injury led him to discover phase-change cooling therapy, Isaac founded Cold2Sport in 2022 to make elite recovery technology accessible to all athletes.',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80',
+    role: 'Co-Founder',
+    bio: 'Former professional footballer who played for FC Barcelona, Ajax and Valencia CF. After a career-defining injury, Isaac co-founded Cold2Sport to make elite recovery technology accessible to all athletes.',
+    image: 'https://cold2sport.com/wp-content/uploads/2019/04/Diseno-sin-titulo-4.png',
     linkedin: '#',
   },
   {
-    name: 'Dr. Marta Solà',
-    role: 'Head of Sports Science',
-    bio: 'PhD in Exercise Physiology from UB Barcelona. 12 years researching thermodynamics in elite sport recovery. Co-inventor of BioFresh Tech PCM formulation.',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80',
-    linkedin: '#',
-  },
-  {
-    name: 'Jordi Mas',
-    role: 'CTO & Co-founder',
-    bio: 'Materials engineer from Universitat Politècnica de Catalunya. 15 years in technical textile innovation. Holds 3 patents in phase-change microencapsulation.',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80',
+    name: 'Eduard M. Segu',
+    role: 'Director of Operations',
+    bio: 'Director of Operations and Communication at Cold2Sport. Responsible for scaling production, managing partnerships and driving the brand across European and international markets.',
+    image: 'https://cold2sport.com/wp-content/uploads/2019/04/Diseno-sin-titulo-5.png',
     linkedin: '#',
   },
 ]

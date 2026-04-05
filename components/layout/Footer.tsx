@@ -1,11 +1,12 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 const productLinks = [
-  { label: 'Thermal Short', href: '/shop/thermal-short' },
+  { label: 'Thermal Short Adult', href: '/shop/thermal-short-adult' },
+  { label: 'Thermal Knee Pad', href: '/shop/cooling-knee-pad' },
+  { label: 'Cold Ankle Brace', href: '/shop/ankle-brace' },
   { label: 'Versatil ColdPack', href: '/shop/versatil-coldpack' },
-  { label: 'Thermal Anklet', href: '/shop/thermal-anklet' },
-  { label: 'Thermal Knee Pad', href: '/shop/thermal-knee-pad' },
-  { label: 'Recovery Backpack', href: '/shop/backpack' },
+  { label: 'Backpack for Garments', href: '/shop/backpack-for-garments' },
 ]
 
 const companyLinks = [
@@ -65,9 +66,13 @@ export default function Footer() {
         <div className="grid grid-cols-2 gap-12 md:grid-cols-4">
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="inline-block" aria-label="Cold2Sport home">
-              <span className="font-heading text-lg font-semibold tracking-tight text-white">
-                COLD<span className="text-brand-gold">2</span>SPORT
-              </span>
+              <Image
+                src="/cold2sport/logo-cold2sport.png"
+                alt="Cold2Sport logo"
+                width={160}
+                height={23}
+                className="h-6 w-auto brightness-100"
+              />
             </Link>
             <p className="mt-3 font-body text-[14px] text-white/40">Elite Recovery Technology</p>
             <div className="mt-6 flex gap-5">

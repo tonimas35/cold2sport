@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -50,9 +51,14 @@ export default function Navbar() {
           className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8"
         >
           <Link href="/" className="flex items-center" aria-label="Cold2Sport home">
-            <span className="font-heading text-lg font-semibold tracking-tight text-white">
-              COLD<span className="text-brand-gold">2</span>SPORT
-            </span>
+            <Image
+              src="/cold2sport/logo-cold2sport.png"
+              alt="Cold2Sport logo"
+              width={160}
+              height={23}
+              priority
+              className="h-6 w-auto"
+            />
           </Link>
 
           <div className="hidden items-center gap-1 lg:flex">
