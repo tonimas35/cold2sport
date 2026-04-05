@@ -1,137 +1,124 @@
 'use client'
 
 import Image from 'next/image'
-import { motion } from 'framer-motion'
-import { products } from '@/lib/products'
-
-const stagger = { animate: { transition: { staggerChildren: 0.15 } } }
-const fadeUp = {
-  initial: { opacity: 0, y: 24 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-}
+import Link from 'next/link'
+import { BlurFade } from '@/components/magicui/blur-fade'
+import { NumberTicker } from '@/components/magicui/number-ticker'
 
 export default function Hero() {
-  const featured = products[0]
-
   return (
-    <section
-      className="relative min-h-screen overflow-hidden bg-brand-navy"
-      style={{
-        backgroundImage: `
-          radial-gradient(ellipse at 70% 50%, rgba(0,155,219,0.08) 0%, transparent 60%),
-          linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)`,
-        backgroundSize: '100% 100%, 60px 60px, 60px 60px',
-      }}
-    >
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-16 px-6 pb-24 pt-36 lg:flex-row lg:gap-12 lg:px-8 lg:pt-44">
-        {/* Text — 55% */}
-        <motion.div
-          variants={stagger}
-          initial="initial"
-          animate="animate"
-          className="flex-[1.2] text-center lg:text-left"
-        >
-          {/* Eyebrow badge — blue border */}
-          <motion.div variants={fadeUp} className="mb-8 inline-flex items-center gap-2 rounded-full border border-brand-blue/40 bg-brand-blue/[0.08] px-4 py-2">
-            <span className="text-[11px] font-medium tracking-[0.1em] text-brand-blue">
-              Official Recovery Partner of FC Barcelona
-            </span>
-          </motion.div>
-
-          {/* H1 — light weight, blue accent */}
-          <motion.h1 variants={fadeUp} className="font-heading leading-[1.05]">
-            <span className="block text-[56px] font-light text-white sm:text-[72px] lg:text-[88px]">
-              Recover
-            </span>
-            <span className="block text-[56px] font-semibold text-brand-blue sm:text-[72px] lg:text-[88px]">
-              Faster.
-            </span>
-          </motion.h1>
-
-          {/* Subheading — muted */}
-          <motion.p variants={fadeUp} className="mx-auto mt-6 max-w-md font-body text-[18px] font-normal leading-relaxed text-brand-text-light lg:mx-0">
-            BioFresh Tech phase-change cooling. Sustained 10–15°C for 60+ minutes. No ice. No freezer.
-          </motion.p>
-
-          {/* CTAs — blue primary, outline secondary */}
-          <motion.div variants={fadeUp} className="mt-10 flex flex-wrap justify-center gap-4 lg:justify-start">
-            <a
-              href="/shop"
-              className="rounded-full bg-brand-blue px-8 py-4 text-[15px] font-medium text-white transition-all duration-300 hover:bg-[#007bb0]"
-            >
-              Shop Now
-            </a>
-            <a
-              href="/#technology"
-              className="rounded-full border border-white/30 px-8 py-4 text-[15px] font-medium text-white transition-all duration-300 hover:bg-white/10"
-            >
-              Discover Technology
-            </a>
-          </motion.div>
-
-          {/* Stats row — divided by vertical lines */}
-          <motion.div
-            variants={fadeUp}
-            className="mt-16 flex justify-center gap-0 lg:justify-start"
-          >
-            {[
-              { value: '10–15°C', label: 'Stable cooling' },
-              { value: '60+ min', label: 'Autonomy' },
-              { value: '3,000+', label: 'Athletes' },
-            ].map((stat, i) => (
-              <div
-                key={stat.label}
-                className={`px-6 text-center lg:text-left ${
-                  i < 2 ? 'border-r border-white/10' : ''
-                } ${i === 0 ? 'pl-0' : ''}`}
-              >
-                <p className="font-heading text-[36px] font-light text-white">{stat.value}</p>
-                <p className="mt-1 font-body text-[11px] font-medium tracking-[0.1em] text-brand-text-light">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </motion.div>
-        </motion.div>
-
-        {/* Product image — 45% */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="relative flex-1"
-        >
-          <Image
-            src={featured.image}
-            alt="Cold2Sport Thermal Short — flagship recovery garment for post-training cooling"
-            width={600}
-            height={600}
-            priority
-            className="mx-auto w-full max-w-sm rounded-2xl object-cover lg:max-w-md"
-            style={{ mixBlendMode: 'normal' }}
-          />
-          {/* Floating spec cards — blue tinted borders */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.1, duration: 0.5 }}
-            className="absolute -left-4 bottom-20 rounded-xl border border-brand-blue/30 bg-brand-navy/85 px-5 py-3 backdrop-blur-sm lg:left-0"
-          >
-            <p className="font-body text-[11px] font-medium tracking-[0.1em] text-brand-text-light">Temperature</p>
-            <p className="font-heading text-xl font-light text-brand-blue">10–15°C</p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.3, duration: 0.5 }}
-            className="absolute -right-4 top-16 rounded-xl border border-brand-blue/30 bg-brand-navy/85 px-5 py-3 backdrop-blur-sm lg:right-0"
-          >
-            <p className="font-body text-[11px] font-medium tracking-[0.1em] text-brand-text-light">Autonomy</p>
-            <p className="font-heading text-xl font-light text-brand-blue">+60 min</p>
-          </motion.div>
-        </motion.div>
+    <section className="relative min-h-screen flex items-center bg-brand-navy overflow-hidden">
+      {/* Background grid */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-brand-navy" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-blue/5 rounded-full blur-[120px]" />
       </div>
+
+      <div className="container-wide relative z-10 pt-28 pb-16 md:pt-32 md:pb-20">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Text */}
+          <div>
+            <BlurFade delay={0.1} direction="up">
+              <span className="inline-block text-brand-blue text-sm font-heading font-medium tracking-wider uppercase mb-5">
+                Elite Recovery Technology
+              </span>
+            </BlurFade>
+
+            <BlurFade delay={0.2} direction="up">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-heading font-light text-white leading-[1.1] tracking-tighter mb-6">
+                The future of{' '}
+                <span className="font-serif italic text-brand-blue">muscle</span>{' '}
+                recovery
+              </h1>
+            </BlurFade>
+
+            <BlurFade delay={0.3} direction="up">
+              <p className="text-lg text-white/60 max-w-lg mb-8 leading-relaxed">
+                Phase-change cooling garments that maintain precise temperature without ice.
+                Trusted by elite athletes and professional clubs worldwide.
+              </p>
+            </BlurFade>
+
+            <BlurFade delay={0.4} direction="up">
+              <div className="flex flex-wrap gap-4 mb-12">
+                <Link
+                  href="/cold2sport/shop"
+                  className="inline-flex items-center gap-2 bg-brand-blue hover:bg-brand-blue-hover text-white font-heading font-medium text-sm px-7 py-3.5 rounded-lg transition-colors duration-200"
+                >
+                  Shop Now
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+                <Link
+                  href="#technology"
+                  className="inline-flex items-center gap-2 border border-white/20 hover:border-white/40 text-white font-heading font-medium text-sm px-7 py-3.5 rounded-lg transition-colors duration-200"
+                >
+                  Our Technology
+                </Link>
+              </div>
+            </BlurFade>
+
+            {/* Stats with NumberTicker */}
+            <BlurFade delay={0.5} direction="up">
+              <div className="flex gap-8 md:gap-12">
+                <div>
+                  <div className="text-2xl md:text-3xl font-heading font-light text-white tracking-tight">
+                    10–15°C
+                  </div>
+                  <div className="text-xs text-white/40 mt-1 uppercase tracking-wider">
+                    Precise cooling
+                  </div>
+                </div>
+                <div>
+                  <div className="text-2xl md:text-3xl font-heading font-light text-white tracking-tight">
+                    <NumberTicker value={60} className="text-white" />
+                    <span className="text-white/60">+</span>
+                  </div>
+                  <div className="text-xs text-white/40 mt-1 uppercase tracking-wider">
+                    Minutes autonomy
+                  </div>
+                </div>
+                <div>
+                  <div className="text-2xl md:text-3xl font-heading font-light text-white tracking-tight">
+                    <NumberTicker value={3000} className="text-white" />
+                    <span className="text-white/60">+</span>
+                  </div>
+                  <div className="text-xs text-white/40 mt-1 uppercase tracking-wider">
+                    Athletes worldwide
+                  </div>
+                </div>
+              </div>
+            </BlurFade>
+          </div>
+
+          {/* Product image */}
+          <BlurFade delay={0.3} direction="right">
+            <div className="relative flex justify-center">
+              <div className="relative w-full max-w-md lg:max-w-lg">
+                <div className="absolute -inset-4 bg-gradient-to-tr from-brand-blue/10 to-transparent rounded-3xl blur-2xl" />
+                <Image
+                  src="https://cold2sport.com/wp-content/uploads/2024/11/COLD2SPORT25294.jpg"
+                  alt="Cold2Sport Thermal Short — flagship recovery garment"
+                  width={600}
+                  height={600}
+                  className="relative rounded-2xl shadow-2xl w-full h-auto object-cover"
+                  priority
+                />
+                {/* Float badge */}
+                <div className="absolute -bottom-3 -right-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3">
+                  <div className="text-xs text-white/60 uppercase tracking-wider">From</div>
+                  <div className="text-xl font-heading font-medium text-white">€100</div>
+                </div>
+              </div>
+            </div>
+          </BlurFade>
+        </div>
+      </div>
+
+      {/* Bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent" />
     </section>
   )
 }

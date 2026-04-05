@@ -1,39 +1,41 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import Link from 'next/link'
+import { BlurFade } from '@/components/magicui/blur-fade'
 
 export default function CTABanner() {
   return (
-    <section id="contact" className="bg-brand-blue py-24">
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-80px' }}
-        transition={{ duration: 0.7 }}
-        className="mx-auto max-w-3xl px-6 text-center lg:px-8"
-      >
-        <h2 className="font-heading text-[48px] font-light leading-tight text-white">
-          Ready to recover like a professional?
-        </h2>
-        <p className="mt-5 font-body text-[18px] text-white/65">
-          Join FC Barcelona, LaLiga athletes, and over 3,000 sports professionals already using Cold2Sport.
-        </p>
-        <div className="mt-10 flex flex-wrap justify-center gap-4">
-          <a
-            href="/shop"
-            className="rounded-full bg-white px-8 py-4 text-[15px] font-medium text-brand-navy transition-all duration-300 hover:bg-white/90"
-          >
-            Shop Now
-          </a>
-          <a
-            href="mailto:info@cold2sport.com"
-            className="rounded-full border border-white/40 px-8 py-4 text-[15px] font-medium text-white transition-all duration-300 hover:bg-white/10"
-          >
-            Contact Us
-          </a>
-        </div>
-        <p className="mt-8 font-body text-[13px] text-white/60">info@cold2sport.com</p>
-      </motion.div>
+    <section className="py-20 md:py-28 bg-brand-blue relative overflow-hidden">
+      {/* Subtle pattern */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
+
+      <div className="container-wide relative z-10">
+        <BlurFade className="text-center">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-light text-white tracking-tighter mb-4">
+            Ready to recover like a <span className="font-serif italic">pro</span>?
+          </h2>
+          <p className="text-lg text-white/70 mb-8 max-w-xl mx-auto">
+            Join 3,000+ professional athletes who trust Cold2Sport for their recovery.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link
+              href="/cold2sport/shop"
+              className="inline-flex items-center gap-2 bg-white text-brand-navy font-heading font-medium text-sm px-8 py-4 rounded-lg hover:bg-white/90 transition-colors"
+            >
+              Shop Now
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+            <Link
+              href="#contact"
+              className="inline-flex items-center gap-2 border border-white/30 text-white font-heading font-medium text-sm px-8 py-4 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              Contact Us
+            </Link>
+          </div>
+        </BlurFade>
+      </div>
     </section>
   )
 }

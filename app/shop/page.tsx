@@ -1,37 +1,66 @@
-import type { Metadata } from 'next'
-import ProductGrid from '@/components/shop/ProductGrid'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Shop — Cold2Sport Recovery Garments',
-  description:
-    'Browse the full Cold2Sport collection: thermal shorts, knee pads, anklets, cold packs and recovery accessories.',
-  openGraph: {
-    title: 'Shop — Cold2Sport Recovery Garments',
-    description: 'Browse the full Cold2Sport collection.',
-    images: ['https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1200&q=80'],
-  },
-}
+import { useState } from 'react'
+import { products, categories } from '@/lib/products'
+import ProductCard from '@/components/shop/ProductCard'
+import { BlurFade } from '@/components/magicui/blur-fade'
 
 export default function ShopPage() {
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
+
+  const filtered = activeCategory
+    ? products.filter((p) => p.category === activeCategory)
+    : products
+
   return (
-    <div className="min-h-screen bg-white pt-24">
-      {/* Header on navy */}
-      <div className="bg-brand-navy py-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <nav aria-label="Breadcrumb" className="mb-4 font-body text-[12px] tracking-wide text-brand-text-light">
-            <a href="/" className="hover:text-brand-blue">Home</a>
-            <span className="mx-2 text-white/20">/</span>
-            <span className="text-white">Shop</span>
-          </nav>
-          <h1 className="font-heading text-[48px] font-light text-white">
-            Recovery Collection
+    <div className="pt-24 pb-20">
+      <div className="container-wide">
+        <BlurFade className="text-center mb-12">
+          <span className="text-brand-blue text-sm font-heading font-medium tracking-wider uppercase">
+            Shop
+          </span>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-light text-brand-navy mt-3 tracking-tighter">
+            Recovery <span className="font-serif italic">products</span>
           </h1>
-          <p className="mt-3 font-body text-[17px] text-brand-text-light">
-            Professional-grade cooling garments and accessories
+          <p className="text-brand-text-mid mt-4 max-w-xl mx-auto">
+            Professional-grade thermal recovery technology for athletes at every level.
           </p>
+        </BlurFade>
+
+        {/* Filters */}
+        <div className="flex flex-wrap justify-center gap-2 mb-10">
+          <button
+            onClick={() => setActiveCategory(null)}
+            className={`px-4 py-2 rounded-lg text-sm font-heading transition-colors ${
+              !activeCategory
+                ? 'bg-brand-navy text-white'
+                : 'bg-brand-offwhite text-brand-text-mid hover:bg-brand-navy/5'
+            }`}
+          >
+            All
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`px-4 py-2 rounded-lg text-sm font-heading transition-colors ${
+                activeCategory === cat
+                  ? 'bg-brand-navy text-white'
+                  : 'bg-brand-offwhite text-brand-text-mid hover:bg-brand-navy/5'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {filtered.map((product) => (
+            <ProductCard key={product.slug} product={product} />
+          ))}
         </div>
       </div>
-      <ProductGrid />
     </div>
   )
 }

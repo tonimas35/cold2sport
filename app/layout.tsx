@@ -8,14 +8,14 @@ const lexend = Lexend({
   subsets: ['latin'],
   variable: '--font-lexend',
   display: 'swap',
-  weight: ['300', '400', '600'],
+  weight: ['300', '400', '500', '600', '700'],
 })
 
 const manrope = Manrope({
   subsets: ['latin'],
   variable: '--font-manrope',
   display: 'swap',
-  weight: ['400', '500'],
+  weight: ['400', '500', '600'],
 })
 
 const dmSerif = DM_Serif_Display({
@@ -27,8 +27,15 @@ const dmSerif = DM_Serif_Display({
 })
 
 export const metadata: Metadata = {
+  title: 'Cold2Sport — Elite Recovery Technology',
+  description: 'Revolutionary thermal recovery technology for professional athletes. Phase-change cooling garments maintaining 10-15°C for 60+ minutes without ice.',
   metadataBase: new URL('https://cold2sport.com'),
   robots: { index: true, follow: true },
+  openGraph: {
+    title: 'Cold2Sport — Elite Recovery Technology',
+    description: 'Revolutionary thermal recovery for athletes. No ice needed.',
+    type: 'website',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

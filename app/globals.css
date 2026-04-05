@@ -10,23 +10,35 @@
   }
 
   body {
-    @apply font-body text-brand-text bg-white;
+    @apply font-body bg-white;
     text-rendering: optimizeLegibility;
-    font-size: 17px;
-    line-height: 1.75;
+    font-size: 16px;
+    line-height: 1.7;
     color: #4a5568;
   }
 
   ::selection {
-    @apply bg-brand-blue/20 text-brand-navy;
+    @apply bg-brand-blue/15 text-brand-navy;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading text-brand-navy;
+    letter-spacing: -0.02em;
   }
 }
 
 @layer components {
-  /* Marquee mask */
   .marquee-container {
     overflow: hidden;
-    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  }
+
+  .section-padding {
+    @apply py-20 md:py-28 lg:py-32;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto px-5 sm:px-8;
   }
 }

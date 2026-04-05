@@ -1,148 +1,141 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
 
 const navLinks = [
-  { label: 'About', href: '/about' },
-  { label: 'Technology', href: '/#technology' },
-  { label: 'Shop', href: '/shop' },
-  { label: 'News', href: '/#news' },
-  { label: 'Contact', href: '/#contact' },
+  { label: 'About', href: '#about' },
+  { label: 'Technology', href: '#technology' },
+  { label: 'Products', href: '#products' },
+  { label: 'Team', href: '#team' },
+  { label: 'Shop', href: '/cold2sport/shop' },
 ]
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const pathname = usePathname()
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    const handleScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  useEffect(() => { setMobileOpen(false) }, [pathname])
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
   }, [mobileOpen])
 
   return (
     <>
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-brand-blue focus:px-4 focus:py-2 focus:text-white"
-      >
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-brand-blue focus:text-white focus:px-4 focus:py-2 focus:rounded">
         Skip to content
       </a>
-      <header
-        className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ${
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'bg-brand-navy/95 shadow-sm backdrop-blur-[12px] py-3'
-            : 'bg-transparent py-5'
+            ? 'bg-brand-navy/95 backdrop-blur-md shadow-lg'
+            : 'bg-transparent'
         }`}
       >
-        <nav
-          aria-label="Main navigation"
-          className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8"
-        >
-          <Link href="/" className="flex items-center" aria-label="Cold2Sport home">
+        <div className="container-wide flex items-center justify-between h-16 md:h-20">
+          <Link href="/cold2sport" className="relative z-10 flex items-center">
             <Image
               src="/cold2sport/logo-cold2sport.png"
-              alt="Cold2Sport logo"
-              width={160}
-              height={23}
+              alt="Cold2Sport"
+              width={140}
+              height={20}
+              className="h-5 w-auto brightness-0 invert"
               priority
-              className="h-6 w-auto"
             />
           </Link>
 
-          <div className="hidden items-center gap-1 lg:flex">
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <Link
-                key={link.href}
+                key={link.label}
                 href={link.href}
-                aria-current={pathname === link.href ? 'page' : undefined}
-                className={`px-4 py-2 font-body text-[14px] font-medium transition-all duration-300 ${
-                  pathname === link.href
-                    ? 'text-white'
-                    : 'text-white/70 hover:text-white'
-                }`}
+                className="text-sm font-medium text-white/70 hover:text-white transition-colors duration-200 tracking-wide"
               >
                 {link.label}
               </Link>
             ))}
-          </div>
-
-          <div className="hidden items-center gap-4 lg:flex">
-            <span className="text-[11px] font-medium text-white/50">ES | EN | CA</span>
             <Link
-              href="/shop"
-              className="rounded-full bg-brand-blue px-5 py-2 text-[13px] font-medium text-white transition-all duration-300 hover:bg-brand-blue-light"
+              href="#contact"
+              className="text-sm font-medium bg-brand-blue hover:bg-brand-blue-hover text-white px-5 py-2 rounded-lg transition-colors duration-200"
             >
-              Shop Now
+              Contact
             </Link>
           </div>
 
+          {/* Mobile burger */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex h-10 w-10 items-center justify-center text-white lg:hidden"
-            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={mobileOpen}
+            className="md:hidden relative z-10 w-8 h-8 flex flex-col items-center justify-center gap-1.5"
+            aria-label="Toggle menu"
           >
-            <div className="flex h-4 w-5 flex-col justify-between">
-              <span className={`block h-[1.5px] w-full bg-white transition-all duration-300 ${mobileOpen ? 'translate-y-[7px] rotate-45' : ''}`} />
-              <span className={`block h-[1.5px] w-full bg-white transition-all duration-300 ${mobileOpen ? 'opacity-0' : ''}`} />
-              <span className={`block h-[1.5px] w-full bg-white transition-all duration-300 ${mobileOpen ? '-translate-y-[7px] -rotate-45' : ''}`} />
-            </div>
+            <motion.span
+              animate={mobileOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
+              className="block w-6 h-0.5 bg-white origin-center"
+            />
+            <motion.span
+              animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }}
+              className="block w-6 h-0.5 bg-white"
+            />
+            <motion.span
+              animate={mobileOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
+              className="block w-6 h-0.5 bg-white origin-center"
+            />
           </button>
-        </nav>
-      </header>
+        </div>
+      </nav>
 
+      {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-brand-navy lg:hidden"
+            className="fixed inset-0 z-40 bg-brand-navy flex flex-col items-center justify-center"
           >
-            <nav className="flex h-full flex-col items-center justify-center gap-6">
+            <div className="flex flex-col items-center gap-6">
               {navLinks.map((link, i) => (
                 <motion.div
-                  key={link.href}
-                  initial={{ opacity: 0, y: 15 }}
+                  key={link.label}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 + i * 0.05 }}
+                  transition={{ delay: i * 0.08 }}
                 >
                   <Link
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className="font-heading text-2xl font-light text-white hover:text-brand-blue"
+                    className="text-2xl font-heading font-light text-white hover:text-brand-blue transition-colors"
                   >
                     {link.label}
                   </Link>
                 </motion.div>
               ))}
               <motion.div
-                initial={{ opacity: 0, y: 15 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                className="mt-4"
+                transition={{ delay: navLinks.length * 0.08 }}
               >
                 <Link
-                  href="/shop"
-                  className="rounded-full bg-brand-blue px-8 py-3 text-base font-medium text-white"
+                  href="#contact"
+                  onClick={() => setMobileOpen(false)}
+                  className="mt-4 text-lg font-medium bg-brand-blue text-white px-8 py-3 rounded-lg"
                 >
-                  Shop Now
+                  Contact
                 </Link>
               </motion.div>
-            </nav>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

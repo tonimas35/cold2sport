@@ -1,31 +1,47 @@
 'use client'
 
-const partners = ['FC Barcelona', 'BioFresh Tech', 'Spanish Football Federation', 'LaLiga', 'UEFA Pro License']
-const doubled = [...partners, ...partners]
+import Image from 'next/image'
+import { Marquee } from '@/components/magicui/marquee'
+
+const partners = [
+  { name: 'BioFreshTech', logo: 'https://cold2sport.com/wp-content/uploads/2024/11/biofreshtech-14.png' },
+  { name: 'FC Barcelona', text: 'FC BARCELONA' },
+  { name: 'Premium Marketing', logo: 'https://cold2sport.com/wp-content/uploads/2024/12/Logo-Premium-Marketing-22-BLANC-01.jpg' },
+]
+
+function PartnerItem({ partner }: { partner: typeof partners[number] }) {
+  return (
+    <div className="flex items-center justify-center px-8 md:px-12">
+      {partner.logo ? (
+        <Image
+          src={partner.logo}
+          alt={partner.name}
+          width={120}
+          height={40}
+          className="h-8 md:h-10 w-auto object-contain opacity-40 grayscale hover:opacity-70 hover:grayscale-0 transition-all duration-300"
+        />
+      ) : (
+        <span className="text-lg md:text-xl font-heading font-semibold tracking-tight text-brand-blue/70 hover:text-brand-blue transition-colors whitespace-nowrap">
+          {partner.text}
+        </span>
+      )}
+    </div>
+  )
+}
 
 export default function TrustBar() {
   return (
-    <section className="bg-brand-navy-deep py-6">
-      <p className="mb-4 text-center font-body text-[11px] font-medium tracking-[0.1em] text-white/30">
-        Trusted by elite sport
-      </p>
-      <div className="marquee-container">
-        <div className="flex animate-marquee items-center gap-16 whitespace-nowrap">
-          {doubled.map((name, i) => (
-            <span
-              key={`${name}-${i}`}
-              className={`font-heading text-[14px] font-normal tracking-wide transition-opacity duration-300 hover:text-white/90 ${
-                name === 'FC Barcelona' ? 'text-brand-blue' : 'text-white/40'
-              }`}
-            >
-              {name}
-              {i < doubled.length - 1 && (
-                <span className="ml-16 font-serif text-white/20">&mdash;</span>
-              )}
-            </span>
-          ))}
-        </div>
+    <section className="py-10 md:py-14 border-b border-brand-border">
+      <div className="container-wide">
+        <p className="text-center text-xs uppercase tracking-[0.2em] text-brand-text-light mb-8 font-heading">
+          Trusted by elite athletes &amp; clubs
+        </p>
       </div>
+      <Marquee pauseOnHover className="[--duration:30s] [--gap:2rem]">
+        {partners.map((p) => (
+          <PartnerItem key={p.name} partner={p} />
+        ))}
+      </Marquee>
     </section>
   )
 }
