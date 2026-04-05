@@ -1,60 +1,75 @@
 'use client'
 
 import Image from 'next/image'
-import { news } from '@/lib/news'
-import { BlurFade } from '@/components/magicui/blur-fade'
+import AnimatedSection from '@/components/ui/AnimatedSection'
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
+const news = [
+  {
+    title: 'Cold2Sport expands its recovery product range with two new launches',
+    date: '2025-12-22',
+    image: '/cold2sport/images/C2S-2025-07-09-0121-red.png',
+    href: '#',
+  },
+  {
+    title: 'Cold2Sport expands in Argentina with Sport78 and DigitalSport',
+    date: '2025-10-06',
+    image: '/cold2sport/images/cold2sport-nautic23-Baja-1-800x694.jpg',
+    href: '#',
+  },
+  {
+    title: 'Discover the Cold2Sport thermal knee pad: stable and long-lasting',
+    date: '2025-07-11',
+    image: '/cold2sport/images/cold2sport-nautic3-Baja-800x694.jpg',
+    href: '#',
+  },
+  {
+    title: 'Sports Technology Company of the Year at the 2025 European Technology Awards',
+    date: '2025-06-09',
+    image: '/cold2sport/images/856c68c5-74ab-4e11-b476-fcf2f10ed7b2.png',
+    href: '#',
+  },
+  {
+    title: 'Sports Physiotherapy Congress in Barcelona, May 9th',
+    date: '2025-05-05',
+    image: '/cold2sport/images/Bihub-placeholder-1200-800.jpg',
+    href: '#',
+  },
+  {
+    title: 'Prevention, immediate treatment and active recovery with Cold2Sport',
+    date: '2025-05-02',
+    image: '/cold2sport/images/WhatsApp-Image-2025-02-17-at-15.10.52-e1740763214940.jpeg',
+    href: '#',
+  },
+]
+
+function formatDate(d: string) {
+  return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 export default function NewsSection() {
   return (
-    <section id="news" className="section-padding bg-brand-offwhite">
+    <section id="news" className="py-16 md:py-24 bg-brand-navy border-t border-white/5">
       <div className="container-wide">
-        <BlurFade className="text-center mb-14">
-          <span className="text-brand-blue text-sm font-heading font-medium tracking-wider uppercase">
-            Latest News
-          </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-light text-brand-navy mt-3 tracking-tighter">
-            What&apos;s <span className="font-serif italic">happening</span>
-          </h2>
-        </BlurFade>
+        <AnimatedSection className="text-center mb-12">
+          <span className="text-brand-blue text-xs font-heading font-semibold tracking-wider uppercase">Latest</span>
+          <h2 className="text-3xl md:text-4xl font-heading font-light text-white mt-2 tracking-tighter">News</h2>
+        </AnimatedSection>
 
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {news.map((item, i) => (
-            <BlurFade key={item.slug} delay={i * 0.1}>
-              <article className="group bg-white rounded-2xl overflow-hidden border border-brand-border hover:shadow-lg transition-shadow duration-300">
+            <AnimatedSection key={i} delay={i * 0.05}>
+              <a href={item.href} className="group block rounded-xl overflow-hidden bg-white/5 hover:bg-white/8 transition-colors">
                 <div className="relative aspect-[16/10] overflow-hidden">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 left-3">
-                    <span className="bg-brand-navy/80 backdrop-blur-sm text-white text-xs font-heading px-3 py-1 rounded-md uppercase tracking-wider">
-                      {item.category}
-                    </span>
-                  </div>
+                  <Image src={item.image} alt={item.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-3 text-xs text-brand-text-light">
-                    <time dateTime={item.date}>{formatDate(item.date)}</time>
-                    <span>&middot;</span>
-                    <span>{item.readTime} read</span>
-                  </div>
-                  <h3 className="text-base font-heading font-medium text-brand-navy leading-snug mb-2 line-clamp-2 group-hover:text-brand-blue transition-colors">
+                <div className="p-4">
+                  <time className="text-[10px] text-white/20 uppercase tracking-wider">{formatDate(item.date)}</time>
+                  <h3 className="text-sm font-heading font-medium text-white/80 mt-1 leading-snug line-clamp-2 group-hover:text-brand-blue transition-colors">
                     {item.title}
                   </h3>
-                  <p className="text-sm text-brand-text-mid line-clamp-2">{item.excerpt}</p>
                 </div>
-              </article>
-            </BlurFade>
+              </a>
+            </AnimatedSection>
           ))}
         </div>
       </div>

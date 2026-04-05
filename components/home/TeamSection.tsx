@@ -1,40 +1,56 @@
 'use client'
 
 import Image from 'next/image'
-import { team } from '@/lib/team'
-import { BlurFade } from '@/components/magicui/blur-fade'
+import Link from 'next/link'
+import AnimatedSection from '@/components/ui/AnimatedSection'
+
+const team = [
+  {
+    name: 'Rafael Matamoros',
+    role: 'Co-Founder',
+    image: '/cold2sport/images/rafa-cofounder.png',
+  },
+  {
+    name: 'Isaac Cuenca',
+    role: 'Co-Founder',
+    image: '/cold2sport/images/isaac-co-founder.png',
+  },
+  {
+    name: 'Eduard M. Segu',
+    role: 'Director of Operations',
+    image: '/cold2sport/images/eduard-director.operations.png',
+  },
+]
 
 export default function TeamSection() {
   return (
-    <section id="team" className="section-padding bg-white">
+    <section id="team" className="py-16 md:py-24 bg-brand-navy border-t border-white/5">
       <div className="container-wide">
-        <BlurFade className="text-center mb-14">
-          <span className="text-brand-blue text-sm font-heading font-medium tracking-wider uppercase">
-            Our Team
-          </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-light text-brand-navy mt-3 tracking-tighter">
-            The people behind <span className="font-serif italic">the tech</span>
+        <AnimatedSection className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-heading font-light text-white tracking-tighter">
+            Meet Our Team
           </h2>
-        </BlurFade>
+          <p className="text-white/30 text-sm mt-2">We Create Powerful Work</p>
+        </AnimatedSection>
 
-        <div className="grid md:grid-cols-3 gap-8 lg:gap-12 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-10">
           {team.map((member, i) => (
-            <BlurFade key={member.name} delay={i * 0.1}>
+            <AnimatedSection key={member.name} delay={i * 0.1}>
               <div className="text-center group">
-                <div className="relative w-40 h-40 mx-auto mb-5 rounded-full overflow-hidden bg-brand-offwhite">
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                  />
+                <div className="relative w-40 h-40 mx-auto mb-4 rounded-full overflow-hidden bg-white/5">
+                  <Image src={member.image} alt={member.name} fill className="object-cover" />
                 </div>
-                <h3 className="text-lg font-heading font-medium text-brand-navy">{member.name}</h3>
-                <p className="text-sm text-brand-blue font-heading mt-0.5">{member.role}</p>
-                <p className="text-sm text-brand-text-mid mt-3 leading-relaxed">{member.bio}</p>
+                <h3 className="text-base font-heading font-semibold text-white">{member.name}</h3>
+                <p className="text-xs text-brand-blue mt-0.5">{member.role}</p>
               </div>
-            </BlurFade>
+            </AnimatedSection>
           ))}
+        </div>
+
+        <div className="text-center">
+          <Link href="#team" className="inline-flex items-center gap-2 bg-brand-blue hover:bg-brand-blue-hover text-white text-xs font-heading font-semibold px-6 py-3 rounded transition-colors uppercase tracking-wider">
+            Our Team
+          </Link>
         </div>
       </div>
     </section>

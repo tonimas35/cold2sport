@@ -1,155 +1,164 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useState, useEffect, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { NumberTicker } from '@/components/magicui/number-ticker'
 
-const stats = [
-  { value: '10–15°C', label: 'Thermal precision' },
-  { num: 60, suffix: '+', label: 'Min autonomy' },
-  { num: 3000, suffix: '+', label: 'Pro athletes' },
+const slides = [
+  {
+    label: 'New Product',
+    heading: 'The Knee Recovery Revolution',
+    description: 'Thermal knee pad with precise cooling between 5-15°C. Targeted cold point positioning for optimal joint recovery.',
+    cta: { label: 'Learn More', href: '#products' },
+    image: '/cold2sport/images/C2S-2025-07-09-0121-red.png',
+    imageAlt: 'Cold2Sport Thermal Knee Pad',
+  },
+  {
+    label: 'BioFresh Tech',
+    heading: 'The Future of Muscle Recovery',
+    description: 'Phase-change cooling garments maintaining 10-15°C for 60+ minutes. No ice needed. Used by FC Barcelona.',
+    cta: { label: 'Our Technology', href: '#technology' },
+    image: '/cold2sport/images/Cold2Sport_Keyvisual_komprimiert_web.png',
+    imageAlt: 'Cold2Sport Thermal Short Technology',
+  },
+  {
+    label: 'Shop Now',
+    heading: 'Thermal Garments for Performance & Recovery',
+    description: 'Professional-grade recovery technology for athletes at every level. From thermal shorts to cold packs.',
+    cta: { label: 'Shop', href: '/cold2sport/shop' },
+    image: '/cold2sport/images/COLD2SPORT25237-removebg-preview.png',
+    imageAlt: 'Cold2Sport Product Range',
+  },
 ]
 
 export default function Hero() {
+  const [current, setCurrent] = useState(0)
+
+  const next = useCallback(() => setCurrent((c) => (c + 1) % slides.length), [])
+  const prev = useCallback(() => setCurrent((c) => (c - 1 + slides.length) % slides.length), [])
+
+  useEffect(() => {
+    const timer = setInterval(next, 6000)
+    return () => clearInterval(timer)
+  }, [next])
+
+  const slide = slides[current]
+
   return (
-    <section className="relative min-h-[100vh] bg-brand-navy overflow-hidden">
-      {/* === FULL BACKGROUND IMAGE === */}
-      <div className="absolute inset-0">
-        <Image
-          src="https://cold2sport.com/wp-content/uploads/2024/11/cold2sport-nautic5-Baja.jpg"
-          alt=""
-          fill
-          className="object-cover"
-          priority
-        />
-        {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-brand-navy via-brand-navy/85 to-brand-navy/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-transparent to-brand-navy/60" />
-      </div>
+    <section className="relative h-[85vh] min-h-[550px] max-h-[800px] bg-brand-navy overflow-hidden">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="absolute inset-0 flex items-center"
+        >
+          <div className="container-wide w-full">
+            <div className="grid lg:grid-cols-2 gap-8 items-center">
+              {/* Left — Text */}
+              <div className="relative z-10">
+                <motion.span
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.4 }}
+                  className="inline-block text-brand-blue text-xs font-heading font-semibold tracking-wider uppercase mb-4"
+                >
+                  {slide.label}
+                </motion.span>
 
-      {/* Subtle blue accent glow */}
-      <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-brand-blue/10 rounded-full blur-[100px]" />
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                  className="text-4xl sm:text-5xl lg:text-6xl font-serif text-white leading-[1.1] mb-5"
+                >
+                  {slide.heading}
+                </motion.h1>
 
-      {/* === CONTENT === */}
-      <div className="relative z-10 min-h-[100vh] flex items-center">
-        <div className="container-wide w-full pt-24 pb-20 md:pt-28 md:pb-24">
-          <div className="max-w-2xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 rounded-full px-4 py-1.5 mb-6">
-                <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse" />
-                <span className="text-white/80 text-xs font-heading font-medium tracking-wider uppercase">
-                  Elite Recovery Technology
-                </span>
+                <motion.p
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.4 }}
+                  className="text-sm md:text-base text-white/50 max-w-md mb-7 leading-relaxed"
+                >
+                  {slide.description}
+                </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.4 }}
+                >
+                  <Link
+                    href={slide.cta.href}
+                    className="inline-flex items-center gap-2 bg-brand-blue hover:bg-brand-blue-hover text-white text-xs font-heading font-semibold px-6 py-3 rounded transition-colors uppercase tracking-wider"
+                  >
+                    {slide.cta.label}
+                  </Link>
+                </motion.div>
               </div>
-            </motion.div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-heading font-light text-white leading-[1.05] tracking-tighter mb-6"
-            >
-              The future of
-              <br />
-              <span className="font-serif italic text-brand-blue">muscle</span>{' '}
-              recovery
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-base md:text-lg text-white/60 max-w-lg mb-8 leading-relaxed"
-            >
-              Phase-change cooling garments that maintain precise temperature without ice.
-              Used by FC Barcelona and 3,000+ professional athletes.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-wrap gap-3 mb-12"
-            >
-              <Link
-                href="/cold2sport/shop"
-                className="group inline-flex items-center gap-2 bg-brand-blue hover:bg-brand-blue-hover text-white font-heading font-medium text-sm px-7 py-3.5 rounded-lg transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,155,219,0.3)]"
+              {/* Right — Product image */}
+              <motion.div
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+                className="relative flex justify-center lg:justify-end"
               >
-                Shop Now
-                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
-              <Link
-                href="#technology"
-                className="inline-flex items-center gap-2 bg-white/5 border border-white/15 hover:bg-white/10 hover:border-white/25 text-white font-heading font-medium text-sm px-7 py-3.5 rounded-lg transition-all duration-300 backdrop-blur-sm"
-              >
-                Our Technology
-              </Link>
-            </motion.div>
-
-            {/* Stats bar */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="flex gap-8 md:gap-12 border-t border-white/10 pt-6"
-            >
-              {stats.map((stat, i) => (
-                <div key={i}>
-                  <div className="text-2xl md:text-3xl font-heading font-medium text-white tracking-tight">
-                    {stat.num ? (
-                      <>
-                        <NumberTicker value={stat.num} className="text-white" />
-                        <span className="text-brand-blue">{stat.suffix}</span>
-                      </>
-                    ) : (
-                      <span>{stat.value}</span>
-                    )}
-                  </div>
-                  <div className="text-[10px] text-white/30 mt-0.5 uppercase tracking-[0.15em]">
-                    {stat.label}
-                  </div>
+                <div className="relative w-full max-w-md lg:max-w-lg">
+                  <Image
+                    src={slide.image}
+                    alt={slide.imageAlt}
+                    width={600}
+                    height={600}
+                    className="w-full h-auto object-contain drop-shadow-[0_20px_60px_rgba(0,155,219,0.15)]"
+                    priority={current === 0}
+                  />
                 </div>
-              ))}
-            </motion.div>
-          </div>
-
-          {/* Floating product card - right side */}
-          <motion.div
-            initial={{ opacity: 0, x: 60 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="hidden lg:block absolute right-8 xl:right-16 bottom-24 w-72"
-          >
-            <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-5 shadow-2xl">
-              <div className="relative aspect-square rounded-xl overflow-hidden mb-4 bg-white">
-                <Image
-                  src="https://cold2sport.com/wp-content/uploads/2024/11/COLD2SPORT25294.jpg"
-                  alt="Thermal Short Adult"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-heading font-medium text-white">Thermal Short</div>
-                  <div className="text-xs text-white/40">10–15°C · 60+ min</div>
-                </div>
-                <div className="text-xl font-heading font-semibold text-white">€100</div>
-              </div>
+              </motion.div>
             </div>
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Navigation arrows */}
+      <div className="absolute top-6 right-6 flex gap-2 z-20">
+        <button
+          onClick={prev}
+          className="w-10 h-10 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+          aria-label="Previous slide"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          onClick={next}
+          className="w-10 h-10 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+          aria-label="Next slide"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
-      {/* Bottom gradient */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent z-20" />
+      {/* Slide indicators */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+        {slides.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            className={`h-1 rounded-full transition-all duration-300 ${
+              i === current ? 'w-8 bg-brand-blue' : 'w-4 bg-white/20 hover:bg-white/40'
+            }`}
+            aria-label={`Go to slide ${i + 1}`}
+          />
+        ))}
+      </div>
     </section>
   )
 }

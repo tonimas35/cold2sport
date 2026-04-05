@@ -1,5 +1,5 @@
 import Hero from '@/components/home/Hero'
-import TrustBar from '@/components/home/TrustBar'
+import FeaturesBar from '@/components/home/FeaturesBar'
 import ProductSpotlight from '@/components/home/ProductSpotlight'
 import LifestyleGallery from '@/components/home/LifestyleGallery'
 import MissionSection from '@/components/home/MissionSection'
@@ -14,7 +14,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <TrustBar />
+      <FeaturesBar />
       <ProductSpotlight />
       <LifestyleGallery />
       <MissionSection />

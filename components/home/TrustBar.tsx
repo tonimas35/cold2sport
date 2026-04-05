@@ -18,7 +18,7 @@ function PartnerItem({ partner }: { partner: typeof partners[number] }) {
           alt={partner.name}
           width={120}
           height={40}
-          className="h-8 md:h-10 w-auto object-contain opacity-40 grayscale hover:opacity-70 hover:grayscale-0 transition-all duration-300"
+          className="h-8 md:h-10 w-auto object-contain opacity-40 invert hover:opacity-70 transition-opacity duration-300"
         />
       ) : (
         <span className="text-lg md:text-xl font-heading font-semibold tracking-tight text-brand-blue/70 hover:text-brand-blue transition-colors whitespace-nowrap">
@@ -31,12 +31,7 @@ function PartnerItem({ partner }: { partner: typeof partners[number] }) {
 
 export default function TrustBar() {
   return (
-    <section className="py-10 md:py-14 border-b border-brand-border">
-      <div className="container-wide">
-        <p className="text-center text-xs uppercase tracking-[0.2em] text-brand-text-light mb-8 font-heading">
-          Trusted by elite athletes &amp; clubs
-        </p>
-      </div>
+    <section className="py-8 bg-brand-navy border-t border-white/5">
       <Marquee pauseOnHover className="[--duration:30s] [--gap:2rem]">
         {partners.map((p) => (
           <PartnerItem key={p.name} partner={p} />
