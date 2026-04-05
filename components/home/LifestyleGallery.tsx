@@ -13,23 +13,22 @@ const images = [
 
 export default function LifestyleGallery() {
   return (
-    <section className="py-12 md:py-16 bg-brand-navy border-t border-white/5">
+    <section className="py-12 md:py-16 bg-white">
       <div className="container-wide">
         <AnimatedSection className="text-center mb-10">
           <span className="text-brand-blue text-xs font-heading font-semibold tracking-wider uppercase">
             Innovation in Recovery
           </span>
-          <h2 className="text-3xl md:text-4xl font-heading font-light text-white mt-2 tracking-tighter">
+          <h2 className="text-3xl md:text-4xl font-heading font-light text-brand-navy mt-2 tracking-tighter">
             Athletic <span className="font-serif italic">Performance</span>
           </h2>
         </AnimatedSection>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
           {images.map((img, i) => (
-            <AnimatedSection key={i} delay={i * 0.05} className={`${img.span} relative overflow-hidden rounded-lg group cursor-pointer`}>
+            <AnimatedSection key={i} delay={i * 0.05} className={`${img.span} relative overflow-hidden rounded-xl group cursor-pointer`}>
               <div className="relative aspect-square w-full">
                 <Image src={img.src} alt={img.alt} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-brand-navy/20 group-hover:bg-transparent transition-colors duration-300" />
               </div>
             </AnimatedSection>
           ))}

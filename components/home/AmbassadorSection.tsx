@@ -5,20 +5,20 @@ import AnimatedSection from '@/components/ui/AnimatedSection'
 
 export default function AmbassadorSection() {
   return (
-    <section className="py-16 md:py-24 bg-brand-navy border-t border-white/5">
+    <section className="py-16 md:py-24 bg-gray-50">
       <div className="container-wide">
         <AnimatedSection className="text-center mb-10">
           <span className="text-brand-blue text-xs font-heading font-semibold tracking-wider uppercase">
             Ambassador
           </span>
-          <h2 className="text-3xl md:text-4xl font-heading font-light text-white mt-2 tracking-tighter">
+          <h2 className="text-3xl md:text-4xl font-heading font-light text-brand-navy mt-2 tracking-tighter">
             Cold2Sport <span className="font-serif italic">Ambassadors</span>
           </h2>
         </AnimatedSection>
 
         <AnimatedSection>
           <div className="grid lg:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
-            <div className="relative aspect-[3/4] max-w-sm mx-auto lg:mx-0 w-full rounded-xl overflow-hidden">
+            <div className="relative aspect-[3/4] max-w-sm mx-auto lg:mx-0 w-full rounded-2xl overflow-hidden shadow-lg">
               <Image
                 src="https://cold2sport.com/wp-content/uploads/2025/01/IG-Iniesta.jpg"
                 alt="Andres Iniesta — Cold2Sport Ambassador"
@@ -36,10 +36,10 @@ export default function AmbassadorSection() {
               >
                 Andres Iniesta
               </a>
-              <p className="text-xs text-white/30 mt-0.5 mb-4">
+              <p className="text-xs text-brand-text-light mt-0.5 mb-4">
                 Former Professional Football Player
               </p>
-              <p className="text-sm text-white/40 leading-relaxed">
+              <p className="text-sm text-brand-text-mid leading-relaxed">
                 Considered one of the greatest midfielders of his generation. World Cup and European
                 Championship winner. He spent most of his career at FC Barcelona, where he became a
                 legend. Now he partners with Cold2Sport to bring elite recovery technology to athletes

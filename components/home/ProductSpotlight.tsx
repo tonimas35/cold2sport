@@ -6,12 +6,11 @@ import AnimatedSection from '@/components/ui/AnimatedSection'
 
 export default function ProductSpotlight() {
   return (
-    <section id="products" className="py-16 md:py-24 bg-brand-navy">
+    <section id="products" className="py-16 md:py-24 bg-gray-50">
       <div className="container-wide">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          {/* Left — Large product image */}
           <AnimatedSection>
-            <div className="relative">
+            <div className="relative bg-white rounded-2xl p-8 shadow-sm">
               <Image
                 src="/cold2sport/images/Cold2Sport_Keyvisual_komprimiert_web.png"
                 alt="Cold2Sport Thermal Short — flagship cooling garment"
@@ -22,15 +21,14 @@ export default function ProductSpotlight() {
             </div>
           </AnimatedSection>
 
-          {/* Right — Text */}
           <AnimatedSection delay={0.15}>
             <span className="text-brand-blue text-xs font-heading font-semibold tracking-wider uppercase mb-3 block">
               Dream It, Own It
             </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-light text-white tracking-tighter mb-3">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-light text-brand-navy tracking-tighter mb-3">
               Explore the <span className="font-serif italic">Possible</span>
             </h2>
-            <p className="text-sm md:text-base text-white/40 leading-relaxed mb-8 max-w-lg">
+            <p className="text-sm md:text-base text-brand-text-mid leading-relaxed mb-8 max-w-lg">
               The Cold2Sport shorts are an innovative solution for sports recovery,
               providing precise cooling between 10°C and 15°C thanks to their
               homogeneous liquid refrigerant design. With a thermal autonomy of

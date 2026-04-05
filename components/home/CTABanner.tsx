@@ -11,7 +11,7 @@ export default function CTABanner() {
           <h2 className="text-3xl md:text-4xl font-heading font-light text-white tracking-tighter mb-3">
             Ready to recover like a <span className="font-serif italic">pro</span>?
           </h2>
-          <p className="text-sm text-white/60 mb-6 max-w-md mx-auto">
+          <p className="text-sm text-white/70 mb-6 max-w-md mx-auto">
             Join 3,000+ professional athletes who trust Cold2Sport for their recovery.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
