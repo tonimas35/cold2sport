@@ -7,25 +7,25 @@ import Link from 'next/link'
 
 const slides = [
   {
-    label: 'New Product',
+    heading: 'Cold2Sport',
+    subheading: 'Elite Recovery Technology',
+    description: 'Phase-change cooling garments maintaining 10-15°C for 60+ minutes. No ice. Used by FC Barcelona and 3,000+ pro athletes.',
+    cta: { label: 'Discover', href: '#products' },
+    image: '/cold2sport/images/Cold2Sport_Keyvisual_komprimiert_web.png',
+    imageAlt: 'Cold2Sport Thermal Short — flagship product',
+  },
+  {
     heading: 'The Knee Recovery Revolution',
+    subheading: 'New Product',
     description: 'Thermal knee pad with precise cooling between 5-15°C. Targeted cold point positioning for optimal joint recovery.',
     cta: { label: 'Learn More', href: '#products' },
     image: '/cold2sport/images/C2S-2025-07-09-0121-red.png',
     imageAlt: 'Cold2Sport Thermal Knee Pad',
   },
   {
-    label: 'BioFresh Tech',
-    heading: 'The Future of Muscle Recovery',
-    description: 'Phase-change cooling garments maintaining 10-15°C for 60+ minutes. No ice needed. Used by FC Barcelona.',
-    cta: { label: 'Our Technology', href: '#technology' },
-    image: '/cold2sport/images/Cold2Sport_Keyvisual_komprimiert_web.png',
-    imageAlt: 'Cold2Sport Thermal Short Technology',
-  },
-  {
-    label: 'Shop Now',
-    heading: 'Thermal Garments for Performance & Recovery',
-    description: 'Professional-grade recovery technology for athletes at every level. From thermal shorts to cold packs.',
+    heading: 'Recovery Without Ice',
+    subheading: 'Shop Now',
+    description: 'Professional-grade thermal recovery for athletes at every level. From shorts to knee pads to cold packs.',
     cta: { label: 'Shop', href: '/cold2sport/shop' },
     image: '/cold2sport/images/COLD2SPORT25237-removebg-preview.png',
     imageAlt: 'Cold2Sport Product Range',
@@ -44,16 +44,17 @@ export default function Hero() {
   }, [next])
 
   const slide = slides[current]
+  const isFirst = current === 0
 
   return (
-    <section className="relative h-[85vh] min-h-[550px] max-h-[800px] bg-brand-navy overflow-hidden">
+    <section className="relative h-[90vh] min-h-[600px] max-h-[850px] bg-brand-navy overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6 }}
           className="absolute inset-0 flex items-center"
         >
           <div className="container-wide w-full">
@@ -63,17 +64,21 @@ export default function Hero() {
                 <motion.span
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2, duration: 0.4 }}
-                  className="inline-block text-brand-blue text-xs font-heading font-semibold tracking-wider uppercase mb-4"
+                  transition={{ delay: 0.15, duration: 0.4 }}
+                  className="inline-block text-brand-blue text-xs font-heading font-semibold tracking-[0.2em] uppercase mb-4"
                 >
-                  {slide.label}
+                  {slide.subheading}
                 </motion.span>
 
                 <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 25 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.5 }}
-                  className="text-4xl sm:text-5xl lg:text-6xl font-serif text-white leading-[1.1] mb-5"
+                  transition={{ delay: 0.25, duration: 0.5 }}
+                  className={`font-serif text-white leading-[1.05] mb-5 ${
+                    isFirst
+                      ? 'text-6xl sm:text-7xl lg:text-8xl xl:text-9xl tracking-tight'
+                      : 'text-4xl sm:text-5xl lg:text-6xl'
+                  }`}
                 >
                   {slide.heading}
                 </motion.h1>
@@ -81,8 +86,8 @@ export default function Hero() {
                 <motion.p
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4, duration: 0.4 }}
-                  className="text-sm md:text-base text-white/50 max-w-md mb-7 leading-relaxed"
+                  transition={{ delay: 0.35, duration: 0.4 }}
+                  className="text-sm md:text-base text-white/40 max-w-md mb-7 leading-relaxed"
                 >
                   {slide.description}
                 </motion.p>
@@ -90,11 +95,11 @@ export default function Hero() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5, duration: 0.4 }}
+                  transition={{ delay: 0.45, duration: 0.4 }}
                 >
                   <Link
                     href={slide.cta.href}
-                    className="inline-flex items-center gap-2 bg-brand-blue hover:bg-brand-blue-hover text-white text-xs font-heading font-semibold px-6 py-3 rounded transition-colors uppercase tracking-wider"
+                    className="inline-flex items-center gap-2 bg-brand-blue hover:bg-brand-blue-hover text-white text-xs font-heading font-semibold px-7 py-3.5 rounded transition-colors uppercase tracking-wider"
                   >
                     {slide.cta.label}
                   </Link>
@@ -103,18 +108,18 @@ export default function Hero() {
 
               {/* Right — Product image */}
               <motion.div
-                initial={{ opacity: 0, x: 40 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
+                initial={{ opacity: 0, x: 50, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                 className="relative flex justify-center lg:justify-end"
               >
-                <div className="relative w-full max-w-md lg:max-w-lg">
+                <div className="relative w-full max-w-sm lg:max-w-md xl:max-w-lg">
                   <Image
                     src={slide.image}
                     alt={slide.imageAlt}
                     width={600}
                     height={600}
-                    className="w-full h-auto object-contain drop-shadow-[0_20px_60px_rgba(0,155,219,0.15)]"
+                    className="w-full h-auto object-contain drop-shadow-[0_20px_60px_rgba(0,155,219,0.12)]"
                     priority={current === 0}
                   />
                 </div>
@@ -124,11 +129,11 @@ export default function Hero() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Navigation arrows */}
-      <div className="absolute top-6 right-6 flex gap-2 z-20">
+      {/* Navigation arrows — top right */}
+      <div className="absolute top-20 right-6 md:right-10 flex gap-2 z-20">
         <button
           onClick={prev}
-          className="w-10 h-10 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+          className="w-10 h-10 rounded bg-white/5 hover:bg-white/15 border border-white/10 flex items-center justify-center text-white/60 hover:text-white transition-all"
           aria-label="Previous slide"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -137,7 +142,7 @@ export default function Hero() {
         </button>
         <button
           onClick={next}
-          className="w-10 h-10 rounded bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+          className="w-10 h-10 rounded bg-white/5 hover:bg-white/15 border border-white/10 flex items-center justify-center text-white/60 hover:text-white transition-all"
           aria-label="Next slide"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -147,13 +152,13 @@ export default function Hero() {
       </div>
 
       {/* Slide indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5 z-20">
         {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}
-            className={`h-1 rounded-full transition-all duration-300 ${
-              i === current ? 'w-8 bg-brand-blue' : 'w-4 bg-white/20 hover:bg-white/40'
+            className={`h-1 rounded-full transition-all duration-400 ${
+              i === current ? 'w-8 bg-brand-blue' : 'w-4 bg-white/15 hover:bg-white/30'
             }`}
             aria-label={`Go to slide ${i + 1}`}
           />
