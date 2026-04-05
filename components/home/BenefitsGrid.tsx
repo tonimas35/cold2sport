@@ -1,77 +1,93 @@
 'use client'
 
-import { BlurFade } from '@/components/magicui/blur-fade'
+import { motion } from 'framer-motion'
+import Image from 'next/image'
 
 const benefits = [
   {
-    number: '01',
-    title: 'Thermal Precision',
-    description: 'Strict temperature control between 10-15°C for every product, ensuring optimal recovery conditions for muscle tissue.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1.5M18.364 5.636l-1.06 1.06M21 12h-1.5M18.364 18.364l-1.06-1.06M12 19.5V21M5.636 18.364l1.06-1.06M3 12h1.5M5.636 5.636l1.06 1.06M12 9a3 3 0 100 6 3 3 0 000-6z" />
-      </svg>
-    ),
+    title: 'Precision',
+    description: 'Cold2Sport products are distinguished by their thermal precision in their applications, offering the ideal temperature in a strict range for each product.',
+    image: 'https://cold2sport.com/wp-content/uploads/2024/11/cold2sport-nautic5-Baja.jpg',
+    stat: '10–15°C',
+    statLabel: 'strict range',
   },
   {
-    number: '02',
-    title: 'Extended Autonomy',
-    description: 'Over 60 minutes of sustained cooling for recovery garments. Up to 10 hours for beverage solutions. No ice needed.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
+    title: 'Stability',
+    description: 'Cold2Sport products offer high levels of stability and thermal autonomy, to enjoy the ideal temperature for as long as necessary for each application.',
+    image: 'https://cold2sport.com/wp-content/uploads/2024/11/cold2sport-nautic23-Baja.jpg',
+    stat: '60+',
+    statLabel: 'min autonomy',
   },
   {
-    number: '03',
-    title: 'Eco-Sustainable',
-    description: 'Eliminates ice dependency in sport. Promotes responsible water use and reduces energy consumption in cooling.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12.75 3.03v.568c0 .334.148.65.405.864l1.068.89c.442.369.535 1.01.216 1.49l-.51.766a2.25 2.25 0 01-1.161.886l-.143.048a1.107 1.107 0 00-.57 1.664c.369.555.169 1.307-.427 1.605L9 13.125l.423 1.059a.956.956 0 01-1.652.928l-.679-.906a1.125 1.125 0 00-1.906.172L4.5 15.75l-.612.153M12.75 3.031a9 9 0 00-8.862 12.872M12.75 3.031a9 9 0 016.69 14.036m0 0l-.177-.529A2.25 2.25 0 0017.128 15H16.5l-.324-.324a1.453 1.453 0 00-2.328.377l-.036.073a1.586 1.586 0 01-.982.816l-.99.282c-.55.157-.894.702-.8 1.267l.073.438c.08.474.49.821.97.821.846 0 1.598.542 1.865 1.345l.215.643m5.276-3.67a9.012 9.012 0 01-5.276 3.67" />
-      </svg>
-    ),
+    title: 'Health',
+    description: 'Products designed to improve the well-being and health of sportsmen and women. Anti-inflammatory benefits that accelerate muscle recovery.',
+    image: 'https://cold2sport.com/wp-content/uploads/2024/12/C2S-2025-07-09-0121.jpg',
+    stat: '3,000+',
+    statLabel: 'athletes trust us',
   },
   {
-    number: '04',
-    title: 'Athlete Health',
-    description: 'Designed for athlete well-being with anti-inflammatory benefits. Reduces swelling and accelerates muscle recovery.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-      </svg>
-    ),
+    title: 'Sustainability',
+    description: 'We replace ice in the world of sport, providing improvements in the management of water consumption in sports clubs worldwide.',
+    image: 'https://cold2sport.com/wp-content/uploads/2024/12/mosaic-versatil-3.jpg',
+    stat: '0',
+    statLabel: 'ice needed',
   },
 ]
 
 export default function BenefitsGrid() {
   return (
-    <section className="section-padding bg-white">
+    <section className="py-16 md:py-24 bg-white">
       <div className="container-wide">
-        <BlurFade delay={0.1} className="text-center mb-14">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
           <span className="text-brand-blue text-sm font-heading font-medium tracking-wider uppercase">
             Why Cold2Sport
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-light text-brand-navy mt-3 tracking-tighter">
-            Recovery, <span className="font-serif italic">redefined</span>
+            Key <span className="font-serif italic">benefits</span>
           </h2>
-        </BlurFade>
+        </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {benefits.map((b, i) => (
-            <BlurFade key={b.number} delay={0.2 + i * 0.1}>
-              <div className="group p-6 lg:p-8 rounded-2xl border border-brand-border hover:border-brand-blue/30 hover:bg-brand-offwhite transition-all duration-300">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-10 h-10 rounded-lg bg-brand-navy/5 flex items-center justify-center text-brand-navy group-hover:bg-brand-blue/10 group-hover:text-brand-blue transition-colors">
-                    {b.icon}
+            <motion.div
+              key={b.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="group relative aspect-[3/4] rounded-2xl overflow-hidden cursor-pointer"
+            >
+              {/* Background photo */}
+              <Image
+                src={b.image}
+                alt={b.title}
+                fill
+                className="object-cover group-hover:scale-110 transition-transform duration-700"
+              />
+              {/* Dark overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/60 to-brand-navy/20 group-hover:from-brand-navy/90 transition-all duration-500" />
+
+              {/* Content */}
+              <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-6">
+                {/* Stat */}
+                <div className="mb-auto pt-4">
+                  <div className="text-3xl md:text-4xl font-heading font-medium text-white tracking-tight">
+                    {b.stat}
                   </div>
-                  <span className="text-xs font-heading text-brand-text-light tracking-wider">{b.number}</span>
+                  <div className="text-[10px] text-white/40 uppercase tracking-wider">{b.statLabel}</div>
                 </div>
-                <h3 className="text-lg font-heading font-medium text-brand-navy mb-3">{b.title}</h3>
-                <p className="text-sm text-brand-text-mid leading-relaxed">{b.description}</p>
+
+                <h3 className="text-xl font-heading font-semibold text-white mb-2">{b.title}</h3>
+                <p className="text-xs text-white/60 leading-relaxed line-clamp-3 group-hover:line-clamp-none transition-all">
+                  {b.description}
+                </p>
               </div>
-            </BlurFade>
+            </motion.div>
           ))}
         </div>
       </div>
