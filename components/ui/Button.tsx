@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 type ButtonProps = {
-  variant?: 'primary' | 'secondary' | 'outline-white' | 'outline-dark' | 'gold' | 'ghost'
+  variant?: 'primary' | 'dark' | 'gold' | 'outline-white' | 'outline-gold' | 'outline-dark'
   size?: 'sm' | 'md' | 'lg'
   href?: string
   children: React.ReactNode
@@ -11,22 +11,18 @@ type ButtonProps = {
 }
 
 const variantStyles = {
-  primary:
-    'bg-brand-blue text-white hover:bg-[#00c8ff] shadow-[0_0_20px_rgba(0,180,255,0.2)] hover:shadow-[0_0_30px_rgba(0,180,255,0.35)] btn-glow',
-  secondary:
-    'bg-brand-gold text-white hover:bg-[#e0b080] shadow-[0_0_20px_rgba(212,165,116,0.15)] hover:shadow-[0_0_30px_rgba(212,165,116,0.3)]',
-  'outline-white':
-    'border border-white/20 text-white hover:bg-white/10 hover:border-white/40',
-  'outline-dark':
-    'border border-brand-dark/20 text-brand-dark hover:bg-brand-dark hover:text-white',
-  gold: 'bg-brand-gold text-white hover:bg-[#e0b080] shadow-[0_0_20px_rgba(212,165,116,0.15)]',
-  ghost: 'text-brand-gray hover:text-white hover:bg-white/5',
+  primary: 'bg-brand-gold text-brand-navy hover:bg-[#d4ad80]',
+  dark: 'bg-brand-navy text-white hover:bg-brand-navy/90',
+  gold: 'bg-brand-gold text-brand-navy hover:bg-[#d4ad80]',
+  'outline-white': 'border border-white/30 text-white hover:bg-white/10',
+  'outline-gold': 'border border-brand-gold/40 text-brand-gold hover:bg-brand-gold/10',
+  'outline-dark': 'border border-brand-navy/20 text-brand-navy hover:bg-brand-navy hover:text-white',
 }
 
 const sizeStyles = {
-  sm: 'px-5 py-2.5 text-sm',
-  md: 'px-7 py-3 text-[15px]',
-  lg: 'px-9 py-4 text-base',
+  sm: 'px-5 py-2.5 text-[13px]',
+  md: 'px-7 py-3 text-[14px]',
+  lg: 'px-8 py-4 text-[15px]',
 }
 
 export default function Button({
@@ -38,7 +34,7 @@ export default function Button({
   onClick,
   type = 'button',
 }: ButtonProps) {
-  const classes = `relative inline-flex items-center justify-center gap-2 rounded-full font-body font-semibold tracking-wide transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark ${variantStyles[variant]} ${sizeStyles[size]} ${className}`
+  const classes = `inline-flex items-center justify-center gap-2 rounded-full font-body font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`
 
   if (href) {
     return (

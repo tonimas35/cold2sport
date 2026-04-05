@@ -5,8 +5,8 @@ const doubled = [...partners, ...partners]
 
 export default function TrustBar() {
   return (
-    <section className="relative border-y border-white/[0.04] bg-brand-darker py-8">
-      <p className="mb-5 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-gray-600">
+    <section className="bg-brand-navy-deep py-6">
+      <p className="mb-4 text-center font-body text-[11px] font-medium tracking-[0.1em] text-white/30">
         Trusted by elite sport
       </p>
       <div className="marquee-container">
@@ -14,11 +14,12 @@ export default function TrustBar() {
           {doubled.map((name, i) => (
             <span
               key={`${name}-${i}`}
-              className={`font-display text-sm font-bold tracking-wider ${
-                name === 'FC Barcelona' ? 'text-brand-blue/60' : 'text-white/15'
-              }`}
+              className="font-heading text-[14px] font-normal tracking-wide text-white/40 transition-opacity duration-300 hover:text-white/90"
             >
               {name}
+              {i < doubled.length - 1 && (
+                <span className="ml-16 font-serif text-white/20">&mdash;</span>
+              )}
             </span>
           ))}
         </div>

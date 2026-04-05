@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Button from '@/components/ui/Button'
 
 export const metadata: Metadata = {
   title: 'Page Not Found — Cold2Sport',
@@ -7,23 +6,19 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <div className="section-contained flex min-h-screen flex-col items-center justify-center bg-brand-darker px-6 text-center">
-      <div className="absolute inset-0 bg-grid opacity-20" />
-      <div className="absolute left-1/2 top-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 blob-blue opacity-15" />
-      <div className="relative z-10">
-        <p className="font-display text-[10rem] font-extrabold leading-none text-gradient-blue opacity-20">404</p>
-        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-white">Page not found</h1>
-        <p className="mt-3 text-gray-400">
-          The page you&apos;re looking for doesn&apos;t exist or has been moved.
-        </p>
-        <div className="mt-10 flex justify-center gap-4">
-          <Button href="/" size="md">
-            Back to Home
-          </Button>
-          <Button href="/shop" variant="outline-white" size="md">
-            Browse Shop
-          </Button>
-        </div>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-brand-cream px-6 text-center">
+      <p className="font-heading text-[120px] font-light leading-none text-brand-gold/20">404</p>
+      <h1 className="mt-4 font-heading text-[28px] font-normal text-brand-navy">Page not found</h1>
+      <p className="mt-2 font-body text-[16px] text-brand-text-mid">
+        The page you&apos;re looking for doesn&apos;t exist or has been moved.
+      </p>
+      <div className="mt-8 flex gap-4">
+        <a href="/" className="rounded-full bg-brand-navy px-7 py-3 font-body text-[14px] font-medium text-white hover:bg-brand-navy/90">
+          Back to Home
+        </a>
+        <a href="/shop" className="rounded-full border border-brand-navy/20 px-7 py-3 font-body text-[14px] font-medium text-brand-navy hover:bg-brand-navy hover:text-white">
+          Browse Shop
+        </a>
       </div>
     </div>
   )

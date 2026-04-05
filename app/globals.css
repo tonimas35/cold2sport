@@ -10,165 +10,23 @@
   }
 
   body {
-    @apply font-body text-brand-dark bg-brand-darker;
+    @apply font-body text-brand-text bg-white;
     text-rendering: optimizeLegibility;
+    font-size: 17px;
+    line-height: 1.75;
+    color: #4a5568;
   }
 
   ::selection {
-    @apply bg-brand-blue/20 text-white;
-  }
-
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: #060d0f;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #1a2e33;
-    border-radius: 3px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: #009bdb;
+    @apply bg-brand-gold/20 text-brand-navy;
   }
 }
 
 @layer components {
-  /* Grain noise overlay */
-  .grain::before {
-    content: '';
-    position: absolute;
-    inset: -200%;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    background-size: 256px 256px;
-    animation: grain 8s steps(10) infinite;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  /* Glass morphism */
-  .glass {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-  }
-
-  .glass-strong {
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .glass-card {
-    background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .glass-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(0, 180, 255, 0.15);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 60px rgba(0, 180, 255, 0.05);
-  }
-
-  /* Gradient mesh blobs */
-  .blob-blue {
-    background: radial-gradient(circle at center, rgba(0, 180, 255, 0.12) 0%, transparent 70%);
-    filter: blur(60px);
-    pointer-events: none;
-  }
-
-  .blob-gold {
-    background: radial-gradient(circle at center, rgba(212, 165, 116, 0.08) 0%, transparent 70%);
-    filter: blur(60px);
-    pointer-events: none;
-  }
-
-  /* Grid pattern */
-  .bg-grid {
-    background-image:
-      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 60px 60px;
-  }
-
-  /* Dot pattern */
-  .bg-dots {
-    background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
-    background-size: 24px 24px;
-  }
-
-  /* Glow button effect */
-  .btn-glow {
-    position: relative;
-    overflow: hidden;
-  }
-  .btn-glow::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    background: linear-gradient(135deg, rgba(0,180,255,0.4), rgba(0,180,255,0), rgba(0,180,255,0.4));
-    border-radius: inherit;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-  .btn-glow:hover::before {
-    opacity: 1;
-  }
-
-  /* Marquee */
+  /* Marquee mask */
   .marquee-container {
     overflow: hidden;
     mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
     -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-  }
-
-  /* Divider gradient */
-  .divider-glow {
-    height: 1px;
-    background: linear-gradient(to right, transparent, rgba(0,180,255,0.3), transparent);
-  }
-
-  /* Section with overflow hidden for blobs */
-  .section-contained {
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Light section text */
-  .light-section {
-    @apply bg-white;
-  }
-  .light-section h2, .light-section h3 {
-    @apply text-brand-dark;
-  }
-  .light-section p {
-    @apply text-brand-gray;
-  }
-}
-
-@layer utilities {
-  .text-gradient-blue {
-    background: linear-gradient(135deg, #00b4ff, #00d4ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .text-gradient-gold {
-    background: linear-gradient(135deg, #d4a574, #e8c9a0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .border-gradient {
-    border-image: linear-gradient(to right, transparent, rgba(0,180,255,0.3), transparent) 1;
   }
 }

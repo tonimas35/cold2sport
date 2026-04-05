@@ -19,28 +19,28 @@ export default function SectionHeader({
 }: SectionHeaderProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className={`mb-16 ${centered ? 'text-center' : ''}`}
     >
       {label && (
-        <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-blue">
+        <p className="mb-3 font-body text-[11px] font-medium tracking-[0.1em] text-brand-gold">
           {label}
         </p>
       )}
       <h2
-        className={`font-display text-3xl font-bold tracking-tight lg:text-5xl ${
-          light ? 'text-white' : 'text-brand-dark'
+        className={`font-heading text-[48px] font-normal ${
+          light ? 'text-white' : 'text-brand-navy'
         }`}
       >
         {title}
       </h2>
       {description && (
         <p
-          className={`mx-auto mt-5 max-w-2xl text-lg leading-relaxed ${
-            light ? 'text-gray-400' : 'text-brand-gray'
+          className={`mx-auto mt-4 max-w-2xl font-body text-[17px] leading-relaxed ${
+            light ? 'text-brand-text-light' : 'text-brand-text-mid'
           }`}
         >
           {description}

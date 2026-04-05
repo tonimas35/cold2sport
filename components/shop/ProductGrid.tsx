@@ -26,15 +26,9 @@ export default function ProductGrid() {
       result = result.filter((p) => selectedCategories.includes(p.category))
     }
     switch (sortBy) {
-      case 'price-asc':
-        result.sort((a, b) => a.price - b.price)
-        break
-      case 'price-desc':
-        result.sort((a, b) => b.price - a.price)
-        break
-      case 'name-az':
-        result.sort((a, b) => a.name.localeCompare(b.name))
-        break
+      case 'price-asc': result.sort((a, b) => a.price - b.price); break
+      case 'price-desc': result.sort((a, b) => b.price - a.price); break
+      case 'name-az': result.sort((a, b) => a.name.localeCompare(b.name)); break
     }
     return result
   }, [selectedCategories, sortBy])
@@ -47,25 +41,21 @@ export default function ProductGrid() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-      {/* Mobile filter toggle */}
       <div className="mb-8 lg:hidden">
         <button
           onClick={() => setFiltersOpen(!filtersOpen)}
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-medium text-white"
+          className="inline-flex items-center gap-2 rounded-full border border-brand-border px-5 py-2.5 font-body text-[14px] font-medium text-brand-navy"
           aria-expanded={filtersOpen}
         >
-          <svg className="h-4 w-4 text-brand-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
           Filters
           {selectedCategories.length > 0 && (
-            <span className="rounded-full bg-brand-blue px-2 py-0.5 text-[11px] text-white">
+            <span className="rounded-full bg-brand-gold px-2 py-0.5 text-[11px] text-brand-navy">
               {selectedCategories.length}
             </span>
           )}
         </button>
         {filtersOpen && (
-          <div className="glass-card mt-4 rounded-2xl p-5">
+          <div className="mt-4 rounded-2xl border border-brand-border bg-white p-5">
             <ProductFilters
               selectedCategories={selectedCategories}
               onToggleCategory={toggleCategory}
@@ -78,7 +68,7 @@ export default function ProductGrid() {
 
       <div className="flex gap-12">
         <aside className="hidden w-[260px] shrink-0 lg:block">
-          <div className="glass-card sticky top-28 rounded-2xl p-6">
+          <div className="sticky top-28 rounded-2xl border border-brand-border bg-white p-6">
             <ProductFilters
               selectedCategories={selectedCategories}
               onToggleCategory={toggleCategory}
@@ -90,15 +80,14 @@ export default function ProductGrid() {
 
         <div className="flex-1">
           <div className="mb-8 flex items-center justify-between">
-            <p className="text-sm text-gray-500">
-              Showing <span className="font-semibold text-white">{filtered.length}</span> product{filtered.length !== 1 ? 's' : ''}
+            <p className="font-body text-[14px] text-brand-text-mid">
+              Showing <span className="font-medium text-brand-navy">{filtered.length}</span> products
             </p>
-            <label className="flex items-center gap-2 text-sm text-gray-500">
-              <span className="hidden sm:inline">Sort by:</span>
+            <label className="flex items-center gap-2 font-body text-[14px] text-brand-text-mid">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue"
+                className="rounded-lg border border-brand-border bg-white px-3 py-2 text-[14px] text-brand-navy focus:border-brand-gold focus:outline-none focus:ring-1 focus:ring-brand-gold"
               >
                 <option value="featured">Featured</option>
                 <option value="price-asc">Price: Low → High</option>
@@ -116,11 +105,8 @@ export default function ProductGrid() {
 
           {filtered.length === 0 && (
             <div className="py-20 text-center">
-              <p className="text-lg text-gray-400">No products match your filters.</p>
-              <button
-                onClick={() => setSelectedCategories([])}
-                className="mt-3 text-brand-blue hover:underline"
-              >
+              <p className="font-body text-[16px] text-brand-text-mid">No products match your filters.</p>
+              <button onClick={() => setSelectedCategories([])} className="mt-2 font-body text-brand-gold hover:underline">
                 Clear filters
               </button>
             </div>

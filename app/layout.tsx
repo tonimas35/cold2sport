@@ -1,21 +1,29 @@
 import type { Metadata } from 'next'
-import { Syne, Plus_Jakarta_Sans } from 'next/font/google'
+import { Lexend, Manrope, DM_Serif_Display } from 'next/font/google'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import './globals.css'
 
-const syne = Syne({
+const lexend = Lexend({
   subsets: ['latin'],
-  variable: '--font-syne',
+  variable: '--font-lexend',
   display: 'swap',
-  weight: ['600', '700', '800'],
+  weight: ['300', '400', '600'],
 })
 
-const jakarta = Plus_Jakarta_Sans({
+const manrope = Manrope({
   subsets: ['latin'],
-  variable: '--font-jakarta',
+  variable: '--font-manrope',
   display: 'swap',
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500'],
+})
+
+const dmSerif = DM_Serif_Display({
+  subsets: ['latin'],
+  variable: '--font-dm-serif',
+  display: 'swap',
+  weight: ['400'],
+  style: ['normal', 'italic'],
 })
 
 export const metadata: Metadata = {
@@ -25,7 +33,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${syne.variable} ${jakarta.variable}`}>
+    <html lang="en" className={`${lexend.variable} ${manrope.variable} ${dmSerif.variable}`}>
       <body className="min-h-screen">
         <Navbar />
         <main id="main-content">{children}</main>
