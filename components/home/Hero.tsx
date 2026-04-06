@@ -80,7 +80,11 @@ export default function Hero() {
                       : 'text-4xl sm:text-5xl lg:text-6xl'
                   }`}
                 >
-                  {slide.heading}
+                  {isFirst ? (
+                    <>Cold<span className="text-brand-blue">2</span>Sport</>
+                  ) : (
+                    slide.heading
+                  )}
                 </motion.h1>
 
                 <motion.p
