@@ -67,8 +67,13 @@ function promptKnownIds(state: MatchState, seat: MatchSeat): Set<string> {
 }
 
 /** Hidden instance ids per owner, from `seat`'s point of view. */
-export function hiddenInstances(state: MatchState, seat: MatchSeat): Record<MatchSeat, string[]> {
+export function hiddenInstances(
+  state: MatchState,
+  seat: MatchSeat,
+  remembered?: ReadonlyMap<string, string>,
+): Record<MatchSeat, string[]> {
   const known = promptKnownIds(state, seat);
+  for (const id of remembered?.keys() ?? []) known.add(id);
   const hidden: Record<MatchSeat, string[]> = { south: [], north: [] };
   for (const instance of Object.values(state.cards)) {
     if (instance.zone === "resolution") continue;
@@ -82,12 +87,18 @@ export function hiddenInstances(state: MatchState, seat: MatchSeat): Record<Matc
  * A private, mutable copy of `state` with `seat`'s hidden information
  * re-dealt at random. The result can be simulated with `applyInPlace`.
  */
-export function determinize(state: MatchState, seat: MatchSeat, rng: Rng): MatchState {
+export function determinize(
+  state: MatchState,
+  seat: MatchSeat,
+  rng: Rng,
+  /** Hidden cards the seat remembers (engine/knowledge.ts): kept with their identity. */
+  remembered?: ReadonlyMap<string, string>,
+): MatchState {
   const world = cloneState(state);
   // Resolved prompts are never read by the rules, but they still list the real
   // cards (e.g. the opponent's whole hand at a past counter step). Drop them.
   world.promptQueue = world.promptQueue.filter((p) => p.status === "pending");
-  const hidden = hiddenInstances(world, seat);
+  const hidden = hiddenInstances(world, seat, remembered);
   for (const owner of ["south", "north"] as const) {
     const ids = hidden[owner];
     if (ids.length < 2) continue;

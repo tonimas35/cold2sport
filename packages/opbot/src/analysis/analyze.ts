@@ -26,6 +26,8 @@ export interface AnalysisConfig {
   readonly model: ValueModel;
   readonly seed?: string;
   readonly maxRolloutSteps?: number;
+  /** Hidden cards the analyzed seat remembers (instanceId -> cardId). */
+  readonly knowledge?: ReadonlyMap<string, string>;
 }
 
 export interface ActionAnalysis {
@@ -129,7 +131,7 @@ export function analyzePosition(
   for (const worldSeed of worldSeeds) {
     for (const action of actions) {
       const worldRng = createRng(worldSeed);
-      const world = determinize(state, seat, worldRng);
+      const world = determinize(state, seat, worldRng, config.knowledge);
       let value: number | null = null;
       try {
         if (applyInPlace(world, action.command)) {

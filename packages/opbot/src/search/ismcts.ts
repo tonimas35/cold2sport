@@ -108,7 +108,13 @@ function candidates(
   return { actions, policyKey };
 }
 
-export function runIsmcts(state: MatchState, rootSeat: MatchSeat, config: IsmctsConfig, rng: Rng): IsmctsResult {
+export function runIsmcts(
+  state: MatchState,
+  rootSeat: MatchSeat,
+  config: IsmctsConfig,
+  rng: Rng,
+  known?: ReadonlyMap<string, string>,
+): IsmctsResult {
   const started = performance.now();
   const c = config.exploration ?? 0.7;
   const bias = config.policyBias ?? 0.5;
@@ -124,7 +130,7 @@ export function runIsmcts(state: MatchState, rootSeat: MatchSeat, config: Ismcts
   for (; iterations < config.iterations; iterations++) {
     if (config.timeMs !== undefined && performance.now() - started > config.timeMs && iterations > 8) break;
     const worldRng = createRng(rng.int(2 ** 31));
-    const world = determinize(state, rootSeat, worldRng);
+    const world = determinize(state, rootSeat, worldRng, known);
     const path: Array<{ edge: Edge; seat: MatchSeat }> = [];
     let node: Node = root;
     let broken = false;

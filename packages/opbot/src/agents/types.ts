@@ -11,6 +11,8 @@ export interface DecisionRequest {
   readonly state: MatchState;
   readonly seat: MatchSeat;
   readonly rng: Rng;
+  /** Hidden cards this seat legitimately remembers (instanceId -> cardId), see engine/knowledge.ts. */
+  readonly knowledge?: ReadonlyMap<string, string>;
 }
 
 export interface DecisionStats {

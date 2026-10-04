@@ -11,6 +11,7 @@ import {
   applyCommand,
   createMatch,
   type EngineCommand,
+  type GameLogEntry,
   type MatchConfig,
   type MatchSeat,
   type MatchState,
@@ -18,6 +19,7 @@ import {
 import type { DeckList } from "../decks/deck.ts";
 import { actingSeat, enumerateActions, pendingJudgePrompt } from "../engine/actions.ts";
 import { applyInPlace, cloneState } from "../engine/sim.ts";
+import { Knowledge } from "../engine/knowledge.ts";
 import { createRng, type Rng } from "../util/rng.ts";
 import type { Agent } from "../agents/types.ts";
 
@@ -77,6 +79,7 @@ export function matchConfig(spec: GameSpec): MatchConfig {
 class Driver {
   state: MatchState;
   readonly log: EngineCommand[] = [];
+  readonly knowledge = new Knowledge();
   constructor(
     initial: MatchState,
     private readonly mode: EngineMode,
@@ -88,19 +91,22 @@ class Driver {
     if (this.mode === "fast") {
       // A rejected command can leave a half-mutated state: work on a copy.
       const next = cloneState(this.state);
+      const logs: GameLogEntry[] = [];
       let accepted = false;
       try {
-        accepted = applyInPlace(next, command);
+        accepted = applyInPlace(next, command, logs);
       } catch {
         accepted = false;
       }
       if (!accepted) return false;
+      this.knowledge.observe(this.state, next, logs);
       this.state = next;
       this.log.push(command);
       return true;
     }
     const result = applyCommand(this.state, command);
     if (!result.accepted) return false;
+    this.knowledge.observe(this.state, result.state, result.logs);
     this.state = result.state;
     this.log.push(command);
     return true;
@@ -140,7 +146,7 @@ export function playGame(
     must({ type: "chooseJoKenPo", seat: "north", choice: "scissors" });
     must({ type: "chooseFirstPlayer", seat: "south", firstPlayer: spec.firstSeat });
     for (const seat of [spec.firstSeat, OTHER[spec.firstSeat]]) {
-      const wants = agents[seat].mulligan({ state: driver.state, seat, rng: rngs[seat] });
+      const wants = agents[seat].mulligan({ state: driver.state, seat, rng: rngs[seat], knowledge: driver.knowledge.knownBy(seat) });
       mulligans[seat] = wants;
       must(wants ? { type: "mulligan", seat } : { type: "keepHand", seat });
     }
@@ -166,7 +172,7 @@ export function playGame(
       }
       options.onDecision?.(state, seat);
       const started = performance.now();
-      const command = agents[seat].decide({ state, seat, rng: rngs[seat] });
+      const command = agents[seat].decide({ state, seat, rng: rngs[seat], knowledge: driver.knowledge.knownBy(seat) });
       thinkMillis[seat] += performance.now() - started;
       decisions[seat]++;
       if (!driver.apply(command)) {

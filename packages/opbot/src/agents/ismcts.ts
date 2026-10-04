@@ -11,14 +11,14 @@ export function createIsmctsAgent(config: IsmctsConfig & { id?: string }): Agent
   return {
     id: config.id ?? `ismcts-i${config.iterations}-h${config.horizonTurns}`,
     honest: true,
-    decide({ state, seat, rng }) {
+    decide({ state, seat, rng, knowledge }) {
       const actions = enumerateActions(state, seat);
       if (actions.length === 0) return { type: "endTurn", seat };
       if (actions.length === 1) {
         last = undefined;
         return actions[0]!.command;
       }
-      last = runIsmcts(state, seat, config, rng);
+      last = runIsmcts(state, seat, config, rng, knowledge);
       return last.bestCommand;
     },
     mulligan: (request) => helper.mulligan(request),

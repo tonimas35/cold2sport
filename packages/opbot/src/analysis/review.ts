@@ -9,9 +9,10 @@
  * paired difference excludes zero): picking the maximum of noisy estimates
  * would otherwise flag good moves (winner's curse).
  */
-import { createMatch, type EngineCommand, type MatchSeat } from "@tcg/op-engine";
+import { createMatch, type EngineCommand, type GameLogEntry, type MatchSeat } from "@tcg/op-engine";
 import { actingSeat, enumerateActions, sameCommand, type Action } from "../engine/actions.ts";
 import { applyInPlace, cloneState } from "../engine/sim.ts";
+import { Knowledge } from "../engine/knowledge.ts";
 import { matchConfig, type GameSpec } from "../arena/game.ts";
 import type { DeckList } from "../decks/deck.ts";
 import { analyzePosition, type AnalysisConfig } from "./analyze.ts";
@@ -57,7 +58,8 @@ export function reviewGame(
   onEntry?: (entry: ReviewEntry, done: number, total: number) => void,
 ): ReviewEntry[] {
   const spec: GameSpec = { seed: record.seed, decks: record.decks, firstSeat: record.firstSeat };
-  const state = cloneState(createMatch(matchConfig(spec)));
+  let state = cloneState(createMatch(matchConfig(spec)));
+  const knowledge = new Knowledge();
   // Count the decisions to review first, for progress reporting.
   const entries: ReviewEntry[] = [];
   const total = record.commandLog.filter((c) => c.seat === seat).length;
@@ -68,7 +70,13 @@ export function reviewGame(
       const actions = enumerateActions(state, seat);
       if (actions.length >= 2) {
         const played: Action = actions.find((a) => sameCommand(a.command, command)) ?? { key: "played", command };
-        const analysis = analyzePosition(state, { ...config, seed: `${config.seed ?? "review"}:${step}` }, cardName, seat, [played]);
+        const analysis = analyzePosition(
+          state,
+          { ...config, seed: `${config.seed ?? "review"}:${step}`, knowledge: knowledge.knownBy(seat) },
+          cardName,
+          seat,
+          [played],
+        );
         const playedRow = analysis.actions.find((a) => a.key === played.key);
         const best = analysis.actions[0]!;
         if (playedRow) {
@@ -90,7 +98,11 @@ export function reviewGame(
         }
       }
     }
-    if (!applyInPlace(state, command)) throw new Error(`replay failed at step ${step}: ${JSON.stringify(command)}`);
+    const next = cloneState(state);
+    const logs: GameLogEntry[] = [];
+    if (!applyInPlace(next, command, logs)) throw new Error(`replay failed at step ${step}: ${JSON.stringify(command)}`);
+    knowledge.observe(state, next, logs);
+    state = next;
   }
   return entries;
 }

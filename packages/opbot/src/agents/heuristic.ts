@@ -63,8 +63,9 @@ export function createHonestHeuristicAgent(): Agent {
   return {
     id: "heuristic-honest",
     honest: true,
-    decide: (request) => inner.decide({ ...request, state: determinize(request.state, request.seat, request.rng) }),
+    decide: (request) =>
+      inner.decide({ ...request, state: determinize(request.state, request.seat, request.rng, request.knowledge) }),
     mulligan: (request) =>
-      inner.mulligan({ ...request, state: determinize(request.state, request.seat, request.rng) }),
+      inner.mulligan({ ...request, state: determinize(request.state, request.seat, request.rng, request.knowledge) }),
   };
 }

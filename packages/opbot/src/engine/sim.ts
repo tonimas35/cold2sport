@@ -25,7 +25,7 @@
  * `test/sim-differential.test.ts` replays full games through both paths and
  * requires identical states after every command.
  */
-import type { EngineCommand, MatchState } from "@tcg/op-engine";
+import type { EngineCommand, GameLogEntry, MatchState } from "@tcg/op-engine";
 import {
   allCards,
   applyQueuedCommandMutation,
@@ -114,7 +114,7 @@ function dealias(state: MatchState): void {
  * it. Mirrors `applyCommand` in vendor .../engine/src/core.ts, including the
  * events it emits, so that generated ids (prompt ids, ...) stay identical.
  */
-export function applyInPlace(state: MatchState, input: EngineCommand): boolean {
+export function applyInPlace(state: MatchState, input: EngineCommand, logSink?: GameLogEntry[]): boolean {
   // The engine stores arrays from the command in the state (for example
   // `battle.counterCardIds = command.selectedIds`). Callers reuse command
   // objects across many simulated states, so give each state its own copy.
@@ -137,6 +137,7 @@ export function applyInPlace(state: MatchState, input: EngineCommand): boolean {
     });
     emitLog(state, command.seat, reason, { visibility, judgeMessage: reason });
   }
+  if (logSink) logSink.push(...state.logHistory);
   state.eventHistory.length = 0;
   state.logHistory.length = 0;
   dealias(state);

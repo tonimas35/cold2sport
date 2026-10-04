@@ -51,19 +51,19 @@ export function createSearchAgent(config: SearchConfig): Agent & { lastReport():
   const maxCandidates = config.maxCandidates ?? 12;
   let last: SearchReport | undefined;
 
-  function heuristicSuggestion(state: MatchState, seat: MatchSeat, rng: Rng): EngineCommand | null {
+  function heuristicSuggestion(state: MatchState, seat: MatchSeat, rng: Rng, known?: ReadonlyMap<string, string>): EngineCommand | null {
     try {
-      return rolloutCommand(determinize(state, seat, rng), seat, rng);
+      return rolloutCommand(determinize(state, seat, rng, known), seat, rng);
     } catch {
       return null;
     }
   }
 
-  function screen(state: MatchState, seat: MatchSeat, actions: Action[], keep: Set<string>, rng: Rng): Action[] {
+  function screen(state: MatchState, seat: MatchSeat, actions: Action[], keep: Set<string>, rng: Rng, known?: ReadonlyMap<string, string>): Action[] {
     if (actions.length <= maxCandidates) return actions;
     const seed = rng.int(2 ** 31);
     const scored = actions.map((action) => {
-      const world = determinize(state, seat, createRng(seed));
+      const world = determinize(state, seat, createRng(seed), known);
       let score = -1;
       try {
         if (applyInPlace(world, action.command)) score = evaluate(config.model, world, seat);
@@ -76,7 +76,7 @@ export function createSearchAgent(config: SearchConfig): Agent & { lastReport():
     return scored.slice(0, maxCandidates).map((s) => s.action);
   }
 
-  function decide({ state, seat, rng }: DecisionRequest): EngineCommand {
+  function decide({ state, seat, rng, knowledge }: DecisionRequest): EngineCommand {
     const started = performance.now();
     let actions = enumerateActions(state, seat);
     if (actions.length === 0) {
@@ -89,7 +89,7 @@ export function createSearchAgent(config: SearchConfig): Agent & { lastReport():
     }
 
     // The rollout policy's own choice is always a candidate.
-    const suggestion = heuristicSuggestion(state, seat, rng);
+    const suggestion = heuristicSuggestion(state, seat, rng, knowledge);
     let heuristicKey: string | null = null;
     if (suggestion) {
       const match = actions.find((a) => sameCommand(a.command, suggestion));
@@ -100,7 +100,7 @@ export function createSearchAgent(config: SearchConfig): Agent & { lastReport():
       }
     }
     const keep = new Set(heuristicKey ? [heuristicKey] : []);
-    const candidates = screen(state, seat, actions, keep, rng);
+    const candidates = screen(state, seat, actions, keep, rng, knowledge);
 
     const stats = new Map<string, { sum: number; n: number }>(candidates.map((a) => [a.key, { sum: 0, n: 0 }]));
     let alive = candidates;
@@ -113,7 +113,7 @@ export function createSearchAgent(config: SearchConfig): Agent & { lastReport():
         const s = stats.get(action.key)!;
         for (const worldSeed of worldSeeds) {
           const worldRng = createRng(worldSeed);
-          const world = determinize(state, seat, worldRng);
+          const world = determinize(state, seat, worldRng, knowledge);
           let ok = false;
           try {
             ok = applyInPlace(world, action.command);
@@ -162,9 +162,9 @@ export function createSearchAgent(config: SearchConfig): Agent & { lastReport():
     id: config.id ?? `search-s${config.simulations}-h${config.horizonTurns}`,
     honest: true,
     decide,
-    mulligan({ state, seat, rng }) {
+    mulligan({ state, seat, rng, knowledge }) {
       // Honest: let the heuristic judge our own hand inside a determinized world.
-      const world = determinize(state, seat, rng);
+      const world = determinize(state, seat, rng, knowledge);
       const choice = rolloutCommandForSetup(world, seat, rng);
       return choice === "mulligan";
     },

@@ -11,7 +11,8 @@
  */
 import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
-import { createMatch, type EngineCommand, type MatchSeat } from "@tcg/op-engine";
+import { createMatch, type EngineCommand, type GameLogEntry, type MatchSeat } from "@tcg/op-engine";
+import { Knowledge } from "../engine/knowledge.ts";
 import { actingSeat, enumerateActions, pendingJudgePrompt } from "../engine/actions.ts";
 import { applyInPlace, cloneState } from "../engine/sim.ts";
 import { matchConfig } from "../arena/game.ts";
@@ -42,7 +43,8 @@ const OTHER: Record<MatchSeat, MatchSeat> = { north: "south", south: "north" };
 export function playInTerminal(options: PlayOptions): GameRecord {
   const ask = options.ask ?? ((q: string) => prompt(q));
   const print = options.print ?? ((t: string) => console.log(t));
-  const state = cloneState(createMatch(matchConfig({ seed: options.seed, decks: options.decks, firstSeat: options.firstSeat })));
+  let state = cloneState(createMatch(matchConfig({ seed: options.seed, decks: options.decks, firstSeat: options.firstSeat })));
+  const knowledge = new Knowledge();
   const log: EngineCommand[] = [];
   const bots: Partial<Record<MatchSeat, Agent>> = {};
   for (const seat of ["south", "north"] as const) {
@@ -52,8 +54,12 @@ export function playInTerminal(options: PlayOptions): GameRecord {
   const model = loadValueModel();
   const rng = createRng(`${options.seed}:play`);
   const apply = (command: EngineCommand) => {
+    const next = cloneState(state);
+    const logs: GameLogEntry[] = [];
+    if (!applyInPlace(next, command, logs)) throw new Error(`engine rejected ${JSON.stringify(command)}`);
+    knowledge.observe(state, next, logs);
+    state = next;
     log.push(command);
-    if (!applyInPlace(state, command)) throw new Error(`engine rejected ${JSON.stringify(command)}`);
   };
   const save = (): GameRecord => {
     const record: GameRecord = {
@@ -78,7 +84,7 @@ export function playInTerminal(options: PlayOptions): GameRecord {
     let mulligan: boolean;
     const bot = bots[seat];
     if (bot) {
-      mulligan = bot.mulligan({ state, seat, rng });
+      mulligan = bot.mulligan({ state, seat, rng, knowledge: knowledge.knownBy(seat) });
     } else {
       print(`\nYour opening hand (${seat}):\n${renderView(state, seat).split("\n").filter((l) => l.includes("Hand:")).join("\n")}`);
       mulligan = (ask("Mulligan? [y/N] ") ?? "").trim().toLowerCase().startsWith("y");
@@ -99,7 +105,7 @@ export function playInTerminal(options: PlayOptions): GameRecord {
     const actions = enumerateActions(state, seat);
     const bot = bots[seat];
     if (bot) {
-      const command = bot.decide({ state, seat, rng });
+      const command = bot.decide({ state, seat, rng, knowledge: knowledge.knownBy(seat) });
       const action = actions.find((a) => JSON.stringify(a.command) === JSON.stringify(command));
       print(`  ${seat} (bot): ${describeAction(state, action ?? { key: "?", command }, cardName)}`);
       apply(command);
@@ -124,11 +130,15 @@ export function playInTerminal(options: PlayOptions): GameRecord {
         continue;
       }
       if (answer === "?") {
-        print(formatAnalysis(analyzePosition(state, { worlds: options.analysisWorlds, horizonTurns: 1, model }, cardName, seat)));
+        print(
+          formatAnalysis(
+            analyzePosition(state, { worlds: options.analysisWorlds, horizonTurns: 1, model, knowledge: knowledge.knownBy(seat) }, cardName, seat),
+          ),
+        );
         continue;
       }
       if (answer === "h") {
-        const command = hint.decide({ state, seat, rng });
+        const command = hint.decide({ state, seat, rng, knowledge: knowledge.knownBy(seat) });
         const action = actions.find((a) => JSON.stringify(a.command) === JSON.stringify(command));
         print(`  hint: ${describeAction(state, action ?? { key: "?", command }, cardName)}`);
         continue;
