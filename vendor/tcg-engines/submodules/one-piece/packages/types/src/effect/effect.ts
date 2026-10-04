@@ -1,0 +1,66 @@
+import type { EffectTrigger, Keyword, Zone } from "./primitives.ts";
+import type { Target, TargetFilter } from "./target.ts";
+import type { Condition } from "./condition.ts";
+import type { Cost } from "./cost.ts";
+import type { Action } from "./action.ts";
+
+export interface EffectEventFilter {
+  player?: "self" | "opponent" | "any";
+  causedBy?: "self" | "opponent" | "any";
+  koCause?: "battle" | "effect";
+  fromZone?: Zone;
+  toZone?: Zone;
+  targetSelf?: boolean;
+  sourceSelf?: boolean;
+  filters?: TargetFilter[];
+  sourceFilters?: TargetFilter[];
+  targetFilters?: TargetFilter[];
+  sourceFromZone?: Zone;
+  minimumAmount?: number;
+  /** Disjunctive alternate filters for one printed multi-predicate trigger. */
+  anyOf?: EffectEventFilter[];
+}
+
+export interface EffectBlock {
+  trigger: EffectTrigger;
+  source?: "opponentEffect" | "opponentCharacterEffect" | "effect";
+  eventFilter?: EffectEventFilter;
+  conditions?: Condition[];
+  costs?: Cost[];
+  actions: Action[];
+  optional?: boolean;
+  oncePerTurn?: boolean;
+  oncePerTurnKey?: string;
+}
+
+export interface PermanentEffect {
+  conditions?: Condition[];
+  actions: Action[];
+}
+
+export interface ReplacementEffect {
+  replacedEvent: "ko" | "removeFromField" | "loseGame" | "leaveField" | "rested";
+  target?: Target;
+  source?: "opponentEffect" | "opponentCharacterEffect" | "battle" | "effect";
+  replacementAction: Action;
+  eventFilter?: EffectEventFilter;
+  conditions?: Condition[];
+  oncePerTurn?: boolean;
+  /** Shared identity for branches originating from one printed once-per-turn replacement ability. */
+  oncePerTurnKey?: string;
+  /** Mandatory printed replacement. Omitted replacement effects remain optional for compatibility. */
+  mandatory?: true;
+}
+
+export type DeckBuildingRule =
+  | { rule: "unlimitedCopies" }
+  | { rule: "cannotInclude"; filters: TargetFilter[] }
+  | { rule: "donDeckCount"; count: number };
+
+export interface CardEffects {
+  keywords?: Keyword[];
+  effects?: EffectBlock[];
+  permanentEffects?: PermanentEffect[];
+  replacementEffects?: ReplacementEffect[];
+  deckBuildingRules?: DeckBuildingRule[];
+}

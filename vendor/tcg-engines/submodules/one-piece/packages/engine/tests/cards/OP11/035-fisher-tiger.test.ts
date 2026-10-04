@@ -1,0 +1,124 @@
+import { describe, expect, test } from "vite-plus/test";
+import { eb01Hannyabal021 } from "../../../../cards/src/cards/leaders/eb01-021-hannyabal.ts";
+import { op11Ishilly025 } from "../../../../cards/src/cards/characters/op11-025-ishilly.ts";
+import { op11FisherTiger035 } from "../../../../cards/src/cards/characters/op11-035-fisher-tiger.ts";
+import { op14eb04Killer005 } from "../../../../cards/src/cards/characters/op14-005-killer.ts";
+import { op14eb04SilversRayleigh108 } from "../../../../cards/src/cards/characters/op14-108-silvers-rayleigh.ts";
+import { OnePieceTestEngine } from "../../../src/index.ts";
+
+function pendingPrompt(engine: OnePieceTestEngine, intent: string) {
+  return engine
+    .getState()
+    .promptQueue.find(
+      (prompt) => prompt.status === "pending" && prompt.resolutionContext?.intent === intent,
+    );
+}
+
+describe("OP11-035 Fisher Tiger", () => {
+  test("rests 1 DON!! to play a Fish-Man or Merfolk after an opponent effect K.O.", () => {
+    const engine = OnePieceTestEngine.create(
+      {
+        character: [op11FisherTiger035],
+        hand: [op11Ishilly025],
+        life: 3,
+        activeDon: 1,
+      },
+      {
+        leaderCardId: eb01Hannyabal021,
+        hand: [op14eb04SilversRayleigh108],
+        activeDon: op14eb04SilversRayleigh108.cost,
+      },
+      { firstPlayer: "south", activeSeat: "north" },
+    );
+    const fisherTigerId = engine.findCardInZone("south", "character", op11FisherTiger035);
+    const ishillyId = engine.findCardInZone("south", "hand", op11Ishilly025);
+
+    engine.playCard(op14eb04SilversRayleigh108, "north");
+    engine.exec({
+      type: "resolvePrompt",
+      seat: "north",
+      promptId: pendingPrompt(engine, "effectTargetSelection")!.id,
+      selectedIds: [fisherTigerId],
+    });
+    engine.exec({
+      type: "resolvePrompt",
+      seat: "south",
+      promptId: pendingPrompt(engine, "effectOptional")!.id,
+      optionId: "yes",
+    });
+    engine.exec({
+      type: "resolvePrompt",
+      seat: "south",
+      promptId: pendingPrompt(engine, "effectPlaySelection")!.id,
+      selectedIds: [ishillyId],
+    });
+
+    expect(engine.findCardInZone("south", "trash", op11FisherTiger035)).toBe(fisherTigerId);
+    expect(engine.findCardInZone("south", "character", op11Ishilly025)).toBe(ishillyId);
+    expect(engine.getState().players.south.activeDon).toBe(0);
+    expect(engine.getState().players.south.restedDon).toBe(1);
+    expect(engine.getState().capabilityHistory).toEqual([]);
+  });
+
+  test("rests an opponent's Character on play", () => {
+    const engine = OnePieceTestEngine.create(
+      {
+        hand: [op11FisherTiger035],
+        activeDon: op11FisherTiger035.cost,
+      },
+      {
+        character: [op14eb04Killer005],
+      },
+      { firstPlayer: "north", activeSeat: "south" },
+    );
+    const killerId = engine.findCardInZone("north", "character", op14eb04Killer005);
+
+    engine.playCard(op11FisherTiger035);
+    engine.exec({
+      type: "resolvePrompt",
+      seat: "south",
+      promptId: pendingPrompt(engine, "effectTargetSelection")!.id,
+      selectedIds: [killerId],
+    });
+
+    expect(engine.getState().cards[killerId]?.rested).toBe(true);
+    expect(engine.getState().capabilityHistory).toEqual([]);
+  });
+
+  test("may decline optional so paid effect does not apply", () => {
+    const engine = OnePieceTestEngine.create(
+      {
+        character: [op11FisherTiger035],
+        hand: [op11Ishilly025],
+        life: 3,
+        activeDon: 1,
+      },
+      {
+        leaderCardId: eb01Hannyabal021,
+        hand: [op14eb04SilversRayleigh108],
+        activeDon: op14eb04SilversRayleigh108.cost,
+      },
+      { firstPlayer: "south", activeSeat: "north" },
+    );
+    const fisherTigerId = engine.findCardInZone("south", "character", op11FisherTiger035);
+    engine.playCard(op14eb04SilversRayleigh108, "north");
+    engine.resolveDecision("effectTargetSelection", { selectedIds: [fisherTigerId] }, "north");
+
+    const before = engine.getView("south").players.south;
+    const donPoolBefore = before.activeDon + before.restedDon;
+    const donDeckBefore = before.donDeckCount;
+    const handBefore = before.hand.length;
+    const lifeBefore = before.lifeCount;
+    const deckBefore = before.deckCount;
+    const trashBefore = before.trash.length;
+    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
+    const after = engine.getView("south").players.south;
+    expect(after.activeDon + after.restedDon).toBe(donPoolBefore);
+    expect(after.donDeckCount).toBe(donDeckBefore);
+    expect(after.hand.length).toBe(handBefore);
+    expect(after.lifeCount).toBe(lifeBefore);
+    expect(after.deckCount).toBe(deckBefore);
+    expect(after.trash.length).toBe(trashBefore);
+    expect(engine.getView("south").prompts).toHaveLength(0);
+  });
+});

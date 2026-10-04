@@ -1,0 +1,16 @@
+{
+  "name": "agnostic-simulator-runtime-subset",
+  "version": "0.0.0",
+  "private": true,
+  "description": "LOCAL FILE (not upstream): installs the runtime dependencies of the vendored agnostic-simulator packages (bot-core, engine-core, protocol, card-model) that the One Piece engine imports.",
+  "type": "module",
+  "dependencies": {
+    "@tcg/bot-core": "link:./packages/bot-core",
+    "@tcg/card-model": "link:./packages/card-model",
+    "@tcg/engine-core": "link:./packages/engine-core",
+    "@tcg/protocol": "link:./packages/protocol",
+    "mutative": "1.3.0",
+    "zod": "4.4.3"
+  },
+  "packageManager": "pnpm@10.33.0"
+}

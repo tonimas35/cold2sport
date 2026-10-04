@@ -1,5 +1,10 @@
 node_modules/
-.next/
-out/
+dist/
+coverage/
+.turbo/
+.vite/
+.vite-hooks/
 *.tsbuildinfo
-next-env.d.ts
+.DS_Store
+# run artifacts (arena reports, benchmark dumps); commit curated results under docs/ instead
+out/

@@ -1,0 +1,43 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@tcg/bot-core':
+        specifier: link:./packages/bot-core
+        version: link:packages/bot-core
+      '@tcg/card-model':
+        specifier: link:./packages/card-model
+        version: link:packages/card-model
+      '@tcg/engine-core':
+        specifier: link:./packages/engine-core
+        version: link:packages/engine-core
+      '@tcg/protocol':
+        specifier: link:./packages/protocol
+        version: link:packages/protocol
+      mutative:
+        specifier: 1.3.0
+        version: 1.3.0
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
+
+packages:
+
+  mutative@1.3.0:
+    resolution: {integrity: sha512-8MJj6URmOZAV70dpFe1YnSppRTKC4DsMkXQiBDFayLcDI4ljGokHxmpqaBQuDWa4iAxWaJJ1PS8vAmbntjjKmQ==}
+    engines: {node: '>=14.0'}
+
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
+
+snapshots:
+
+  mutative@1.3.0: {}
+
+  zod@4.4.3: {}

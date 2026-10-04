@@ -1,0 +1,108 @@
+import { describe, expect, test } from "vite-plus/test";
+import { op01XDrake054 } from "../../../../cards/src/cards/characters/op01-054-x-drake.ts";
+import { op01PunkGibson058 } from "../../../../cards/src/cards/events/op01-058-punk-gibson.ts";
+import { op01RoundTable027 } from "../../../../cards/src/cards/events/op01-027-round-table.ts";
+import { op01RoronoaZoro001 } from "../../../../cards/src/cards/leaders/op01-001-roronoa-zoro.ts";
+import { op04Dellinger029 } from "../../../../cards/src/cards/characters/op04-029-dellinger.ts";
+import { op12KouzukiHiyori028 } from "../../../../cards/src/cards/characters/op12-028-kouzuki-hiyori.ts";
+import { OnePieceTestEngine } from "../../../src/index.ts";
+
+function pendingPrompt(engine: OnePieceTestEngine, intent: string) {
+  return engine
+    .getState()
+    .promptQueue.find(
+      (prompt) => prompt.status === "pending" && prompt.resolutionContext?.intent === intent,
+    );
+}
+
+describe("OP12-028 Kouzuki Hiyori", () => {
+  test("rests 1 DON!! and itself to find a Slash card or a green Event", () => {
+    const engine = OnePieceTestEngine.create(
+      {
+        leaderCardId: op01RoronoaZoro001,
+        character: [op12KouzukiHiyori028],
+        deck: [op01XDrake054, op01PunkGibson058, op04Dellinger029, op01RoundTable027],
+        activeDon: 1,
+      },
+      {},
+      { firstPlayer: "north", activeSeat: "south" },
+    );
+    const hiyoriId = engine.findCardInZone("south", "character", op12KouzukiHiyori028);
+    const drakeId = engine.findCardInZone("south", "deck", op01XDrake054);
+    const punkGibsonId = engine.findCardInZone("south", "deck", op01PunkGibson058);
+    const dellingerId = engine.findCardInZone("south", "deck", op04Dellinger029);
+    const roundTableId = engine.findCardInZone("south", "deck", op01RoundTable027);
+
+    engine.activateEffect(hiyoriId, "activateMain", "south");
+    const optionalPrompt = pendingPrompt(engine, "effectOptional");
+    engine.exec({
+      type: "resolvePrompt",
+      seat: "south",
+      promptId: optionalPrompt!.id,
+      optionId: "yes",
+    });
+
+    expect(engine.getState().cards[hiyoriId]?.rested).toBe(true);
+    expect(engine.getState().players.south.activeDon).toBe(0);
+    expect(engine.getState().players.south.restedDon).toBe(1);
+    const selectionPrompt = pendingPrompt(engine, "effectSearchSelection");
+    expect(selectionPrompt).toBeDefined();
+    expect(
+      selectionPrompt!.options.filter((option) => option.enabled).map((option) => option.targetId),
+    ).toEqual([drakeId, punkGibsonId]);
+    expect(
+      selectionPrompt!.options.find((option) => option.targetId === dellingerId)?.enabled,
+    ).toBe(false);
+    expect(
+      selectionPrompt!.options.find((option) => option.targetId === roundTableId)?.enabled,
+    ).toBe(false);
+    engine.exec({
+      type: "resolvePrompt",
+      seat: "south",
+      promptId: selectionPrompt!.id,
+      selectedIds: [punkGibsonId],
+    });
+
+    const orderPrompt = pendingPrompt(engine, "effectSearchRemainderOrder");
+    expect(orderPrompt).toBeDefined();
+    engine.exec({
+      type: "resolvePrompt",
+      seat: "south",
+      promptId: orderPrompt!.id,
+      selectedIds: [roundTableId, dellingerId, drakeId],
+    });
+
+    expect(engine.findCardInZone("south", "hand", op01PunkGibson058)).toBe(punkGibsonId);
+    expect(engine.getState().capabilityHistory).toEqual([]);
+  });
+
+  test("may decline optional so paid effect does not apply", () => {
+    const engine = OnePieceTestEngine.create(
+      {
+        leaderCardId: op01RoronoaZoro001,
+        character: [op12KouzukiHiyori028],
+        deck: [op01XDrake054, op01PunkGibson058, op04Dellinger029, op01RoundTable027],
+        activeDon: 1,
+      },
+      {},
+      { firstPlayer: "north", activeSeat: "south" },
+    );
+    const hiyoriId = engine.findCardInZone("south", "character", op12KouzukiHiyori028);
+    const activeDonBefore = engine.getView("south").players.south.activeDon;
+    const deckBefore = engine.getView("south").players.south.deckCount;
+    const handBefore = engine.getView("south").players.south.hand.length;
+
+    engine.activateEffect(hiyoriId, "activateMain", "south");
+    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
+
+    const view = engine.getView("south");
+    expect(view.players.south.activeDon).toBe(activeDonBefore);
+    expect(view.players.south.restedDon).toBe(0);
+    expect(view.players.south.deckCount).toBe(deckBefore);
+    expect(view.players.south.hand.length).toBe(handBefore);
+    expect(
+      view.players.south.characters.find((card) => card?.instanceId === hiyoriId)?.rested,
+    ).toBe(false);
+    expect(view.prompts).toHaveLength(0);
+  });
+});

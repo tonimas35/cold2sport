@@ -1,0 +1,944 @@
+import { getCard } from "../../cards/src/runtime-catalog.ts";
+import type { DeckBuildingRule, LeaderCard, OPCard } from "@tcg/op-types";
+import {
+  cardName,
+  emitEvent,
+  emitLog,
+  enqueueResolution,
+  getCardForInstance,
+  getInstance,
+  getPlayer,
+  enqueueInPlayEffectsForTrigger,
+  isCardPreventedFromRefreshing,
+  leaderLife,
+  nextIdentifier,
+  otherSeat,
+  shuffle,
+} from "./shared.ts";
+import type {
+  CardInstance,
+  CardZone,
+  ChoiceKind,
+  MatchFinishReason,
+  MatchSeat,
+  MatchState,
+  ModifierState,
+  PlayerState,
+  PromptState,
+} from "./types.ts";
+import { donGivenFromDonPhase } from "./effects/permanent.ts";
+
+const DEFAULT_DON_DECK_COUNT = 10;
+
+/** Reads a deck-building rule the Leader card itself declares. */
+function leaderEffectsDeckBuildingRule(
+  leader: OPCard,
+  rule: "donDeckCount",
+): Extract<DeckBuildingRule, { rule: "donDeckCount" }> | undefined {
+  return leader.effects?.deckBuildingRules?.find(
+    (candidate): candidate is Extract<DeckBuildingRule, { rule: "donDeckCount" }> =>
+      candidate.rule === rule,
+  );
+}
+
+function removeFromList(list: string[], value: string) {
+  const index = list.indexOf(value);
+  if (index >= 0) {
+    list.splice(index, 1);
+  }
+}
+
+function reindexLinearZone(
+  state: MatchState,
+  seat: MatchSeat,
+  zone: "deck" | "hand" | "life" | "trash",
+) {
+  const player = getPlayer(state, seat);
+  for (const [index, instanceId] of player[zone].entries()) {
+    const instance = getInstance(state, instanceId);
+    instance.zone = zone;
+    instance.zoneIndex = index;
+  }
+}
+
+function describeHiddenCard(state: MatchState, instanceId: string): string {
+  const instance = getInstance(state, instanceId);
+  if (instance.publicKnowledge || instance.zone === "leader" || instance.zone === "character") {
+    return cardName(getCardForInstance(state, instanceId));
+  }
+
+  return "a hidden card";
+}
+
+/**
+ * Ends the match as a direct state transition with no domain-event dispatch:
+ * pending prompts are cancelled, queued resolutions are dropped, any ongoing
+ * battle is abandoned, and no effect or replacement machinery is consulted.
+ * Used by concession (1-2-3, which 1-2-4 shields from every card effect) and
+ * by the draw outcome (11-1). Defeat-by-rule-processing and effect wins keep
+ * their own event-emitting paths instead.
+ */
+export function finalizeMatchImmediately(
+  state: MatchState,
+  winner: MatchSeat | null,
+  finishReason: MatchFinishReason,
+  message: string,
+) {
+  state.status = "finished";
+  state.phase = "finished";
+  state.winner = winner;
+  state.finishReason = finishReason;
+  state.battle = null;
+  state.resolutionQueue = [];
+  state.resolutionStatus = "idle";
+  for (const prompt of state.promptQueue) {
+    if (prompt.status === "pending") {
+      prompt.status = "cancelled";
+    }
+  }
+  emitLog(state, "system", message, {
+    visibility: "public",
+  });
+}
+
+/**
+ * 11-1: the game can end in a draw, with no winner. Infinite-loop detection
+ * (11-1-1) is not implemented yet; this helper is the constructible draw
+ * outcome future loop detection (or a judge) finalizes through.
+ */
+export function finalizeDraw(state: MatchState) {
+  if (state.status === "finished") {
+    return;
+  }
+  finalizeMatchImmediately(state, null, "draw", "The game is a draw.");
+}
+
+export function processEmptyDeckDefeat(state: MatchState, seat: MatchSeat, atEndOfTurn = false) {
+  if (state.status !== "active" || getPlayer(state, seat).deck.length > 0) {
+    return;
+  }
+
+  const leaderId = getPlayer(state, seat).leaderInstanceId;
+  const loseGameReplacement = getCardForInstance(state, leaderId).effects?.replacementEffects?.find(
+    (effect) => effect.replacedEvent === "loseGame",
+  );
+  const replacementAction = loseGameReplacement?.replacementAction.action;
+  // 6-2-3-1 variants: a Leader can replace the deck-empty defeat either with
+  // an alternate win or by deferring it to the end of the current turn. The
+  // deferred defeat expires once that turn ends, so the end-of-turn check
+  // ignores the deferral.
+  if (replacementAction === "deferEmptyDeckLoss" && !atEndOfTurn) {
+    emitLog(
+      state,
+      "system",
+      `${getPlayer(state, seat).playerName} does not lose while their deck has 0 cards; the defeat is deferred to the end of this turn.`,
+      {
+        sourceCardId: getInstance(state, leaderId).cardId,
+        sourceInstanceId: leaderId,
+        visibility: "public",
+      },
+    );
+    return;
+  }
+  const replacement = replacementAction === "winGame" ? loseGameReplacement : undefined;
+  const winner = replacement ? seat : otherSeat(seat);
+  state.status = "finished";
+  state.phase = "finished";
+  state.winner = winner;
+  state.finishReason = replacement ? "effectWin" : "emptyDeck";
+  emitEvent(state, "winnerDeclared", winner, {
+    sourceCardId: replacement ? getInstance(state, leaderId).cardId : null,
+    sourceInstanceId: replacement ? leaderId : null,
+    visibility: "public",
+    data: { winner },
+  });
+  emitLog(
+    state,
+    "system",
+    replacement
+      ? `${getPlayer(state, seat).playerName} wins when their deck is reduced to 0.`
+      : `${getPlayer(state, winner).playerName} wins because their opponent's deck was reduced to 0.`,
+    {
+      sourceCardId: replacement ? getInstance(state, leaderId).cardId : null,
+      sourceInstanceId: replacement ? leaderId : null,
+      visibility: "public",
+    },
+  );
+}
+
+function zoneLabel(zone: CardZone): string {
+  switch (zone) {
+    case "character":
+      return "Character area";
+    case "deck":
+      return "Deck";
+    case "hand":
+      return "Hand";
+    case "leader":
+      return "Leader area";
+    case "life":
+      return "Life";
+    case "stage":
+      return "Stage area";
+    case "trash":
+      return "Trash";
+    case "resolution":
+      return "resolution area";
+  }
+}
+
+function removeFromCurrentZone(state: MatchState, instanceId: string) {
+  const instance = getInstance(state, instanceId);
+  const player = getPlayer(state, instance.controller);
+
+  switch (instance.zone) {
+    case "deck":
+      removeFromList(player.deck, instanceId);
+      reindexLinearZone(state, instance.controller, "deck");
+      break;
+    case "hand":
+      removeFromList(player.hand, instanceId);
+      reindexLinearZone(state, instance.controller, "hand");
+      break;
+    case "life":
+      removeFromList(player.life, instanceId);
+      reindexLinearZone(state, instance.controller, "life");
+      break;
+    case "trash":
+      removeFromList(player.trash, instanceId);
+      reindexLinearZone(state, instance.controller, "trash");
+      break;
+    case "character":
+      if (player.characterArea[instance.zoneIndex] === instanceId) {
+        player.characterArea[instance.zoneIndex] = null;
+      } else {
+        const fallback = player.characterArea.indexOf(instanceId);
+        if (fallback >= 0) {
+          player.characterArea[fallback] = null;
+        }
+      }
+      break;
+    case "stage":
+      if (player.stageArea === instanceId) {
+        player.stageArea = null;
+      }
+      break;
+    case "leader":
+    case "resolution":
+      break;
+  }
+}
+
+function placeInZone(
+  state: MatchState,
+  instanceId: string,
+  owner: MatchSeat,
+  zone: CardZone,
+  options: {
+    slotIndex?: number;
+    deckPosition?: "top" | "bottom";
+    lifePosition?: "top" | "bottom";
+    faceUp?: boolean;
+    publicKnowledge?: boolean;
+  } = {},
+) {
+  const instance = getInstance(state, instanceId);
+  const player = getPlayer(state, owner);
+
+  instance.controller = owner;
+  instance.zoneChangeCounter += 1;
+  instance.zone = zone;
+  instance.faceUp = options.faceUp ?? (zone !== "deck" && zone !== "life" && zone !== "hand");
+  instance.publicKnowledge =
+    options.publicKnowledge ??
+    (zone === "trash" || zone === "character" || zone === "stage" || zone === "leader");
+  instance.zoneIndex = 0;
+
+  switch (zone) {
+    case "deck": {
+      if (options.deckPosition === "bottom") {
+        player.deck.push(instanceId);
+      } else {
+        player.deck.unshift(instanceId);
+      }
+      reindexLinearZone(state, owner, "deck");
+      break;
+    }
+    case "hand":
+      player.hand.push(instanceId);
+      reindexLinearZone(state, owner, "hand");
+      break;
+    case "life":
+      if (options.lifePosition === "top") {
+        player.life.unshift(instanceId);
+      } else {
+        player.life.push(instanceId);
+      }
+      reindexLinearZone(state, owner, "life");
+      break;
+    case "trash":
+      player.trash.push(instanceId);
+      reindexLinearZone(state, owner, "trash");
+      break;
+    case "character": {
+      const slotIndex =
+        options.slotIndex ?? player.characterArea.findIndex((entry) => entry === null);
+      if (slotIndex < 0 || slotIndex >= player.characterArea.length) {
+        throw new Error(`No open character slot for ${instanceId}`);
+      }
+      player.characterArea[slotIndex] = instanceId;
+      instance.zoneIndex = slotIndex;
+      instance.faceUp = true;
+      instance.publicKnowledge = true;
+      break;
+    }
+    case "stage":
+      player.stageArea = instanceId;
+      instance.zoneIndex = 0;
+      instance.faceUp = true;
+      instance.publicKnowledge = true;
+      break;
+    case "leader":
+      instance.zoneIndex = 0;
+      instance.faceUp = true;
+      instance.publicKnowledge = true;
+      break;
+    case "resolution":
+      instance.zoneIndex = 0;
+      break;
+  }
+}
+
+export function moveCard(
+  state: MatchState,
+  instanceId: string,
+  owner: MatchSeat,
+  zone: CardZone,
+  options: Parameters<typeof placeInZone>[4] & {
+    actor?: MatchSeat | "judge" | "system";
+    eventId?: string | null;
+    sourceInstanceId?: string | null;
+    visibility?: "public" | "private" | "judge";
+    privateMessages?: Partial<Record<MatchSeat, string>>;
+    judgeMessage?: string | null;
+    suppressLog?: boolean;
+    redactIdentity?: boolean;
+    deferLifeRemovedTrigger?: boolean;
+  } = {},
+) {
+  const current = getInstance(state, instanceId);
+  const previous = {
+    controller: current.controller,
+    zone: current.zone,
+    description: describeHiddenCard(state, instanceId),
+  };
+  removeFromCurrentZone(state, instanceId);
+  placeInZone(state, instanceId, owner, zone, options);
+  const next = getInstance(state, instanceId);
+  // 3-1-6 / 10-2-13-4: a card that leaves the field is treated as a new card,
+  // so effects applied to it in the original area and its [Once Per Turn]
+  // usage do not carry over.
+  const leftField =
+    (previous.zone === "leader" || previous.zone === "character" || previous.zone === "stage") &&
+    zone !== "leader" &&
+    zone !== "character" &&
+    zone !== "stage";
+  if (leftField) {
+    for (const modifier of Object.values(state.modifiers)) {
+      if (modifier.targetId === instanceId) {
+        removeModifier(state, modifier.id);
+      }
+    }
+    next.usedEffectKeys = [];
+    next.battledOpponentCharacterOnTurn = null;
+  }
+  emitEvent(state, "cardMoved", options.actor ?? "system", {
+    sourceCardId: options.redactIdentity ? null : next.cardId,
+    sourceInstanceId: options.redactIdentity ? null : instanceId,
+    eventId: options.eventId ?? null,
+    visibility: options.visibility ?? "public",
+    data: {
+      fromZone: previous.zone,
+      toZone: zone,
+      fromOwner: previous.controller,
+      toOwner: owner,
+    },
+  });
+  if (!options.suppressLog) {
+    emitLog(
+      state,
+      options.actor ?? "system",
+      `${getPlayer(state, owner).playerName} moves ${previous.description} from ${zoneLabel(previous.zone)} to ${zoneLabel(zone)}.`,
+      {
+        sourceCardId: options.redactIdentity ? null : next.cardId,
+        sourceInstanceId: options.redactIdentity ? null : instanceId,
+        eventId: options.eventId ?? null,
+        visibility: options.visibility ?? "public",
+        privateMessages: options.privateMessages,
+        judgeMessage:
+          options.judgeMessage ??
+          `${getPlayer(state, owner).playerName} moves ${cardName(getCardForInstance(state, instanceId))} from ${zoneLabel(previous.zone)} to ${zoneLabel(zone)}.`,
+      },
+    );
+  }
+  if (previous.zone === "life" && zone !== "life" && !options.deferLifeRemovedTrigger) {
+    const effectController =
+      options.actor === "north" || options.actor === "south" ? options.actor : previous.controller;
+    enqueueInPlayEffectsForTrigger(state, "whenLifeRemoved", {
+      instanceId,
+      effectController,
+      targetInstanceId: getPlayer(state, previous.controller).leaderInstanceId,
+    });
+  }
+  if (previous.zone === "life" && zone === "hand") {
+    const effectController =
+      options.actor === "north" || options.actor === "south" ? options.actor : previous.controller;
+    enqueueInPlayEffectsForTrigger(
+      state,
+      "whenLifeAddedToHand",
+      {
+        instanceId,
+        effectController,
+        targetInstanceId: getPlayer(state, previous.controller).leaderInstanceId,
+      },
+      [previous.controller],
+    );
+  }
+  if (previous.zone === "deck" && zone !== "deck") {
+    processEmptyDeckDefeat(state, previous.controller);
+  }
+}
+
+function createInstance(
+  state: MatchState,
+  owner: MatchSeat,
+  cardId: string,
+  zone: CardZone,
+  zoneIndex: number,
+): CardInstance {
+  const instance: CardInstance = {
+    instanceId: nextIdentifier(state, "card"),
+    cardId,
+    owner,
+    controller: owner,
+    zone,
+    zoneIndex,
+    zoneChangeCounter: 0,
+    rested: false,
+    attachedDon: 0,
+    playedOnTurn: null,
+    faceUp: zone !== "deck" && zone !== "life" && zone !== "hand",
+    publicKnowledge: zone === "leader",
+    usedEffectKeys: [],
+    battledOpponentCharacterOnTurn: null,
+  };
+  state.cards[instance.instanceId] = instance;
+  return instance;
+}
+
+export function addModifier(
+  state: MatchState,
+  sourceInstanceId: string | null,
+  targetId: string,
+  modifier: Omit<ModifierState, "id" | "sourceInstanceId" | "targetId">,
+) {
+  const id = nextIdentifier(state, "mod");
+  state.modifiers[id] = {
+    id,
+    sourceInstanceId,
+    targetId,
+    ...(sourceInstanceId && { createdBySeat: getInstance(state, sourceInstanceId).controller }),
+    ...modifier,
+  };
+}
+
+function removeModifier(state: MatchState, modifierId: string) {
+  delete state.modifiers[modifierId];
+}
+
+export function consumeNextPlayCostModifiers(state: MatchState, instanceId: string) {
+  const sourceIds = new Set(
+    Object.values(state.modifiers)
+      .filter(
+        (modifier) =>
+          modifier.targetId === instanceId &&
+          modifier.type === "cost" &&
+          modifier.consumeOnPlay &&
+          modifier.sourceInstanceId,
+      )
+      .map((modifier) => modifier.sourceInstanceId!),
+  );
+  for (const modifier of Object.values(state.modifiers)) {
+    if (
+      modifier.consumeOnPlay &&
+      modifier.sourceInstanceId &&
+      sourceIds.has(modifier.sourceInstanceId)
+    ) {
+      removeModifier(state, modifier.id);
+    }
+  }
+}
+
+export function cleanupBattleModifiers(state: MatchState, battleId: string) {
+  for (const modifier of Object.values(state.modifiers)) {
+    if (modifier.expiresAtBattleId === battleId) {
+      removeModifier(state, modifier.id);
+    }
+  }
+}
+
+export function cleanupTurnEndModifiers(
+  state: MatchState,
+  turnNumber: number,
+  endingSeat: MatchSeat,
+) {
+  for (const modifier of Object.values(state.modifiers)) {
+    if (modifier.expiresAtTurn === turnNumber) {
+      const expectedEndingSeat =
+        modifier.duration === "untilEndOfYourNextTurn"
+          ? modifier.createdBySeat
+          : modifier.duration === "untilEndOfOpponentNextTurn" ||
+              modifier.duration === "untilEndOfOpponentNextEndPhase"
+            ? modifier.createdBySeat && otherSeat(modifier.createdBySeat)
+            : undefined;
+      if (expectedEndingSeat && expectedEndingSeat !== endingSeat) {
+        modifier.expiresAtTurn = turnNumber + 1;
+        continue;
+      }
+      removeModifier(state, modifier.id);
+    }
+  }
+}
+
+function cleanupTurnStartModifiers(state: MatchState, seat: MatchSeat) {
+  for (const modifier of Object.values(state.modifiers)) {
+    if (modifier.expiresOnTurnStartOfSeat === seat) {
+      removeModifier(state, modifier.id);
+    }
+  }
+}
+
+export function getOpenCharacterSlots(state: MatchState, seat: MatchSeat): number[] {
+  return getPlayer(state, seat).characterArea.flatMap((instanceId, index) =>
+    instanceId ? [] : [index],
+  );
+}
+
+export function createPrompt(
+  state: MatchState,
+  prompt: Omit<PromptState, "id" | "status">,
+): PromptState {
+  const nextPrompt: PromptState = {
+    id: nextIdentifier(state, "prompt"),
+    status: "pending",
+    ...prompt,
+  };
+  state.promptQueue.push(nextPrompt);
+  emitEvent(state, "promptCreated", prompt.seat === "judge" ? "judge" : "system", {
+    sourceCardId: prompt.sourceCardId,
+    sourceInstanceId: prompt.sourceInstanceId,
+    eventId: prompt.eventId,
+    visibility: prompt.seat === "judge" ? "judge" : "public",
+    data: {
+      promptId: nextPrompt.id,
+      kind: prompt.kind,
+      choiceKind: prompt.choiceKind,
+      seat: prompt.seat,
+    },
+  });
+  emitLog(
+    state,
+    prompt.seat === "judge" ? "judge" : "system",
+    prompt.seat === "judge" ? "Judge review required." : prompt.label,
+    {
+      sourceCardId: prompt.sourceCardId,
+      sourceInstanceId: prompt.sourceInstanceId,
+      eventId: prompt.eventId,
+      visibility: prompt.seat === "judge" ? "judge" : "public",
+      judgeMessage: `${prompt.label} ${prompt.details}`.trim(),
+    },
+  );
+  return nextPrompt;
+}
+
+export function enqueueJudgePrompt(
+  state: MatchState,
+  sourceInstanceId: string | null,
+  label: string,
+  details: string,
+  options: {
+    issueId?: string | null;
+    eventId?: string | null;
+  } = {},
+) {
+  const sourceCardId = sourceInstanceId ? getInstance(state, sourceInstanceId).cardId : null;
+  return createPrompt(state, {
+    kind: "judge",
+    choiceKind: null,
+    seat: "judge",
+    label,
+    details,
+    sourceCardId,
+    sourceInstanceId,
+    eventId: options.eventId ?? null,
+    options: [
+      {
+        id: "ack",
+        label: "Acknowledge",
+        value: "ack",
+      },
+    ],
+    minSelections: 0,
+    maxSelections: 0,
+    context: {},
+    resolutionContext: {
+      intent: "judge",
+      issueId: options.issueId ?? null,
+    },
+  });
+}
+
+export function createChoicePrompt(
+  state: MatchState,
+  prompt: Omit<PromptState, "id" | "status" | "kind"> & {
+    choiceKind: ChoiceKind;
+  },
+): PromptState {
+  return createPrompt(state, {
+    ...prompt,
+    kind: "choice",
+  });
+}
+
+export function findPendingPrompt(state: MatchState, promptId: string): PromptState | undefined {
+  return state.promptQueue.find((prompt) => prompt.id === promptId && prompt.status === "pending");
+}
+
+export function formatCardList(state: MatchState, instanceIds: string[]): string {
+  return instanceIds
+    .map((instanceId) => cardName(getCardForInstance(state, instanceId)))
+    .join(", ");
+}
+
+export function drawTopCard(
+  state: MatchState,
+  seat: MatchSeat,
+  options: { suppressLog?: boolean } = {},
+): string | null {
+  const player = getPlayer(state, seat);
+  const instanceId = player.deck.shift() ?? null;
+
+  if (!instanceId) {
+    return null;
+  }
+
+  moveCard(state, instanceId, seat, "hand", {
+    faceUp: false,
+    publicKnowledge: false,
+    actor: seat,
+    visibility: "private",
+    suppressLog: options.suppressLog,
+    privateMessages: {
+      [seat]: `You drew ${cardName(getCardForInstance(state, instanceId))}.`,
+    },
+    judgeMessage: `${getPlayer(state, seat).playerName} draws ${cardName(getCardForInstance(state, instanceId))}.`,
+  });
+  return instanceId;
+}
+
+export function addDonFromDeck(
+  state: MatchState,
+  seat: MatchSeat,
+  amount: number,
+  rested: boolean,
+) {
+  const player = getPlayer(state, seat);
+  const actual = Math.min(amount, player.donDeckCount);
+
+  player.donDeckCount -= actual;
+  if (rested) {
+    player.restedDon += actual;
+  } else {
+    player.activeDon += actual;
+  }
+
+  if (actual > 0) {
+    emitLog(
+      state,
+      "system",
+      `${player.playerName} adds ${actual} DON!! from the DON!! deck to the cost area ${rested ? "rested" : "active"}.`,
+      {
+        visibility: "public",
+      },
+    );
+  }
+}
+
+export function drawCards(state: MatchState, seat: MatchSeat, amount: number, reason: string) {
+  const drawn: string[] = [];
+
+  for (let index = 0; index < amount; index += 1) {
+    // The batch "draws N card(s)." line below is the single player-facing
+    // record; suppress the per-card zone-movement line to avoid logging the
+    // same draw twice.
+    const instanceId = drawTopCard(state, seat, { suppressLog: true });
+    if (!instanceId) {
+      break;
+    }
+    drawn.push(instanceId);
+  }
+
+  if (drawn.length === 0) {
+    return;
+  }
+
+  emitLog(
+    state,
+    seat,
+    `${getPlayer(state, seat).playerName} draws ${drawn.length} card${drawn.length === 1 ? "" : "s"}.`,
+    {
+      visibility: "private",
+      privateMessages: {
+        [seat]: `${reason}: ${formatCardList(state, drawn)}.`,
+      },
+      judgeMessage: `${getPlayer(state, seat).playerName} draws ${formatCardList(state, drawn)}.`,
+    },
+  );
+
+  if (state.phase !== "draw") {
+    enqueueInPlayEffectsForTrigger(
+      state,
+      "whenCardDrawn",
+      {
+        instanceId: drawn[0]!,
+        instanceController: seat,
+        effectController: seat,
+      },
+      [seat],
+    );
+  }
+}
+
+export function buildInitialPlayerState(
+  state: MatchState,
+  seat: MatchSeat,
+  config: MatchState["config"],
+): PlayerState {
+  const playerConfig = config.players[seat];
+  const leader = getCard(playerConfig.leaderCardId);
+  if (leader.cardType !== "leader") {
+    throw new Error(`Leader expected for ${seat}, got ${leader.cardType}`);
+  }
+
+  const leaderInstance = createInstance(state, seat, leader.id, "leader", 0);
+  const deckCardIds = config.shuffleDecks
+    ? shuffle(playerConfig.mainDeck, `${config.seed ?? "0"}:${seat}`)
+    : [...playerConfig.mainDeck];
+
+  const deckInstances = deckCardIds.map((cardId, index) =>
+    createInstance(state, seat, cardId, "deck", index),
+  );
+
+  const player: PlayerState = {
+    seat,
+    playerName: playerConfig.playerName ?? seat[0]!.toUpperCase() + seat.slice(1),
+    leaderCardId: leader.id,
+    leaderInstanceId: leaderInstance.instanceId,
+    deck: deckInstances.map((instance) => instance.instanceId),
+    hand: [],
+    life: [],
+    trash: [],
+    characterArea: Array.from({ length: config.maxCharacterSlots }, () => null),
+    stageArea: null,
+    activeDon: 0,
+    restedDon: 0,
+    donDeckCount:
+      playerConfig.donDeckCount ??
+      leaderEffectsDeckBuildingRule(leader, "donDeckCount")?.count ??
+      DEFAULT_DON_DECK_COUNT,
+    turnsStarted: 0,
+  };
+
+  state.players[seat] = player;
+
+  for (let index = 0; index < config.openingHandSize; index += 1) {
+    const drawn = drawTopCard(state, seat, { suppressLog: true });
+    if (!drawn) {
+      break;
+    }
+  }
+
+  return player;
+}
+
+// 5-2-1-7 / 2-9-2-1: starting Life is placed after the opening-hand redraws
+// (5-2-1-6), taking cards from the top of the deck so that the deck-top card
+// ends up at the bottom of the Life area (life[0] is the top of the stack).
+export function placeStartingLife(state: MatchState, seat: MatchSeat) {
+  const player = getPlayer(state, seat);
+  const leader = getCard(player.leaderCardId) as LeaderCard;
+  for (let index = 0; index < leaderLife(leader); index += 1) {
+    const instanceId = player.deck.shift();
+    if (!instanceId) {
+      throw new Error(`Deck for ${seat} does not have enough cards to build life`);
+    }
+    placeInZone(state, instanceId, seat, "life", {
+      lifePosition: "top",
+      faceUp: false,
+      publicKnowledge: false,
+    });
+  }
+  reindexLinearZone(state, seat, "deck");
+  emitLog(
+    state,
+    "system",
+    `${player.playerName} places ${player.life.length} Life card${player.life.length === 1 ? "" : "s"}.`,
+    {
+      visibility: "public",
+    },
+  );
+}
+
+function resetStartOfTurnState(state: MatchState, seat: MatchSeat) {
+  const player = getPlayer(state, seat);
+  let returningDon = 0;
+
+  for (const instance of Object.values(state.cards)) {
+    if (instance.controller !== seat) {
+      continue;
+    }
+
+    if (instance.zone === "leader" || instance.zone === "character" || instance.zone === "stage") {
+      if (!isCardPreventedFromRefreshing(state, instance.instanceId)) {
+        instance.rested = false;
+      }
+      instance.usedEffectKeys = [];
+      if (instance.attachedDon > 0) {
+        returningDon += instance.attachedDon;
+        instance.attachedDon = 0;
+      }
+    }
+  }
+
+  const frozenDon = Object.values(state.modifiers).filter(
+    (modifier) =>
+      modifier.type === "flag" &&
+      modifier.flag === "freezeDon" &&
+      modifier.targetId.startsWith(`rested-don:${seat}:`),
+  ).length;
+  const remainingRestedDon = Math.min(player.restedDon, frozenDon);
+  player.activeDon += player.restedDon - remainingRestedDon + returningDon;
+  player.restedDon = remainingRestedDon;
+  cleanupTurnStartModifiers(state, seat);
+}
+
+export function beginTurn(state: MatchState, seat: MatchSeat, skipDraw: boolean) {
+  state.activeSeat = seat;
+  // 6-5-6-1: count each seat's first turn independently (extra turns do not
+  // reassign the opponent's first-turn battle ban to a different game turn).
+  // Normalize missing field for snapshots serialized before turnsStarted existed
+  // (undefined += 1 would become NaN and silently allow first-turn attacks).
+  const player = getPlayer(state, seat);
+  if (typeof player.turnsStarted !== "number" || Number.isNaN(player.turnsStarted)) {
+    player.turnsStarted = 0;
+  }
+  player.turnsStarted += 1;
+
+  state.phase = "refresh";
+  emitEvent(state, "phaseChanged", "system", {
+    data: {
+      seat,
+      phase: "refresh",
+    },
+  });
+  emitLog(state, "system", `${getPlayer(state, seat).playerName} enters Refresh.`, {
+    visibility: "public",
+  });
+
+  enqueueInPlayEffectsForTrigger(state, "startOfYourTurn", {
+    instanceId: getPlayer(state, seat).leaderInstanceId,
+    effectController: seat,
+  });
+  enqueueResolution(state, {
+    kind: "beginTurnRefreshFinalize",
+    seat,
+    skipDraw,
+  });
+}
+
+export function finalizeBeginTurnRefresh(state: MatchState, seat: MatchSeat, skipDraw: boolean) {
+  resetStartOfTurnState(state, seat);
+
+  state.phase = "draw";
+  emitEvent(state, "phaseChanged", "system", {
+    data: {
+      seat,
+      phase: "draw",
+    },
+  });
+  emitLog(state, "system", `${getPlayer(state, seat).playerName} enters Draw.`, {
+    visibility: "public",
+  });
+  if (!skipDraw) {
+    drawCards(state, seat, 1, `${getPlayer(state, seat).playerName} draws for turn`);
+  }
+
+  state.phase = "don";
+  emitEvent(state, "phaseChanged", "system", {
+    data: {
+      seat,
+      phase: "don",
+    },
+  });
+  emitLog(state, "system", `${getPlayer(state, seat).playerName} enters DON!! phase.`, {
+    visibility: "public",
+  });
+  const player = getPlayer(state, seat);
+  // 6-4-1: the player going first places only 1 DON!! card on their first turn.
+  const isFirstPlayerFirstTurn = state.turnNumber === 1 && seat === state.config.firstPlayer;
+  const placedDon = Math.min(isFirstPlayerFirstTurn ? 1 : 2, player.donDeckCount);
+  const givenDon = Math.min(placedDon, donGivenFromDonPhase(state, seat));
+  addDonFromDeck(state, seat, placedDon - givenDon, false);
+  if (givenDon > 0) {
+    player.donDeckCount -= givenDon;
+    getInstance(state, player.leaderInstanceId).attachedDon += givenDon;
+    emitLog(
+      state,
+      "system",
+      `${player.playerName} gives ${givenDon} DON!! from the DON!! Phase to their Leader.`,
+      {
+        sourceCardId: getInstance(state, player.leaderInstanceId).cardId,
+        sourceInstanceId: player.leaderInstanceId,
+        targetIds: [player.leaderInstanceId],
+        visibility: "public",
+      },
+    );
+  }
+
+  state.phase = "main";
+  emitEvent(state, "phaseChanged", "system", {
+    data: {
+      seat,
+      phase: "main",
+    },
+  });
+  emitLog(state, "system", `${getPlayer(state, seat).playerName} enters Main.`, {
+    visibility: "public",
+  });
+
+  const mainPhaseActions = state.delayedEffectActions.filter(
+    (item) => item.scheduledPhase === "main" && item.scheduledSeat === seat,
+  );
+  state.delayedEffectActions = state.delayedEffectActions.filter(
+    (item) => item.scheduledPhase !== "main" || item.scheduledSeat !== seat,
+  );
+  for (const item of mainPhaseActions) {
+    enqueueResolution(state, {
+      kind: "effectAction",
+      sourceInstanceId: item.sourceInstanceId,
+      controller: item.controller,
+      action: item.action,
+      previousActionTargetIds: item.previousActionTargetIds,
+    });
+  }
+}

@@ -1,0 +1,431 @@
+import type { Condition, EffectTrigger } from "@tcg/op-types";
+import type { InlineConditionResult } from "../types.ts";
+import { parseLeaderCondition } from "./leader.ts";
+import { parseCountCondition } from "./counts.ts";
+import { parseCardStateCondition } from "./card-state.ts";
+import { parseReplacementCondition, parseNonSelfReplacementCondition } from "./replacement.ts";
+
+function parseConditionChain(text: string): Condition | null {
+  const jointLifeCount = /^(.*?)\s+and\s+(you\s+and\s+your\s+opponent\s+have\s+.+)$/i.exec(text);
+  if (jointLifeCount) {
+    const conditions = [
+      parseConditionText(jointLifeCount[1]!.trim()),
+      parseConditionText(jointLifeCount[2]!.trim()),
+    ];
+    if (conditions.every((condition) => condition !== null)) {
+      return {
+        condition: "compound",
+        operator: "and",
+        conditions: conditions as Condition[],
+      };
+    }
+  }
+  const playerCountPrefix =
+    "(?:you\\s+and\\s+your\\s+opponent\\s+have|(?:you|your\\s+opponent)\\s+(?:have|has))";
+  const normalized = text.replace(new RegExp(`,\\s+(?=${playerCountPrefix}\\b)`, "gi"), " and ");
+  const parts = normalized.split(new RegExp(`\\s+and\\s+(?=${playerCountPrefix}\\b)`, "i"));
+  if (parts.length === 1) {
+    return parseConditionText(text);
+  }
+  const conditions = parts.map((part) => parseConditionText(part.trim()));
+  if (conditions.some((condition) => condition === null)) {
+    return null;
+  }
+  return {
+    condition: "compound",
+    operator: "and",
+    conditions: conditions as Condition[],
+  };
+}
+
+/**
+ * Extract an "If <condition>, <actions>" or "When <event>, <actions>" prefix
+ * from action text.
+ * Returns the parsed condition and remaining action text, or null if
+ * no "If"/"When" prefix is present or the condition can't be parsed.
+ */
+export function parseInlineCondition(text: string): InlineConditionResult | null {
+  // "This effect can be activated at the start of your turn. Y"
+  const activatedStartOfTurnMatch =
+    /^This\s+effect\s+can\s+be\s+activated\s+at\s+the\s+start\s+of\s+your\s+turn\.\s*(.+)$/is.exec(
+      text,
+    );
+  if (activatedStartOfTurnMatch) {
+    return {
+      condition: { condition: "triggerEvent", event: "startOfYourTurn" },
+      remainingText: activatedStartOfTurnMatch[1]!.trim(),
+    };
+  }
+
+  // "This effect can be activated when X. Y" — meta-prefix for custom timing
+  const activatedWhenMatch =
+    /^This\s+effect\s+can\s+be\s+activated\s+when\s+(.+?)\.\s+(.+)$/is.exec(text);
+  if (activatedWhenMatch) {
+    const eventText = activatedWhenMatch[1]!;
+    let remaining = activatedWhenMatch[2]!;
+    // Try parsing as a known event trigger
+    const event = parseWhenEvent(eventText);
+    // Preserve nested conditions for the builder. Keep the optional marker on
+    // the opponent-rest reaction so its joined self-trash payment remains
+    // distinguishable from a mandatory action.
+    if (
+      !/^this\s+Character\s+is\s+rested\s+by\s+your\s+opponent[''\u2019]s\s+effect$/i.test(
+        eventText,
+      )
+    ) {
+      remaining = remaining.replace(/^You\s+may\s+/i, "").trim();
+    }
+    if (event) {
+      return { condition: { condition: "triggerEvent", event }, remainingText: remaining };
+    }
+    // Try as a custom condition — "this Character is rested by your opponent's effect"
+    const cond = parseConditionText(eventText);
+    if (cond) {
+      return { condition: cond, remainingText: remaining };
+    }
+  }
+
+  // "If X, Y" — try splitting at different comma positions to handle conditions with internal commas
+  if (/^If\s+/i.test(text)) {
+    const afterIf = text.slice(text.indexOf(" ") + 1);
+    // Find all comma positions and try from longest to shortest condition text
+    const commaPositions: number[] = [];
+    for (let i = 0; i < afterIf.length; i++) {
+      if (afterIf[i] === ",") commaPositions.push(i);
+    }
+    // Try longest condition first (rightmost comma), then shorter
+    for (let ci = commaPositions.length - 1; ci >= 0; ci--) {
+      const condText = afterIf.slice(0, commaPositions[ci]!).trim();
+      let remaining = afterIf.slice(commaPositions[ci]! + 1).trim();
+      const condition = parseConditionChain(condText);
+      if (condition) {
+        // Check for compound condition: "and <condition2>, <action>"
+        const andCondMatch = /^and\s+(.+?),\s+(.+)$/is.exec(remaining);
+        if (andCondMatch) {
+          const cond2 = parseConditionText(andCondMatch[1]!);
+          if (cond2) {
+            remaining = andCondMatch[2]!;
+            return {
+              condition: { condition: "compound", operator: "and", conditions: [condition, cond2] },
+              remainingText: remaining,
+            };
+          }
+        }
+        return { condition, remainingText: remaining };
+      }
+    }
+  }
+
+  // "When X, Y" — event prefix
+  const whenMatch = /^When\s+(.+?),\s+(.+)$/is.exec(text);
+  if (whenMatch) {
+    const eventText = whenMatch[1]!;
+    let remaining = whenMatch[2]!;
+    const event = parseWhenEvent(eventText);
+    if (!event) return null;
+    const source = /by\s+your\s+opponent[''\u2019]s\s+Character[''\u2019]s\s+effect$/i.test(
+      eventText,
+    )
+      ? "opponentCharacterEffect"
+      : /by\s+your\s+opponent[''\u2019]s\s+effect$/i.test(eventText)
+        ? "opponentEffect"
+        : /by\s+your\s+effect$/i.test(eventText)
+          ? "effect"
+          : undefined;
+    // Preserve a nested "if Y, Z" so the builder can parse it as a second
+    // inline condition after extracting this event trigger.
+    return {
+      condition: { condition: "triggerEvent", event, ...(source && { source }) },
+      remainingText: remaining,
+    };
+  }
+
+  // "At the end of a battle in which this Character battles X, Y" is a
+  // timing trigger. Target constraints are promoted to the block event filter
+  // by the effect builder.
+  const battleEndMatch =
+    /^At\s+the\s+end\s+of\s+a\s+battle\s+in\s+which\s+this\s+Character\s+battles\s+your\s+opponent[''\u2019]s\s+Character(?:\s+with\s+.+)?,\s+(.+)$/is.exec(
+      text,
+    );
+  if (battleEndMatch) {
+    return {
+      condition: { condition: "triggerEvent", event: "endOfBattle" },
+      remainingText: battleEndMatch[1]!,
+    };
+  }
+
+  // "At the end of a battle in which X, Y" — generic battle-end condition
+  const atEndMatch = /^At\s+the\s+end\s+of\s+(.+?),\s+(.+)$/is.exec(text);
+  if (atEndMatch) {
+    const cond = parseConditionText(atEndMatch[1]!);
+    if (cond) {
+      return { condition: cond, remainingText: atEndMatch[2]! };
+    }
+  }
+
+  // "ACTION when EVENT" — event suffix (e.g., "Draw 1 card when your opponent activates an Event")
+  const whenSuffix = /^(.+?)\s+when\s+(.+)$/is.exec(text);
+  if (whenSuffix) {
+    const remaining = whenSuffix[1]!;
+    const eventText = whenSuffix[2]!;
+    const event = parseWhenEvent(eventText);
+    if (!event) return null;
+    return { condition: { condition: "triggerEvent", event }, remainingText: remaining };
+  }
+
+  return null;
+}
+
+/**
+ * Map "When X" event text to an EffectTrigger value.
+ */
+export function parseWhenEvent(text: string): EffectTrigger | null {
+  const t = text.trim().replace(/\.+$/, "");
+
+  if (/^a\s+card\s+is\s+trashed\s+from\s+your\s+hand\s+by\s+an\s+effect$/i.test(t)) {
+    return "whenCardTrashedFromHandByEffect";
+  }
+
+  // "this Character/Leader's attack deals damage to your opponent's Life"
+  if (
+    /^this\s+(?:Character|Leader)[''\u2019]s\s+attack\s+deals\s+damage\s+to\s+your\s+opponent[''\u2019]s\s+Life$/i.test(
+      t,
+    )
+  )
+    return "whenDealsDamage";
+
+  if (/^you\s+deal\s+damage\s+to\s+your\s+opponent[''\u2019]s\s+Life$/i.test(t)) {
+    return "whenYouDealDamage";
+  }
+
+  // "this Character battles and K.O.'s your opponent's Character"
+  if (
+    /^this\s+Character\s+battles\s+and\s+K\.O\.\u2019?'?s\s+your\s+opponent[''\u2019]s\s+Character$/i.test(
+      t,
+    )
+  )
+    return "whenCharacterKod";
+
+  // "this Character is K.O.'d (by your opponent's effect)?"
+  if (
+    /^this\s+Character\s+is\s+K\.O\.\u2019?'?d(?:\s+by\s+your\s+opponent[''\u2019]s\s+effect)?$/i.test(
+      t,
+    )
+  )
+    return "onKo";
+
+  // "a DON!! card on your field is returned to your DON!! deck" (with or without "by your effect")
+  if (
+    /^a\s+DON!!\s+card\s+on\s+your\s+field\s+is\s+returned\s+to\s+your\s+DON!!\s+deck(?:\s+by\s+your\s+effect)?$/i.test(
+      t,
+    )
+  )
+    return "whenDonReturned";
+
+  // "you/your opponent activates an Event (or [Trigger])?"
+  if (/^your\s+opponent\s+activates\s+an\s+Event(?:\s+or\s+\[Trigger\])?$/i.test(t))
+    return "whenOpponentActivatesEvent";
+  if (/^you\s+activate\s+an\s+Event$/i.test(t)) return "whenYouActivateEvent";
+
+  // "your opponent activates [Blocker] or an Event"
+  if (/^your\s+opponent\s+activates\s+\[Blocker\]\s+or\s+an\s+Event$/i.test(t))
+    return "whenBlockerActivated";
+
+  // "a card is removed from your, your opponent's, or either player's Life cards"
+  if (
+    /^a\s+card\s+is\s+removed\s+from\s+(?:your\s+or\s+your\s+opponent[''\u2019]s|your\s+opponent[''\u2019]s|your)\s+Life\s+cards?$/i.test(
+      t,
+    )
+  )
+    return "whenLifeRemoved";
+
+  // "your opponent plays a Character with a base cost of N or more" (with optional "or when..." compound)
+  if (/^your\s+opponent\s+plays\s+a\s+Character/i.test(t)) return "whenOpponentPlaysCharacter";
+
+  // "your opponent's Character is returned to the owner's hand by your effect"
+  if (
+    /^your\s+opponent[''\u2019]s\s+Character\s+is\s+returned\s+to\s+the\s+owner[''\u2019]s\s+hand\s+by\s+your\s+effect$/i.test(
+      t,
+    )
+  )
+    return "whenLeaving";
+
+  // "one of your {Trait} type Characters ... is K.O.'d"
+  if (/^one\s+of\s+your\s+.+\s+is\s+K\.O\.\u2019?'?d$/i.test(t)) return "onKo";
+
+  // "a Character is K.O.'d" / "your opponent's Character is K.O.'d"
+  if (
+    /^(?:your\s+opponent[''\u2019]s\s+)?(?:a\s+)?Character\s+(?:on\s+your\s+opponent[''\u2019]s\s+field\s+)?is\s+K\.O\.\u2019?'?d$/i.test(
+      t,
+    )
+  )
+    return "whenCharacterKod";
+
+  // "a Character is removed from the field by your/your opponent's effect"
+  if (
+    /^a\s+Character\s+is\s+removed\s+from\s+the\s+field(?:\s+by\s+(?:your|your\s+opponent[''\u2019]s)\s+effect)?$/i.test(
+      t,
+    )
+  )
+    return "whenLeaving";
+
+  // "a [Trigger] activates"
+  if (/^a\s+\[Trigger\]\s+activates$/i.test(t)) return "whenTriggerActivates";
+
+  // "you play a Character with a [Trigger]"
+  if (/^you\s+play\s+a\s+Character\s+with\s+a\s+\[Trigger\]$/i.test(t))
+    return "whenTriggerActivates";
+
+  // "your opponent activates [Blocker]" / "a [Blocker] is activated" / "your opponent activates [Blocker] or an Event"
+  if (
+    /^(?:your\s+opponent\s+activates\s+(?:a\s+)?\[Blocker\](?:\s+or\s+an\s+Event)?|a\s+\[Blocker\]\s+is\s+activated)$/i.test(
+      t,
+    )
+  )
+    return "whenBlockerActivated";
+
+  // "your opponent attacks"
+  if (/^your\s+opponent\s+attacks$/i.test(t)) return "onOpponentAttack";
+
+  // "this Leader or 1 of your Characters is given a DON!! card"
+  if (
+    /^(?:this\s+Leader\s+or\s+)?\d+\s+of\s+your\s+Characters?\s+is\s+given\s+a\s+DON!!\s+card$/i.test(
+      t,
+    )
+  )
+    return "whenDonReturned"; // Reuse closest trigger type
+
+  // "you play a Character (with X) from your hand"
+  if (/^you\s+play\s+a\s+Character\b/i.test(t)) return "onPlay";
+
+  // "you activate an Event"
+  if (/^you\s+activate\s+an\s+Event$/i.test(t)) return "whenYouActivateEvent";
+
+  // "you draw a card outside of your Draw Phase"
+  if (/^you\s+draw\s+a\s+card\s+outside\s+of\s+your\s+Draw\s+Phase$/i.test(t))
+    return "whenCardDrawn";
+
+  // "a card is added to your hand from your Life"
+  if (/^a\s+card\s+is\s+added\s+to\s+your\s+hand\s+from\s+your\s+Life$/i.test(t))
+    return "whenLifeAddedToHand";
+
+  // "N or more DON!! cards on your field are returned to your DON!! deck"
+  if (
+    /^\d+\s+or\s+more\s+DON!!\s+cards?\s+on\s+your\s+field\s+are\s+returned\s+to\s+your\s+DON!!\s+deck$/i.test(
+      t,
+    )
+  )
+    return "whenDonReturned";
+
+  // "a Character is rested by your effect"
+  if (/^a\s+Character\s+is\s+rested\s+by\s+your\s+effect$/i.test(t))
+    return "whenCharacterRestedByEffect";
+
+  // "your X type Character is removed from the field by your opponent's effect"
+  if (
+    /^your\s+(?:.+?\s+type\s+Character|Character\s+with\s+a\s+type\s+including\s+["\u201c][^"\u201d]+["\u201d])\s+is\s+removed\s+from\s+the\s+field\s+by\s+(?:an|your\s+opponent[''\u2019]s)\s+effect$/i.test(
+      t,
+    )
+  )
+    return "whenLeaving";
+
+  // "your opponent's Character attacks"
+  if (/^your\s+opponent[''\u2019]s\s+Character\s+attacks$/i.test(t)) return "onOpponentAttack";
+
+  // "a card is trashed from your hand by your "Trait" type card's effect"
+  if (
+    /^a\s+card\s+is\s+trashed\s+from\s+your\s+hand\s+by\s+your\s+(?:[[{"\u201c])([^\]}"\u201d]+)(?:[\]}"\u201d])\s+type\s+card[''\u2019]?s\s+effect$/i.test(
+      t,
+    )
+  )
+    return "whenCardsTrashedFromHandByEffect";
+
+  // "you take damage (or ...)"
+  if (/^you\s+take\s+damage/i.test(t)) return "whenDealsDamage";
+
+  // "this Character becomes rested"
+  if (
+    /^this\s+Character\s+becomes\s+rested(?:\s+by\s+your\s+opponent[''\u2019]s\s+Character[''\u2019]s\s+effect)?$/i.test(
+      t,
+    )
+  )
+    return "whenBecomesRested";
+
+  return null;
+}
+
+/**
+ * Parse a condition clause into a typed `Condition`.
+ * Tries single-condition parsing first, then compound "and" splitting.
+ */
+export function parseConditionText(text: string): Condition | null {
+  const single = parseSingleCondition(text);
+  if (single) return single;
+
+  const leaderPowerAndTrait =
+    /^(your Leader has \d+ power(?:\s+or\s+(?:more|less))?)\s+and\s+the\s+([""[{][^""\]}]+[""\]}])\s+type$/i.exec(
+      text.trim(),
+    );
+  if (leaderPowerAndTrait) {
+    const power = parseSingleCondition(leaderPowerAndTrait[1]!);
+    const trait = parseSingleCondition(`your Leader has the ${leaderPowerAndTrait[2]!} type`);
+    if (power && trait) {
+      return { condition: "compound", operator: "and", conditions: [power, trait] };
+    }
+  }
+
+  const leaderTraitAndState = /^(your Leader has .+? type)\s+and\s+is\s+(active|rested)$/i.exec(
+    text.trim(),
+  );
+  if (leaderTraitAndState) {
+    const trait = parseSingleCondition(leaderTraitAndState[1]!);
+    const state = parseCardStateCondition(`your Leader is ${leaderTraitAndState[2]!}`);
+    if (trait && state) {
+      return { condition: "compound", operator: "and", conditions: [trait, state] };
+    }
+  }
+
+  // Compound "and": split on " and " followed by condition-starting words
+  const compound = parseCompoundCondition(text);
+  if (compound) return compound;
+
+  // Non-self replacement: tried last because its greedy regex can match compound texts
+  return parseNonSelfReplacementCondition(text);
+}
+
+/**
+ * Parse a single (non-compound) condition clause.
+ */
+function parseSingleCondition(text: string): Condition | null {
+  if (
+    /^this\s+Character\s+is\s+rested\s+by\s+your\s+opponent[''\u2019]s\s+effect$/i.test(text.trim())
+  ) {
+    return {
+      condition: "triggerEvent",
+      event: "whenBecomesRested",
+      source: "opponentEffect",
+    };
+  }
+  return (
+    parseLeaderCondition(text) ??
+    parseCountCondition(text) ??
+    parseCardStateCondition(text) ??
+    parseReplacementCondition(text)
+  );
+}
+
+function parseCompoundCondition(text: string): Condition | null {
+  // Split on " and " followed by condition-starting words
+  const splitPattern = /\s+and\s+(?=(?:you(?:r|\s)|this\s|the\s+number|there\s|is\s))/i;
+  const parts = text.split(splitPattern);
+  if (parts.length < 2) return null;
+
+  const conditions: Condition[] = [];
+  for (const part of parts) {
+    const cond = parseSingleCondition(part.trim());
+    if (!cond) return null; // All parts must parse
+    conditions.push(cond);
+  }
+
+  return { condition: "compound", operator: "and", conditions };
+}
