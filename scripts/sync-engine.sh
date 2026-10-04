@@ -21,6 +21,7 @@ PATHS=(
   submodules/agnostic-simulator/packages/engine-core
   submodules/agnostic-simulator/packages/protocol
   submodules/agnostic-simulator/packages/card-model
+  submodules/agnostic-simulator/packages/typescript-config
 )
 # Files inside the vendor tree that are ours, not upstream's.
 LOCAL_FILES=(

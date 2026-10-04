@@ -15,6 +15,7 @@ Only what the One Piece engine needs at runtime and for its own test suite:
 |---|---|
 | `submodules/one-piece/` | Engine, cards, types, utils, card parser, rules skill and tests (unchanged upstream workspace, own `pnpm-lock.yaml`) |
 | `submodules/agnostic-simulator/packages/{bot-core,engine-core,protocol,card-model}` | Imported by the engine at runtime (seeded RNG, bot helpers, card model) |
+| `submodules/agnostic-simulator/packages/typescript-config` | `tsconfig.json` base that the four packages above extend (the engine's test runner needs it) |
 
 Paths are kept identical to upstream so the engine's `link:` dependencies
 (`../../../agnostic-simulator/packages/...`) resolve without changes.
@@ -31,7 +32,11 @@ Not vendored: the other games, the browser simulator, `tools/bot-lab` and
 
 ## Local changes to upstream code
 
-None yet. Rules:
+| Patch | What | Why | Verified |
+|---|---|---|---|
+| `0001-permanent-effects-action-prefilter.patch` | `effects/permanent.ts`: every scan over permanent effects first checks a static, per-card index of the action kinds printed on that card's permanent effects, and skips cards that cannot contribute | The scans ran the in-play / negation / condition checks for every card on every power, cost or keyword query, which was quadratic and dominated the profile. Same results, about 2x faster `applyCommand` and 9x faster `getLegalCommands` | Full upstream suite (`pnpm run engine:check`): 10/10 tasks green. `packages/opbot/test/sim-differential.test.ts` (300 games) |
+
+Rules:
 
 1. Do not edit vendored files casually. If the engine must change (bug fix,
    performance hook), make the change, then save it as

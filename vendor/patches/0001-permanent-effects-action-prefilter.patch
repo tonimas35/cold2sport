@@ -1,0 +1,154 @@
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/permanent.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/permanent.ts
+index 24ffb2c..7423596 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/permanent.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/permanent.ts
+@@ -6,6 +6,35 @@ import { candidatePoolForTarget, matchesTargetFilter } from "./targeting.ts";
+ 
+ const activeEvaluations = new WeakMap<MatchState, Set<string>>();
+ 
++// opbot patch 0001: static per-card index of permanent-effect action kinds.
++// Every permanent-effect scan below only acts on sources whose printed
++// permanent effects contain a given action, so checking this first skips the
++// expensive in-play / negation / condition evaluation for all other cards.
++// Card definitions are immutable, so the index never needs invalidation.
++const permanentActionKindsByCardId = new Map<string, ReadonlySet<string>>();
++
++function cardHasPermanentAction(cardId: string, actionKinds: readonly string[]): boolean {
++  let kinds = permanentActionKindsByCardId.get(cardId);
++  if (!kinds) {
++    const collected = new Set<string>();
++    for (const effect of getCard(cardId).effects?.permanentEffects ?? []) {
++      for (const action of effect.actions) collected.add(action.action);
++    }
++    kinds = collected;
++    permanentActionKindsByCardId.set(cardId, kinds);
++  }
++  for (const kind of actionKinds) {
++    if (kinds.has(kind)) return true;
++  }
++  return false;
++}
++
++const DYNAMIC_MODIFIER_ACTION = {
++  power: "modifyPower",
++  cost: "modifyCost",
++  counter: "modifyCounter",
++} as const;
++
+ function actionIsDynamicModifier(
+   action: Action,
+   type: "power" | "cost" | "counter",
+@@ -80,6 +109,7 @@ export function isPlayedRestedByPermanentEffect(
+   targetInstanceId: string,
+ ): boolean {
+   for (const source of Object.values(state.cards)) {
++    if (!cardHasPermanentAction(source.cardId, ["playRested"])) continue;
+     if (
+       !sourceIsInPlay(state, source.instanceId) ||
+       sourceEffectsAreNegated(state, source.instanceId)
+@@ -121,6 +151,7 @@ export function donGivenFromDonPhase(
+ ): number {
+   let total = 0;
+   for (const source of Object.values(state.cards)) {
++    if (!cardHasPermanentAction(source.cardId, ["giveDonFromDonPhase"])) continue;
+     if (
+       source.controller !== controller ||
+       !sourceIsInPlay(state, source.instanceId) ||
+@@ -223,6 +254,7 @@ export function isKoPreventedByModifier(
+   };
+ 
+   for (const permanentSource of Object.values(state.cards)) {
++    if (!cardHasPermanentAction(permanentSource.cardId, ["cannotBeKod"])) continue;
+     if (
+       !sourceIsInPlay(state, permanentSource.instanceId) ||
+       sourceEffectsAreNegated(state, permanentSource.instanceId)
+@@ -296,6 +328,7 @@ export function isRestPreventedByPermanentEffect(
+ 
+   try {
+     for (const permanentSource of Object.values(state.cards)) {
++      if (!cardHasPermanentAction(permanentSource.cardId, ["cannotBeRested"])) continue;
+       if (
+         !sourceIsInPlay(state, permanentSource.instanceId) ||
+         sourceEffectsAreNegated(state, permanentSource.instanceId)
+@@ -354,6 +387,9 @@ function effectsNegatedByPermanentEffect(
+ 
+   try {
+     for (const source of inPlaySources(state)) {
++      if (!cardHasPermanentAction(source.cardId, ["negatePlayerEffects", "negateEffects"])) {
++        continue;
++      }
+       if (sourceEffectsAreNegatedByModifier(state, source.instanceId)) {
+         continue;
+       }
+@@ -425,6 +461,7 @@ export function isCharacterRemovalPreventedByPermanentEffect(
+   if (!target || target.zone !== "character") return false;
+ 
+   for (const source of Object.values(state.cards)) {
++    if (!cardHasPermanentAction(source.cardId, ["cannotBeRemoved"])) continue;
+     if (
+       !sourceIsInPlay(state, source.instanceId) ||
+       sourceEffectsAreNegated(state, source.instanceId)
+@@ -475,6 +512,7 @@ export function getPermanentModifierTotal(
+   try {
+     let total = 0;
+     for (const source of Object.values(state.cards)) {
++      if (!cardHasPermanentAction(source.cardId, [DYNAMIC_MODIFIER_ACTION[type]])) continue;
+       const card = getCard(source.cardId);
+       const relevantActions = (card.effects?.permanentEffects ?? []).flatMap((effect) =>
+         effect.actions.filter((action) => actionIsDynamicModifier(action, type)),
+@@ -603,6 +641,7 @@ export function getPermanentSetBasePower(
+   try {
+     let setBasePower: number | null = null;
+     for (const source of Object.values(state.cards)) {
++      if (!cardHasPermanentAction(source.cardId, ["setBasePowerFrom", "setBasePower"])) continue;
+       const sourceIsSelfInHand = source.instanceId === targetInstanceId && source.zone === "hand";
+       if (
+         (!sourceIsInPlay(state, source.instanceId) && !sourceIsSelfInHand) ||
+@@ -681,6 +720,7 @@ export function getPermanentSetCost(state: MatchState, targetInstanceId: string)
+ 
+   try {
+     for (const source of Object.values(state.cards)) {
++      if (!cardHasPermanentAction(source.cardId, ["setCost"])) continue;
+       const sourceIsSelfInHand = source.instanceId === targetInstanceId && source.zone === "hand";
+       if (
+         (!sourceIsInPlay(state, source.instanceId) && !sourceIsSelfInHand) ||
+@@ -736,6 +776,7 @@ export function getPermanentKeywords(state: MatchState, targetInstanceId: string
+   try {
+     const keywords = new Set<Keyword>();
+     for (const source of Object.values(state.cards)) {
++      if (!cardHasPermanentAction(source.cardId, ["grantKeyword"])) continue;
+       if (
+         !sourceIsInPlay(state, source.instanceId) ||
+         sourceEffectsAreNegated(state, source.instanceId)
+@@ -806,6 +847,7 @@ export function isAttackPreventedByPermanentEffect(
+ 
+   try {
+     for (const source of Object.values(state.cards)) {
++      if (!cardHasPermanentAction(source.cardId, ["cannotAttack"])) continue;
+       if (
+         !sourceIsInPlay(state, source.instanceId) ||
+         sourceEffectsAreNegated(state, source.instanceId)
+@@ -876,6 +918,7 @@ export function canAttackActiveByPermanentEffect(
+ 
+   try {
+     for (const source of Object.values(state.cards)) {
++      if (!cardHasPermanentAction(source.cardId, ["canAttackActive"])) continue;
+       if (
+         !sourceIsInPlay(state, source.instanceId) ||
+         sourceEffectsAreNegated(state, source.instanceId)
+@@ -948,6 +991,7 @@ export function isAttackTargetAllowedByPermanentEffects(
+       return false;
+     }
+     for (const source of Object.values(state.cards)) {
++      if (!cardHasPermanentAction(source.cardId, ["attackRestriction"])) continue;
+       if (
+         source.controller === attacker.controller ||
+         !sourceIsInPlay(state, source.instanceId) ||
+@@ -1020,6 +1064,7 @@ export function isRefreshPreventedByPermanentEffect(
+ 
+   try {
+     for (const source of Object.values(state.cards)) {
++      if (!cardHasPermanentAction(source.cardId, ["freeze"])) continue;
+       if (
+         !sourceIsInPlay(state, source.instanceId) ||
+         sourceEffectsAreNegated(state, source.instanceId)
