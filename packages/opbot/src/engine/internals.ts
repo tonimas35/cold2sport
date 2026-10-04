@@ -14,7 +14,15 @@ export {
   rememberPrivateJoKenPoChoices,
 } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/commands.ts";
 export { drainResolutionQueue } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/queue.ts";
-export { emitEvent, emitLog, getCardForInstance } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/shared.ts";
+export {
+  emitEvent,
+  emitLog,
+  getCardCounter,
+  getCardCost,
+  getCardForInstance,
+  getCardPower,
+  getKeywords,
+} from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/shared.ts";
 export {
   allCards,
   getCard,

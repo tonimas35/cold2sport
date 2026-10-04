@@ -95,6 +95,8 @@ class Driver {
 
 export interface PlayOptions {
   readonly keepLog?: boolean;
+  /** Called before each agent decision (not for scripted setup or judge prompts). */
+  readonly onDecision?: (state: MatchState, seat: MatchSeat) => void;
 }
 
 export function playGame(
@@ -148,6 +150,7 @@ export function playGame(
         termination = "no-action";
         break;
       }
+      options.onDecision?.(state, seat);
       const started = performance.now();
       const command = agents[seat].decide({ state, seat, rng: rngs[seat] });
       thinkMillis[seat] += performance.now() - started;

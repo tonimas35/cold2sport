@@ -12,6 +12,7 @@ import {
   type OnePieceBotAgent,
 } from "@tcg/op-engine";
 import { pendingPrompt } from "../engine/actions.ts";
+import { determinize } from "../engine/determinize.ts";
 import type { Agent, DecisionRequest } from "./types.ts";
 
 function wrap(id: string, bot: OnePieceBotAgent): Agent {
@@ -47,4 +48,20 @@ export function createHeuristicAgent(): Agent {
 
 export function createAggressiveAgent(): Agent {
   return wrap("aggressive", aggressiveAgent);
+}
+
+/**
+ * The heuristic bot made honest: it decides on a determinized copy of the
+ * state (hidden cards re-dealt at random), so it cannot read the opponent's
+ * hand, Life or deck order. Commands only reference ids that exist in both.
+ */
+export function createHonestHeuristicAgent(): Agent {
+  const inner = wrap("heuristic", heuristicAgent);
+  return {
+    id: "heuristic-honest",
+    honest: true,
+    decide: (request) => inner.decide({ ...request, state: determinize(request.state, request.seat, request.rng) }),
+    mulligan: (request) =>
+      inner.mulligan({ ...request, state: determinize(request.state, request.seat, request.rng) }),
+  };
 }
