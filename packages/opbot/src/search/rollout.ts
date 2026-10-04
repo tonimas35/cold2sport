@@ -19,13 +19,37 @@ export interface RolloutConfig {
   readonly model: ValueModel;
 }
 
-/** The policy used inside rollouts: the engine's heuristic bot, for both seats. */
+/**
+ * "Up to N DON!!" prompts where more is better for the chooser. The engine's
+ * heuristic does not handle `chooseOption` prompts and its fallback picks the
+ * first option, "0", wasting the effect (and sometimes a cost already paid).
+ */
+const TAKE_MAX_INTENTS = new Set(["effectSetActiveDon", "effectAddDon", "effectGiveDonCount"]);
+
+function takeMaxOption(prompt: NonNullable<ReturnType<typeof pendingPrompt>>): EngineCommand | null {
+  const intent = (prompt.resolutionContext as { intent?: string } | null)?.intent;
+  if (prompt.choiceKind !== "chooseOption" || !intent || !TAKE_MAX_INTENTS.has(intent)) return null;
+  let best: string | null = null;
+  for (const option of prompt.options) {
+    if (option.enabled === false || !/^\d+$/.test(option.id)) continue;
+    if (best === null || Number(option.id) > Number(best)) best = option.id;
+  }
+  return best === null
+    ? null
+    : { type: "resolvePrompt", seat: prompt.seat as MatchSeat, promptId: prompt.id, optionId: best };
+}
+
+/**
+ * The policy used inside rollouts: the engine's heuristic bot for both seats,
+ * plus the fix above.
+ */
 export function rolloutCommand(world: MatchState, seat: MatchSeat, rng: Rng): EngineCommand {
   const context = { random: () => rng.next() };
   const prompt = pendingPrompt(world);
   if (prompt && prompt.seat === seat) {
     return (
       heuristicAgent.resolvePrompt?.(world, prompt, context) ??
+      takeMaxOption(prompt) ??
       resolveBotPromptCommand(world, prompt) ?? { type: "endTurn", seat }
     );
   }
