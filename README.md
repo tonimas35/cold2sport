@@ -7,6 +7,7 @@ información que tendría un jugador. **No es para usar durante torneos.**
 - Plan, estado y decisiones: [`PLAN.md`](PLAN.md)
 - Cómo funciona el motor de reglas y qué hemos cambiado: [`docs/NOTAS_MOTOR.md`](docs/NOTAS_MOTOR.md)
 - Resultados medidos: [`docs/RESULTADOS.md`](docs/RESULTADOS.md)
+- Investigación (bots existentes, estado del arte, fuentes de datos, formato): [`docs/INVESTIGACION.md`](docs/INVESTIGACION.md)
 
 Motor de reglas: [TheCardGoat/tcg-engines](https://github.com/TheCardGoat/tcg-engines) (MIT),
 vendorizado en `vendor/tcg-engines` con su licencia.

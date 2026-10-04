@@ -17,6 +17,9 @@ sintéticos), simulación rápida, modelo de valor `logreg-test-v1`.
 | # | Fecha | Código | Candidato | Rival | Pares | Pentanomial | Puntuación [IC 95 %] | Elo [IC 95 %] | Notas |
 |---|---|---|---|---|---|---|---|---|---|
 | E1 | 2026-10-04 | `336230d` | `search:sims=64,h=1,cands=12` | `heuristic` (oráculo) | 144 | 0/0/25/0/119 | **91,3 % [88,2–94,4]** | **+409 [350, 491]** | SPRT(0, 35) decide H1. Nunca pierde las dos partidas de un par. Ningún enfrentamiento por debajo del 50 %. 1º: 88,9 %, 2º: 93,8 %. 213 ms por decisión |
+| E2 | 2026-10-04 | `3254f3d` | `search:sims=64,h=1,cands=12` | `aggressive` (oráculo) | 12 | 0/0/4/0/8 | 83,3 % [69,4–97,3] | +280 [142, 620] | SPRT(0, 35) decide H1 tras 12 pares (parada temprana: intervalo ancho). 249 ms por decisión |
+| E3 | 2026-10-04 | `3254f3d` | `ismcts:iters=150,h=1,c=0.3` | `search:sims=64` | 8 | 3/0/3/0/2 | 43,8 % [14,8–72,7] | −44 [−304, 170] | Detenido a mano: no concluyente y 2,6× más lento. ISMCTS no mejora aún a la búsqueda plana con este presupuesto |
+| E4 | 2026-10-04 | `3254f3d` | `heuristic-honest` | `heuristic` (oráculo) | 360 | 0/0/360/0/0 | 50,0 % | 0 | Las 720 partidas son idénticas por pares: la heurística **no usa** su acceso oráculo, así que la ventaja de E1 no se debe a que el rival haga trampa ni a que deje de hacerla |
 
 Comando E1:
 
@@ -28,11 +31,9 @@ pnpm opbot arena --candidate "search:sims=64,h=1,cands=12" --baseline heuristic 
 
 ## Pendientes / en curso
 
-- E2: búsqueda contra `aggressive` (el bot del motor que gana ~61 % a `heuristic`).
-- E3: ISMCTS (árbol sobre el turno) contra la búsqueda plana.
-- E4: `heuristic-honest` contra `heuristic` (cuánto vale el acceso oráculo).
-- E5: 256 contra 64 simulaciones (¿escala con el cálculo?).
-- Todo lo anterior con mazos del meta post-ban.
+- E5: 256 contra 64 simulaciones (¿escala con el cálculo?). En curso.
+- E2 con tamaño fijo (la parada temprana del SPRT deja un intervalo ancho).
+- Todo lo anterior con mazos del meta post-ban, cuando el motor soporte las cartas que faltan.
 
 ## Cómo leer estos números
 

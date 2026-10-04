@@ -5,8 +5,8 @@
 > **No se usa nunca durante partidas de torneo** (sería trampa y motivo de sanción de Bandai).
 
 Plan original: 5 de octubre de 2026. Revisado el 4 de octubre de 2026 tras ejecutar las fases 0 a 3
-y una investigación del estado del arte. Este documento sustituye al plan original; la sección 8
-lista qué estaba mal en él y por qué se ha cambiado.
+y una investigación del estado del arte con verificación de fuentes (`docs/INVESTIGACION.md`). Este
+documento sustituye al plan original; la sección 8 lista qué estaba mal en él y por qué se ha cambiado.
 
 ---
 
@@ -29,11 +29,12 @@ La investigación (octubre 2026) encontró que **sí existen IAs fuertes de One 
 
 | Herramienta | Qué es | Lo que no hace |
 |---|---|---|
-| **OPTCG AI** (optcgai.com) | Rival con PPO + MCTS con información oculta; modelos nuevos cada pocas semanas | No analiza posiciones que tú introduces; no simula enfrentamientos; código cerrado; sin fuerza publicada salvo "75 % contra su versión anterior" |
-| **SeaKing** (seaking.gg) | Rival con búsqueda, botón de pista y revisión post-partida de letales | La revisión ve las dos manos (a toro pasado) y solo de partidas contra su bot; no importa partidas reales |
+| **OPTCG AI** (optcgai.com) | Rival que, según su web, combina PPO + MCTS con información oculta; modelos nuevos cada pocas semanas (datos no verificables: la web bloquea accesos automáticos) | No analiza posiciones que tú introduces; no simula enfrentamientos; código cerrado; sin fuerza publicada salvo "75 % contra su versión anterior" |
+| **SeaKing** (seaking.gg) | Rival con búsqueda e información justa, botón de pista y revisión post-partida (letales perdidos y nota de decisiones) | La revisión ve las dos manos (a toro pasado) y solo lee partidas contra su bot; no importa partidas reales ni da % calibrados |
 | **OPlayTCG** | Modo "Solo vs AI" desde agosto de 2026 y estadísticas del meta (1º/2º) | Algoritmo no publicado; árbol de jugadas manual |
 | Bots de `tcg-engines` | Heurística sin búsqueda que ve la información oculta | — |
-| HeitorWestphal/optcg-ai | Sobre el mismo motor; sus intentos con MCTS y red neuronal **no lograron batir** a una heurística ajustada | — |
+| HeitorWestphal/optcg-ai | Sobre el mismo motor; sus intentos con MCTS y red neuronal no lograron batir a una heurística ajustada (evidencia débil: motor con errores y solo 40 simulaciones) | — |
+| SimOP | MCTS, determinización, evaluación aprendida y analizador (sep 2026) | Solo OP-01 a OP-03 (bloque 1, fuera de Standard); sin licencia |
 
 Ser "mejor que lo que existe" se concreta en tres listones medibles:
 
@@ -150,7 +151,7 @@ Decisiones clave:
 | Sobreajuste a la heurística (nuestro bot aprende a explotar sus fallos) | Evaluar también contra `aggressive`, contra versiones propias y, de forma manual, contra otras IAs; el rival en el árbol ISMCTS elige entre varias respuestas, no solo la de la heurística |
 | Información oculta (*strategy fusion*) | ISMCTS; registro de conocimiento; modelo de oponente |
 | Meta cambiante | Pool del meta regenerable con un comando; separar datos antes/después de cada ban |
-| **Derechos de Bandai** | Bandai está cerrando simuladores online. Uso personal y local; **este repo es público hoy: recomendable hacerlo privado** (y desactivar GitHub Pages, que venía de la web anterior). No publicar imágenes de cartas |
+| **Derechos de Bandai** | Hay informes (no verificados en fuente oficial) de simuladores online retirados a petición de Bandai. Uso personal y local; **este repo es público hoy: recomendable hacerlo privado** (y desactivar GitHub Pages, que venía de la web anterior). No publicar imágenes de cartas |
 | Juego limpio | El bot se usa **solo** para estudiar, nunca durante un torneo |
 
 ---
@@ -169,8 +170,9 @@ Decisiones clave:
 5. **Regionales.** Fechas confirmadas en la web oficial: Porto 7–8 nov, **Burdeos 14–15 nov**,
    Bristol 21–22 nov, **Elche/Elx (Alicante) 28–29 nov**, Múnich 5–6 dic, **Utrecht 5–6 dic**
    (Beatrix Theater; hubo otro en Utrecht en septiembre) y **Rungis 12–13 dic**. Elche es el más
-   cercano si vives en España. Porto, Burdeos, Bristol y Elche se juegan con OP-17 + EB-05 y Mihawk
-   ya prohibido; Múnich, Utrecht y Rungis incluyen OP-18. Las Finales EU de la temporada 2 son en
+   cercano si vives en España. Porto, Burdeos y Bristol se juegan con OP-17 + EB-05 y Mihawk ya
+   prohibido; Elche, Múnich, Utrecht y Rungis incluyen además OP-18 (legal en eventos grandes 7 días
+   después de su salida, el 27 de noviembre). Las Finales EU de la temporada 2 son en
    Londres del 16 al 17 de enero de 2027.
 
 ---
@@ -192,3 +194,6 @@ Decisiones clave:
 | 11 | Estadísticas de OPlayTCG como fuente | Su robots.txt bloquea a crawlers de IA y no tiene API | Solo consulta manual; gumgum.gg prohíbe el scraping en sus términos |
 | 12 | Regionales "Burdeos, Utrecht y Rungis" | Correctas, pero había más opciones y una más cercana | Fechas verificadas y añadidas Elche (Alicante), Porto, Bristol y Múnich |
 | 13 | Riesgo legal "uso personal" | El repo es público | Recomendación: repo privado |
+| 14 | "No hace falta programar reglas ni efectos de cartas" | Falso para el meta actual: faltan cartas (ST34-002/003/004, Líder ST30-001), los costes de las cartas OP15-074 a 078 (paquete de Enel) no están implementados y OP17-119 Loki ofrece objetivos que luego rechaza. Afecta a ~25 % del meta post-ban | Validación de restricciones ocultas en nuestro código; cartas y costes nuevos como parches del motor con tests (`vendor/patches/0002-*`, en curso) |
+| 15 | La API de OPTCG llega hasta OP-15 | Desfasado: ya cubre hasta OP-17 (le falta ST-29) y es el origen de errores de signo en el motor | Solo para precios; datos de cartas, de la web oficial |
+| 16 | SimOP "solo OP-01, sin licencia" | Cubre OP-01 a OP-03 y ya tiene MCTS y analizador; sigue sin licencia | Referencia conceptual, sin copiar código |
