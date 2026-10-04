@@ -1,0 +1,38 @@
+{
+  "_comment": "North is on 0 Life with no cards in hand and no Blocker. Any attack that connects wins. Expected: the best moves win right now (100%); ending the turn is the worst move.",
+  "_expect": {
+    "bestKeyPrefix": "",
+    "minWinNow": 0.99,
+    "worstKey": "end"
+  },
+  "toMove": "south",
+  "turn": 7,
+  "south": {
+    "deck": "../../decks/engine-test/red-aggro.txt",
+    "life": 3,
+    "hand": [
+      "OP01-016"
+    ],
+    "characters": [
+      {
+        "card": "OP01-023",
+        "rested": false
+      }
+    ],
+    "activeDon": 4,
+    "restedDon": 0
+  },
+  "north": {
+    "deck": "../../decks/engine-test/blue-control.txt",
+    "life": 0,
+    "handCount": 0,
+    "characters": [
+      {
+        "card": "OP03-044",
+        "rested": true
+      }
+    ],
+    "activeDon": 0,
+    "restedDon": 7
+  }
+}

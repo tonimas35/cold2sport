@@ -1,0 +1,23 @@
+{
+  "_comment": "North is on 0 Life with no cards in hand and no Blocker; its Leader has 5000 power (attached DON!! only adds power during its owner's turn). South's Leader already attacked (rested); South's only attacker is Sai (4000). Attacking right away bounces off; South must first give at least 1 DON!! to Sai (+1000). Expected: a 'don:' action on Sai first; attacking first is a blunder.",
+  "_expect": { "bestKeyPrefix": "don:", "minWinNow": 0.9, "worseKeyPrefix": "atk:" },
+  "toMove": "south",
+  "turn": 7,
+  "south": {
+    "deck": "../../decks/engine-test/red-aggro.txt",
+    "life": 3,
+    "hand": [],
+    "leaderRested": true,
+    "characters": [{ "card": "OP01-012", "rested": false }],
+    "activeDon": 3,
+    "restedDon": 0
+  },
+  "north": {
+    "deck": "../../decks/engine-test/blue-control.txt",
+    "life": 0,
+    "handCount": 0,
+    "characters": [],
+    "activeDon": 0,
+    "restedDon": 7
+  }
+}
