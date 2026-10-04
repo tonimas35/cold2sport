@@ -1,0 +1,29 @@
+{
+  "_comment": "South (red aggro) to move on turn 9. North is on 2 Life with 4 cards in hand and one Blocker. Does South have lethal, and how should it spend its 7 DON!!?",
+  "toMove": "south",
+  "turn": 9,
+  "south": {
+    "deck": "../../decks/engine-test/red-aggro.txt",
+    "life": 2,
+    "hand": ["ST01-012", "OP01-025", "OP01-029", "OP01-016"],
+    "characters": [
+      { "card": "OP01-023", "rested": false },
+      { "card": "OP03-007", "rested": false }
+    ],
+    "trash": ["OP01-004", "OP01-012", "EB01-005"],
+    "activeDon": 7,
+    "restedDon": 0
+  },
+  "north": {
+    "deck": "../../decks/engine-test/blue-control.txt",
+    "life": 2,
+    "handCount": 4,
+    "characters": [
+      { "card": "OP01-077", "rested": false },
+      { "card": "OP03-044", "rested": true }
+    ],
+    "trash": ["OP01-084", "OP01-086"],
+    "activeDon": 0,
+    "restedDon": 8
+  }
+}

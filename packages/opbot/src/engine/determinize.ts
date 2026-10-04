@@ -7,7 +7,11 @@
  * in that seat's own hand. Every other card (opponent hand, both decks, face-down
  * Life, including your own Life) is hidden. On top of that, cards listed in a
  * pending prompt of the seat (for example the top cards it is looking at) are
- * known to it.
+ * known to it, and cards referenced by the resolution queue are pinned.
+ *
+ * Known limitation: the engine forgets public reveals (a searched card revealed
+ * and added to hand, a bounced Character) once the card is back in a hidden
+ * zone, so this treats them as unknown. A human would remember them.
  *
  * For each owner, the catalog ids of its hidden cards are shuffled among its
  * hidden instances. Instance ids, zones and per-instance fields stay where they
@@ -29,9 +33,24 @@ export function canSee(seat: MatchSeat, instance: CardInstance): boolean {
   return instance.zone === "hand" && instance.controller === seat;
 }
 
-/** Instance ids referenced by the seat's own pending prompts (cards it is being shown). */
+function collectIds(value: unknown, state: MatchState, into: Set<string>): void {
+  if (typeof value === "string") {
+    if (state.cards[value]) into.add(value);
+  } else if (Array.isArray(value)) {
+    for (const v of value) collectIds(v, state, into);
+  } else if (value !== null && typeof value === "object") {
+    for (const v of Object.values(value)) collectIds(v, state, into);
+  }
+}
+
+/**
+ * Instance ids whose identity must not change: cards shown to the seat in its
+ * own pending prompts, and cards referenced by effects that are mid-resolution
+ * (their contents were computed from the real identities).
+ */
 function promptKnownIds(state: MatchState, seat: MatchSeat): Set<string> {
   const known = new Set<string>();
+  collectIds(state.resolutionQueue, state, known);
   for (const prompt of state.promptQueue) {
     if (prompt.status !== "pending" || prompt.seat !== seat) continue;
     for (const option of prompt.options) {
@@ -65,6 +84,9 @@ export function hiddenInstances(state: MatchState, seat: MatchSeat): Record<Matc
  */
 export function determinize(state: MatchState, seat: MatchSeat, rng: Rng): MatchState {
   const world = cloneState(state);
+  // Resolved prompts are never read by the rules, but they still list the real
+  // cards (e.g. the opponent's whole hand at a past counter step). Drop them.
+  world.promptQueue = world.promptQueue.filter((p) => p.status === "pending");
   const hidden = hiddenInstances(world, seat);
   for (const owner of ["south", "north"] as const) {
     const ids = hidden[owner];

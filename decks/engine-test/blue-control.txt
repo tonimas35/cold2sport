@@ -1,0 +1,16 @@
+# source: tcg-engines automation/test-decks.ts (synthetic, not a meta deck)
+1xOP03-040
+4xOP03-044
+4xOP01-077
+4xOP01-064
+4xOP01-076
+2xOP03-048
+4xOP01-084
+4xOP01-079
+4xOP01-073
+2xOP03-045
+4xOP01-074
+4xOP02-065
+4xOP01-088
+4xOP01-086
+2xOP02-069
