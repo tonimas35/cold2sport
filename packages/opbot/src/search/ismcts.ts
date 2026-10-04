@@ -17,7 +17,7 @@
  * the point of view of the seat that decides there.
  */
 import type { EngineCommand, MatchSeat, MatchState } from "@tcg/op-engine";
-import { actingSeat, enumerateActions, pendingJudgePrompt, pendingPrompt, type Action } from "../engine/actions.ts";
+import { actingSeat, enumerateActions, pendingJudgePrompt, pendingPrompt, sameCommand, type Action } from "../engine/actions.ts";
 import { determinize } from "../engine/determinize.ts";
 import { applyInPlace } from "../engine/sim.ts";
 import { evaluate, type ValueModel } from "../eval/value.ts";
@@ -69,16 +69,6 @@ export interface IsmctsResult {
   readonly millis: number;
 }
 
-function sameCommand(a: EngineCommand, b: EngineCommand): boolean {
-  const norm = (c: EngineCommand) =>
-    JSON.stringify(
-      Object.entries(c)
-        .filter(([, v]) => v !== undefined)
-        .sort(([x], [y]) => (x < y ? -1 : 1))
-        .map(([k, v]) => [k, Array.isArray(v) ? [...v].sort() : v]),
-    );
-  return norm(a) === norm(b);
-}
 
 /**
  * Candidate actions at a node. Ours: everything (screened down to

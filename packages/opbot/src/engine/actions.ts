@@ -36,6 +36,18 @@ export interface ActionOptions {
 
 const DEFAULTS: Required<ActionOptions> = { maxSubsets: 40, maxOrderings: 4 };
 
+/** Structural equality of two commands (ignoring undefined fields and selection order). */
+export function sameCommand(a: EngineCommand, b: EngineCommand): boolean {
+  const norm = (c: EngineCommand) =>
+    JSON.stringify(
+      Object.entries(c)
+        .filter(([, v]) => v !== undefined)
+        .sort(([x], [y]) => (x < y ? -1 : 1))
+        .map(([k, v]) => [k, Array.isArray(v) ? [...v].sort() : v]),
+    );
+  return norm(a) === norm(b);
+}
+
 export function pendingPrompt(state: MatchState): PromptState | undefined {
   return state.promptQueue.find((p) => p.status === "pending" && p.seat !== "judge");
 }

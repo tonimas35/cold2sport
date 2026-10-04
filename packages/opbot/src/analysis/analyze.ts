@@ -12,7 +12,7 @@
  * is "what was best given what you could know", not hindsight.
  */
 import type { MatchSeat, MatchState } from "@tcg/op-engine";
-import { actingSeat, enumerateActions, type Action } from "../engine/actions.ts";
+import { actingSeat, enumerateActions, sameCommand, type Action } from "../engine/actions.ts";
 import { determinize } from "../engine/determinize.ts";
 import { applyInPlace } from "../engine/sim.ts";
 import { evaluate, type ValueModel } from "../eval/value.ts";
@@ -82,9 +82,25 @@ export function describeAction(state: MatchState, action: Action, cardName: (car
     case "activateEffect":
       return `Activate ${name(c.sourceInstanceId)}`;
     case "resolvePrompt": {
-      if (c.optionId !== undefined) return `Choose "${c.optionId}"`;
+      const prompt = state.promptQueue.find((p) => p.id === c.promptId);
+      const intent = (prompt?.resolutionContext as { intent?: string } | null)?.intent ?? "";
+      const source = prompt?.sourceCardId ? cardName(prompt.sourceCardId) : "effect";
       const ids = c.selectedIds ?? [];
-      return ids.length === 0 ? "Choose nothing" : `Choose ${ids.map(name).join(", ")}`;
+      const list = ids.map(name).join(", ");
+      switch (intent) {
+        case "battleCounter":
+          return ids.length === 0 ? "No counter" : `Counter with ${list}`;
+        case "battleBlocker":
+          return ids.length === 0 || c.optionId === "skip" ? "No block" : `Block with ${list || name(c.optionId ?? "")}`;
+        case "lifeTrigger":
+          return c.optionId === "activate" ? `Activate [Trigger] (${source})` : `Do not activate [Trigger] (${source})`;
+        case "effectOptional":
+        case "effectActionOptional":
+          return c.optionId === "yes" ? `Use optional effect of ${source}` : `Decline optional effect of ${source}`;
+        default:
+          if (c.optionId !== undefined) return `${source}: choose "${prompt?.options.find((o) => o.id === c.optionId)?.label ?? c.optionId}"`;
+          return ids.length === 0 ? `${source}: choose nothing` : `${source}: choose ${list}`;
+      }
     }
     default:
       return action.key;
@@ -96,11 +112,15 @@ export function analyzePosition(
   config: AnalysisConfig,
   cardName: (cardId: string) => string,
   seatOverride?: MatchSeat,
+  extraActions: readonly Action[] = [],
 ): PositionAnalysis {
   const started = performance.now();
   const seat = seatOverride ?? actingSeat(state);
   if (!seat) throw new Error("nobody can act in this position");
-  const actions = enumerateActions(state, seat);
+  const actions = [...enumerateActions(state, seat)];
+  for (const extra of extraActions) {
+    if (!actions.some((a) => a.key === extra.key || sameCommand(a.command, extra.command))) actions.push(extra);
+  }
   if (actions.length === 0) throw new Error(`${seat} has no legal action here`);
   const rng = createRng(config.seed ?? "analysis");
   const worldSeeds = Array.from({ length: config.worlds }, () => rng.int(2 ** 31));

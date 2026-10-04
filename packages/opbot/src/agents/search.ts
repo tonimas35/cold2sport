@@ -14,7 +14,7 @@
  */
 import { getLegalCommands, heuristicAgent } from "@tcg/op-engine";
 import type { EngineCommand, MatchSeat, MatchState } from "@tcg/op-engine";
-import { enumerateActions, type Action } from "../engine/actions.ts";
+import { enumerateActions, sameCommand, type Action } from "../engine/actions.ts";
 import { determinize } from "../engine/determinize.ts";
 import { applyInPlace } from "../engine/sim.ts";
 import { evaluate, type ValueModel } from "../eval/value.ts";
@@ -45,14 +45,6 @@ export interface SearchReport extends DecisionStats {
   readonly actions: readonly ActionReport[];
 }
 
-function sameCommand(a: EngineCommand, b: EngineCommand): boolean {
-  const norm = (c: EngineCommand) => {
-    const entries = Object.entries(c).filter(([, v]) => v !== undefined);
-    entries.sort(([x], [y]) => (x < y ? -1 : 1));
-    return JSON.stringify(entries.map(([k, v]) => [k, Array.isArray(v) ? [...v].sort() : v]));
-  };
-  return norm(a) === norm(b);
-}
 
 export function createSearchAgent(config: SearchConfig): Agent & { lastReport(): SearchReport | undefined } {
   const maxSteps = config.maxRolloutSteps ?? 300;
