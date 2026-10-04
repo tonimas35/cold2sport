@@ -16,7 +16,7 @@ import {
   type MatchState,
 } from "@tcg/op-engine";
 import type { DeckList } from "../decks/deck.ts";
-import { actingSeat, pendingJudgePrompt } from "../engine/actions.ts";
+import { actingSeat, enumerateActions, pendingJudgePrompt } from "../engine/actions.ts";
 import { applyInPlace, cloneState } from "../engine/sim.ts";
 import { createRng, type Rng } from "../util/rng.ts";
 import type { Agent } from "../agents/types.ts";
@@ -83,13 +83,27 @@ class Driver {
   ) {
     this.state = mode === "fast" ? cloneState(initial) : initial;
   }
+  /** Applies `command`; on rejection the state is left exactly as it was. */
   apply(command: EngineCommand): boolean {
-    this.log.push(command);
-    if (this.mode === "fast") return applyInPlace(this.state, command);
+    if (this.mode === "fast") {
+      // A rejected command can leave a half-mutated state: work on a copy.
+      const next = cloneState(this.state);
+      let accepted = false;
+      try {
+        accepted = applyInPlace(next, command);
+      } catch {
+        accepted = false;
+      }
+      if (!accepted) return false;
+      this.state = next;
+      this.log.push(command);
+      return true;
+    }
     const result = applyCommand(this.state, command);
-    // A rejected command can leave a corrupted draft behind: keep the old state.
-    if (result.accepted) this.state = result.state;
-    return result.accepted;
+    if (!result.accepted) return false;
+    this.state = result.state;
+    this.log.push(command);
+    return true;
   }
 }
 
@@ -156,10 +170,13 @@ export function playGame(
       thinkMillis[seat] += performance.now() - started;
       decisions[seat]++;
       if (!driver.apply(command)) {
+        // Record it and keep the game going with the first action the engine
+        // accepts, so one bad prompt answer does not void the whole game.
         illegal[seat]++;
-        if (illegal[seat] > 3 || spec.engine === "fast") {
+        error ??= `illegal command from ${agents[seat].id}: ${JSON.stringify(command)}`;
+        const fallback = enumerateActions(driver.state, seat).find((a) => driver.apply(a.command));
+        if (!fallback) {
           termination = "illegal";
-          error = `illegal command from ${agents[seat].id}: ${JSON.stringify(command)}`;
           break;
         }
       }

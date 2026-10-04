@@ -20,7 +20,7 @@ import {
   type MatchState,
   type PromptState,
 } from "@tcg/op-engine";
-import { getCard } from "./internals.ts";
+import { getCard, selectionSatisfiesTotalConstraint } from "./internals.ts";
 
 export interface Action {
   readonly key: string;
@@ -185,6 +185,37 @@ function resolve(
   };
 }
 
+type TotalConstraint = Parameters<typeof selectionSatisfiesTotalConstraint>[2];
+
+/**
+ * Hidden constraints of a selection prompt that the engine validates but does
+ * not express through min/max (e.g. "K.O. opponent Characters with a total
+ * cost of 4 or less").
+ */
+export function promptSelectionIsValid(state: MatchState, prompt: PromptState, selectedIds: readonly string[]): boolean {
+  const ctx = prompt.resolutionContext as { action?: { target?: { totalConstraint?: TotalConstraint } } } | null;
+  const constraint = ctx?.action?.target?.totalConstraint;
+  if (!constraint) return true;
+  if (selectedIds.some((id) => !state.cards[id])) return true; // opaque ids: let the engine decide
+  return selectionSatisfiesTotalConstraint(state, [...selectedIds], constraint);
+}
+
+/**
+ * Makes a prompt command acceptable when another policy (the engine heuristic)
+ * picked a selection that breaks a hidden constraint: falls back to the largest
+ * valid selection among our enumerated actions.
+ */
+export function repairPromptCommand(state: MatchState, command: EngineCommand): EngineCommand {
+  if (command.type !== "resolvePrompt" || !command.selectedIds) return command;
+  const prompt = state.promptQueue.find((p) => p.id === command.promptId && p.status === "pending");
+  if (!prompt || promptSelectionIsValid(state, prompt, command.selectedIds)) return command;
+  const valid = enumerateActions(state, prompt.seat as MatchSeat)
+    .map((a) => a.command)
+    .filter((c): c is EngineCommand & { selectedIds?: string[] } => c.type === "resolvePrompt");
+  valid.sort((a, b) => (b.selectedIds?.length ?? 0) - (a.selectedIds?.length ?? 0));
+  return valid[0] ?? command;
+}
+
 function intentOf(prompt: PromptState): string {
   const ctx = prompt.resolutionContext as { intent?: string } | null;
   return ctx?.intent ?? "unknown";
@@ -288,7 +319,9 @@ function subsetActions(
 ): Action[] {
   const ids = enabled.map((o) => o.id);
   const groups = groupOptions(state, ids);
-  const sels = multisets(groups, prompt.minSelections, prompt.maxSelections, opts.maxSubsets);
+  const sels = multisets(groups, prompt.minSelections, prompt.maxSelections, opts.maxSubsets * 4)
+    .filter((sel) => promptSelectionIsValid(state, prompt, sel.flatMap((g) => g.ids)))
+    .slice(0, opts.maxSubsets);
   if (sels.length === 0) {
     return [{ key: "sel:", command: resolve(prompt, { selectedIds: [] }) }];
   }

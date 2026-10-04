@@ -13,6 +13,7 @@ export {
   privateChoicesForJoKenPo,
   rememberPrivateJoKenPoChoices,
 } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/commands.ts";
+export { selectionSatisfiesTotalConstraint } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/targeting.ts";
 export { drainResolutionQueue } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/queue.ts";
 export {
   emitEvent,

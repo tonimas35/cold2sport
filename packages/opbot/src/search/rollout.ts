@@ -4,7 +4,7 @@
  */
 import { heuristicAgent, resolveBotPromptCommand, getLegalCommands } from "@tcg/op-engine";
 import type { EngineCommand, MatchSeat, MatchState } from "@tcg/op-engine";
-import { actingSeat, pendingJudgePrompt, pendingPrompt } from "../engine/actions.ts";
+import { actingSeat, pendingJudgePrompt, pendingPrompt, repairPromptCommand } from "../engine/actions.ts";
 import { applyInPlace } from "../engine/sim.ts";
 import { evaluate, type ValueModel } from "../eval/value.ts";
 import type { Rng } from "../util/rng.ts";
@@ -47,10 +47,11 @@ export function rolloutCommand(world: MatchState, seat: MatchSeat, rng: Rng): En
   const context = { random: () => rng.next() };
   const prompt = pendingPrompt(world);
   if (prompt && prompt.seat === seat) {
-    return (
+    return repairPromptCommand(
+      world,
       heuristicAgent.resolvePrompt?.(world, prompt, context) ??
-      takeMaxOption(prompt) ??
-      resolveBotPromptCommand(world, prompt) ?? { type: "endTurn", seat }
+        takeMaxOption(prompt) ??
+        resolveBotPromptCommand(world, prompt) ?? { type: "endTurn", seat },
     );
   }
   const legal = getLegalCommands(world, seat).filter((d) => d.type !== "concede");

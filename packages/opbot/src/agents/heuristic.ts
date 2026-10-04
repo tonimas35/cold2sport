@@ -11,7 +11,7 @@ import {
   type EngineCommand,
   type OnePieceBotAgent,
 } from "@tcg/op-engine";
-import { pendingPrompt } from "../engine/actions.ts";
+import { pendingPrompt, repairPromptCommand } from "../engine/actions.ts";
 import { determinize } from "../engine/determinize.ts";
 import type { Agent, DecisionRequest } from "./types.ts";
 
@@ -23,9 +23,12 @@ function wrap(id: string, bot: OnePieceBotAgent): Agent {
       const context = { random: () => rng.next() };
       const prompt = pendingPrompt(state);
       if (prompt && prompt.seat === seat) {
-        return (
+        // The engine bots do not know hidden selection constraints (total cost
+        // limits); repair their choice instead of letting the engine reject it.
+        return repairPromptCommand(
+          state,
           bot.resolvePrompt?.(state, prompt, context) ??
-          resolveBotPromptCommand(state, prompt) ?? { type: "endTurn", seat }
+            resolveBotPromptCommand(state, prompt) ?? { type: "endTurn", seat },
         );
       }
       const legal = getLegalCommands(state, seat).filter((d) => d.type !== "concede");
