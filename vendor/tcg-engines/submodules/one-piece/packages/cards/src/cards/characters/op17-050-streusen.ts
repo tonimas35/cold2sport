@@ -33,6 +33,12 @@ export const op17Streusen050: CharacterCard = {
         trigger: "onPlay",
         actions: [
           {
+            action: "rearrangeDeck",
+            player: "self",
+            count: 2,
+            position: "topOrBottom",
+          },
+          {
             action: "draw",
             player: "self",
             amount: 1,

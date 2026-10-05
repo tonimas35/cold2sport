@@ -38,9 +38,11 @@ export const op17ThereSNoAuthorityInTheWorldThatLastsForever055: EventCard = {
         actions: [
           {
             action: "grantKeyword",
+            // [Rocks.D.Xebec] names a card (2-1-2), so the Leader OP17-039 is a
+            // legal target as well as the OP17-118 Character.
             target: {
               player: "self",
-              zones: ["character"],
+              zones: ["leader", "character"],
               count: {
                 amount: 1,
                 upTo: true,

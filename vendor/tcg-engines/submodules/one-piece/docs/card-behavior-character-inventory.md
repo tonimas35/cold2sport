@@ -1712,15 +1712,15 @@ reconciles catalog entries.
 | OP17-042 | Kaido | verified | onPlay |
 | OP17-043 | Ganzui | verified | replacement |
 | OP17-044 | Captain John | verified | activateMain, permanent |
-| OP17-045 | Kyo | verified | onPlay |
-| OP17-046 | Gloriosa | verified | onPlay |
+| OP17-045 | Kyo | verified | onPlay draw 1; optional removeFromField replacement for every own Character vs opponent effects: trash 2 chosen hand cards, not once per turn, not offered with 0-1 cards, not for battle K.O. |
+| OP17-046 | Gloriosa | verified | onPlay; two types Amazon Lily/Rocks Pirates (exact {Rocks Pirates} matches) |
 | OP17-047 | Shiki | verified | endOfYourTurn |
 | OP17-048 | Shiki | verified | whenAttacking, onOpponentAttack |
-| OP17-049 | Charlotte Linlin | verified | onOpponentAttack |
-| OP17-050 | Streusen | verified | onPlay |
+| OP17-049 | Charlotte Linlin | verified | onPlay opponent-seat choice: Linlin's player draws 2, or the opponent trashes 2 of their choice (1 or 0 cards allowed); onOpponentAttack trash 1 for +1000 |
+| OP17-050 | Streusen | verified | onPlay looks at top 2, orders them, all top or all bottom (no split), then draws 1 |
 | OP17-051 | Jinbe | vanilla | Parameterized vanilla invariant batch |
 | OP17-052 | Don Marlon | verified | onPlay |
-| OP17-053 | Barbell | verified | onKo, activateMain |
+| OP17-053 | Barbell | verified | onKo, activateMain; two types Fish-Man/Rocks Pirates |
 | OP17-054 | Miss Buckingham Stussy | verified | onPlay, activateMain |
 | OP17-059 | Aramaki | verified | onPlay |
 | OP17-060 | Ulti & Page One | verified | onPlay |
@@ -1770,7 +1770,7 @@ reconciles catalog entries.
 | OP17-112 | Charlotte Linlin | verified | onPlay |
 | OP17-113 | Streusen | verified | onPlay |
 | OP17-114 | Sweet 3 Generals | verified | onPlay, Life Trigger |
-| OP17-118 | Rocks.D.Xebec | verified | On Play draw + Rocks replay under total cost 9 (pair and cap outcomes) |
+| OP17-118 | Rocks.D.Xebec | verified | On Play draw + exact {Rocks Pirates} replay (Former Rocks Pirates excluded) with different names under total cost 9; over-budget picks rejected, cards over 9 alone not offered |
 | OP17-119 | Loki | verified | Printed behavior is unstructured |
 | P-014        | Koby (Jolly Roger Foil)                         | verified | Controller-owned Blocker redirection and battle result; physical self-play Life Trigger and decline-to-hand branch                                                                                    |
 | P-029        | Bartolomeo (P-029) (Jolly Roger Foil)           | verified | Optional end-turn self-rest cost; included FILM ownership/name filtering; selected physical set-active result and decline                                                                              |

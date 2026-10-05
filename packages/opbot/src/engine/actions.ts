@@ -20,7 +20,7 @@ import {
   type MatchState,
   type PromptState,
 } from "@tcg/op-engine";
-import { getCard, selectionSatisfiesTotalConstraint } from "./internals.ts";
+import { getCard, getCardForInstance, selectionSatisfiesTotalConstraint } from "./internals.ts";
 
 export interface Action {
   readonly key: string;
@@ -187,17 +187,35 @@ function resolve(
 
 type TotalConstraint = Parameters<typeof selectionSatisfiesTotalConstraint>[2];
 
+interface SelectionContext {
+  intent?: string;
+  action?: {
+    target?: { totalConstraint?: TotalConstraint };
+    // "Play" actions (e.g. OP17-118) carry their constraints on the action itself.
+    totalConstraint?: TotalConstraint;
+    differentNames?: boolean;
+  };
+}
+
 /**
  * Hidden constraints of a selection prompt that the engine validates but does
  * not express through min/max (e.g. "K.O. opponent Characters with a total
- * cost of 4 or less").
+ * cost of 4 or less", or "play up to 2 cards with different names and a total
+ * cost of 9 or less").
  */
 export function promptSelectionIsValid(state: MatchState, prompt: PromptState, selectedIds: readonly string[]): boolean {
-  const ctx = prompt.resolutionContext as { action?: { target?: { totalConstraint?: TotalConstraint } } } | null;
-  const constraint = ctx?.action?.target?.totalConstraint;
-  if (!constraint) return true;
+  const ctx = prompt.resolutionContext as SelectionContext | null;
+  const action = ctx?.action;
+  const isPlay = ctx?.intent === "effectPlaySelection";
+  const constraint = action?.target?.totalConstraint ?? (isPlay ? action?.totalConstraint : undefined);
+  const differentNames = isPlay && action?.differentNames === true;
+  if (!constraint && !differentNames) return true;
   if (selectedIds.some((id) => !state.cards[id])) return true; // opaque ids: let the engine decide
-  return selectionSatisfiesTotalConstraint(state, [...selectedIds], constraint);
+  if (differentNames) {
+    const names = selectedIds.map((id) => getCardForInstance(state, id).name);
+    if (new Set(names).size !== names.length) return false;
+  }
+  return !constraint || selectionSatisfiesTotalConstraint(state, [...selectedIds], constraint);
 }
 
 /**
