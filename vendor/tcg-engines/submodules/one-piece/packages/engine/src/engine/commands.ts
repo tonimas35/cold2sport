@@ -162,10 +162,44 @@ function resolveJoKenPoRound(
   );
 }
 
+/**
+ * Whether this command leaves MatchState.declinedActivations in place:
+ * activating an effect (it either stops at its optional cost, or resolves and
+ * clears them in processEffectBlock) and declining such an optional cost
+ * (which adds one). Any other command changes the game, after which those
+ * activations may be declined again.
+ */
+function keepsDeclinedActivations(state: MatchState, command: EngineCommand): boolean {
+  if (command.type === "activateEffect") {
+    return true;
+  }
+  if (command.type !== "resolvePrompt" || command.optionId !== "no") {
+    return false;
+  }
+  const context = state.promptQueue.find(
+    (prompt) => prompt.id === command.promptId && prompt.status === "pending",
+  )?.resolutionContext;
+  return context?.intent === "effectOptional" && context.trigger === "activateMain";
+}
+
 export function applyQueuedCommandMutation(
   state: MatchState,
   command: EngineCommand,
   context: CommandMutationContext = privateChoicesForJoKenPo(state),
+): { accepted: boolean; reason: string | null } {
+  // Decided before the command runs: resolving a prompt marks it resolved.
+  const keepDeclined = !state.declinedActivations || keepsDeclinedActivations(state, command);
+  const result = applyCommandMutation(state, command, context);
+  if (result.accepted && !keepDeclined) {
+    delete state.declinedActivations;
+  }
+  return result;
+}
+
+function applyCommandMutation(
+  state: MatchState,
+  command: EngineCommand,
+  context: CommandMutationContext,
 ): { accepted: boolean; reason: string | null } {
   let accepted = false;
   let reason: string | null = null;

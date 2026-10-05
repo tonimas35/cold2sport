@@ -30,6 +30,7 @@ import {
   isAttackTargetAllowedByPermanentEffects,
   isKoPreventedByModifier,
 } from "./effects/permanent.ts";
+import { canPayCosts, eventActivationCostsPayable } from "./effects/actions.ts";
 import { findKoReplacement } from "./effects/replacements.ts";
 import { matchesTargetFilter } from "./effects/targeting.ts";
 import { cleanupBattleModifiers, createChoicePrompt, formatCardList, moveCard } from "./state.ts";
@@ -176,6 +177,48 @@ export function endBattleIfParticipantLeftArea(state: MatchState): boolean {
   return true;
 }
 
+/**
+ * Whether the defender can use these hand cards together in the Counter Step
+ * (7-1-3-1): Characters with a Counter, and Events with [Counter] whose costs
+ * are paid from active DON!! (7-1-3-1-2) and whose mandatory [Counter]
+ * activation costs can then be paid in full (8-4-1-3, 8-3-1-3) -- e.g. not
+ * OP01-118 Ulti-Mortar's "DON!! −2" with fewer than 2 DON!! cards on the
+ * field, nor two such Events that need more DON!! cards than there are.
+ */
+export function counterSelectionIsPayable(
+  state: MatchState,
+  seat: MatchSeat,
+  selectedIds: readonly string[],
+): boolean {
+  const player = getPlayer(state, seat);
+  if (
+    new Set(selectedIds).size !== selectedIds.length ||
+    selectedIds.some((instanceId) => !player.hand.includes(instanceId))
+  ) {
+    return false;
+  }
+  let eventCost = 0;
+  const eventIds: string[] = [];
+  for (const instanceId of selectedIds) {
+    const card = getCardForInstance(state, instanceId);
+    if (card.cardType === "event" && effectBlocksFor(card, "counter").length > 0) {
+      eventCost += baseCost(card);
+      eventIds.push(instanceId);
+    } else if (!(card.cardType === "character" && getCardCounter(state, instanceId) > 0)) {
+      return false;
+    }
+  }
+  return (
+    eventCost <= player.activeDon &&
+    (eventIds.length === 0 ||
+      eventActivationCostsPayable(state, seat, "counter", eventIds, {
+        cardCost: eventCost,
+        destination: "trash",
+        usedIds: selectedIds,
+      }))
+  );
+}
+
 export function beginBattleCounterStep(state: MatchState) {
   if (!state.battle) {
     return;
@@ -198,7 +241,9 @@ export function beginBattleCounterStep(state: MatchState) {
       label,
       value: instanceId,
       targetId: instanceId,
-      enabled: isCharacterCounter || (isEventCounter && player.activeDon >= baseCost(card)),
+      enabled:
+        isCharacterCounter ||
+        (isEventCounter && counterSelectionIsPayable(state, defendingSeat, [instanceId])),
     };
   });
 
@@ -227,6 +272,35 @@ export function beginBattleCounterStep(state: MatchState) {
   });
 }
 
+/**
+ * The answers to a Life card's [Trigger] prompt. "activate" is disabled when
+ * every [Trigger] effect of the card has a mandatory activation cost that
+ * cannot be paid in full (8-4-1-3, 8-3-1-3: then it cannot be activated, e.g.
+ * OP02-075 Shiki's "DON!! −1" with no DON!! card on the field); the player
+ * adds the card to their hand instead (10-1-5-2).
+ */
+function lifeTriggerOptions(
+  state: MatchState,
+  seat: MatchSeat,
+  lifeCardId: string,
+): PromptOption[] {
+  const blocks = effectBlocksFor(getCardForInstance(state, lifeCardId), "trigger");
+  const canActivate =
+    blocks.length === 0 ||
+    blocks.some(
+      (block) => block.optional || canPayCosts(state, seat, lifeCardId, block.costs, undefined),
+    );
+  return [
+    {
+      id: "activate",
+      label: "Activate trigger",
+      value: "activate",
+      ...(canActivate ? {} : { enabled: false }),
+    },
+    { id: "skip", label: "Skip trigger", value: "skip" },
+  ];
+}
+
 function createBattleLifeTriggerPrompt(
   state: MatchState,
   battle: NonNullable<MatchState["battle"]>,
@@ -244,10 +318,7 @@ function createBattleLifeTriggerPrompt(
     sourceCardId: lifeCard.id,
     sourceInstanceId: lifeCardId,
     eventId: battle.id,
-    options: [
-      { id: "activate", label: "Activate trigger", value: "activate" },
-      { id: "skip", label: "Skip trigger", value: "skip" },
-    ],
+    options: lifeTriggerOptions(state, defendingSeat, lifeCardId),
     minSelections: 0,
     maxSelections: 1,
     context: { battleId: battle.id },
@@ -688,10 +759,7 @@ export function continueEffectDamage(
       sourceCardId: lifeCard.id,
       sourceInstanceId: lifeCardId,
       eventId: null,
-      options: [
-        { id: "activate", label: "Activate trigger", value: "activate" },
-        { id: "skip", label: "Skip trigger", value: "skip" },
-      ],
+      options: lifeTriggerOptions(state, targetSeat, lifeCardId),
       minSelections: 0,
       maxSelections: 1,
       context: { damageKind: "effect" },
@@ -1007,32 +1075,13 @@ export function resolvePrompt(
       }
       const selectedIds = command.selectedIds ?? [];
       const player = getPlayer(state, command.seat);
-      if (
-        new Set(selectedIds).size !== selectedIds.length ||
-        selectedIds.some((instanceId) => !player.hand.includes(instanceId))
-      ) {
+      if (!counterSelectionIsPayable(state, command.seat, selectedIds)) {
         return false;
       }
-      const selectedCards = selectedIds.map((instanceId) => ({
-        card: getCardForInstance(state, instanceId),
-        counter: getCardCounter(state, instanceId),
-      }));
-      if (
-        selectedCards.some(
-          ({ card, counter }) =>
-            !(card.cardType === "character" && counter > 0) &&
-            !(card.cardType === "event" && effectBlocksFor(card, "counter").length > 0),
-        )
-      ) {
-        return false;
-      }
-      const eventCost = selectedCards.reduce(
-        (total, { card }) => total + (card.cardType === "event" ? baseCost(card) : 0),
-        0,
-      );
-      if (eventCost > player.activeDon) {
-        return false;
-      }
+      const eventCost = selectedIds.reduce((total, instanceId) => {
+        const card = getCardForInstance(state, instanceId);
+        return total + (card.cardType === "event" ? baseCost(card) : 0);
+      }, 0);
       player.activeDon -= eventCost;
       player.restedDon += eventCost;
       let counterTotal = 0;
@@ -1178,6 +1227,15 @@ export function resolvePrompt(
       return true;
     }
     case "lifeTrigger": {
+      // Only the prompt's own enabled answers: an unknown id ("yes", a typo)
+      // is rejected instead of being read as "skip", which would silently add
+      // the card to hand and drop its [Trigger] (10-1-5-2 makes skipping a
+      // choice, not a default).
+      if (
+        !prompt.options.some((option) => option.id === command.optionId && option.enabled !== false)
+      ) {
+        return false;
+      }
       const lifeCardId = prompt.sourceInstanceId;
       if (command.optionId === "activate" && prompt.sourceInstanceId) {
         enqueueEffectsForTrigger(

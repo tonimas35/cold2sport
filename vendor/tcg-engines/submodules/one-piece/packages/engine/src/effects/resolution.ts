@@ -34,9 +34,15 @@ import type {
 } from "../types.ts";
 import { completeBattleResolution } from "../battle.ts";
 import {
+  ACTIVE_DON_COST_PREFIX,
   addTopDeckCardsToLife,
   actionTargetIsEligible,
   canPayCosts,
+  declinedActivationKey,
+  effectBlockCosts,
+  isActiveDonCostId,
+  payableCostOptions,
+  restCardsCostNeedsChoice,
   candidatesForGroupedPlayAction,
   candidatesForPlayAction,
   candidatesForKoCharacterCost,
@@ -376,9 +382,9 @@ function liveEffectBlock(state: MatchState, item: EffectBlockItemInput): EffectB
 
 /**
  * Whether processEffectBlock would activate this block now (same checks, in
- * the same order): live, conditions met, and for an optional block its costs
- * payable. A block with an unsupported condition only reaches the judge, so
- * it does not count.
+ * the same order): live, conditions met, and its activation costs payable
+ * (8-3-1-3, optional or not). A block with an unsupported condition only
+ * reaches the judge, so it does not count.
  */
 function effectBlockWouldActivate(state: MatchState, item: EffectBlockItemInput): boolean {
   const block = liveEffectBlock(state, item);
@@ -396,18 +402,57 @@ function effectBlockWouldActivate(state: MatchState, item: EffectBlockItemInput)
   if (!conditions.supported || !conditions.matches) {
     return false;
   }
-  return (
-    !block.optional ||
-    canPayCosts(
-      state,
-      item.controller,
-      item.sourceInstanceId,
-      block.costs,
-      item.trashHandIds,
-      item.costPaymentIds,
-      item.costPaymentIdsByType,
-    )
+  return canPayCosts(
+    state,
+    item.controller,
+    item.sourceInstanceId,
+    effectBlockCosts(block.costs, item.costOption),
+    item.trashHandIds,
+    item.costPaymentIds,
+    item.costPaymentIdsByType,
   );
+}
+
+/**
+ * Spread into a re-queued effect block, a continuation or a cost prompt's
+ * context: the option chosen for the block's "choice" cost, when there is one,
+ * so every later cost step pays that option's costs.
+ */
+function costOptionField(costOption: number | undefined): { costOption?: number } {
+  return costOption === undefined ? {} : { costOption };
+}
+
+/** Short printed form of one activation cost, for the alternative-cost prompt. */
+function costLabel(cost: Cost): string {
+  const cards = (amount: number) => `${amount} card${amount === 1 ? "" : "s"}`;
+  switch (cost.cost) {
+    case "restDon":
+      // Printed as "rest N of your DON!! cards", 1 included.
+      return `rest ${cost.amount} of your DON!! cards`;
+    case "returnDon":
+      return `DON!! −${cost.amount ?? cost.minimumAmount}`;
+    case "trashFromHand":
+      return `trash ${cards(cost.amount)} from your hand`;
+    case "restCards":
+      return `rest ${cost.amount} of your cards`;
+    case "restThisCard":
+      return "rest this card";
+    case "trashThisCard":
+      return "trash this card";
+    case "trashLife":
+      return `trash ${cards(cost.amount)} from your Life`;
+    case "addLifeToHand":
+      return `add ${cards(cost.amount)} from your Life to your hand`;
+    case "giveDon":
+      return `give ${cost.amount} DON!! card${cost.amount === 1 ? "" : "s"}`;
+    default:
+      return `pay the ${cost.cost} cost`;
+  }
+}
+
+function costOptionLabel(option: readonly Cost[]): string {
+  const text = option.map(costLabel).join(" and ");
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 function simultaneousEntryId(entry: SimultaneousEffectEntry): string {
@@ -528,6 +573,17 @@ export function processEffectBlock(
     ) {
       return;
     }
+    // The player activated this [Activate: Main] again right after declining
+    // it, with nothing else done in between: declining once more would repeat
+    // the same no-op (and bots could loop on it forever), so this time the
+    // activation commits to paying. See MatchState.declinedActivations.
+    const declinedBefore =
+      item.trigger === "activateMain" &&
+      Boolean(
+        state.declinedActivations?.includes(
+          declinedActivationKey(item.sourceInstanceId, item.trigger, item.blockIndex),
+        ),
+      );
     createChoicePrompt(state, {
       choiceKind: "confirm",
       seat: item.controller,
@@ -538,7 +594,7 @@ export function processEffectBlock(
       eventId: null,
       options: [
         { id: "yes", label: "Activate", value: "yes" },
-        { id: "no", label: "Skip", value: "no" },
+        { id: "no", label: "Skip", value: "no", ...(declinedBefore ? { enabled: false } : {}) },
       ],
       minSelections: 0,
       maxSelections: 1,
@@ -559,7 +615,92 @@ export function processEffectBlock(
     return;
   }
 
-  const giveDonCost = block.costs?.find((cost) => cost.cost === "giveDon");
+  // 8-3-1-3: an activation cost that cannot be paid in full cannot be paid at
+  // all, so the effect is not activated -- e.g. "[Trigger] Activate this
+  // card's [Main]" when that [Main] has a DON!! −X the field cannot cover
+  // (rules FAQ on OP03-074 Top Knot). Checked once, when the effect is about
+  // to be activated (8-4-1-3); optional blocks were checked above.
+  if (
+    !block.optional &&
+    !item.confirmed &&
+    !item.costsPaid &&
+    !canPayCosts(
+      state,
+      item.controller,
+      item.sourceInstanceId,
+      effectBlockCosts(block.costs, item.costOption),
+      item.trashHandIds,
+      item.costPaymentIds,
+      item.costPaymentIdsByType,
+    )
+  ) {
+    emitLog(
+      state,
+      item.controller,
+      `${cardName(card)}'s ${triggerLabel(item.trigger)} effect is not activated: its activation cost cannot be paid.`,
+      {
+        sourceCardId: source.cardId,
+        sourceInstanceId: item.sourceInstanceId,
+        visibility: "public",
+      },
+    );
+    return;
+  }
+
+  // "You may A or B:" (Cost "choice", 8-3-1): exactly one alternative is paid.
+  // When more than one can be paid the controller chooses (OP17 FAQ on
+  // OP17-020 Shanks); a single payable one is paid without asking. From here
+  // on the block's costs are the chosen option's, and every cost prompt
+  // carries costOption back.
+  let costOption = item.costOption;
+  if (costOption === undefined && !item.costsPaid) {
+    const optionIndexes = payableCostOptions(
+      state,
+      item.controller,
+      item.sourceInstanceId,
+      block.costs,
+      item.trashHandIds,
+      item.costPaymentIds,
+      item.costPaymentIdsByType,
+    );
+    const choiceCost = block.costs?.find((cost) => cost.cost === "choice");
+    if (optionIndexes.length > 1 && choiceCost?.cost === "choice") {
+      createChoicePrompt(state, {
+        choiceKind: "chooseOption",
+        seat: item.controller,
+        label: `${cardName(card)} cost: choose which cost to pay.`,
+        details: "Choose one of the alternative activation costs to pay.",
+        sourceCardId: source.cardId,
+        sourceInstanceId: item.sourceInstanceId,
+        eventId: null,
+        options: optionIndexes.map((index) => ({
+          id: String(index),
+          label: costOptionLabel(choiceCost.options[index] ?? []),
+          value: String(index),
+        })),
+        minSelections: 1,
+        maxSelections: 1,
+        context: { cost: "choice" },
+        resolutionContext: {
+          intent: "effectCostChoice",
+          sourceInstanceId: item.sourceInstanceId,
+          controller: item.controller,
+          trigger: item.trigger,
+          blockIndex: item.blockIndex,
+          optionIndexes,
+          trashHandIds: item.trashHandIds,
+          costPaymentIds: item.costPaymentIds,
+          costPaymentIdsByType: item.costPaymentIdsByType,
+          triggerEvent: item.triggerEvent,
+        },
+      });
+      return;
+    }
+    costOption = optionIndexes[0];
+  }
+  const costs = effectBlockCosts(block.costs, costOption);
+
+  const giveDonCost = costs?.find((cost) => cost.cost === "giveDon");
   if (giveDonCost && !item.costPaymentIdsByType?.giveDon) {
     const { recipientSeat, poolAmount } = giveDonCostParts(state, item.controller, giveDonCost);
     const recipient = getPlayer(state, recipientSeat);
@@ -587,6 +728,7 @@ export function processEffectBlock(
         context: { cost: "giveDon" },
         resolutionContext: {
           intent: "effectCostGiveDon",
+          ...costOptionField(costOption),
           sourceInstanceId: item.sourceInstanceId,
           controller: item.controller,
           trigger: item.trigger,
@@ -604,14 +746,14 @@ export function processEffectBlock(
 
   // Ordered costs (8-3-1-1): a DON!! −X with no real choice is paid by default,
   // so it must not hold back the trash-from-hand prompt that follows it.
-  const pendingOrderedCost = block.costs?.find((cost) =>
+  const pendingOrderedCost = costs?.find((cost) =>
     cost.cost === "trashFromHand"
       ? !item.trashHandIds
       : cost.cost === "returnDon"
         ? !item.costPaymentIds && returnDonCostNeedsChoice(state, item.controller, cost)
         : false,
   );
-  const trashFromHandCost = block.costs?.find((cost) => cost.cost === "trashFromHand");
+  const trashFromHandCost = costs?.find((cost) => cost.cost === "trashFromHand");
   if (trashFromHandCost && pendingOrderedCost === trashFromHandCost) {
     const candidateIds = candidatesForTrashFromHandCost(
       state,
@@ -641,6 +783,7 @@ export function processEffectBlock(
         },
         resolutionContext: {
           intent: "effectCostTrashFromHand",
+          ...costOptionField(costOption),
           sourceInstanceId: item.sourceInstanceId,
           controller: item.controller,
           trigger: item.trigger,
@@ -657,7 +800,7 @@ export function processEffectBlock(
     }
   }
 
-  const playCardCost = block.costs?.find((cost) => cost.cost === "playCard");
+  const playCardCost = costs?.find((cost) => cost.cost === "playCard");
   if (playCardCost && !item.costPaymentIds) {
     const candidateIds = candidatesForPlayCardCost(
       state,
@@ -685,6 +828,7 @@ export function processEffectBlock(
         context: { cost: "playCard" },
         resolutionContext: {
           intent: "effectCostPlayCard",
+          ...costOptionField(costOption),
           sourceInstanceId: item.sourceInstanceId,
           controller: item.controller,
           trigger: item.trigger,
@@ -698,7 +842,7 @@ export function processEffectBlock(
     }
   }
 
-  const trashCardCost = block.costs?.find((cost) => cost.cost === "trashCard");
+  const trashCardCost = costs?.find((cost) => cost.cost === "trashCard");
   if (trashCardCost && !item.costPaymentIds) {
     const candidateIds = candidatesForTrashCardCost(
       state,
@@ -726,6 +870,7 @@ export function processEffectBlock(
         context: { cost: "trashCard" },
         resolutionContext: {
           intent: "effectCostTrashCard",
+          ...costOptionField(costOption),
           sourceInstanceId: item.sourceInstanceId,
           controller: item.controller,
           trigger: item.trigger,
@@ -739,7 +884,7 @@ export function processEffectBlock(
     }
   }
 
-  const returnDonCost = block.costs?.find((cost) => cost.cost === "returnDon");
+  const returnDonCost = costs?.find((cost) => cost.cost === "returnDon");
   if (returnDonCost && pendingOrderedCost === returnDonCost) {
     const options = returnDonCostOptions(state, item.controller);
     const minimumAmount = returnDonCost.minimumAmount ?? returnDonCost.amount;
@@ -769,6 +914,7 @@ export function processEffectBlock(
         },
         resolutionContext: {
           intent: "effectCostReturnDon",
+          ...costOptionField(costOption),
           sourceInstanceId: item.sourceInstanceId,
           controller: item.controller,
           trigger: item.trigger,
@@ -784,9 +930,7 @@ export function processEffectBlock(
     }
   }
 
-  const returnCharacterToDeckCost = block.costs?.find(
-    (cost) => cost.cost === "returnCharacterToDeck",
-  );
+  const returnCharacterToDeckCost = costs?.find((cost) => cost.cost === "returnCharacterToDeck");
   if (returnCharacterToDeckCost && !item.costPaymentIds) {
     const candidateIds = candidatesForReturnCharacterToDeckCost(
       state,
@@ -817,6 +961,7 @@ export function processEffectBlock(
         },
         resolutionContext: {
           intent: "effectCostReturnCharacterToDeck",
+          ...costOptionField(costOption),
           sourceInstanceId: item.sourceInstanceId,
           controller: item.controller,
           trigger: item.trigger,
@@ -831,13 +976,15 @@ export function processEffectBlock(
     }
   }
 
-  const returnCharacterCost = block.costs?.find((cost) => cost.cost === "returnCharacter");
-  const pendingCompoundCardCost = block.costs?.find((cost) => {
+  const returnCharacterCost = costs?.find((cost) => cost.cost === "returnCharacter");
+  const pendingCompoundCardCost = costs?.find((cost) => {
     if (cost.cost === "restCards") {
       return (
         !item.costPaymentIdsByType?.restCards &&
-        candidatesForRestCardsCost(state, item.controller, item.sourceInstanceId, cost).length >
-          cost.amount
+        restCardsCostNeedsChoice(
+          candidatesForRestCardsCost(state, item.controller, item.sourceInstanceId, cost),
+          cost.amount,
+        )
       );
     }
     if (cost.cost === "returnCharacter") {
@@ -880,6 +1027,7 @@ export function processEffectBlock(
         context: { cost: "returnCharacter" },
         resolutionContext: {
           intent: "effectCostReturnCharacter",
+          ...costOptionField(costOption),
           sourceInstanceId: item.sourceInstanceId,
           controller: item.controller,
           trigger: item.trigger,
@@ -894,7 +1042,7 @@ export function processEffectBlock(
     }
   }
 
-  const restCardsCost = block.costs?.find((cost) => cost.cost === "restCards");
+  const restCardsCost = costs?.find((cost) => cost.cost === "restCards");
   if (
     restCardsCost &&
     !item.costPaymentIdsByType?.restCards &&
@@ -906,7 +1054,9 @@ export function processEffectBlock(
       item.sourceInstanceId,
       restCardsCost,
     );
-    if (candidateIds.length > restCardsCost.amount) {
+    // Asked whenever there is a real choice: a field card among more
+    // candidates than needed, active DON!! cards included (OP14/EB04 FAQ).
+    if (restCardsCostNeedsChoice(candidateIds, restCardsCost.amount)) {
       createChoicePrompt(state, {
         choiceKind: "costPayment",
         seat: item.controller,
@@ -915,12 +1065,20 @@ export function processEffectBlock(
         sourceCardId: source.cardId,
         sourceInstanceId: item.sourceInstanceId,
         eventId: null,
-        options: candidateIds.map((instanceId) => ({
-          id: instanceId,
-          label: cardName(getCardForInstance(state, instanceId)),
-          value: instanceId,
-          targetId: instanceId,
-        })),
+        options: candidateIds.map((id) =>
+          isActiveDonCostId(id)
+            ? {
+                id,
+                label: `Active DON!! in cost area ${Number(id.slice(ACTIVE_DON_COST_PREFIX.length)) + 1}`,
+                value: id,
+              }
+            : {
+                id,
+                label: cardName(getCardForInstance(state, id)),
+                value: id,
+                targetId: id,
+              },
+        ),
         minSelections: restCardsCost.amount,
         maxSelections: restCardsCost.amount,
         context: {
@@ -928,6 +1086,7 @@ export function processEffectBlock(
         },
         resolutionContext: {
           intent: "effectCostRestCards",
+          ...costOptionField(costOption),
           sourceInstanceId: item.sourceInstanceId,
           controller: item.controller,
           trigger: item.trigger,
@@ -942,7 +1101,7 @@ export function processEffectBlock(
     }
   }
 
-  const koCharacterCost = block.costs?.find((cost) => cost.cost === "koCharacter");
+  const koCharacterCost = costs?.find((cost) => cost.cost === "koCharacter");
   if (koCharacterCost && !item.costPaymentIds) {
     const candidateIds = candidatesForKoCharacterCost(
       state,
@@ -970,6 +1129,7 @@ export function processEffectBlock(
         context: { cost: "koCharacter" },
         resolutionContext: {
           intent: "effectCostKoCharacter",
+          ...costOptionField(costOption),
           sourceInstanceId: item.sourceInstanceId,
           controller: item.controller,
           trigger: item.trigger,
@@ -983,7 +1143,7 @@ export function processEffectBlock(
     }
   }
 
-  const trashCharacterCost = block.costs?.find((cost) => cost.cost === "trashCharacter");
+  const trashCharacterCost = costs?.find((cost) => cost.cost === "trashCharacter");
   if (trashCharacterCost && !item.costPaymentIds) {
     const candidateIds = candidatesForTrashCharacterCost(
       state,
@@ -1011,6 +1171,7 @@ export function processEffectBlock(
         context: { cost: "trashCharacter" },
         resolutionContext: {
           intent: "effectCostTrashCharacter",
+          ...costOptionField(costOption),
           sourceInstanceId: item.sourceInstanceId,
           controller: item.controller,
           trigger: item.trigger,
@@ -1045,6 +1206,7 @@ export function processEffectBlock(
           controller: item.controller,
           trigger: item.trigger,
           blockIndex: item.blockIndex,
+          ...costOptionField(costOption),
           costPaymentIds: candidateIds,
           costsPaid: true,
           confirmed: true,
@@ -1056,7 +1218,7 @@ export function processEffectBlock(
     }
   }
 
-  const revealFromHandCost = block.costs?.find((cost) => cost.cost === "revealFromHand");
+  const revealFromHandCost = costs?.find((cost) => cost.cost === "revealFromHand");
   if (revealFromHandCost && !item.costPaymentIds) {
     const candidateIds = candidatesForRevealFromHandCost(
       state,
@@ -1084,6 +1246,7 @@ export function processEffectBlock(
         context: { cost: "revealFromHand" },
         resolutionContext: {
           intent: "effectCostRevealFromHand",
+          ...costOptionField(costOption),
           sourceInstanceId: item.sourceInstanceId,
           controller: item.controller,
           trigger: item.trigger,
@@ -1097,7 +1260,7 @@ export function processEffectBlock(
     }
   }
 
-  const returnHandToDeckCost = block.costs?.find((cost) => cost.cost === "returnHandToDeck");
+  const returnHandToDeckCost = costs?.find((cost) => cost.cost === "returnHandToDeck");
   if (returnHandToDeckCost && !item.costPaymentIds) {
     const candidateIds = [...getPlayer(state, item.controller).hand];
     createChoicePrompt(state, {
@@ -1122,6 +1285,7 @@ export function processEffectBlock(
       },
       resolutionContext: {
         intent: "effectCostReturnHandToDeck",
+        ...costOptionField(costOption),
         sourceInstanceId: item.sourceInstanceId,
         controller: item.controller,
         trigger: item.trigger,
@@ -1134,7 +1298,7 @@ export function processEffectBlock(
     return;
   }
 
-  const returnTrashToDeckCost = block.costs?.find((cost) => cost.cost === "returnTrashToDeck");
+  const returnTrashToDeckCost = costs?.find((cost) => cost.cost === "returnTrashToDeck");
   if (returnTrashToDeckCost && !item.costPaymentIds) {
     const candidateIds = candidatesForReturnTrashToDeckCost(
       state,
@@ -1162,6 +1326,7 @@ export function processEffectBlock(
         context: { cost: "returnTrashToDeck", ordered: true },
         resolutionContext: {
           intent: "effectCostReturnTrashToDeck",
+          ...costOptionField(costOption),
           sourceInstanceId: item.sourceInstanceId,
           controller: item.controller,
           trigger: item.trigger,
@@ -1175,7 +1340,7 @@ export function processEffectBlock(
     }
   }
 
-  const returnThisAndHandToDeckCost = block.costs?.find(
+  const returnThisAndHandToDeckCost = costs?.find(
     (cost) => cost.cost === "returnThisAndHandToDeck",
   );
   if (returnThisAndHandToDeckCost && !item.costPaymentIds) {
@@ -1203,6 +1368,7 @@ export function processEffectBlock(
       },
       resolutionContext: {
         intent: "effectCostReturnThisAndHandToDeck",
+        ...costOptionField(costOption),
         sourceInstanceId: item.sourceInstanceId,
         controller: item.controller,
         trigger: item.trigger,
@@ -1215,8 +1381,8 @@ export function processEffectBlock(
     return;
   }
 
-  const addLifeToHandCost = block.costs?.find((cost) => cost.cost === "addLifeToHand");
-  const trashLifeCost = block.costs?.find((cost) => cost.cost === "trashLife");
+  const addLifeToHandCost = costs?.find((cost) => cost.cost === "addLifeToHand");
+  const trashLifeCost = costs?.find((cost) => cost.cost === "trashLife");
   if (
     trashLifeCost?.position === "choice" &&
     getPlayer(state, item.controller).life.length > 1 &&
@@ -1239,6 +1405,7 @@ export function processEffectBlock(
       context: { cost: "trashLife" },
       resolutionContext: {
         intent: "effectCostTrashLife",
+        ...costOptionField(costOption),
         sourceInstanceId: item.sourceInstanceId,
         controller: item.controller,
         trigger: item.trigger,
@@ -1270,6 +1437,7 @@ export function processEffectBlock(
       context: { cost: "addLifeToHand" },
       resolutionContext: {
         intent: "effectCostAddLifeToHand",
+        ...costOptionField(costOption),
         sourceInstanceId: item.sourceInstanceId,
         controller: item.controller,
         trigger: item.trigger,
@@ -1311,6 +1479,7 @@ export function processEffectBlock(
           kind: "playCardCost",
           trigger: item.trigger,
           blockIndex: item.blockIndex,
+          ...costOptionField(costOption),
           selectedIds: costPlayIds,
           trashHandIds: item.trashHandIds,
           costPaymentIdsByType: item.costPaymentIdsByType,
@@ -1326,7 +1495,7 @@ export function processEffectBlock(
       state,
       item.controller,
       item.sourceInstanceId,
-      block.costs,
+      costs,
       item.trashHandIds,
       item.costPaymentIds,
       item.costPaymentIdsByType,
@@ -1352,6 +1521,11 @@ export function processEffectBlock(
   }
   if (!item.costsPaid) {
     enqueueCharacterRemovalEffects(state, charactersBeforeCosts, item.controller);
+  }
+  // An [Activate: Main] effect resolves, so the game changes: activations
+  // declined earlier (MatchState.declinedActivations) may be declined again.
+  if (item.trigger === "activateMain" && state.declinedActivations) {
+    delete state.declinedActivations;
   }
 
   const battle = state.battle;
@@ -2390,6 +2564,11 @@ export function resolveEffectChoicePrompt(
     }
     case "effectActionOptional": {
       const context = prompt.resolutionContext;
+      // Only the prompt's own answers: an unknown id is rejected, not read as
+      // "skip" (a mistyped answer must not silently drop the effect).
+      if (command.optionId !== "yes" && command.optionId !== "no") {
+        return false;
+      }
       if (command.optionId === "yes") {
         for (const action of [...context.actions].reverse()) {
           enqueueResolution(
@@ -2419,6 +2598,14 @@ export function resolveEffectChoicePrompt(
       return true;
     }
     case "effectOptional":
+      // Only the prompt's own enabled answers: an unknown id is rejected, not
+      // read as "no" (a mistyped answer must not silently drop the effect),
+      // and so is a "no" disabled for a repeated activation.
+      if (
+        !prompt.options.some((option) => option.id === command.optionId && option.enabled !== false)
+      ) {
+        return false;
+      }
       if (command.optionId === "yes") {
         enqueueResolution(
           state,
@@ -2438,6 +2625,21 @@ export function resolveEffectChoicePrompt(
       } else {
         // Rules 8-1-2 / 10-2-13: Once Per Turn is consumed only when activated
         // and resolved — declining leaves later opportunities available.
+        if (prompt.resolutionContext.trigger === "activateMain") {
+          // The player activated this [Activate: Main] and then declined its
+          // optional cost, so it was not activated at all (8-3-1-4) and
+          // nothing changed. It may be activated again, but until something
+          // else happens that activation cannot be declined once more: it
+          // would be the same no-op, and bots could loop on it forever.
+          state.declinedActivations = [
+            ...(state.declinedActivations ?? []),
+            declinedActivationKey(
+              prompt.resolutionContext.sourceInstanceId,
+              prompt.resolutionContext.trigger,
+              prompt.resolutionContext.blockIndex,
+            ),
+          ];
+        }
         emitLog(
           state,
           command.seat,
@@ -2450,6 +2652,52 @@ export function resolveEffectChoicePrompt(
         );
       }
       return true;
+    case "effectCostChoice": {
+      const context = prompt.resolutionContext;
+      const costOption = Number(command.optionId);
+      const block = effectBlocksFor(
+        getCardForInstance(state, context.sourceInstanceId),
+        context.trigger,
+      )[context.blockIndex];
+      const chosenCosts = effectBlockCosts(block?.costs, costOption);
+      if (
+        command.optionId === undefined ||
+        !Number.isInteger(costOption) ||
+        !context.optionIndexes.includes(costOption) ||
+        !canPayCosts(
+          state,
+          context.controller,
+          context.sourceInstanceId,
+          chosenCosts,
+          context.trashHandIds,
+          context.costPaymentIds,
+          context.costPaymentIdsByType,
+        )
+      ) {
+        return false;
+      }
+      // Hand cards picked in advance (activateEffect.trashHandIds) only pay
+      // an option that trashes from hand.
+      const trashesFromHand = chosenCosts?.some((cost) => cost.cost === "trashFromHand");
+      enqueueResolution(
+        state,
+        {
+          kind: "effectBlock",
+          sourceInstanceId: context.sourceInstanceId,
+          controller: context.controller,
+          trigger: context.trigger,
+          blockIndex: context.blockIndex,
+          costOption,
+          trashHandIds: trashesFromHand ? context.trashHandIds : undefined,
+          costPaymentIds: context.costPaymentIds,
+          costPaymentIdsByType: context.costPaymentIdsByType,
+          confirmed: true,
+          triggerEvent: context.triggerEvent,
+        },
+        { next: true },
+      );
+      return true;
+    }
     case "effectCostGiveDon": {
       const context = prompt.resolutionContext;
       const selectedIds = command.selectedIds ?? [];
@@ -2478,6 +2726,7 @@ export function resolveEffectChoicePrompt(
           controller: context.controller,
           trigger: context.trigger,
           blockIndex: context.blockIndex,
+          ...costOptionField(context.costOption),
           costPaymentIdsByType: {
             ...context.costPaymentIdsByType,
             giveDon: selectedIds,
@@ -2516,6 +2765,7 @@ export function resolveEffectChoicePrompt(
           controller: context.controller,
           trigger: context.trigger,
           blockIndex: context.blockIndex,
+          ...costOptionField(context.costOption),
           trashHandIds: selectedIds,
           costPaymentIds: context.costPaymentIds,
           costPaymentIdsByType: context.costPaymentIdsByType,
@@ -2545,6 +2795,7 @@ export function resolveEffectChoicePrompt(
           controller: context.controller,
           trigger: context.trigger,
           blockIndex: context.blockIndex,
+          ...costOptionField(context.costOption),
           costPaymentIds: selectedIds,
           confirmed: true,
           triggerEvent: context.triggerEvent,
@@ -2560,9 +2811,10 @@ export function resolveEffectChoicePrompt(
         (option) => option.id,
       );
       const card = getCard(getInstance(state, context.sourceInstanceId).cardId);
-      const returnDonCost = effectBlocksFor(card, context.trigger)[context.blockIndex]?.costs?.find(
-        (cost) => cost.cost === "returnDon",
-      );
+      const returnDonCost = effectBlockCosts(
+        effectBlocksFor(card, context.trigger)[context.blockIndex]?.costs,
+        context.costOption,
+      )?.find((cost) => cost.cost === "returnDon");
       const minimumAmount = returnDonCost?.minimumAmount ?? context.amount;
       const maximumAmount =
         returnDonCost?.minimumAmount === undefined ? context.amount : liveCandidateIds.length;
@@ -2584,6 +2836,7 @@ export function resolveEffectChoicePrompt(
           controller: context.controller,
           trigger: context.trigger,
           blockIndex: context.blockIndex,
+          ...costOptionField(context.costOption),
           trashHandIds: context.trashHandIds,
           costPaymentIds: selectedIds,
           costPaymentIdsByType: context.costPaymentIdsByType,
@@ -2603,6 +2856,7 @@ export function resolveEffectChoicePrompt(
           controller: prompt.resolutionContext.controller,
           trigger: prompt.resolutionContext.trigger,
           blockIndex: prompt.resolutionContext.blockIndex,
+          ...costOptionField(prompt.resolutionContext.costOption),
           trashHandIds: prompt.resolutionContext.trashHandIds,
           costPaymentIds: command.selectedIds ?? [],
           confirmed: true,
@@ -2649,6 +2903,7 @@ export function resolveEffectChoicePrompt(
             controller: context.controller,
             trigger: context.trigger,
             blockIndex: context.blockIndex,
+            ...costOptionField(context.costOption),
             costPaymentIdsByType: {
               ...context.costPaymentIdsByType,
               returnCharacter: selectedIds,
@@ -2668,6 +2923,7 @@ export function resolveEffectChoicePrompt(
           controller: context.controller,
           trigger: context.trigger,
           blockIndex: context.blockIndex,
+          ...costOptionField(context.costOption),
           costPaymentIdsByType: {
             ...context.costPaymentIdsByType,
             returnCharacter: selectedIds,
@@ -2693,6 +2949,7 @@ export function resolveEffectChoicePrompt(
           controller: context.controller,
           trigger: context.trigger,
           blockIndex: context.blockIndex,
+          ...costOptionField(context.costOption),
           costPaymentIds: [command.optionId],
           confirmed: true,
           triggerEvent: context.triggerEvent,
@@ -2723,6 +2980,7 @@ export function resolveEffectChoicePrompt(
           controller: context.controller,
           trigger: context.trigger,
           blockIndex: context.blockIndex,
+          ...costOptionField(context.costOption),
           costPaymentIds: selectedIds,
           confirmed: true,
           triggerEvent: context.triggerEvent,
@@ -2753,6 +3011,7 @@ export function resolveEffectChoicePrompt(
           controller: context.controller,
           trigger: context.trigger,
           blockIndex: context.blockIndex,
+          ...costOptionField(context.costOption),
           costPaymentIds: selectedIds,
           confirmed: true,
           triggerEvent: context.triggerEvent,
@@ -2770,6 +3029,7 @@ export function resolveEffectChoicePrompt(
           controller: prompt.resolutionContext.controller,
           trigger: prompt.resolutionContext.trigger,
           blockIndex: prompt.resolutionContext.blockIndex,
+          ...costOptionField(prompt.resolutionContext.costOption),
           costPaymentIds: command.selectedIds ?? [],
           confirmed: true,
           triggerEvent: prompt.resolutionContext.triggerEvent,
@@ -2795,6 +3055,7 @@ export function resolveEffectChoicePrompt(
           controller: context.controller,
           trigger: context.trigger,
           blockIndex: context.blockIndex,
+          ...costOptionField(context.costOption),
           costPaymentIdsByType: {
             ...context.costPaymentIdsByType,
             restCards: selectedIds,
@@ -2811,7 +3072,9 @@ export function resolveEffectChoicePrompt(
       const selectedIds = command.selectedIds ?? [];
       const card = getCard(getInstance(state, context.sourceInstanceId).cardId);
       const block = effectBlocksFor(card, context.trigger)[context.blockIndex];
-      const cost = block?.costs?.find((candidate) => candidate.cost === "koCharacter");
+      const cost = effectBlockCosts(block?.costs, context.costOption)?.find(
+        (candidate) => candidate.cost === "koCharacter",
+      );
       if (!cost) return false;
       const liveCandidateIds = candidatesForKoCharacterCost(
         state,
@@ -2837,6 +3100,7 @@ export function resolveEffectChoicePrompt(
           controller: context.controller,
           trigger: context.trigger,
           blockIndex: context.blockIndex,
+          ...costOptionField(context.costOption),
           costPaymentIds: selectedIds,
           confirmed: true,
           triggerEvent: context.triggerEvent,
@@ -2850,7 +3114,9 @@ export function resolveEffectChoicePrompt(
       const selectedIds = command.selectedIds ?? [];
       const card = getCard(getInstance(state, context.sourceInstanceId).cardId);
       const block = effectBlocksFor(card, context.trigger)[context.blockIndex];
-      const cost = block?.costs?.find((candidate) => candidate.cost === "trashCharacter");
+      const cost = effectBlockCosts(block?.costs, context.costOption)?.find(
+        (candidate) => candidate.cost === "trashCharacter",
+      );
       if (!cost) return false;
       const liveCandidateIds = candidatesForTrashCharacterCost(
         state,
@@ -2890,6 +3156,7 @@ export function resolveEffectChoicePrompt(
             controller: context.controller,
             trigger: context.trigger,
             blockIndex: context.blockIndex,
+            ...costOptionField(context.costOption),
             costPaymentIds: selectedIds,
             costsPaid: true,
             confirmed: true,
@@ -2907,6 +3174,7 @@ export function resolveEffectChoicePrompt(
           controller: context.controller,
           trigger: context.trigger,
           blockIndex: context.blockIndex,
+          ...costOptionField(context.costOption),
           costPaymentIds: selectedIds,
           confirmed: true,
           triggerEvent: context.triggerEvent,
@@ -2920,7 +3188,9 @@ export function resolveEffectChoicePrompt(
       const selectedIds = command.selectedIds ?? [];
       const card = getCard(getInstance(state, context.sourceInstanceId).cardId);
       const block = effectBlocksFor(card, context.trigger)[context.blockIndex];
-      const cost = block?.costs?.find((candidate) => candidate.cost === "revealFromHand");
+      const cost = effectBlockCosts(block?.costs, context.costOption)?.find(
+        (candidate) => candidate.cost === "revealFromHand",
+      );
       if (!cost) {
         return false;
       }
@@ -2948,6 +3218,7 @@ export function resolveEffectChoicePrompt(
           controller: context.controller,
           trigger: context.trigger,
           blockIndex: context.blockIndex,
+          ...costOptionField(context.costOption),
           costPaymentIds: selectedIds,
           confirmed: true,
           triggerEvent: context.triggerEvent,
@@ -3401,7 +3672,10 @@ export function resolveEffectChoicePrompt(
         case "playCardCost": {
           const sourceCard = getCardForInstance(state, context.sourceInstanceId);
           const otherCosts = (
-            effectBlocksFor(sourceCard, continuation.trigger)[continuation.blockIndex]?.costs ?? []
+            effectBlockCosts(
+              effectBlocksFor(sourceCard, continuation.trigger)[continuation.blockIndex]?.costs,
+              continuation.costOption,
+            ) ?? []
           ).filter((cost) => cost.cost !== "playCard");
           if (
             otherCosts.length > 0 &&
@@ -3441,6 +3715,7 @@ export function resolveEffectChoicePrompt(
               controller: context.controller,
               trigger: continuation.trigger,
               blockIndex: continuation.blockIndex,
+              ...costOptionField(continuation.costOption),
               trashHandIds: continuation.trashHandIds,
               costPaymentIds: continuation.selectedIds,
               costPaymentIdsByType: continuation.costPaymentIdsByType,

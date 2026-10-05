@@ -20,7 +20,12 @@ import {
   type MatchState,
   type PromptState,
 } from "@tcg/op-engine";
-import { getCard, getCardForInstance, selectionSatisfiesTotalConstraint } from "./internals.ts";
+import {
+  counterSelectionIsPayable,
+  getCard,
+  getCardForInstance,
+  selectionSatisfiesTotalConstraint,
+} from "./internals.ts";
 
 export interface Action {
   readonly key: string;
@@ -370,11 +375,18 @@ function counterActions(
   for (const sel of sels) {
     const ids = sel.flatMap((g) => g.ids);
     let eventCost = 0;
+    let events = 0;
     for (const id of ids) {
       const card = getCard(cardIdOf(state, id)) as { cardType: string };
-      if (card.cardType === "event") eventCost += baseCostOf(cardIdOf(state, id));
+      if (card.cardType === "event") {
+        eventCost += baseCostOf(cardIdOf(state, id));
+        events++;
+      }
     }
     if (eventCost > budget) continue;
+    // Several [Counter] Events together can need more DON!! cards for their
+    // DON!! −X costs than the field holds; the engine rejects those subsets.
+    if (events > 1 && !counterSelectionIsPayable(state, seat, ids)) continue;
     actions.push({ key: selectionKey("counter", sel), command: resolve(prompt, { selectedIds: ids }) });
     if (actions.length >= opts.maxSubsets) break;
   }

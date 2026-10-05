@@ -86,6 +86,11 @@ export interface EffectBlockContinuation {
   controller: MatchSeat;
   trigger: EffectTrigger;
   blockIndex: number;
+  /**
+   * Index of the option chosen for the block's "choice" cost ("You may A or
+   * B:"); absent while not chosen or when the block has no choice cost.
+   */
+  costOption?: number;
   trashHandIds?: string[];
   costPaymentIds?: string[];
   costPaymentIdsByType?: {
@@ -225,6 +230,7 @@ export type EffectPlayReplacementContinuation =
       kind: "playCardCost";
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       selectedIds: string[];
       trashHandIds?: string[];
       costPaymentIdsByType?: {
@@ -430,11 +436,26 @@ export type PromptResolutionContext =
       maximum: number;
     }
   | {
+      // "You may A or B:" -- which alternative activation cost to pay.
+      intent: "effectCostChoice";
+      sourceInstanceId: string;
+      controller: MatchSeat;
+      trigger: EffectTrigger;
+      blockIndex: number;
+      /** Indexes of the payable options, the only ones offered. */
+      optionIndexes: number[];
+      trashHandIds?: string[];
+      costPaymentIds?: string[];
+      costPaymentIdsByType?: EffectBlockContinuation["costPaymentIdsByType"];
+      triggerEvent?: EffectBlockContinuation["triggerEvent"];
+    }
+  | {
       intent: "effectCostGiveDon";
       sourceInstanceId: string;
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       amount: number;
       cost: Extract<import("@tcg/op-types").Cost, { cost: "giveDon" }>;
       candidateIds: string[];
@@ -450,6 +471,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       amount: number;
       cost: Extract<import("@tcg/op-types").Cost, { cost: "trashFromHand" }>;
       candidateIds: string[];
@@ -471,6 +493,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       amount: number;
       candidateIds: string[];
       triggerEvent?: {
@@ -489,6 +512,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       amount: number;
       candidateIds: string[];
       trashHandIds?: string[];
@@ -504,6 +528,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       amount: number;
       candidateIds: string[];
       trashHandIds?: string[];
@@ -518,6 +543,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       amount: number;
       candidateIds: string[];
       costPaymentIdsByType?: EffectBlockContinuation["costPaymentIdsByType"];
@@ -532,6 +558,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       triggerEvent?: {
         instanceId: string;
         effectController: MatchSeat;
@@ -543,6 +570,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       triggerEvent?: {
         instanceId: string;
         effectController: MatchSeat;
@@ -554,6 +582,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       amount: number;
       candidateIds: string[];
       triggerEvent?: {
@@ -567,6 +596,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       amount: number;
       candidateIds: string[];
       triggerEvent?: {
@@ -580,6 +610,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       handAmount: number;
       candidateIds: string[];
       triggerEvent?: {
@@ -593,6 +624,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       amount: number;
       candidateIds: string[];
       costPaymentIdsByType?: EffectBlockContinuation["costPaymentIdsByType"];
@@ -607,6 +639,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       amount: number;
       candidateIds: string[];
       triggerEvent?: {
@@ -620,6 +653,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       amount: number;
       candidateIds: string[];
       triggerEvent?: {
@@ -633,6 +667,7 @@ export type PromptResolutionContext =
       controller: MatchSeat;
       trigger: EffectTrigger;
       blockIndex: number;
+      costOption?: number;
       amount: number;
       candidateIds: string[];
       triggerEvent?: {
@@ -1046,6 +1081,11 @@ export type ResolutionItem =
       trigger: EffectTrigger;
       blockIndex: number;
       sourceZoneChangeCounter?: number;
+      /**
+       * Index of the option chosen for the block's "choice" cost ("You may A
+       * or B:"); absent until chosen. See effectBlockCosts in effects/actions.ts.
+       */
+      costOption?: number;
       trashHandIds?: string[];
       costPaymentIds?: string[];
       costPaymentIdsByType?: EffectBlockContinuation["costPaymentIdsByType"];
@@ -1310,6 +1350,16 @@ export interface MatchState {
   resolutionQueue: ResolutionItem[];
   resolutionStatus: ResolutionStatus;
   commandHistory: Array<GameCommand | JudgeCommand>;
+  /**
+   * [Activate: Main] blocks ("instanceId:trigger:blockIndex") whose optional
+   * activation cost the player declined after activating them, while nothing
+   * else has happened since. Declining means the effect was not activated
+   * (8-3-1-4), so it does not use up [Once Per Turn] (10-2-13-1) and may be
+   * activated again; but declining that repeated activation would only repeat
+   * the no-op (a loop for bots), so its optional prompt then offers no "no".
+   * Absent when empty; cleared by any other command.
+   */
+  declinedActivations?: string[];
 }
 
 export interface PromptResolution {

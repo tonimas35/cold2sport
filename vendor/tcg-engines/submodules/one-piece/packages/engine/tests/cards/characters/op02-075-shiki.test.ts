@@ -63,11 +63,26 @@ describe("OP02-075 Shiki", () => {
     const donDeckBefore = engine.getView("north").players.north.donDeckCount;
 
     engine.declareAttack(attacker, engine.leader("north"), "south");
-    engine.resolveDecision("lifeTrigger", { optionId: "activate" }, "north");
+    // 8-4-1-3 / 8-3-1-3: the [Trigger]'s DON!! −1 cannot be paid in full, so
+    // the [Trigger] cannot be activated at all; the only answer left is to add
+    // Shiki to hand (10-1-5-2) instead of losing it to the trash.
+    const trigger = engine
+      .getState()
+      .promptQueue.find(
+        (p) => p.status === "pending" && p.resolutionContext?.intent === "lifeTrigger",
+      );
+    expect(trigger?.options.find((option) => option.id === "activate")?.enabled).toBe(false);
+    engine.expectFailure({
+      type: "resolvePrompt",
+      seat: "north",
+      promptId: trigger!.id,
+      optionId: "activate",
+    });
+    engine.resolveDecision("lifeTrigger", { optionId: "skip" }, "north");
 
     const view = engine.getView("north");
     expect(view.players.north.characters.some((card) => card?.instanceId === shiki)).toBe(false);
-    expect(view.players.north.trash.map((card) => card.instanceId)).toContain(shiki);
+    expect(view.players.north.hand.map((card) => card.instanceId)).toContain(shiki);
     expect(view.players.north.donDeckCount).toBe(donDeckBefore);
     expect(view.prompts).toHaveLength(0);
   });

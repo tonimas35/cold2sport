@@ -97,7 +97,7 @@ describe("OP03-116 Shirahoshi", () => {
     const deckBefore = engine.getView("north").players.north.deckCount;
 
     engine.declareAttack(attackerId, engine.leader("north"), "south");
-    engine.resolveDecision("lifeTrigger", { optionId: "decline" }, "north");
+    engine.resolveDecision("lifeTrigger", { optionId: "skip" }, "north");
 
     const view = engine.getView("north");
     expect(view.players.north.hand.map((card) => card.instanceId)).toContain(shirahoshiId);

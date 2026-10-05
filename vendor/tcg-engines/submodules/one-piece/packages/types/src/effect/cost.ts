@@ -24,7 +24,22 @@ export type Cost =
   | KoCharacterCost
   | PlayCardCost
   | TrashCardCost
-  | ModifyLeaderPowerCost;
+  | ModifyLeaderPowerCost
+  | ChoiceCost;
+
+/**
+ * Alternative activation costs: "You may A or B:" (OP17-020 Shanks: "trash 1
+ * card from your hand or rest 1 of your DON!! cards"). Exactly one option is
+ * paid; each option is a list of costs paid in printed order (8-3-1-1). The
+ * cost is payable when any option is (8-3-1-3 applies to the option chosen),
+ * and the controller chooses when more than one is payable (OP17 FAQ: with no
+ * cards in hand the DON!! option can still be paid). A block holds at most one
+ * choice cost, and options do not nest.
+ */
+export interface ChoiceCost {
+  cost: "choice";
+  options: Array<Array<Exclude<Cost, ChoiceCost>>>;
+}
 
 export interface CardCostOption {
   zones: Zone[];

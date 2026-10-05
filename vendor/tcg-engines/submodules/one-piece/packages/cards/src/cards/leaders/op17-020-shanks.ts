@@ -40,14 +40,13 @@ export const op17Shanks020: LeaderCard = {
     effects: [
       {
         trigger: "activateMain",
+        // "trash 1 card from your hand OR rest 1 of your DON!! cards": one of
+        // the two is paid (OP17 FAQ: with no cards in hand, resting 1 DON!!
+        // still activates it).
         costs: [
           {
-            cost: "trashFromHand",
-            amount: 1,
-          },
-          {
-            cost: "restDon",
-            amount: 1,
+            cost: "choice",
+            options: [[{ cost: "trashFromHand", amount: 1 }], [{ cost: "restDon", amount: 1 }]],
           },
         ],
         actions: [

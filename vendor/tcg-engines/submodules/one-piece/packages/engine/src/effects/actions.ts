@@ -1149,6 +1149,21 @@ export function validActiveIdsForGroupedPlayAction(
   });
 }
 
+/** Option id of the index-th active DON!! card in a cost owner's cost area. */
+export const ACTIVE_DON_COST_PREFIX = "active-don:";
+
+export function isActiveDonCostId(id: string): boolean {
+  return id.startsWith(ACTIVE_DON_COST_PREFIX);
+}
+
+/**
+ * Cards that can be rested for a "rest N of your cards" cost. An unfiltered
+ * cost ("rest 1 of your cards") also takes active DON!! cards in the cost
+ * area (OP14/EB04 FAQ for OP14-020: "resting 1 of your active Leader,
+ * Character, Stage, or DON!! cards"), listed after the field cards as
+ * interchangeable "active-don:<index>" ids. A filtered cost ("rest 1 of your
+ * Characters", "your Leader") names card kinds a DON!! card never matches.
+ */
 export function candidatesForRestCardsCost(
   state: MatchState,
   controller: MatchSeat,
@@ -1156,7 +1171,7 @@ export function candidatesForRestCardsCost(
   cost: RestCardsCost,
 ): string[] {
   const player = getPlayer(state, controller);
-  return [
+  const fieldCandidates = [
     player.leaderInstanceId,
     ...player.characterArea.filter((entry): entry is string => Boolean(entry)),
     ...(player.stageArea ? [player.stageArea] : []),
@@ -1169,6 +1184,23 @@ export function candidatesForRestCardsCost(
         return result.supported && result.matches;
       }),
   );
+  if (cost.filters?.length || player.activeDon === 0) {
+    return fieldCandidates;
+  }
+  return [
+    ...fieldCandidates,
+    ...Array.from({ length: player.activeDon }, (_, index) => `${ACTIVE_DON_COST_PREFIX}${index}`),
+  ];
+}
+
+/**
+ * Whether paying a "rest N of your cards" cost involves a real choice. Active
+ * DON!! cards are interchangeable, so N of them alone are not a choice; any
+ * field card among more candidates than N is (resting the Leader or a Blocker
+ * versus a DON!! card matters).
+ */
+export function restCardsCostNeedsChoice(candidateIds: readonly string[], amount: number): boolean {
+  return candidateIds.length > amount && !candidateIds.every(isActiveDonCostId);
 }
 
 function candidatesForCardCostOption(
@@ -2077,6 +2109,23 @@ export function actionTargetIsEligible(
     action.requiresKeyword &&
     !getKeywords(state, instanceId).has(action.keyword)
   ) {
+    return false;
+  }
+  if (
+    action.action === "activateEvent" &&
+    getCardForInstance(state, instanceId).cardType === "event" &&
+    !eventActivationCostsPayable(
+      state,
+      getInstance(state, instanceId).controller,
+      action.effectTrigger,
+      [instanceId],
+      // Activated by an effect: the Event's own cost is not paid, and it
+      // waits in the resolution area while its [Main] resolves.
+      { cardCost: 0, destination: "resolution" },
+    )
+  ) {
+    // 8-3-1-3: an Event whose mandatory [Main] activation cost cannot be paid
+    // cannot be activated, so it is not a legal choice.
     return false;
   }
   return true;
@@ -6175,6 +6224,142 @@ export function giveDonCostParts(
   return { donorSeat, recipientSeat, poolAmount };
 }
 
+/** Key of one activated block in MatchState.declinedActivations. */
+export function declinedActivationKey(
+  sourceInstanceId: string,
+  trigger: string,
+  blockIndex: number,
+): string {
+  return `${sourceInstanceId}:${trigger}:${blockIndex}`;
+}
+
+/**
+ * Whether Events can activate their `trigger` effect ([Main] or [Counter]):
+ * every mandatory activation cost of those blocks must be payable (8-4-1-3),
+ * and one that cannot be paid in full cannot be paid at all (8-3-1-3), so the
+ * Event cannot be activated. A cost the text makes optional ("You may ...:",
+ * 8-3-1-4) can be declined and never blocks it.
+ *
+ * The costs are checked against the state they are paid from: `cardCost`
+ * already rested from active DON!! and every card in `usedIds` (default: the
+ * Events themselves) gone from the hand, the Events to `destination` (trash
+ * after a play or a Counter, the resolution area when another effect
+ * activates them), so neither the Event nor the DON!! that paid for it can
+ * pay again. Several Events used together (Counter Step) also share the
+ * DON!! cards their DON!! −X costs return (8-3-1-6).
+ */
+export function eventActivationCostsPayable(
+  state: MatchState,
+  seat: MatchSeat,
+  trigger: "main" | "counter",
+  eventIds: readonly string[],
+  options: { cardCost: number; destination: "trash" | "resolution"; usedIds?: readonly string[] },
+): boolean {
+  const mandatory = eventIds.flatMap((instanceId) =>
+    effectBlocksForInstance(state, instanceId, trigger)
+      .filter((block) => !block.optional && block.costs?.length)
+      .map((block) => ({ instanceId, costs: block.costs! })),
+  );
+  if (mandatory.length === 0) {
+    return true;
+  }
+  const usedIds = options.usedIds ?? eventIds;
+  const player = getPlayer(state, seat);
+  const cards = { ...state.cards };
+  for (const instanceId of usedIds) {
+    cards[instanceId] = {
+      ...cards[instanceId]!,
+      zone: eventIds.includes(instanceId) ? options.destination : "trash",
+    };
+  }
+  const projected: MatchState = {
+    ...state,
+    players: {
+      ...state.players,
+      [seat]: {
+        ...player,
+        activeDon: player.activeDon - options.cardCost,
+        restedDon: player.restedDon + options.cardCost,
+        hand: player.hand.filter((handId) => !usedIds.includes(handId)),
+        trash: [
+          ...player.trash,
+          ...usedIds.filter((id) => cards[id]!.zone === "trash" && !player.trash.includes(id)),
+        ],
+      },
+    },
+    cards,
+  };
+  if (
+    !mandatory.every(({ instanceId, costs }) =>
+      canPayCosts(projected, seat, instanceId, costs, undefined),
+    )
+  ) {
+    return false;
+  }
+  const returnedDon = mandatory.reduce(
+    (total, { costs }) =>
+      total +
+      costs.reduce(
+        (sum, cost) =>
+          cost.cost === "returnDon" ? sum + (cost.amount ?? cost.minimumAmount ?? 0) : sum,
+        0,
+      ),
+    0,
+  );
+  return returnedDon <= returnDonCostOptions(projected, seat).length;
+}
+
+/**
+ * A block's activation costs once its "choice" cost ("You may A or B:") is
+ * settled: the chosen option's costs take the choice's place, in printed order
+ * (8-3-1-1). Without a choice cost, or before the option is chosen, the
+ * block's own array comes back unchanged.
+ */
+export function effectBlockCosts(
+  costs: Cost[] | undefined,
+  costOption: number | undefined,
+): Cost[] | undefined {
+  if (costOption === undefined || !costs?.some((cost) => cost.cost === "choice")) {
+    return costs;
+  }
+  return costs.flatMap((cost) =>
+    cost.cost === "choice" ? (cost.options[costOption] ?? []) : [cost],
+  );
+}
+
+/**
+ * Indexes of the options of a block's "choice" cost that can be paid now,
+ * together with the block's other costs (8-3-1-3: the whole activation cost
+ * of the chosen alternative must be payable). Empty without a choice cost.
+ */
+export function payableCostOptions(
+  state: MatchState,
+  controller: MatchSeat,
+  sourceInstanceId: string,
+  costs: Cost[] | undefined,
+  trashHandIds: string[] | undefined,
+  costPaymentIds?: string[],
+  costPaymentIdsByType?: EffectBlockContinuation["costPaymentIdsByType"],
+): number[] {
+  const choice = costs?.find((cost) => cost.cost === "choice");
+  if (!choice || choice.cost !== "choice") {
+    return [];
+  }
+  return choice.options.flatMap((_, index) =>
+    canPayCosts(
+      state,
+      controller,
+      sourceInstanceId,
+      effectBlockCosts(costs, index),
+      trashHandIds,
+      costPaymentIds,
+      costPaymentIdsByType,
+    )
+      ? [index]
+      : [],
+  );
+}
+
 export function canPayCosts(
   state: MatchState,
   controller: MatchSeat,
@@ -6194,6 +6379,24 @@ export function canPayCosts(
 
   for (const cost of costs) {
     switch (cost.cost) {
+      case "choice":
+        // Alternative costs: payable when one option is payable in full.
+        if (
+          !cost.options.some((option) =>
+            canPayCosts(
+              state,
+              controller,
+              sourceInstanceId,
+              option,
+              trashHandIds,
+              costPaymentIds,
+              costPaymentIdsByType,
+            ),
+          )
+        ) {
+          return false;
+        }
+        break;
       case "trashThisCard": {
         const trashThisCost = cost as Extract<
           Cost,
@@ -6436,10 +6639,19 @@ export function canPayCosts(
         const candidates = candidatesForRestCardsCost(state, controller, sourceInstanceId, cost);
         const selected =
           costPaymentIdsByType?.restCards ?? costPaymentIds ?? candidates.slice(0, cost.amount);
+        // An active DON!! card rested here cannot also pay a "rest N DON!!"
+        // (①) cost of the same activation.
+        const restDonInSameCost = costs.reduce(
+          (total, other) => total + (other.cost === "restDon" ? other.amount : 0),
+          0,
+        );
         if (
           selected.length !== cost.amount ||
           new Set(selected).size !== selected.length ||
-          selected.some((instanceId) => !candidates.includes(instanceId))
+          selected.some((instanceId) => !candidates.includes(instanceId)) ||
+          (restDonInSameCost > 0 &&
+            selected.filter(isActiveDonCostId).length + restDonInSameCost >
+              getPlayer(state, controller).activeDon)
         ) {
           return false;
         }
@@ -6550,6 +6762,36 @@ export function payCosts(
 
   for (const cost of costs) {
     switch (cost.cost) {
+      case "choice": {
+        // processEffectBlock settles the choice first (effectBlockCosts); a
+        // choice still unsettled here pays its first payable option.
+        const option = cost.options.find((candidate) =>
+          canPayCosts(
+            state,
+            controller,
+            sourceInstanceId,
+            candidate,
+            trashHandIds,
+            costPaymentIds,
+            costPaymentIdsByType,
+          ),
+        );
+        if (
+          !option ||
+          !payCosts(
+            state,
+            controller,
+            sourceInstanceId,
+            option,
+            trashHandIds,
+            costPaymentIds,
+            costPaymentIdsByType,
+          )
+        ) {
+          return false;
+        }
+        break;
+      }
       case "restDon":
         getPlayer(state, controller).activeDon -= cost.amount;
         getPlayer(state, controller).restedDon += cost.amount;
@@ -6827,8 +7069,15 @@ export function payCosts(
             0,
             cost.amount,
           );
-        for (const instanceId of selected) {
-          restCard(state, instanceId, controller);
+        for (const id of selected) {
+          if (isActiveDonCostId(id)) {
+            // A DON!! card is a card too: resting it moves it from the active
+            // to the rested pool of the cost area.
+            getPlayer(state, controller).activeDon -= 1;
+            getPlayer(state, controller).restedDon += 1;
+          } else {
+            restCard(state, id, controller);
+          }
         }
         break;
       }

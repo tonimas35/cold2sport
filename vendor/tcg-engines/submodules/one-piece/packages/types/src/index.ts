@@ -25,6 +25,7 @@ export type {
   CannotBeKodAction,
   CannotBeRemovedAction,
   CardEffects,
+  ChoiceCost,
   Comparison,
   Condition,
   Cost,

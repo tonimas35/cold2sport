@@ -98,6 +98,15 @@ decisión, mediana 4, p90 19, p99 64. Unas 90 decisiones por partida (45 en fase
 - Los manejadores aceptan algunas jugadas que `getLegalCommands` oculta (por ejemplo `playCard` con
   un prompt pendiente). Generar jugadas siempre desde `getLegalCommands`.
 - Ids inexistentes lanzan una excepción en vez de rechazarse.
+- **Opciones deshabilitadas**: un prompt puede listar opciones con `enabled: false` que el motor
+  rechaza (un evento de [Counter] cuyo coste no se puede pagar, "activar" un [Trigger] cuyo coste
+  DON!! −X no se puede pagar, o "no" al repetir una activación que se acaba de rechazar). Los prompts
+  de sí/no (`lifeTrigger`, `effectOptional`, `effectActionOptional`) solo aceptan sus propias
+  opciones: un id desconocido ya no se toma como "saltar".
+- **Activar y rechazar en bucle**: rechazar el coste opcional de un [Activate: Main] equivale a no
+  activarlo (8-3-1-4) y no gasta [Once Per Turn]; se puede volver a activar, pero si no ha pasado
+  nada más entretanto esa segunda activación ya no se puede rechazar (`state.declinedActivations`).
+  Así un bot no puede quedarse activando y rechazando la misma carta para siempre.
 - **Restricciones ocultas en las selecciones**: algunos efectos limitan la suma de los objetivos
   (por ejemplo OP17-119 Loki: "Personajes con un coste total de 4 o menos"). El límite está en
   `resolutionContext.action.target.totalConstraint`, no en el mínimo/máximo del prompt, así que el
@@ -293,6 +302,23 @@ Con esto se explica que la calibración saliera **negativa** (Rocks perdía 30 d
 el bot de búsqueda, frente al 30 % real): el problema no era solo el bot, sino el motor. Las
 correcciones van como parches `0003` y siguientes, cada una con tests dirigidos por comandos, la
 suite completa del motor y el test diferencial del simulador.
+
+La auditoría del mazo de Shanks (OP17-020) sacó a la luz mecánicas que el motor no tenía:
+
+- **Costes alternativos** ("You may A or B:"): el DSL tiene un coste `choice` con varias opciones;
+  se paga exactamente una, y si se pueden pagar varias el jugador elige (prompt `effectCostChoice`).
+  El Líder Shanks pagaba antes las dos cosas (descartar 1 carta *y* girar 1 DON!!) y con la mano
+  vacía no se podía activar, al contrario que la FAQ de OP17.
+- **"Gira N de tus cartas"** (coste `restCards` sin filtro, OP17-037, OP14-020, OP17-038...) admite
+  también DON!! activos (FAQ de OP14/EB04) y pregunta siempre que hay una elección real.
+- **Costes de activación en otros caminos** (8-3-1-3): un evento de [Counter] cuyo coste obligatorio
+  (por ejemplo DON!! −2 de OP01-118) no se puede pagar ya no se puede usar en el Counter Step, ni
+  varios a la vez si entre todos piden más DON!! de los que hay; "activa 1 Evento de tu mano" solo
+  ofrece eventos cuyo [Main] se puede pagar; un efecto cuyo coste obligatorio no se puede pagar no
+  se activa (antes dejaba un registro `unsupportedCost` y un prompt de juez), y un [Trigger] con coste
+  imposible no se puede activar (la carta va a la mano).
+- **Registros privados**: la vista del rival ya no recibe los ids de carta de los registros privados
+  (por ejemplo la carta que OP16-119 pone boca abajo en las vidas).
 
 Patrones de fallo que conviene buscar en cualquier carta nueva:
 

@@ -50,6 +50,7 @@ export type {
 export type {
   AddLifeToHandCost,
   CardCostOption,
+  ChoiceCost,
   Cost,
   ModifyLeaderPowerCost,
   PlayCardCost,

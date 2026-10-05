@@ -93,7 +93,7 @@ describe("OP04-067 Miss.MerryChristmas(Drophy)", () => {
     );
 
     engine.declareAttack(attackerId, engine.leader("north"), "south");
-    engine.resolveDecision("lifeTrigger", { optionId: "decline" }, "north");
+    engine.resolveDecision("lifeTrigger", { optionId: "skip" }, "north");
 
     const view = engine.getView("north");
     expect(view.players.north.activeDon).toBe(1);

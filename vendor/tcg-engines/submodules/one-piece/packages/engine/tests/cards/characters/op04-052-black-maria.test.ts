@@ -107,7 +107,7 @@ describe("OP04-052 Black Maria", () => {
     const blackMariaId = engine.findCardInZone("north", "life", op04BlackMaria052);
 
     engine.declareAttack(attackerId, engine.leader("north"), "south");
-    engine.resolveDecision("lifeTrigger", { optionId: "decline" }, "north");
+    engine.resolveDecision("lifeTrigger", { optionId: "skip" }, "north");
 
     const view = engine.getView("north");
     expect(view.players.north.hand.map((card) => card.instanceId)).toContain(blackMariaId);

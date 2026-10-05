@@ -52,9 +52,11 @@ export function resolveBotPromptCommand(
   let optionId: string | undefined;
   let selectedIds: string[] | undefined;
 
+  // Disabled options (e.g. a [Trigger] whose cost cannot be paid) are never sent.
+  const enabledOptions = prompt.options.filter((o) => o.enabled !== false);
   if (prompt.choiceKind === "confirm") {
-    const yesOption = prompt.options.find((o) => o.id === "yes" || o.id === "activate");
-    optionId = yesOption?.id ?? prompt.options[0]?.id;
+    const yesOption = enabledOptions.find((o) => o.id === "yes" || o.id === "activate");
+    optionId = yesOption?.id ?? enabledOptions[0]?.id ?? prompt.options[0]?.id;
   } else if (prompt.choiceKind === "selectCards" || prompt.choiceKind === "selectTargets") {
     const count = Math.min(prompt.maxSelections, prompt.minSelections);
     selectedIds = prompt.options.slice(0, count).map((o) => o.id);
@@ -66,7 +68,7 @@ export function resolveBotPromptCommand(
   }
 
   if (optionId === undefined && selectedIds === undefined) {
-    optionId = prompt.options[0]?.id;
+    optionId = enabledOptions[0]?.id ?? prompt.options[0]?.id;
   }
 
   return {

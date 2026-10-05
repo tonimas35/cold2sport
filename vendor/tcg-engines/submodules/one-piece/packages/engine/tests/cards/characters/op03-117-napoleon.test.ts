@@ -122,7 +122,7 @@ describe("OP03-117 Napoleon", () => {
     const napoleonId = engine.findCardInZone("north", "life", op03Napoleon117);
 
     engine.declareAttack(attackerId, engine.leader("north"), "south");
-    engine.resolveDecision("lifeTrigger", { optionId: "decline" }, "north");
+    engine.resolveDecision("lifeTrigger", { optionId: "skip" }, "north");
 
     const view = engine.getView("north");
     expect(view.players.north.hand.map((card) => card.instanceId)).toContain(napoleonId);

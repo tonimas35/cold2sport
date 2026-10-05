@@ -98,7 +98,7 @@ reconciles catalog entries.
 | OP13-079 | Imu | verified | activateMain; deck rule excludes Events of cost 2 or more (deck validation); start-of-game Mary Geoise Stage play not implemented |
 | OP13-100     | Jewelry Bonney                   | verified | Optional Trigger-Character play reaction; 0–2 rested-DON!! count; Leader-or-Character recipient                                         |
 | OP14-001     | Trafalgar Law                    | verified | Alternative included-type candidate mapping; two-Character base-power swap; external DON!! modifier preservation and expiry             |
-| OP14-020     | Dracule Mihawk                   | verified | Opposing Slash permanent power; selectable card-rest cost; post-cost cost-5 gate; 0–3 reactivation; Character play restriction          |
+| OP14-020     | Dracule Mihawk                   | verified | Opposing Slash permanent power; selectable card-rest cost (active DON!! included); post-cost cost-5 gate; 0–3 reactivation; Character play restriction |
 | OP14-040     | Jinbe - OP14-040                 | verified | Filtered hand-trash cost; alternative Fish-Man/Merfolk recipient mapping; 0–2 rested DON!! transfer                                     |
 | OP14-041     | Boa Hancock - OP14-041           | verified | Opponent-turn effect-play draw; DON!! x1; qualifying Kuja base-power-5000 battle K.O.; opposing Life removal                            |
 | OP14-060     | Donquixote Doflamingo - OP14-060 | verified | Opponent-attack optional payment; DON!! return; Leader-or-Donquixote target mapping; live battle retarget                               |
@@ -117,7 +117,7 @@ reconciles catalog entries.
 | OP16-079 | Yamato | verified | Printed behavior is unstructured |
 | OP16-080 | Marshall.D.Teach | verified | permanent |
 | OP17-001 | Edward.Newgate | verified | onOpponentAttack |
-| OP17-020 | Shanks | verified | activateMain |
+| OP17-020 | Shanks | verified | activateMain alternative cost: trash 1 from hand or rest 1 DON!! (chosen when both payable; FAQ empty hand); freeze 1 opposing rested Character; once per turn |
 | OP17-039 | Rocks.D.Xebec | verified | whenAttacking |
 | OP17-058 | Kaido | verified | whenAttacking, onOpponentAttack |
 | OP17-079 | Monkey.D.Luffy | verified | permanent |

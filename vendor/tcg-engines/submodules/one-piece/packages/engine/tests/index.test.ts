@@ -847,11 +847,12 @@ describe("@tcg/op-engine", () => {
       selectedIds: [],
     });
     const triggerPrompt = findPendingPromptByIntent(resolvedCounter.state, "lifeTrigger");
+    // The prompt's own answers are "activate" and "skip"; other ids are rejected.
     const resolvedTrigger = applyCommand(resolvedCounter.state, {
       type: "resolvePrompt",
       seat: "north",
       promptId: triggerPrompt!.id,
-      optionId: "no",
+      optionId: "skip",
     });
 
     expect(triggerPrompt).toBeDefined();

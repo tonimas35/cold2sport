@@ -1,5 +1,5 @@
 import { attackHandTrashCost, canAttackWith, legalAttackTargets } from "../battle.ts";
-import { canPayCosts } from "../effects/actions.ts";
+import { canPayCosts, eventActivationCostsPayable } from "../effects/actions.ts";
 import { evaluateConditions } from "../effects/conditions.ts";
 import { isCardPlayRestricted } from "../effects/permanent.ts";
 import {
@@ -130,31 +130,10 @@ function eventMainCostsPayable(
   instanceId: string,
   cardCost: number,
 ): boolean {
-  const mandatoryCostBlocks = effectBlocksForInstance(state, instanceId, "main").filter(
-    (block) => !block.optional && block.costs?.length,
-  );
-  if (!mandatoryCostBlocks.length) {
-    return true;
-  }
-  const player = getPlayer(state, seat);
-  const instance = getInstance(state, instanceId);
-  const afterPlay: MatchState = {
-    ...state,
-    players: {
-      ...state.players,
-      [seat]: {
-        ...player,
-        activeDon: player.activeDon - cardCost,
-        restedDon: player.restedDon + cardCost,
-        hand: player.hand.filter((handId) => handId !== instanceId),
-        trash: [...player.trash, instanceId],
-      },
-    },
-    cards: { ...state.cards, [instanceId]: { ...instance, zone: "trash" } },
-  };
-  return mandatoryCostBlocks.every((block) =>
-    canPayCosts(afterPlay, seat, instanceId, block.costs, undefined),
-  );
+  return eventActivationCostsPayable(state, seat, "main", [instanceId], {
+    cardCost,
+    destination: "trash",
+  });
 }
 
 export function canPlayCard(

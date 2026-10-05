@@ -360,8 +360,12 @@ function optionCommand(prompt: PromptState, optionId: string): EngineCommand {
 }
 
 function confirm(prompt: PromptState, accept: boolean): EngineCommand | null {
-  const option = prompt.options.find((o) =>
-    accept ? o.id === "yes" || o.id === "activate" : o.id === "no" || o.id === "skip",
+  // A disabled answer is rejected by the engine: e.g. "activate" on a [Trigger]
+  // whose mandatory cost cannot be paid (8-3-1-3).
+  const option = prompt.options.find(
+    (o) =>
+      o.enabled !== false &&
+      (accept ? o.id === "yes" || o.id === "activate" : o.id === "no" || o.id === "skip"),
   );
   return option ? optionCommand(prompt, option.id) : null;
 }

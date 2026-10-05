@@ -17,6 +17,17 @@ describe("OP17-038 I Think He's Seen an Ugly Future", () => {
 
     engine.playCard("OP17-038");
     engine.acceptLeadingOptional("south");
+    // "Rest 4 of your cards" also takes active DON!! cards (OP14/EB04 FAQ on
+    // OP14-020: "your active Leader, Character, Stage, or DON!! cards"), so the
+    // player chooses which 4 of the Leader, 3 Characters and 5 DON!!: here 4 DON!!.
+    const cost = engine.pendingDecision("effectCostRestCards", "south").steps[0];
+    if (cost?.kind !== "payCost") throw new Error("Expected the rest-4 cost.");
+    expect(cost.candidates).toHaveLength(9);
+    engine.resolveDecision(
+      "effectCostRestCards",
+      { selectedIds: ["active-don:0", "active-don:1", "active-don:2", "active-don:3"] },
+      "south",
+    );
     const rest = engine.pendingDecision("effectTargetSelection", "south").steps[0];
     if (rest?.kind !== "selectEntity") throw new Error("Expected the rest target.");
     engine.resolveDecision("effectTargetSelection", { selectedIds: [bennId] }, "south");
@@ -25,6 +36,10 @@ describe("OP17-038 I Think He's Seen an Ugly Future", () => {
       engine.getView("south").players.north.characters.find((c) => c?.instanceId === bennId)
         ?.rested,
     ).toBe(true);
+    const south = engine.getView("south").players.south;
+    expect(south).toMatchObject({ activeDon: 1, restedDon: 6 });
+    expect(south.leader.rested).toBe(false);
+    expect(south.characters.filter((c) => c?.rested)).toHaveLength(0);
     expect(engine.getView("south").prompts).toHaveLength(0);
   });
 

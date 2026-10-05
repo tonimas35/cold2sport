@@ -22,6 +22,10 @@ export {
 export { canPayCosts } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts";
 export { evaluateConditions } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/conditions.ts";
 export { drainResolutionQueue } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/queue.ts";
+// The engine's own check of a Counter Step selection (Event costs, and their
+// mandatory [Counter] activation costs such as DON!! −X), used to enumerate
+// only counter subsets the engine accepts.
+export { counterSelectionIsPayable } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/battle.ts";
 export {
   effectBlocksFor,
   effectBlocksForInstance,

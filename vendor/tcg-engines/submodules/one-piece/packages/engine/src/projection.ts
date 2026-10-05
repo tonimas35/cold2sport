@@ -754,15 +754,24 @@ function projectLogs(state: MatchState, viewer: Viewer): ProjectedLogEntry[] {
       continue;
     }
 
+    // A private log records hidden information (a card placed face-down in
+    // Life, a card trashed from hand): its card ids belong only to the player
+    // it concerns -- its actor, or a seat it has a private message for. The
+    // other player still sees that it happened, without the ids (they would
+    // reveal the card, e.g. OP16-119's [On Play] Life card).
+    const privy =
+      log.visibility !== "private" ||
+      viewer === log.actor ||
+      (viewer !== "spectator" && log.privateMessages[viewer] !== undefined);
     projected.push({
       id: log.id,
       turn: log.turn,
       phase: log.phase,
       sequence: log.sequence,
       actor: log.actor,
-      sourceCardId: log.sourceCardId,
-      sourceInstanceId: log.sourceInstanceId,
-      targetIds: log.targetIds,
+      sourceCardId: privy ? log.sourceCardId : null,
+      sourceInstanceId: privy ? log.sourceInstanceId : null,
+      targetIds: privy ? log.targetIds : [],
       eventId: log.eventId,
       visibility: log.visibility,
       message: viewer === "spectator" ? log.message : (log.privateMessages[viewer] ?? log.message),

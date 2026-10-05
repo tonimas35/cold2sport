@@ -1,4 +1,4 @@
-import type { Action, OPCard } from "@tcg/op-types";
+import type { Action, Cost, OPCard } from "@tcg/op-types";
 import type {
   EngineCommand,
   LegalCommandDescriptor,
@@ -18,6 +18,7 @@ import {
   getPlayer,
   otherSeat,
 } from "../shared.ts";
+import { counterSelectionIsPayable } from "../battle.ts";
 import { selectionSatisfiesTotalConstraint } from "../effects/targeting.ts";
 import {
   commandFromDescriptor,
@@ -685,11 +686,13 @@ export function createHeuristicStrategy(policy: HeuristicPolicy): OnePieceBotStr
 
 function confirmCommand(prompt: PromptState, accept: boolean): EngineCommand {
   const seat = prompt.seat as MatchSeat;
-  const acceptOption = prompt.options.find((o) => o.id === "yes" || o.id === "activate");
-  const declineOption = prompt.options.find((o) => o.id === "no" || o.id === "skip");
+  // A disabled answer (e.g. a [Trigger] whose cost cannot be paid) is never sent.
+  const options = prompt.options.filter((o) => o.enabled !== false);
+  const acceptOption = options.find((o) => o.id === "yes" || o.id === "activate");
+  const declineOption = options.find((o) => o.id === "no" || o.id === "skip");
   const optionId = accept
-    ? (acceptOption?.id ?? prompt.options[0]?.id)
-    : (declineOption?.id ?? prompt.options[0]?.id);
+    ? (acceptOption?.id ?? declineOption?.id ?? options[0]?.id)
+    : (declineOption?.id ?? options[0]?.id);
   return { type: "resolvePrompt", seat, promptId: prompt.id, optionId };
 }
 
@@ -844,14 +847,14 @@ function resolveBattleCounter(
   const descending = [...usable].sort((a, b) => b.value - a.value || a.cost - b.cost);
   const chosen: string[] = [];
   let total = 0;
-  let donBudget = me.activeDon; // [Counter] Events each need their cost paid
   for (const counter of descending) {
     if (total >= needed) break;
     const isEvent = getCardForInstance(state, counter.id).cardType === "event";
-    if (isEvent && counter.cost > donBudget) continue;
+    // [Counter] Events each need their cost paid, and their DON!! −X costs
+    // must fit the DON!! cards on the field together (the engine's own check).
+    if (isEvent && !counterSelectionIsPayable(state, seat, [...chosen, counter.id])) continue;
     chosen.push(counter.id);
     total += counter.value;
-    if (isEvent) donBudget -= counter.cost;
   }
   if (total >= needed || lethal) {
     // Lethal with an unsurvivable wall: go down fighting (spec).
@@ -1002,9 +1005,51 @@ function resolveCostSelection(state: MatchState, prompt: PromptState): EngineCom
   } else {
     ordered = byCheapest(state, candidateIds);
   }
+  // Options that are not cards -- an active DON!! card for "rest N of your
+  // cards" ("active-don:0") -- complete the count after the cards.
+  ordered = [
+    ...ordered,
+    ...prompt.options
+      .filter((o) => o.targetId === undefined && state.cards[o.id] === undefined)
+      .map((o) => o.id),
+  ];
 
   const count = Math.min(Math.max(prompt.minSelections, 1), ordered.length);
   return selectCommand(prompt, ordered.slice(0, count));
+}
+
+/** Activation costs that spend DON!! cards rather than cards from hand, field or Life. */
+const DON_ONLY_COSTS = new Set<Cost["cost"]>(["restDon", "returnDon", "giveDon"]);
+
+/**
+ * "You may A or B:" (effectCostChoice): pay with DON!! rather than with cards
+ * when both are possible -- e.g. OP17-020 Shanks rests 1 DON!! instead of
+ * trashing a card from hand. Among options of the same kind, the first.
+ */
+function resolveCostChoice(state: MatchState, prompt: PromptState): EngineCommand | null {
+  const context = prompt.resolutionContext;
+  if (context?.intent !== "effectCostChoice" || !state.cards[context.sourceInstanceId]) {
+    return null;
+  }
+  const choice = effectBlocksFor(
+    getCardForInstance(state, context.sourceInstanceId),
+    context.trigger,
+  )[context.blockIndex]?.costs?.find((cost) => cost.cost === "choice");
+  if (choice?.cost !== "choice") {
+    return null;
+  }
+  const spendsCards = (index: number) =>
+    (choice.options[index] ?? []).some((cost) => !DON_ONLY_COSTS.has(cost.cost));
+  const best =
+    context.optionIndexes.find((index) => !spendsCards(index)) ?? context.optionIndexes[0];
+  return best === undefined
+    ? null
+    : {
+        type: "resolvePrompt",
+        seat: prompt.seat as MatchSeat,
+        promptId: prompt.id,
+        optionId: String(best),
+      };
 }
 
 export function createHeuristicPromptResolver(policy: HeuristicPolicy): OnePieceBotPromptResolver {
@@ -1023,6 +1068,10 @@ export function createHeuristicPromptResolver(policy: HeuristicPolicy): OnePiece
 
     if (prompt.choiceKind === "costPayment") {
       return resolveCostSelection(state, prompt);
+    }
+
+    if (intent === "effectCostChoice") {
+      return resolveCostChoice(state, prompt);
     }
 
     if (prompt.choiceKind === "orderCards") {
