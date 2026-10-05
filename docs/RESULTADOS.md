@@ -38,6 +38,20 @@ compara con los resultados reales entre esos Líderes en los torneos de Limitles
 |---|---|---|---|---|---|---|
 | 2026-10-05 | `heuristic` | Rocks, Luffy (OP17-079), Sabo, Shanks | 60 | **−0,24** | 37 puntos | 2 de 5 |
 | 2026-10-05 | `heuristic` (muestra real ampliada: 44 torneos, p. ej. 139 partidas Rocks–Sabo) | ídem | 60 | **−0,23** | 33 puntos | 2 de 6 |
+| 2026-10-05 | `policy` (heurística mejorada), motor con los parches 0001–0012 | los 9 del pool | 60 | **0,07** | 30,8 puntos | 18 de 36 |
+
+**Calibración con el motor corregido (parches 0001–0012) y `policy`** (36 enfrentamientos con al
+menos 5 partidas reales): la correlación sube de −0,23 a 0,07, pero la simulación sigue sin
+parecerse a la realidad. Los dos casos más extremos son **Kaido** (0 % contra Luffy simulado, 49 %
+real; pierde casi todo salvo contra Pudding y Enel) y **Enel** (3–10 % contra Shanks, Luffy y
+Luffy & Ace, frente a 48–71 % reales). Se está investigando si queda algún fallo del motor en esos
+mazos o si es que los bots no saben jugar mazos de rampa de DON!!. En marcha: la misma calibración
+con el bot de búsqueda.
+
+```bash
+bun packages/opbot/src/cli.ts calibrate --decks decks/meta-op17-postban --agent policy --games 60 \
+  --workers 3 --seed cal2
+```
 
 Ejemplos: Rocks contra Shanks sale 2 % simulado frente a 75 % real (8 partidas); Rocks contra Sabo,
 18 % frente a 71 % (34). La heurística del motor juega muy mal algunos mazos (por ejemplo, con
