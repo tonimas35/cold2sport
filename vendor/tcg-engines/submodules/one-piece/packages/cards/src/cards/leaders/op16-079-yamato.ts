@@ -60,7 +60,7 @@ export const op16Yamato079: LeaderCard = {
                 {
                   filter: "trait",
                   value: "Land of Wano",
-                  match: "includes",
+                  match: "exact",
                 },
               ],
             },

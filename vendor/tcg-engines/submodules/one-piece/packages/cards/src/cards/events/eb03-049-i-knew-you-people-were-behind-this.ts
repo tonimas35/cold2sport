@@ -61,7 +61,7 @@ export const eb03IKnewYouPeopleWereBehindThis049: EventCard = {
                   {
                     filter: "trait",
                     value: "Thriller Bark Pirates",
-                    match: "includes",
+                    match: "exact",
                   },
                   {
                     filter: "cardCategory",
@@ -88,7 +88,7 @@ export const eb03IKnewYouPeopleWereBehindThis049: EventCard = {
                   {
                     filter: "trait",
                     value: "Thriller Bark Pirates",
-                    match: "includes",
+                    match: "exact",
                   },
                   {
                     filter: "cardCategory",

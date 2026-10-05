@@ -63,7 +63,7 @@ export const eb02NicoRobin036: CharacterCard = {
               {
                 filter: "trait",
                 value: "Straw Hat Crew",
-                match: "includes",
+                match: "exact",
               },
             ],
             revealDestination: "hand",

@@ -32,8 +32,8 @@ export const op15Arlong023: CharacterCard = {
   cost: 4,
   power: 5000,
   counter: 1000,
-  attribute: "strike",
-  traits: ["Fish-Man Arlong Pirates East Blue"],
+  attribute: "slash",
+  traits: ["Fish-Man", "East Blue", "Arlong Pirates"],
   effect:
     "[On K.O.] Up to 2 of your opponent's rested cards will not become active in your opponent's next Refresh Phase.\n[Activate: Main] [Once Per Turn] You may give 1 of your opponent's rested DON!! cards to 1 of your opponent's Characters: Give up to 1 DON!! card from its owner's cost area to its owner's Leader or 1 of their Characters.",
   effects: {

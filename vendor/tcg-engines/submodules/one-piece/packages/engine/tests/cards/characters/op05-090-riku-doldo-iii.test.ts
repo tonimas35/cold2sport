@@ -10,7 +10,7 @@ const compoundDressrosa: CharacterCard = {
   id: "TEST-OP05-090-COMPOUND-DRESSROSA",
   canonicalId: "TEST-OP05-090-COMPOUND-DRESSROSA",
   name: "Compound Dressrosa Character",
-  traits: ["Beautiful Pirates/Dressrosa"],
+  traits: ["Beautiful Pirates", "Dressrosa"],
 };
 registerCards([compoundDressrosa]);
 

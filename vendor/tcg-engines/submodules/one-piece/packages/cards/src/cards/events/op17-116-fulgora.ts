@@ -21,7 +21,7 @@ export const op17Fulgora116: EventCard = {
   rarity: "UC",
   setId: "OP17",
   cost: 1,
-  traits: ["The Four Emperors Big Mom Pirates"],
+  traits: ["The Four Emperors", "Big Mom Pirates"],
   effect:
     "[Main] You may rest 2 of your DON!! cards: K.O. up to 1 of your opponent's Stages.\n[Counter] If you have 2 or more Characters with a [Trigger], up to 1 of your Leader or Characters gains +4000 power during this battle.",
   effects: {

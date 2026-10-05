@@ -11,7 +11,7 @@ const compoundDonquixote: CharacterCard = {
   canonicalId: "TEST-OP10-071-DONQUIXOTE",
   name: "Donquixote Compound Trait Test",
   cost: 5,
-  traits: ["Donquixote Pirates Navy"],
+  traits: ["Donquixote Pirates", "Navy"],
 };
 registerCards([compoundDonquixote]);
 

@@ -59,7 +59,7 @@ export const prb02CharlottePuddingPrb02010010: CharacterCard = {
                 {
                   condition: "leaderTrait",
                   trait: "Big Mom Pirates",
-                  match: "includes",
+                  match: "exact",
                 },
                 {
                   condition: "donFieldCount",
@@ -94,7 +94,7 @@ export const prb02CharlottePuddingPrb02010010: CharacterCard = {
               {
                 filter: "trait",
                 value: "Big Mom Pirates",
-                match: "includes",
+                match: "exact",
               },
               {
                 filter: "cardCategory",

@@ -73,7 +73,7 @@ export const eb02WithoutYourHelpICanTBecomeTheKingOfThePirates059: EventCard = {
                     {
                       filter: "trait",
                       value: "Straw Hat Crew",
-                      match: "includes",
+                      match: "exact",
                     },
                   ],
                   [

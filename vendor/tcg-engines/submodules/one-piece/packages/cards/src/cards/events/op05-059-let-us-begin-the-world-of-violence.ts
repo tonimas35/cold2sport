@@ -5,7 +5,7 @@ export const op05LetUsBeginTheWorldOfViolence059: EventCard = {
   id: "OP05-059",
   canonicalId: "OP05-059",
   slug: "let-us-begin-the-world-of-violence",
-  name: "Let Us Begin the World of Violence!!",
+  name: "Let Us Begin the World of Violence!!!",
   printings: [
     {
       id: "OP05-059",
@@ -21,7 +21,7 @@ export const op05LetUsBeginTheWorldOfViolence059: EventCard = {
   rarity: "UC",
   setId: "OP05",
   cost: 5,
-  traits: ["Animal Kingdom Pirates The Four Emperors"],
+  traits: ["The Four Emperors", "Animal Kingdom Pirates"],
   effect:
     "[Main] If your Leader is multicolored, draw 1 card. Then, return up to 1 Character with a cost of 5 or less to the owner's hand. [Trigger] If your Leader is multicolored, draw 2 cards.",
   effects: {

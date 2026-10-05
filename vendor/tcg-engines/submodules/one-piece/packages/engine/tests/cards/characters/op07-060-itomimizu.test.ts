@@ -4,9 +4,9 @@ import { op07Foxy059, op07Itomimizu060 } from "@tcg/op-cards";
 import { OnePieceTestEngine } from "../../../src/index.ts";
 
 describe("OP07-060 Itomimizu", () => {
-  test("with an included Foxy Pirates Leader and no other copy, adds one rested DON!! once", () => {
+  test("with a Leader that has {Foxy Pirates} among other types and no other copy, adds one rested DON!! once", () => {
     const originalTraits = op07Foxy059.traits;
-    op07Foxy059.traits = ["Foxy Pirates Long Ring Long Land"];
+    op07Foxy059.traits = ["Foxy Pirates", "Long Ring Long Land"];
     try {
       const engine = OnePieceTestEngine.create({
         leaderCardId: op07Foxy059,

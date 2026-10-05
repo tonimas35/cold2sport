@@ -35,7 +35,7 @@ export const op17UltiPageOne060: CharacterCard = {
           {
             condition: "leaderTrait",
             trait: "Animal Kingdom Pirates",
-            match: "includes",
+            match: "exact",
           },
         ],
         actions: [

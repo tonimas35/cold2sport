@@ -36,7 +36,7 @@ export const st31ThousandSunny005: StageCard = {
             lookCount: 5,
             source: { player: "self", zone: "deck" },
             revealCount: { amount: 1, upTo: true },
-            revealFilters: [{ filter: "trait", value: "Straw Hat Crew", match: "includes" }],
+            revealFilters: [{ filter: "trait", value: "Straw Hat Crew", match: "exact" }],
             revealDestination: "hand",
             remainderPosition: "bottom",
           },

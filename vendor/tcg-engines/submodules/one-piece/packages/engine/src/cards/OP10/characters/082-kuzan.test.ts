@@ -35,14 +35,16 @@ describe("OP10-082 Kuzan", () => {
     expect(view.prompts).toHaveLength(0);
   });
 
-  test("trashes itself, draws, then plays an included cost-5 Blackbeard Character from trash", () => {
+  // 2-4-3: {Blackbeard Pirates} means that exact type, so Peachbeard
+  // ({Peachbeard Pirates}/{Blackbeard Pirates Allies}) is not a candidate.
+  test("trashes itself, draws, then plays a {Blackbeard Pirates} cost-5 Character from trash", () => {
     const engine = OnePieceTestEngine.create({
       character: [op10Kuzan082],
       deck: [eb01Fourtricks025, eb01Doma005],
       trash: [op09Peachbeard094, op09AvaloPizarro082, op09MarshallDTeach093, eb01Doma005],
     });
     const kuzanId = engine.findCardInZone("south", "character", op10Kuzan082);
-    const compoundTraitId = engine.findCardInZone("south", "trash", op09Peachbeard094);
+    const alliesTraitId = engine.findCardInZone("south", "trash", op09Peachbeard094);
     const exactTraitId = engine.findCardInZone("south", "trash", op09AvaloPizarro082);
     const tooExpensiveId = engine.findCardInZone("south", "trash", op09MarshallDTeach093);
     const wrongTraitId = engine.findCardInZone("south", "trash", eb01Doma005);
@@ -53,21 +55,16 @@ describe("OP10-082 Kuzan", () => {
     const play = engine.pendingDecision("effectPlaySelection", "south").steps[0];
     expect(play).toMatchObject({ kind: "selectEntity", min: 0, max: 1 });
     if (play?.kind !== "selectEntity") throw new Error("Expected Kuzan's trash play.");
-    expect(play.candidates.map((candidate) => candidate.ref.id)).toEqual([
-      compoundTraitId,
-      exactTraitId,
-    ]);
+    expect(play.candidates.map((candidate) => candidate.ref.id)).toEqual([exactTraitId]);
     expect(play.candidates.map((candidate) => candidate.ref.id)).not.toEqual(
-      expect.arrayContaining([kuzanId, tooExpensiveId, wrongTraitId]),
+      expect.arrayContaining([kuzanId, tooExpensiveId, wrongTraitId, alliesTraitId]),
     );
-    engine.resolveDecision("effectPlaySelection", { selectedIds: [compoundTraitId] }, "south");
+    engine.resolveDecision("effectPlaySelection", { selectedIds: [exactTraitId] }, "south");
 
     const view = engine.getView("south");
     expect(view.players.south.trash.map((card) => card.instanceId)).toContain(kuzanId);
     expect(view.players.south.hand.map((card) => card.instanceId)).toContain(drawnId);
-    expect(view.players.south.characters.map((card) => card?.instanceId)).toContain(
-      compoundTraitId,
-    );
+    expect(view.players.south.characters.map((card) => card?.instanceId)).toContain(exactTraitId);
     expect(view.prompts).toHaveLength(0);
   });
 

@@ -21,7 +21,8 @@ export const op03OneTwoJango039: EventCard = {
   rarity: "UC",
   setId: "OP03",
   cost: 1,
-  traits: ["East Blue Black Cat Pirates"],
+  trigger: "Rest up to 1 of your opponent's Characters with a cost of 4 or less.",
+  traits: ["East Blue", "Black Cat Pirates"],
   effect:
     "[Main] Rest up to 1 of your opponent's Characters with a cost of 1 or less. Then, up to 1 of your Characters gains +1000 power during this turn.",
   effects: {
@@ -59,6 +60,29 @@ export const op03OneTwoJango039: EventCard = {
             },
             value: 1000,
             duration: "thisTurn",
+          },
+        ],
+      },
+      {
+        trigger: "trigger",
+        actions: [
+          {
+            action: "rest",
+            target: {
+              player: "opponent",
+              zones: ["character"],
+              count: {
+                amount: 1,
+                upTo: true,
+              },
+              filters: [
+                {
+                  filter: "cost",
+                  comparison: "lte",
+                  value: 4,
+                },
+              ],
+            },
           },
         ],
       },

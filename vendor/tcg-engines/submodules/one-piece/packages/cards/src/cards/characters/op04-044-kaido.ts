@@ -56,7 +56,7 @@ export const op04Kaido044: CharacterCard = {
   setId: "OP04",
   cost: 10,
   power: 12000,
-  traits: ["Animal Kingdom Pirates The Four Emperors"],
+  traits: ["The Four Emperors", "Animal Kingdom Pirates"],
   attribute: "strike",
 
   effect:

@@ -23,7 +23,7 @@ export const op17BasilHawkins073: CharacterCard = {
   cost: 3,
   power: 1000,
   counter: 2000,
-  traits: ["Animal Kingdom Pirates Hawkins Pirates"],
+  traits: ["Animal Kingdom Pirates", "Hawkins Pirates"],
   attribute: "slash",
   effect:
     "[On Play] You may trash 1 card from your hand: If your Leader has the {Animal Kingdom Pirates} type, add up to 1 DON!! card as active from your DON!! deck.",
@@ -42,7 +42,7 @@ export const op17BasilHawkins073: CharacterCard = {
           {
             condition: "leaderTrait",
             trait: "Animal Kingdom Pirates",
-            match: "includes",
+            match: "exact",
           },
         ],
         actions: [

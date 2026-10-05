@@ -47,7 +47,7 @@ export const op07MonkeyDLuffy109: CharacterCard = {
   cost: 5,
   power: 6000,
   counter: 1000,
-  traits: ["Straw Hat Crew The Four Emperors Egghead"],
+  traits: ["The Four Emperors", "Egghead", "Straw Hat Crew"],
   attribute: "strike",
 
   effect:

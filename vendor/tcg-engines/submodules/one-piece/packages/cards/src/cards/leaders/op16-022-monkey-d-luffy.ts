@@ -32,7 +32,7 @@ export const op16MonkeyDLuffy022: LeaderCard = {
   setId: "OP16",
   power: 5000,
   life: 4,
-  traits: ["Straw Hat Crew Impel Down"],
+  traits: ["Impel Down", "Straw Hat Crew"],
   attribute: "strike",
   effect:
     "[Activate:Main] [Once Per Turn] If the only Characters on your field are {Impel Down} type Characters, set up to 2 of your DON!! cards as active.",
@@ -51,7 +51,7 @@ export const op16MonkeyDLuffy022: LeaderCard = {
               {
                 filter: "trait",
                 value: "Impel Down",
-                match: "includes",
+                match: "exact",
                 negate: true,
               },
             ],

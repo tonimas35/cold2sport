@@ -25,7 +25,7 @@ export const op16CatarinaDevon104: CharacterCard = {
   counter: 2000,
   trigger:
     "Draw 1 card and play up to 1 {Blackbeard Pirates} type Character with a cost of 1 from your trash.",
-  traits: ["Blackbeard Pirates Impel Down"],
+  traits: ["Impel Down", "Blackbeard Pirates"],
   attribute: "special",
   effect:
     "[When Attacking] Select up to 1 of your opponent's Characters. This Character's base power becomes the same as the selected Character's power during this turn.",

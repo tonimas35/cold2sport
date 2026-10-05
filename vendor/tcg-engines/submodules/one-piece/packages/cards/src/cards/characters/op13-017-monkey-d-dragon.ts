@@ -41,7 +41,7 @@ export const op13MonkeyDDragon017: CharacterCard = {
             {
               filter: "trait",
               value: "Revolutionary Army",
-              match: "includes",
+              match: "exact",
             },
           ],
         },

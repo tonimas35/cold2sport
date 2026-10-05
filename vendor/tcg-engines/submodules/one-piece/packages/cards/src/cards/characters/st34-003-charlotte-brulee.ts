@@ -49,7 +49,7 @@ export const st34CharlotteBrulee003: CharacterCard = {
               {
                 filter: "trait",
                 value: "Big Mom Pirates",
-                match: "includes",
+                match: "exact",
               },
             ],
             revealDestination: "hand",

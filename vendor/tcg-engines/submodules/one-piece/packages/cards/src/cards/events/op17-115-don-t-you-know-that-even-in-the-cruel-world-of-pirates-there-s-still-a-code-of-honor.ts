@@ -22,7 +22,7 @@ export const op17DonTYouKnowThatEvenInTheCruelWorldOfPiratesThereSStillACodeOfHo
     rarity: "R",
     setId: "OP17",
     cost: 1,
-    traits: ["The Four Emperors Big Mom Pirates"],
+    traits: ["The Four Emperors", "Big Mom Pirates"],
     effect:
       "[Main] Your [Charlotte Linlin] Leader gains [Unblockable] during this turn.\n[Counter] Up to 1 of your [Charlotte Linlin] gains +4000 power during this battle.",
     effects: {

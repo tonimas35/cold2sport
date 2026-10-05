@@ -1,13 +1,40 @@
 import { describe, expect, test } from "vite-plus/test";
+import type { LeaderCard } from "@tcg/op-types";
 import {
   eb01Doma005,
   eb01MountainGod018,
+  op11FishManIsland117,
   op11Shirahoshi022,
   op12UrsaShock096,
 } from "@tcg/op-cards";
 import { op11Fukaboshi110 } from "../../../../../cards/src/cards/characters/op11-110-fukaboshi.ts";
+import { registerCards } from "../../../../../cards/src/runtime-catalog.ts";
 
 import { OnePieceTestEngine } from "../../../index.ts";
+
+// A Leader with the Fish-Man Island type that is not [Shirahoshi].
+const fishManIslandLeader: LeaderCard = {
+  ...op11Shirahoshi022,
+  id: "TEST-OP11-110-FISH-MAN-ISLAND-LEADER",
+  canonicalId: "TEST-OP11-110-FISH-MAN-ISLAND-LEADER",
+  name: "Fish-Man Island Typed Leader",
+  traits: ["Fish-Man Island"],
+  effects: undefined,
+  i18n: { en: { ...op11Shirahoshi022.i18n.en, name: "Fish-Man Island Typed Leader" } },
+};
+registerCards([fishManIslandLeader]);
+
+function koFukaboshi(south: { leaderCardId?: LeaderCard; stage?: typeof op11FishManIsland117 }) {
+  const engine = OnePieceTestEngine.create(
+    { leaderCardId: south.leaderCardId, character: [op11Fukaboshi110], stage: south.stage },
+    { hand: [op12UrsaShock096], activeDon: op12UrsaShock096.cost },
+    { firstPlayer: "south", activeSeat: "north" },
+  );
+  const fukaboshiId = engine.findCardInZone("south", "character", op11Fukaboshi110);
+  engine.playCard(op12UrsaShock096, "north");
+  engine.resolveDecision("effectTargetSelection", { selectedIds: [fukaboshiId] }, "north");
+  return { engine, fukaboshiId };
+}
 
 describe("OP11-110 Fukaboshi", () => {
   test("may rest its Fish-Man Island Leader instead of being K.O.'d", () => {
@@ -29,6 +56,29 @@ describe("OP11-110 Fukaboshi", () => {
     expect(view.players.south.leader.rested).toBe(true);
     expect(view.players.south.characters.map((card) => card?.instanceId)).toContain(fukaboshiId);
     expect(view.prompts).toHaveLength(0);
+  });
+
+  // "[Fish-Man Island]" in brackets is a card name (the OP11-117 Stage), not
+  // the {Fish-Man Island} type.
+  test("may rest its [Fish-Man Island] Stage instead under any Leader", () => {
+    const { engine, fukaboshiId } = koFukaboshi({ stage: op11FishManIsland117 });
+
+    engine.resolveDecision("effectKoReplacement", { optionId: "yes" }, "south");
+
+    const view = engine.getView("south");
+    expect(view.players.south.stage?.rested).toBe(true);
+    expect(view.players.south.leader.rested).toBe(false);
+    expect(view.players.south.characters.map((card) => card?.instanceId)).toContain(fukaboshiId);
+    expect(view.prompts).toHaveLength(0);
+  });
+
+  test("a Leader with the Fish-Man Island type but another name cannot be rested instead", () => {
+    const { engine, fukaboshiId } = koFukaboshi({ leaderCardId: fishManIslandLeader });
+
+    expect(() => engine.pendingDecision("effectKoReplacement", "south")).toThrow();
+    const view = engine.getView("south");
+    expect(view.players.south.leader.rested).toBe(false);
+    expect(view.players.south.trash.map((card) => card.instanceId)).toContain(fukaboshiId);
   });
 
   test("takes either end of Life before K.O.'ing a cost-1-or-less opponent", () => {

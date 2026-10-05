@@ -53,7 +53,7 @@ export const op14eb04Foxy036: CharacterCard = {
             condition: {
               condition: "leaderTrait",
               trait: "Foxy Pirates",
-              match: "includes",
+              match: "exact",
             },
           },
           {
@@ -63,7 +63,7 @@ export const op14eb04Foxy036: CharacterCard = {
             condition: {
               condition: "leaderTrait",
               trait: "Foxy Pirates",
-              match: "includes",
+              match: "exact",
             },
           },
           {

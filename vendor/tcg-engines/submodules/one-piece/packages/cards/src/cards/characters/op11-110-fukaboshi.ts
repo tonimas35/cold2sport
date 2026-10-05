@@ -22,7 +22,7 @@ export const op11Fukaboshi110: CharacterCard = {
   setId: "OP11",
   cost: 3,
   power: 5000,
-  traits: ["Merfolk Fish-Man Island"],
+  traits: ["Merfolk", "Fish-Man Island"],
   attribute: "slash",
   effect:
     "If this Character would be K.O.'d, you may rest 1 of your [Fish-Man Island] or your [Shirahoshi] Leader instead.\n[On Play] You may add 1 card from the top or bottom of your Life cards to your hand: K.O. up to 1 of your opponent's Characters with a cost of 1 or less.",
@@ -68,9 +68,12 @@ export const op11Fukaboshi110: CharacterCard = {
         },
         replacementAction: {
           action: "rest",
+          // "rest 1 of your [Fish-Man Island] or your [Shirahoshi] Leader":
+          // [ ] is a card name, so this is the Fish-Man Island Stage
+          // (OP11-117) or a Shirahoshi Leader, not a Fish-Man Island type.
           target: {
             player: "self",
-            zones: ["leader"],
+            zones: ["leader", "stage"],
             count: {
               amount: 1,
             },
@@ -79,9 +82,8 @@ export const op11Fukaboshi110: CharacterCard = {
                 filter: "anyOf",
                 filters: [
                   {
-                    filter: "trait",
+                    filter: "name",
                     value: "Fish-Man Island",
-                    match: "includes",
                   },
                   {
                     filter: "name",

@@ -64,7 +64,7 @@ export const op04Leo091: CharacterCard = {
             condition: {
               condition: "leaderTrait",
               trait: "Dressrosa",
-              match: "includes",
+              match: "exact",
             },
           },
           {

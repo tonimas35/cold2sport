@@ -63,7 +63,7 @@ export const op16Sengoku060: LeaderCard = {
               {
                 filter: "trait",
                 value: "Admiral",
-                match: "includes",
+                match: "exact",
               },
               {
                 filter: "cardCategory",

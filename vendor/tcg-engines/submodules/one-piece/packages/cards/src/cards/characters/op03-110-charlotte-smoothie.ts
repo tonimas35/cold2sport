@@ -58,6 +58,7 @@ export const op03CharlotteSmoothie110: CharacterCard = {
   cost: 4,
   power: 5000,
   counter: 1000,
+  trigger: "You may trash 1 card from your hand: Play this card.",
   traits: ["Big Mom Pirates"],
   attribute: "special",
   effect:
@@ -86,6 +87,21 @@ export const op03CharlotteSmoothie110: CharacterCard = {
             },
             value: 2000,
             duration: "thisBattle",
+          },
+        ],
+        optional: true,
+      },
+      {
+        trigger: "trigger",
+        costs: [
+          {
+            cost: "trashFromHand",
+            amount: 1,
+          },
+        ],
+        actions: [
+          {
+            action: "playThisCard",
           },
         ],
         optional: true,

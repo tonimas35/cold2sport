@@ -5,7 +5,7 @@ export const op02Mr1DazBonez063: CharacterCard = {
   id: "OP02-063",
   canonicalId: "OP02-063",
   slug: "mr-1-daz-bonez/op02-063",
-  name: "Mr.1 (Daz.Bonez)",
+  name: "Mr.1(Daz.Bonez)",
   printings: [
     {
       id: "OP02-063",
@@ -23,7 +23,7 @@ export const op02Mr1DazBonez063: CharacterCard = {
   cost: 1,
   power: 1000,
   counter: 1000,
-  traits: ["Impel Down Former Baroque Works"],
+  traits: ["Impel Down", "Former Baroque Works"],
   attribute: "slash",
   effect: "[On Play] Add up to 1 blue Event card with a cost of 1 from your trash to your hand.",
   effects: {

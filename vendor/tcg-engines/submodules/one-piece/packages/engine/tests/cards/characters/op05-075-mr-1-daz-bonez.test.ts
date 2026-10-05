@@ -3,6 +3,7 @@ import {
   eb01Doma005,
   eb01Fourtricks025,
   eb01MountainGod018,
+  op01Mr2BonKureiBentham084,
   op02Mr1DazBonez063,
   op04MissMerrychristmasDrophy067,
   op05Mr1DazBonez075,
@@ -11,10 +12,17 @@ import {
 import { OnePieceTestEngine } from "../../../src/index.ts";
 
 describe("OP05-075 Mr.1 (Daz.Bonez)", () => {
-  test("on an opponent's attack returns DON!! to play an included Baroque Works Character once", () => {
+  // 2-4-3: {Baroque Works} means that exact type, so OP02-063
+  // ({Impel Down}/{Former Baroque Works}) is not a candidate.
+  test("on an opponent's attack returns DON!! to play a {Baroque Works} Character once", () => {
     const engine = OnePieceTestEngine.create(
       {
-        hand: [op02Mr1DazBonez063, op04MissMerrychristmasDrophy067, eb01Doma005],
+        hand: [
+          op01Mr2BonKureiBentham084,
+          op02Mr1DazBonez063,
+          op04MissMerrychristmasDrophy067,
+          eb01Doma005,
+        ],
         character: [op05Mr1DazBonez075],
         activeDon: 2,
         life: 2,
@@ -30,7 +38,8 @@ describe("OP05-075 Mr.1 (Daz.Bonez)", () => {
     const attackers = engine
       .getView("north")
       .players.north.characters.flatMap((card) => (card ? [card.instanceId] : []));
-    const eligibleId = engine.findCardInZone("south", "hand", op02Mr1DazBonez063);
+    const eligibleId = engine.findCardInZone("south", "hand", op01Mr2BonKureiBentham084);
+    const formerId = engine.findCardInZone("south", "hand", op02Mr1DazBonez063);
     const highCostId = engine.findCardInZone("south", "hand", op04MissMerrychristmasDrophy067);
     const wrongTraitId = engine.findCardInZone("south", "hand", eb01Doma005);
 
@@ -45,6 +54,7 @@ describe("OP05-075 Mr.1 (Daz.Bonez)", () => {
     expect(play.candidates.map((candidate) => candidate.ref.id)).toContain(eligibleId);
     expect(play.candidates.map((candidate) => candidate.ref.id)).not.toContain(highCostId);
     expect(play.candidates.map((candidate) => candidate.ref.id)).not.toContain(wrongTraitId);
+    expect(play.candidates.map((candidate) => candidate.ref.id)).not.toContain(formerId);
     engine.resolveDecision("effectPlaySelection", { selectedIds: [eligibleId] }, "south");
 
     expect(

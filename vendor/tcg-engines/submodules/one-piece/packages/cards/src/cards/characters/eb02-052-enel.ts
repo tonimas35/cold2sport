@@ -87,7 +87,7 @@ export const eb02Enel052: CharacterCard = {
           {
             condition: "leaderTrait",
             trait: "Sky Island",
-            match: "includes",
+            match: "exact",
           },
         ],
         actions: [

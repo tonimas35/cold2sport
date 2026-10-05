@@ -21,7 +21,7 @@ export const op16TheThreeAdmirals076: EventCard = {
   rarity: "UC",
   setId: "OP16",
   cost: 1,
-  traits: ["Navy Admiral"],
+  traits: ["Admiral", "Navy"],
   effect:
     "[Main] You may rest 3 of your DON!! cards: Up to 3 of your {Admiral} type Characters gain +2000 power during this turn.\n[Counter] If you have an {Admiral} type Character, up to 1 of your Leader or Character cards gains +4000 power during this battle.",
   effects: {
@@ -48,7 +48,7 @@ export const op16TheThreeAdmirals076: EventCard = {
                 {
                   filter: "trait",
                   value: "Admiral",
-                  match: "includes",
+                  match: "exact",
                 },
               ],
             },

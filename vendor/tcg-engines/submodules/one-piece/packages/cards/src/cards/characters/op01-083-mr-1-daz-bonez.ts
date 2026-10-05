@@ -5,7 +5,7 @@ export const op01Mr1DazBonez083: CharacterCard = {
   id: "OP01-083",
   canonicalId: "OP01-083",
   slug: "mr-1-daz-bonez/op01-083",
-  name: "Mr.1 (Daz.Bonez)",
+  name: "Mr.1(Daz.Bonez)",
   printings: [
     {
       id: "OP01-083",
@@ -42,7 +42,7 @@ export const op01Mr1DazBonez083: CharacterCard = {
           {
             condition: "leaderTrait",
             trait: "Baroque Works",
-            match: "includes",
+            match: "exact",
           },
         ],
         actions: [

@@ -21,7 +21,7 @@ export const op17WithdrawNowAndAllowMeToSaveFace036: EventCard = {
   rarity: "UC",
   setId: "OP17",
   cost: 1,
-  traits: ["The Four Emperors Red-Haired Pirates"],
+  traits: ["The Four Emperors", "Red-Haired Pirates"],
   effect:
     "[Main] You may rest 6 of your DON!! cards: Rest up to 1 of your opponent's Characters. Then, K.O. up to 2 of your opponent's rested Characters with a cost of 6 or less.\n\n[Counter] Up to 1 of your [Shanks] gains +4000 power during this battle.",
   effects: {

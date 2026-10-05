@@ -12,7 +12,7 @@ const compoundMinksLeader: LeaderCard = {
   slug: "test-op08-033-compound-minks-leader",
   name: "Compound Minks Leader",
   printings: [],
-  traits: ["Heart Pirates Minks"],
+  traits: ["Heart Pirates", "Minks"],
   effect: undefined,
   effects: undefined,
   i18n: { en: { name: "Compound Minks Leader" } },

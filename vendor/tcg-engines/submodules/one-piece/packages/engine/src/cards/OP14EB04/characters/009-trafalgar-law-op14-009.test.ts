@@ -6,8 +6,11 @@ import { OnePieceTestEngine } from "../../../index.ts";
 
 describe("OP14-009 Trafalgar Law", () => {
   test("keeps all three official traits", () => {
+    // One entry per printed type (2-4-2: types are separated by "/").
     expect(op14eb04TrafalgarLawOp14009009.traits).toEqual([
-      "Heart Pirates Supernovas The Seven Warlords of the Sea",
+      "The Seven Warlords of the Sea",
+      "Supernovas",
+      "Heart Pirates",
     ]);
   });
 

@@ -22,7 +22,7 @@ export const op17Izo003: CharacterCard = {
   setId: "OP17",
   cost: 4,
   power: 6000,
-  traits: ["Land of Wano Whitebeard Pirates"],
+  traits: ["Land of Wano", "Whitebeard Pirates"],
   attribute: "ranged",
   effect:
     "[Rush: Character]\n[On Play] If your Leader is [Edward.Newgate] or has the {Land of Wano} type, give up to 1 of your opponent's rested Characters -6000 power during this turn.",

@@ -23,7 +23,7 @@ export const st27MarshallDTeach005: CharacterCard = {
   setId: "ST27",
   cost: 7,
   power: 8000,
-  traits: ["Blackbeard Pirates The Four Emperors"],
+  traits: ["The Four Emperors", "Blackbeard Pirates"],
   attribute: "special",
   effect:
     "[Activate:Main] You may rest this Character: K.O. up to 1 Character with a cost of 3 or less.[On K.O.] Add up to 1 black card from your trash to your hand.",

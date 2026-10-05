@@ -21,6 +21,7 @@ export const op14eb04IceTime028: EventCard = {
   rarity: "R",
   setId: "EB04",
   cost: 5,
+  trigger: "Return up to 1 Character with a cost of 5 or less to the owner's hand.",
   traits: ["Navy"],
   effect:
     "[Main] You may trash 1 card from your hand: If your Leader has the {Navy} type, up to 2 of your opponent's Characters with 10000 power or less cannot attack until the end of your opponent's next End Phase.",
@@ -56,11 +57,34 @@ export const op14eb04IceTime028: EventCard = {
             condition: {
               condition: "leaderTrait",
               trait: "Navy",
-              match: "includes",
+              match: "exact",
             },
           },
         ],
         optional: true,
+      },
+      {
+        trigger: "trigger",
+        actions: [
+          {
+            action: "returnToHand",
+            target: {
+              player: "any",
+              zones: ["character"],
+              count: {
+                amount: 1,
+                upTo: true,
+              },
+              filters: [
+                {
+                  filter: "cost",
+                  comparison: "lte",
+                  value: 5,
+                },
+              ],
+            },
+          },
+        ],
       },
     ],
   },

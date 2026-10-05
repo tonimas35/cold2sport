@@ -31,7 +31,7 @@ export const op16MonkeyDLuffy015: CharacterCard = {
   setId: "OP16",
   cost: 4,
   power: 6000,
-  traits: ["Straw Hat Crew Impel Down"],
+  traits: ["Impel Down", "Straw Hat Crew"],
   attribute: "strike",
   effect:
     "If your Leader's card name includes \"Ace\" and you have 6 or more DON!! cards on your field, give this card in your hand -2 cost. [On Your Opponent's Attack] You may trash 1 Character card with 8000 power from your hand: Your Leader and this Character's base power becomes 7000 during this turn.",

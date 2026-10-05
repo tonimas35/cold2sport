@@ -1,18 +1,20 @@
 import { describe, expect, test } from "vite-plus/test";
 import {
-  eb01Fourtricks025,
   eb01Hamlet024,
   eb01JustShutUpAndComeWithUs009,
   eb01MountainGod018,
+  op01Komachiyo010,
+  op03Momoo035,
   op13Higuma013,
-  op13Otama043,
   op13York094,
 } from "@tcg/op-cards";
 
 import { OnePieceTestEngine } from "../../../src/index.ts";
 
 describe("EB01-009 Just Shut Up and Come with Us!!!!", () => {
-  test("pays for its Counter, plays an eligible Animal Character, and orders the deck remainder", () => {
+  // 2-4-3: {Animal} means that exact type, so Hamlet ({Animal Kingdom Pirates}/{SMILE})
+  // is not eligible although its type contains the word "Animal".
+  test("pays for its Counter, plays an eligible {Animal} Character, and orders the deck remainder", () => {
     const engine = OnePieceTestEngine.create(
       {
         character: [{ card: op13Higuma013, playedOnTurn: 0 }],
@@ -22,22 +24,22 @@ describe("EB01-009 Just Shut Up and Come with Us!!!!", () => {
         hand: [eb01JustShutUpAndComeWithUs009],
         deck: [
           op13York094,
-          eb01Hamlet024,
-          eb01Fourtricks025,
+          op01Komachiyo010,
+          op03Momoo035,
           eb01MountainGod018,
           op13Higuma013,
-          op13Otama043,
+          eb01Hamlet024,
         ],
         activeDon: 1,
       },
     );
     const attackerId = engine.findCardInZone("south", "character", op13Higuma013);
     const eventId = engine.findCardInZone("north", "hand", eb01JustShutUpAndComeWithUs009);
-    const selectedId = engine.findCardInZone("north", "deck", eb01Hamlet024);
-    const otherEligibleId = engine.findCardInZone("north", "deck", eb01Fourtricks025);
+    const selectedId = engine.findCardInZone("north", "deck", op01Komachiyo010);
+    const otherEligibleId = engine.findCardInZone("north", "deck", op03Momoo035);
     const tooExpensiveId = engine.findCardInZone("north", "deck", eb01MountainGod018);
     const wrongTypeId = engine.findCardInZone("north", "deck", op13Higuma013);
-    const otherRemainderId = engine.findCardInZone("north", "deck", op13Otama043);
+    const otherRemainderId = engine.findCardInZone("north", "deck", eb01Hamlet024);
 
     engine.endTurn("south");
     engine.endTurn("north");
@@ -95,7 +97,7 @@ describe("EB01-009 Just Shut Up and Come with Us!!!!", () => {
     const view = engine.getView("north");
     expect(
       view.players.north.characters.find((card) => card?.instanceId === selectedId),
-    ).toMatchObject({ cardId: eb01Hamlet024.id, rested: false });
+    ).toMatchObject({ cardId: op01Komachiyo010.id, rested: false });
     expect(view.players.north.trash.map((card) => card.instanceId)).toContain(eventId);
     expect(view.players.north).toMatchObject({
       activeDon: donBeforeCounter.activeDon - 1,

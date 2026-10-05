@@ -5,7 +5,7 @@ export const op07TrafalgarLawTr010: CharacterCard = {
   id: "ST10-010",
   canonicalId: "ST10-010",
   slug: "trafalgar-law-tr",
-  name: "Trafalgar Law (TR)",
+  name: "Trafalgar Law",
   printings: [
     {
       id: "ST10-010",

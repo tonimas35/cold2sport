@@ -21,6 +21,7 @@ export const op05IBid500Million096: EventCard = {
   rarity: "UC",
   setId: "OP05",
   cost: 3,
+  traits: ["Celestial Dragons"],
   effect:
     "[Main] Choose one: • K.O. up to 1 of your opponent's Characters with a cost of 1 or less. • Return up to 1 of your opponent's Characters with a cost of 1 or less to the owner's hand. • Place up to 1 of your opponent's Characters with a cost of 1 or less at the top or bottom of their Life cards face-up. Then, if you have a [Celestial Dragons] type Character, draw 1 card. [Trigger] K.O. up to 1 of your opponent's Characters with a cost of 6 or less, or return it to the owner's hand.",
   effects: {
@@ -107,7 +108,7 @@ export const op05IBid500Million096: EventCard = {
                 {
                   filter: "trait",
                   value: "Celestial Dragons",
-                  match: "includes",
+                  match: "exact",
                 },
               ],
             },

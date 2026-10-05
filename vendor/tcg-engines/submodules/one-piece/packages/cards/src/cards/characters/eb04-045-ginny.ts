@@ -64,7 +64,7 @@ export const eb04Ginny045: CharacterCard = {
                 {
                   filter: "trait",
                   value: "Revolutionary Army",
-                  match: "includes",
+                  match: "exact",
                 },
               ],
             },

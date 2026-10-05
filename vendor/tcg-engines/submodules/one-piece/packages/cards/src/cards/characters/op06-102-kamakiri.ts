@@ -23,7 +23,8 @@ export const op06Kamakiri102: CharacterCard = {
   cost: 3,
   power: 4000,
   counter: 1000,
-  traits: ["Sky Island Shandian Warrior"],
+  trigger: "If you have 2 or less Life cards, play this card.",
+  traits: ["Sky Island", "Shandian Warrior"],
   attribute: "slash",
   effect:
     "[Activate:Main][Once Per Turn] You may place 1 Stage with a cost of 1 at the bottom of the owner's deck: K.O. up to 1 of your opponent's Characters with a cost of 2 or less.",
@@ -63,6 +64,22 @@ export const op06Kamakiri102: CharacterCard = {
         ],
         optional: true,
         oncePerTurn: true,
+      },
+      {
+        trigger: "trigger",
+        conditions: [
+          {
+            condition: "lifeCount",
+            player: "self",
+            comparison: "lte",
+            value: 2,
+          },
+        ],
+        actions: [
+          {
+            action: "playThisCard",
+          },
+        ],
       },
     ],
   },

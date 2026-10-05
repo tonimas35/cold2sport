@@ -1,5 +1,4 @@
 import type { EventCard } from "@tcg/op-types";
-import { strawHat } from "../st01-helpers.ts";
 import { st01GuardPoint014I18n } from "./st01-014-guard-point.i18n.ts";
 
 export const st01GuardPoint014: EventCard = {
@@ -47,7 +46,7 @@ export const st01GuardPoint014: EventCard = {
   rarity: "C",
   setId: "ST01",
   cost: 1,
-  traits: strawHat,
+  traits: ["Animal", "Straw Hat Crew"],
   trigger:
     "[Trigger] Up to 1 of your Leader or Character cards gains +1000 power during this turn.",
   effect:

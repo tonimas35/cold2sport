@@ -49,6 +49,9 @@ const HARNESS_ONLY = new Set([
   "review-regressions.test.ts",
   "review-on-block-regressions.test.ts",
   "review-don-activation-regressions.test.ts",
+  // Cross-card catalog suites: each card keeps its own file as primary proof.
+  "exact-type-filters.test.ts",
+  "printed-trigger-blocks.test.ts",
 ]);
 
 const COMMAND_MARKERS = [

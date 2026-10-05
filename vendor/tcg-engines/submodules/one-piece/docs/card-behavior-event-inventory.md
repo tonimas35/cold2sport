@@ -41,7 +41,7 @@ reconciles catalog entries.
 | EB04-009 | It's My Student's Farewell. I Want It to Be Proper. | verified | Main give-DON -2000 drop to an opposing Character; [Counter] +2000 save |
 | EB04-019 | Eleclaw | verified | Selectable rest-card cost, post-cost Minks gate and turn cost modifier; compound-Minks Counter recipient mapping |
 | EB04-020 | Shark Brick Fist | verified | Ordered compound-Fish-Man Counter power and Character reactivation choices; opposing cost-4 Life Trigger rest mapping |
-| EB04-028 | Ice Time | verified | Selectable hand cost, post-cost Navy gate, power-10000 target mapping, attack-legality denial and opposing End Phase expiration |
+| EB04-028 | Ice Time | verified | Selectable hand cost, post-cost Navy gate, power-10000 target mapping, attack-legality denial and opposing End Phase expiration; Life Trigger cost-5 return to owner's hand |
 | EB04-029 | I Heard the Sound...of a Lady's Teardrops Falling | verified | Sanji-or-Event top-3 search union, trash remainder, optional Counter hand cost, Sanji target mapping and battle power |
 | EB04-040 | Flame Dragon Torch | verified | Optional six-DON!! Main cost, Kaido-only power choice, opposing rest mapping, turn expiration and DON!! -1 Counter computation |
 | EB04-041 | Stealth Black | verified | Four-DON!! boundary, Sanji hand-or-trash play mapping and power filter; Life Trigger draw 2 then controller discard |
@@ -52,7 +52,7 @@ reconciles catalog entries.
 | OP01-026 | Gum-Gum Fire-Fist Pistol Red Hawk | verified | Ordered Counter power and power-4000 K.O. choices with battle outcome; Life Trigger opposing target map and turn expiration |
 | OP01-027 | Round Table | verified | Event payment, opponent-only Character choice, -10000 power computation and turn-end expiration |
 | OP01-028 | Green Star Rafflesia | verified | Paid Counter opposing target mapping and battle outcome; Life Trigger Counter activation without payment and turn expiration |
-| OP01-029 | Radical Beam!! | verified | Single Counter recipient mapping, same-target conditional +2000, exact two-Life boundary and equal-power battle damage above threshold |
+| OP01-029 | Radical Beam!! | verified | Single Counter recipient mapping, same-target conditional +2000, exact two-Life boundary and equal-power battle damage above threshold; Life Trigger +1000 Leader-or-Character choice |
 | OP01-030 | In Two Years!! At the Sabaody Archipelago!! | verified | Exact and compound Straw Hat Crew Character search, category filtering, bottom ordering and cost-free Life Trigger Main activation |
 | OP01-055 | You Can Be My Samurai!! | verified | Controller-owned exact-two active Character rest cost, atomic payment and draw 2 |
 | OP01-056 | Demon Face | verified | Rested-state and cost-5 filters, controller up-to-two selection, dual K.O. resolution and exclusion preservation |
@@ -92,7 +92,7 @@ reconciles catalog entries.
 | OP03-036 | Out-of-the-Bag | verified | Compound East Blue Character rest cost and Leader/Character Kuro reactivation mapping; Life Trigger rested cost-3 K.O. boundary |
 | OP03-037 | Tooth Attack | verified | Compound East Blue Character rest cost and rested cost-3 K.O. boundary; Life Trigger cost-4 Character plus printed-Trigger filter mapping |
 | OP03-038 | Deathly Poison Gas Bomb MH5 | verified | Main up-to-2 opposing cost-2 rest mapping; Life Trigger cost-5 rest boundary |
-| OP03-039 | One, Two, Jango | verified | Ordered opposing cost-1 rest choice then own-Character +1000 choice with turn expiration |
+| OP03-039 | One, Two, Jango | verified | Ordered opposing cost-1 rest choice then own-Character +1000 choice with turn expiration; Life Trigger cost-4 rest |
 | OP03-054 | Usopp's Rubber Band of Doom!!! | verified | Counter power with decline-or-exactly-one deck trash; Trigger draws before the same exact optional trash |
 | OP03-055 | Gum-Gum Giant Gavel | verified | Optional hand cost and Leader Counter power before decline-or-exactly-two deck trash; Trigger either-field cost-4 return |
 | OP03-056 | Sanji's Pilaf | verified | Paid Main exact top-2 draw; Life Trigger activates Main and draws 2 without payment |
@@ -151,7 +151,7 @@ reconciles catalog entries.
 | OP06-038 | The Billion-fold World Trichiliocosm | verified | Counter payment becomes eighth rested card before same-recipient additional power; Life Trigger rested effective cost-3 K.O. |
 | OP06-039 | You Ain't Even Worth Killing Time!! | verified | Main maps rest-or-rested-K.O. choice; Life Trigger activates either branch without Event payment |
 | OP06-040 | Shark Arrows | verified | Main controller selects 0–2 rested effective cost-3 K.O. targets; Life Trigger activates Main without payment |
-| OP06-056 | Ama no Murakumo Sword | verified | Ordered cost-2 then cost-1 target decisions produce controller-selected bottom-deck order |
+| OP06-056 | Ama no Murakumo Sword | verified | Ordered cost-2 then cost-1 target decisions produce controller-selected bottom-deck order; Life Trigger activates Main without Event payment |
 | OP06-057 | But I Will Never Doubt a Woman's Tears!!!! | verified | Main power, public top reveal, revealed-only optional play and top/bottom fallback; Life Trigger exact cost-2 hand play |
 | OP06-058 | Gravity Blade Raging Tiger | verified | Main owner-neutral 0–2 cost-6 returns route by owner; Life Trigger owner-neutral effective cost-5 return without Main payment |
 | OP06-059 | White Snake | verified | Counter turn power and draw before combat; Life Trigger private top-5 ordering and top/bottom group placement |
@@ -191,7 +191,7 @@ reconciles catalog entries.
 | OP08-054 | You Can't Take Our King This Early in the Game. | verified | Counter +3000 target, revealed eligible play, public reveal, and top/bottom fallback |
 | OP08-055 | Phoenix Brand | verified | Optional filtered two-card public reveal cost without hand movement; owner-neutral cost-6 Character bottom-deck |
 | OP08-075 | Candy Maiden | verified | Player-selected DON!! return, cost-2 rest boundary, and all own Life turned face-down |
-| OP08-076 | It's to Die For | verified | First optional active DON!! and conditional second active DON!! from opposing power-6000-or-more Character |
+| OP08-076 | It's to Die For | verified | First optional active DON!! and conditional second active DON!! from opposing power-6000-or-more Character; Life Trigger adds 1 active DON!! |
 | OP08-077 | Conquest of the Sea | verified | Included Leader trait gate, selected DON!! -2 payment, up-to-two cost-6 K.O. candidates, and cost-7 exclusion |
 | OP08-094 | Imperial Flame | verified | Counter ordered three-card Trash-to-deck cost including the activated Event; Trigger-activated Main excludes the resolving Trigger card; cost-2 K.O. |
 | OP08-095 | Iron Body Fang Flash | verified | Main resolution-time Trash threshold and power through opponent turn; Trigger broader Leader-or-Character target without Main payment |
@@ -282,7 +282,7 @@ reconciles catalog entries.
 | OP13-040 | I Know You're Strong... So I'll Go All Out from the Very Start!!! | verified | Optional two-DON!! cost before two cost-7 freezes through Refresh; Leader Counter power |
 | OP13-057 | If I Bowed Down to Power, What's the Point in Living? | verified | Optional one-DON!! cost before one-Life Leader-only unblockable attacks; Leader Counter power |
 | OP13-058 | Phoenix Pyreapple | verified | Optional one-DON!! cost before opposing power-3000 deck-bottom return; Leader Counter power |
-| OP13-059 | Brilliant Punk | verified | Controller-selected own Character return cost before either-field cost-6 return-to-owner choice |
+| OP13-059 | Brilliant Punk | verified | Controller-selected own Character return cost before either-field cost-6 return-to-owner choice; Life Trigger draw 1 |
 | OP13-075 | Guess We'll Have Another Scrap. You Can Only Risk Death While You're Still Alive!! | verified | Optional one-DON!! cost before Roger/given-DON!! check and rested DON!! addition; Leader Counter power |
 | OP13-076 | Divine Departure | verified | Optional five-DON!! cost before given-DON!! −8000; Counter hand-trash choice before recipient power |
 | OP13-077 | Go All the Way to the Top!! | verified | Optional three-DON!! cost and given-DON!! gate before separate base-power-4000/3000 K.O.s; turn-scoped Leader Counter power |
@@ -327,7 +327,7 @@ reconciles catalog entries.
 | OP15-095 | Gum-Gum Storm | verified | rest-DON cost with 15-trash gate gives a Straw Hat card +3000; sub-threshold boundary |
 | OP15-096 | Swallow Bond en Avant | verified | rest-DON cost with Straw Hat Leader trashes 5 deck cards; non-SH decline boundary |
 | OP15-097 | I Find It Embarrassing as a Human Being | verified | Main 10-trash gate stops a base-cost-5-or-less Character attacking; cost filter boundary |
-| OP15-115 | Impact Dial | verified | Main K.O.s a cost-4-or-less Character and draws the top Life card to hand |
+| OP15-115 | Impact Dial | verified | Main K.O.s a cost-4-or-less Character and draws the top Life card to hand; Life Trigger cost-4 K.O. |
 | OP15-116 | Gum-Gum Golden Rifle | verified | Straw Hat-gated life cycling (top Life to trash, deck to Life) with hand trash; non-SH boundary |
 | OP15-117 | Heso!! | verified | Main draws and gives a rested DON!! to a Sky Island card with decline boundary |
 | OP16-019 | Let's Show 'Em What We're Made Of!! | verified | Main plays up to 2 Whitebeard 8000-power Characters from hand; [Trigger] Leader +1000 on life damage |
@@ -354,7 +354,7 @@ reconciles catalog entries.
 | OP17-038 | I Think He's Seen an Ugly Future... | verified | Main rest-4-cards cost rests an opposing Character; [Counter] optional trash +3000 save |
 | OP17-055 | There's No Authority in the World That Lasts Forever!!! | verified | Main rest-DON gives a [Rocks.D.Xebec] Leader or Character [Unblockable] (opposing Blocker not offered); [Counter] Rocks Pirates +2000 save |
 | OP17-056 | Rocks Pirates | verified | Main rest-5-DON returns a cost-6-or-less Character to its owner's hand; [Counter] cost-0 +2000 for the battle to a Leader or Character whose type includes Rocks Pirates |
-| OP17-076 | Wo Ro Ro Ro Ro... I Think I've Sobered Up | verified | [Counter] optional hand trash saves the Leader with +3000 |
+| OP17-076 | Wo Ro Ro Ro Ro... I Think I've Sobered Up | verified | [Counter] optional hand trash saves the Leader with +3000; Life Trigger DON!! -1 draw 2 |
 | OP17-077 | Kundali Dragon Swarm | verified | Main Animal-Kingdom-gated rest-3-DON + trash 2 hand adds 3 rested DON with DON accounting |
 | OP17-078 | Drunken Dragon Bagua | verified | Main rest-2-DON + trash 2 hand adds 3 rested DON for an Animal Kingdom Leader |
 | OP17-096 | I'm Luffy!! The Man Who Will Be King of the Pirates!! | verified | [Counter] gated on a cost-12-or-more Character; no such card exists so it auto-declines |

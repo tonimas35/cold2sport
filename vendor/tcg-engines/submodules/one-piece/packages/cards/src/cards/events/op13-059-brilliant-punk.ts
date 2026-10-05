@@ -21,6 +21,7 @@ export const op13BrilliantPunk059: EventCard = {
   rarity: "C",
   setId: "OP13",
   cost: 4,
+  trigger: "Draw 1 card.",
   traits: ["Whitebeard Pirates"],
   effect:
     "[Main] You may return 1 of your Characters to the owner's hand: Return up to 1 Character with a cost of 6 or less to the owner's hand.",
@@ -55,6 +56,16 @@ export const op13BrilliantPunk059: EventCard = {
           },
         ],
         optional: true,
+      },
+      {
+        trigger: "trigger",
+        actions: [
+          {
+            action: "draw",
+            player: "self",
+            amount: 1,
+          },
+        ],
       },
     ],
   },

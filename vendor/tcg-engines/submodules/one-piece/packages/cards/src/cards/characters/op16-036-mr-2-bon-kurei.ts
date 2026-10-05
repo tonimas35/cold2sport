@@ -5,7 +5,7 @@ export const op16Mr2BonKurei036: CharacterCard = {
   id: "OP16-036",
   canonicalId: "OP16-036",
   slug: "mr-2-bon-kurei/op16-036",
-  name: "Mr.2.Bon.Kurei",
+  name: "Mr.2.Bon.Kurei(Bentham)",
   printings: [
     {
       id: "OP16-036",
@@ -24,7 +24,7 @@ export const op16Mr2BonKurei036: CharacterCard = {
   cost: 4,
   power: 1000,
   counter: 1000,
-  traits: ["Impel Down Former Baroque Works"],
+  traits: ["Impel Down", "Former Baroque Works"],
   attribute: "strike",
   effect:
     "[On Play] Rest up to 1 of your opponent's Characters with a cost of 4 or less.\n\n[When Attacking] This Character's base power becomes the same as your opponent's Leader during this turn.",

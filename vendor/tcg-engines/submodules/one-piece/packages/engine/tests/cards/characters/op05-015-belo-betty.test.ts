@@ -17,7 +17,7 @@ const compoundRevolutionary: CharacterCard = {
   id: "TEST-OP05-015-COMPOUND-REVOLUTIONARY",
   canonicalId: "TEST-OP05-015-COMPOUND-REVOLUTIONARY",
   name: "Compound Revolutionary",
-  traits: ["Test Fleet/Revolutionary Army"],
+  traits: ["Test Fleet", "Revolutionary Army"],
 };
 
 registerCards([compoundRevolutionary]);

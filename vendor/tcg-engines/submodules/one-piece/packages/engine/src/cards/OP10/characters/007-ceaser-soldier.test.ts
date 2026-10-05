@@ -11,7 +11,7 @@ const compoundPunkHazard: CharacterCard = {
   canonicalId: "TEST-OP10-007-COMPOUND-PUNK-HAZARD",
   name: "Compound Punk Hazard",
   cost: 2,
-  traits: ["Scientist Punk Hazard"],
+  traits: ["Scientist", "Punk Hazard"],
   effects: undefined,
 };
 

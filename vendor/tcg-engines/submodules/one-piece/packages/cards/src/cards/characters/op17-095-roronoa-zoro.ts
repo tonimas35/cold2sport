@@ -24,7 +24,7 @@ export const op17RoronoaZoro095: CharacterCard = {
   cost: 2,
   power: 2000,
   counter: 2000,
-  traits: ["Straw Hat Crew Elbaph"],
+  traits: ["Elbaph", "Straw Hat Crew"],
   attribute: "slash",
   effect:
     "If there is a Character with a cost of 12 or more, this Character gains +3000 power.\nIf one of your Characters would be removed from the field by your opponent's effect, you may place 3 cards from your trash at the bottom of your deck in any order instead.",

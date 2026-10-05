@@ -46,7 +46,7 @@ export const st34CharlotteCracker002: CharacterCard = {
             condition: {
               condition: "leaderTrait",
               trait: "Big Mom Pirates",
-              match: "includes",
+              match: "exact",
             },
           },
           {

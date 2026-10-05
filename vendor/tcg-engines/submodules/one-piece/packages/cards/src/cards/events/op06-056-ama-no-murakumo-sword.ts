@@ -63,6 +63,7 @@ export const op06AmaNoMurakumoSword056: EventCard = {
   rarity: "UC",
   setId: "OP06",
   cost: 2,
+  trigger: "Activate this card's [Main] effect.",
   traits: ["Navy"],
   effect:
     "[Main] Place up to 1 of your opponent's Characters with a cost of 2 or less and up to 1 of your opponent's Characters with a cost of 1 or less at the bottom of the owner's deck in any order.",
@@ -108,6 +109,15 @@ export const op06AmaNoMurakumoSword056: EventCard = {
               ],
             },
             position: "bottom",
+          },
+        ],
+      },
+      {
+        trigger: "trigger",
+        actions: [
+          {
+            action: "activateEffect",
+            effectTrigger: "main",
           },
         ],
       },

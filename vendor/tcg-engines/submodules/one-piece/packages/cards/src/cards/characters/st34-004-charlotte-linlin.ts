@@ -24,7 +24,7 @@ export const st34CharlotteLinlin004: CharacterCard = {
   setId: "ST34",
   cost: 10,
   power: 12000,
-  traits: ["The Four Emperors Big Mom Pirates"],
+  traits: ["The Four Emperors", "Big Mom Pirates"],
   attribute: "special",
   effect:
     "[On Play] DON!! −4, you may trash 1 card from your hand: Add up to 1 card from the top of your deck to the top of your Life cards. Then, up to 1 of your opponent's Characters' base power becomes 0 during this turn.",

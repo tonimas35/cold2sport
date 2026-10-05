@@ -32,7 +32,7 @@ export const op15DressrosaKingdom057: StageCard = {
           {
             condition: "leaderTrait",
             trait: "Dressrosa",
-            match: "includes",
+            match: "exact",
           },
         ],
         actions: [

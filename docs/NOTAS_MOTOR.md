@@ -300,7 +300,9 @@ Patrones de fallo que conviene buscar en cualquier carta nueva:
 2. efectos estáticos que deben funcionar desde la mano (counters condicionales);
 3. modificadores de coste propios con `zones: ["hand", ...]` cuando el texto es de personaje;
 4. tipos compuestos guardados como una sola cadena y filtros de tipo con `includes` donde el texto
-   dice `{Tipo}` exacto;
+   dice `{Tipo}` exacto (corregido en todo el catálogo: cada tipo es una entrada de `traits` y cada
+   filtro sigue al texto impreso, ver "Arreglos aplicados al motor" en `docs/CATALOGO.md`; el
+   importador de upstream sigue generando `includes`);
 5. `[Nombre]` que debería incluir al Líder.
 
 Los patrones 1, 2 y 4, y los errores de datos (counter, atributo, nombre, coste, [Trigger]), los

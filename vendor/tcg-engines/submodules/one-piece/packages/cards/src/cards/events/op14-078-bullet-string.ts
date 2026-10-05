@@ -21,7 +21,7 @@ export const op14eb04BulletString078: EventCard = {
   rarity: "C",
   setId: "OP14",
   cost: 2,
-  traits: ["Donquixote Pirates The Seven Warlords of the Sea"],
+  traits: ["The Seven Warlords of the Sea", "Donquixote Pirates"],
   effect:
     "[Counter] DON!! -1: If your Leader has the {Donquixote Pirates} type, up to 1 of your Leader or Character cards gains +2000 power during this battle. Then, that card gains an additional +2000 power during this turn.",
   effects: {
@@ -32,7 +32,7 @@ export const op14eb04BulletString078: EventCard = {
           {
             condition: "leaderTrait",
             trait: "Donquixote Pirates",
-            match: "includes",
+            match: "exact",
           },
         ],
         costs: [

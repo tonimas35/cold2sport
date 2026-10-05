@@ -5,7 +5,7 @@ export const op01Mr3Galdino085: CharacterCard = {
   id: "OP01-085",
   canonicalId: "OP01-085",
   slug: "mr-3-galdino/op01-085",
-  name: "Mr.3 (Galdino)",
+  name: "Mr.3(Galdino)",
   printings: [
     {
       id: "OP01-085",
@@ -35,7 +35,7 @@ export const op01Mr3Galdino085: CharacterCard = {
           {
             condition: "leaderTrait",
             trait: "Baroque Works",
-            match: "includes",
+            match: "exact",
           },
         ],
         actions: [

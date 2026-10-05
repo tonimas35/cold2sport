@@ -62,8 +62,8 @@ export const op14eb04BoaHancockOp14041041: LeaderCard = {
             {
               filter: "anyOf",
               groups: [
-                [{ filter: "trait", value: "Amazon Lily", match: "includes" }],
-                [{ filter: "trait", value: "Kuja Pirates", match: "includes" }],
+                [{ filter: "trait", value: "Amazon Lily", match: "exact" }],
+                [{ filter: "trait", value: "Kuja Pirates", match: "exact" }],
               ],
             },
             {

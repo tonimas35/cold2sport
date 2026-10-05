@@ -42,7 +42,7 @@ export const prb01BartolomeoP029JollyRogerFoil029: CharacterCard = {
   cost: 2,
   power: 3000,
   counter: 1000,
-  traits: ["Barto Club Pirates Supernovas"],
+  traits: ["FILM", "Supernovas", "Barto Club"],
   attribute: "special",
   effect:
     '[End of your Turn] You may rest this Character: Set up to 1 of your "FILM" type Characters other than [Bartolomeo] as active.',
@@ -69,7 +69,7 @@ export const prb01BartolomeoP029JollyRogerFoil029: CharacterCard = {
                 {
                   filter: "trait",
                   value: "FILM",
-                  match: "includes",
+                  match: "exact",
                 },
                 {
                   filter: "excludeName",

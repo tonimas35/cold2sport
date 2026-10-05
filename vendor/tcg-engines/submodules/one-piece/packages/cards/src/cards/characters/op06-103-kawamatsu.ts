@@ -22,6 +22,7 @@ export const op06Kawamatsu103: CharacterCard = {
   setId: "OP06",
   cost: 3,
   power: 5000,
+  trigger: "If your opponent has 3 or less Life cards, play this card.",
   traits: ["Fish-Man", "Land of Wano", "The Akazaya Nine"],
   attribute: "slash",
   effect:
@@ -59,6 +60,22 @@ export const op06Kawamatsu103: CharacterCard = {
           },
         ],
         optional: true,
+      },
+      {
+        trigger: "trigger",
+        conditions: [
+          {
+            condition: "lifeCount",
+            player: "opponent",
+            comparison: "lte",
+            value: 3,
+          },
+        ],
+        actions: [
+          {
+            action: "playThisCard",
+          },
+        ],
       },
     ],
   },

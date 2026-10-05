@@ -40,7 +40,7 @@ export const op16VanAugur103: CharacterCard = {
           {
             condition: "leaderTrait",
             trait: "Blackbeard Pirates",
-            match: "includes",
+            match: "exact",
           },
         ],
         actions: [

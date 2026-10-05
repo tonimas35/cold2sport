@@ -22,7 +22,7 @@ export const op06Tsuru051: CharacterCard = {
   setId: "OP06",
   cost: 5,
   power: 4000,
-  counter: 4000,
+  counter: 2000,
   traits: ["Navy"],
   attribute: "special",
   effect:

@@ -5,7 +5,7 @@ export const op16LetSGoToTheNavyHeadquarters038: EventCard = {
   id: "OP16-038",
   canonicalId: "OP16-038",
   slug: "let-s-go-to-the-navy-headquarters/op16-038",
-  name: "Let's Go!! To the Navy Headquarters..",
+  name: "Let's Go!! To the Navy Headquarters!!",
   printings: [
     {
       id: "OP16-038",
@@ -21,7 +21,7 @@ export const op16LetSGoToTheNavyHeadquarters038: EventCard = {
   rarity: "R",
   setId: "OP16",
   cost: 1,
-  traits: ["Straw Hat Crew Impel Down"],
+  traits: ["Impel Down", "Straw Hat Crew"],
   effect:
     "[Main] You may rest 6 of your DON!! cards: If you have 5 {Impel Down} type Characters with different card names, set your Leader and all of your Characters as active.\n\n[Counter] Your Leader gains +3000 power during this battle.",
   effects: {

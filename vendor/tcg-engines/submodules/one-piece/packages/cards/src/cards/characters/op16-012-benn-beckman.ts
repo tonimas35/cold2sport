@@ -43,6 +43,7 @@ export const op16BennBeckman012: CharacterCard = {
           {
             condition: "leaderTrait",
             trait: "Red-Haired Pirates",
+            match: "exact",
           },
           {
             condition: "donFieldCount",

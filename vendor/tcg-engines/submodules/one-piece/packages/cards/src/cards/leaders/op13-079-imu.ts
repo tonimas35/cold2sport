@@ -50,7 +50,7 @@ export const op13Imu079: LeaderCard = {
                   {
                     filter: "trait",
                     value: "Celestial Dragons",
-                    match: "includes",
+                    match: "exact",
                   },
                 ],
               },

@@ -31,7 +31,7 @@ export const eb04RobLucci048: CharacterCard = {
   setId: "EB04",
   cost: 4,
   power: 6000,
-  traits: ["CP0 Egghead"],
+  traits: ["Egghead", "CP0"],
   attribute: "strike",
   effect:
     'If your Leader\'s type includes "CP", this Character gains +1000 power and -2 cost for every 5 cards in your trash.\n[On Play] You may trash 1 of your Characters: Draw 1 card.',

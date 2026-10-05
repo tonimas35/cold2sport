@@ -23,7 +23,7 @@ export const op15Fuza070: CharacterCard = {
   cost: 3,
   power: 4000,
   counter: 1000,
-  traits: ["Animal Sky Island"],
+  traits: ["Animal", "Sky Island"],
   attribute: "special",
   effect:
     "All of your [Shura] cards and this Character gain [Unblockable].\n(This card cannot be blocked.)\n[Opponent's Turn] All of your [Shura] cards' base power and this Character's base power become 6000.",

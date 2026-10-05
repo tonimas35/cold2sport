@@ -5,7 +5,7 @@ export const op06YouReTheOneWhoShouldDisappear115: EventCard = {
   id: "OP06-115",
   canonicalId: "OP06-115",
   slug: "you-re-the-one-who-should-disappear",
-  name: "You're the One Who Should Disappear",
+  name: "You're the One Who Should Disappear.",
   printings: [
     {
       id: "OP06-115",

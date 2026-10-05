@@ -23,7 +23,7 @@ export const op17MaserSaber117: EventCard = {
   cost: 1,
   trigger:
     "Your opponent may trash 3 cards from their hand. If they do not, K.O. up to 1 of your opponent's Characters with a cost of 6 or less.",
-  traits: ["The Four Emperors Big Mom Pirates"],
+  traits: ["The Four Emperors", "Big Mom Pirates"],
   effect: "[Counter] Up to 1 of your [Charlotte Linlin] gains +3000 power during this battle.",
   effects: {
     effects: [

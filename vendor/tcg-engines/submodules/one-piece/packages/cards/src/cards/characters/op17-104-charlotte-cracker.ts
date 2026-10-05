@@ -23,10 +23,11 @@ export const op17CharlotteCracker104: CharacterCard = {
   cost: 3,
   power: 4000,
   counter: 1000,
+  trigger: "Play this card.",
   traits: ["Big Mom Pirates"],
   attribute: "slash",
   effect:
-    "[Your Turn] [On Play] You may rest 2 of your DON!! cards: If your Leader has the {Big Mom Pirates} type, add up to 1 card from the top of your deck to the top of your Life Cards.\nTrigger Play this card.",
+    "[Your Turn] [On Play] You may rest 2 of your DON!! cards: If your Leader has the {Big Mom Pirates} type, add up to 1 card from the top of your deck to the top of your Life Cards.",
   effects: {
     effects: [
       {
@@ -58,11 +59,19 @@ export const op17CharlotteCracker104: CharacterCard = {
             condition: {
               condition: "leaderTrait",
               trait: "Big Mom Pirates",
-              match: "includes",
+              match: "exact",
             },
           },
         ],
         optional: true,
+      },
+      {
+        trigger: "trigger",
+        actions: [
+          {
+            action: "playThisCard",
+          },
+        ],
       },
     ],
   },

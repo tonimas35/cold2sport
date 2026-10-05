@@ -22,7 +22,7 @@ export const op06Reject116: EventCard = {
   setId: "OP06",
   cost: 4,
   trigger: "Draw 1 cards.",
-  traits: ["Sky Island Shandian Warrior"],
+  traits: ["Sky Island", "Shandian Warrior"],
   effect:
     "[Main] Choose one:\n• K.O. up to 1 of your opponent's Characters with a cost of 5 or less.\n• If your opponent has 1 Life card, deal 1 damage to your opponent.\nThen, add 1 card from the top of your Life cards to your hand.",
   effects: {

@@ -41,7 +41,7 @@ export const op16MobyDick021: StageCard = {
           {
             condition: "leaderTrait",
             trait: "Whitebeard Pirates",
-            match: "includes",
+            match: "exact",
           },
         ],
         actions: [

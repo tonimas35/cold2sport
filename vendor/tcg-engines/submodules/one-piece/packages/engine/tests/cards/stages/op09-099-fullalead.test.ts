@@ -12,7 +12,9 @@ import {
 import { OnePieceTestEngine } from "../../../src/index.ts";
 
 describe("OP09-099 Fullalead", () => {
-  test("pays both costs, reveals a composite Blackbeard Pirates card, and orders the remainder", () => {
+  // 2-4-3: {Blackbeard Pirates} means that exact type, so Peachbeard
+  // ({Peachbeard Pirates}/{Blackbeard Pirates Allies}) cannot be revealed.
+  test("pays both costs, reveals a {Blackbeard Pirates} card, and orders the remainder", () => {
     const engine = OnePieceTestEngine.create({
       stage: op09Fullalead099,
       hand: [op13Otama043, op13York094],
@@ -21,7 +23,7 @@ describe("OP09-099 Fullalead", () => {
     const stageId = engine.findCardInZone("south", "stage", op09Fullalead099);
     const keptHandId = engine.findCardInZone("south", "hand", op13Otama043);
     const costId = engine.findCardInZone("south", "hand", op13York094);
-    const compositeEligibleId = engine.findCardInZone("south", "deck", op09Peachbeard094);
+    const alliesId = engine.findCardInZone("south", "deck", op09Peachbeard094);
     const ineligibleId = engine.findCardInZone("south", "deck", op13Higuma013);
     const exactEligibleId = engine.findCardInZone("south", "deck", op09JesusBurgess086);
     const untouchedBottomId = engine.findCardInZone("south", "deck", op13WindmillVillage022);
@@ -47,22 +49,18 @@ describe("OP09-099 Fullalead", () => {
         legal: candidate.legal,
       })),
     ).toEqual([
-      { id: compositeEligibleId, legal: true },
+      { id: alliesId, legal: false },
       { id: ineligibleId, legal: false },
       { id: exactEligibleId, legal: true },
     ]);
 
-    engine.resolveDecision(
-      "effectSearchSelection",
-      { selectedIds: [compositeEligibleId] },
-      "south",
-    );
+    engine.resolveDecision("effectSearchSelection", { selectedIds: [exactEligibleId] }, "south");
 
     const orderDecision = engine.pendingDecision("effectSearchRemainderOrder", "south");
     expect(orderDecision.steps[0]?.kind).toBe("orderItems");
     engine.resolveDecision(
       "effectSearchRemainderOrder",
-      { selectedIds: [exactEligibleId, ineligibleId] },
+      { selectedIds: [alliesId, ineligibleId] },
       "south",
     );
 
@@ -70,12 +68,12 @@ describe("OP09-099 Fullalead", () => {
     expect(view.players.south.stage?.rested).toBe(true);
     expect(view.players.south.hand.map((card) => card.instanceId)).toEqual([
       keptHandId,
-      compositeEligibleId,
+      exactEligibleId,
     ]);
     expect(view.players.south.trash.map((card) => card.instanceId)).toContain(costId);
     expect(engine.getState().players.south.deck).toEqual([
       untouchedBottomId,
-      exactEligibleId,
+      alliesId,
       ineligibleId,
     ]);
     expect(view.prompts).toHaveLength(0);

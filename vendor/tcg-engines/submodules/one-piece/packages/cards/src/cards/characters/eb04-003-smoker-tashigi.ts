@@ -31,7 +31,7 @@ export const eb04SmokerTashigi003: CharacterCard = {
   setId: "EB04",
   cost: 8,
   power: 8000,
-  traits: ["Navy Punk Hazard"],
+  traits: ["Punk Hazard", "Navy"],
   attribute: ["slash", "special"],
   effect:
     "[Rush] (This card can attack on the turn in which it is played.)\n[Opponent's Turn] Your {Navy} type Leader's base power becomes 7000.",

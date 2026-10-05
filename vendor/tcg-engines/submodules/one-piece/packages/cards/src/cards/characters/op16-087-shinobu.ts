@@ -40,7 +40,7 @@ export const op16Shinobu087: CharacterCard = {
           {
             condition: "leaderTrait",
             trait: "Land of Wano",
-            match: "includes",
+            match: "exact",
           },
         ],
         actions: [

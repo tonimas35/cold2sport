@@ -23,7 +23,7 @@ export const eb04Vegapunk057: CharacterCard = {
   cost: 2,
   power: 0,
   counter: 1000,
-  traits: ["Scientist Ohara"],
+  traits: ["Ohara", "Scientist"],
   attribute: "wisdom",
   effect:
     "If you have 2 or less Life cards, all of your yellow {Scientist} type Characters cannot be removed from the field by your opponent's effects.\n[DON!! x1] This Character gains [Blocker].",

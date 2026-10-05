@@ -463,7 +463,7 @@ reconciles catalog entries.
 | OP03-107     | Charlotte Galette                               | verified | Blocker redirect and battle target replacement                                                                                                                                                           |
 | OP03-108     | Charlotte Cracker                               | verified | Optional Trigger hand-trash cost and physical play/decline; DON x1 and lower-Life gates for +1000 and Double Attack                                                                                      |
 | OP03-109     | Charlotte Chiffon                               | verified | Optional top-or-bottom Life trash; top-deck Life replacement; decline                                                                                                                                    |
-| OP03-110     | Charlotte Smoothie                              | verified | Optional top-or-bottom Life-to-hand cost; battle-scoped +2000 and decline                                                                                                                                |
+| OP03-110     | Charlotte Smoothie                              | verified | Optional top-or-bottom Life-to-hand cost; battle-scoped +2000 and decline; Life Trigger optional hand-trash cost plays it, decline trashes it |
 | OP03-111     | Charlotte Praline                               | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
 | OP03-112     | Charlotte Pudding                               | verified | Sanji-or-included-trait search; name exclusion; physical selection/zero; ordered bottom remainder                                                                                                        |
 | OP03-113     | Charlotte Perospero                             | verified | On K.O. included-trait search/zero and ordered remainder; optional Trigger hand cost and physical play/decline                                                                                           |
@@ -734,8 +734,8 @@ reconciles catalog entries.
 | OP06-099 | Aisa | verified | Private top-Life inspection for either player and chosen bottom movement |
 | OP06-100 | Inuarashi | verified | DON!! x2 hand cost and opponent-Life-bounded K.O.; physical-card Life Trigger play |
 | OP06-101 | O-Nami | verified | Chosen turn-scoped Banish grant; Life Trigger opposing cost-5 K.O. |
-| OP06-102 | Kamakiri | verified | Cost-1 Stage-to-owner-deck activation cost, low-cost K.O., once-per-turn, and unpaid rejection |
-| OP06-103 | Kawamatsu | verified | Two-card hand cost and chosen top-or-bottom face-up Life movement for a 0-power Character |
+| OP06-102 | Kamakiri | verified | Cost-1 Stage-to-owner-deck activation cost, low-cost K.O., once-per-turn, and unpaid rejection; Life Trigger plays it at 2 or less Life only |
+| OP06-103 | Kawamatsu | verified | Two-card hand cost and chosen top-or-bottom face-up Life movement for a 0-power Character; Life Trigger plays it while the opponent has 3 or less Life only |
 | OP06-104 | Kikunojo | verified | On K.O. Life creation threshold and physical-card Life Trigger success/failure boundaries |
 | OP06-105     | Genbo                                           | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
 | OP06-106 | Kouzuki Hiyori | verified | Optional top-or-bottom Life removal before adding a hand card to top Life; decline branch |
@@ -1205,7 +1205,7 @@ reconciles catalog entries.
 | OP11-107 | Topknot Neptunian | verified | Blocker; Shirahoshi-gated Life cost; once-per-turn delayed reactivation |
 | OP11-108 | Neptune | verified | Shirahoshi gate, optional Life cost, draw two, and chosen hand discard |
 | OP11-109 | Pappag | verified | Camie presence gate, draw two, and exact two-card hand discard |
-| OP11-110 | Fukaboshi | verified | Optional K.O. replacement rests eligible Leader; Life payment and cost-1 K.O. |
+| OP11-110 | Fukaboshi | verified | Optional K.O. replacement rests the [Fish-Man Island] Stage or a [Shirahoshi] Leader (card names, not the type); Life payment and cost-1 K.O. |
 | OP11-111     | Mamboshi                                        | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
 | OP11-112 | Megalo | verified | Blocker and Shirahoshi-gated opponent-turn-only +4000 power |
 | OP11-113     | Ryuboshi                                        | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
@@ -1287,7 +1287,7 @@ reconciles catalog entries.
 | OP12-095     | Lindbergh                                       | verified | gains 4 cost with a Revolutionary Army Leade |
 | OP12-099     | Kalgara                                         | verified | draws when own Life is remove |
 | OP12-100     | Sabo                                            | verified | takes top Life as its optional cos |
-| OP12-101     | Jewelry Bonney                                  | verified | rests itself and boosts an included Supernovas Leader through the opponent's next turn |
+| OP12-101     | Jewelry Bonney                                  | verified | rests itself and boosts a {Supernovas} Leader through the opponent's next turn; Life Trigger plays it only under a {Supernovas} Leader |
 | OP12-102     | Shirahoshi                                      | verified | boosts included Neptunians only on the opponent's turn with no other base-cost-2 Shirahoshi |
 | OP12-103     | Seto                                            | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
 | OP12-104     | Sentomaru                                       | verified | its Life Trigger K.O.s an opposing cost-4-or-less Character |
@@ -1682,7 +1682,7 @@ reconciles catalog entries.
 | OP17-004 | Inuarashi & Nekomamushi | verified | Printed behavior is unstructured |
 | OP17-005 | Edward.Newgate | verified | permanent |
 | OP17-006 | Kingdew | vanilla | Parameterized vanilla invariant batch |
-| OP17-007 | Kouzuki Oden | verified | Printed behavior is unstructured |
+| OP17-007 | Kouzuki Oden | verified | Newgate-or-{Land of Wano} Leader gate; plays a {Land of Wano} or "Whitebeard Pirates"-including Character of 6000 power or less from hand |
 | OP17-008 | Jozu | verified | Printed behavior is unstructured |
 | OP17-009 | Haruta | verified | onPlay, permanent |
 | OP17-010 | Fossa | verified | activateMain |
@@ -1759,7 +1759,7 @@ reconciles catalog entries.
 | OP17-101 | Caribou | verified | activateMain, Life Trigger |
 | OP17-102 | Charlotte Oven | verified | onKo, Life Trigger |
 | OP17-103 | Charlotte Katakuri | verified | onPlay, Life Trigger |
-| OP17-104 | Charlotte Cracker | verified | onPlay |
+| OP17-104 | Charlotte Cracker | verified | onPlay; Life Trigger plays it |
 | OP17-105 | Charlotte Chiffon | verified | onPlay |
 | OP17-106 | Charlotte Smoothie | verified | onPlay, Life Trigger |
 | OP17-107 | Charlotte Daifuku | verified | Life Trigger |

@@ -5,7 +5,7 @@ export const op04Mr3Galdino070: CharacterCard = {
   id: "OP04-070",
   canonicalId: "OP04-070",
   slug: "mr-3-galdino/op04-070",
-  name: "Mr.3 (Galdino)",
+  name: "Mr.3(Galdino)",
   printings: [
     {
       id: "OP04-070",

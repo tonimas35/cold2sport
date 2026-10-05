@@ -4,9 +4,26 @@ import { eb01Doma005, op07Foxy059, op07Foxy071 } from "@tcg/op-cards";
 import { OnePieceTestEngine } from "../../../src/index.ts";
 
 describe("OP07-071 Foxy", () => {
-  test("with an included Foxy Pirates Leader reduces every opposing Character only on the opponent's turn", () => {
+  // 2-4-3: {Foxy Pirates} is that exact type. A Leader whose type only
+  // contains the words (e.g. "Special Foxy Pirates") does not count.
+  test("with a type that only contains Foxy Pirates on the Leader, nothing is reduced", () => {
     const originalTraits = op07Foxy059.traits;
     op07Foxy059.traits = ["Special Foxy Pirates"];
+    try {
+      const opponentTurn = OnePieceTestEngine.create(
+        { leaderCardId: op07Foxy059, character: [op07Foxy071] },
+        { character: [eb01Doma005] },
+        { firstPlayer: "south", activeSeat: "north" },
+      );
+      expect(opponentTurn.getView("south").players.north.characters[0]?.power).toBe(3000);
+    } finally {
+      op07Foxy059.traits = originalTraits;
+    }
+  });
+
+  test("with a {Foxy Pirates} Leader among other types, reduces every opposing Character only on the opponent's turn", () => {
+    const originalTraits = op07Foxy059.traits;
+    op07Foxy059.traits = ["Long Ring Long Land", "Foxy Pirates"];
     try {
       const opponentTurn = OnePieceTestEngine.create(
         { leaderCardId: op07Foxy059, character: [op07Foxy071] },

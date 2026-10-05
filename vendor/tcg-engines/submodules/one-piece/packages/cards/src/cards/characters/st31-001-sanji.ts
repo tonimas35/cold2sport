@@ -60,7 +60,7 @@ export const st31Sanji001: CharacterCard = {
             count: { amount: 1, upTo: true },
             filters: [
               { filter: "cardCategory", value: "character" },
-              { filter: "trait", value: "Straw Hat Crew", match: "includes" },
+              { filter: "trait", value: "Straw Hat Crew", match: "exact" },
               { filter: "cost", comparison: "lte", value: 5 },
               { filter: "excludeName", value: "Sanji" },
             ],

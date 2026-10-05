@@ -208,6 +208,77 @@ borrar la propiedad), `evidence` (valor y página oficial) y avisos:
 Los arreglos de coste (3) y de otros tipos (39) salen en `out/catalog-check.json` con `safe: false`:
 los 9 de la muestra eran reales, pero conviene revisarlos uno a uno.
 
+Estos arreglos ya están aplicados (sección siguiente); el fichero se ha regenerado y ahora solo lista
+los arreglos seguros que quedan (ninguno).
+
+## Arreglos aplicados al motor (5-oct-2026)
+
+Un parche del motor aplica los datos de `catalog-check` (regenerado con
+`pnpm opbot catalog-check --offline --json out/cc.json` sobre el motor con los parches 0001-0007, que
+ya habían corregido OP14-019 y dos counters) y lo que hacía falta para que fueran seguros:
+
+- **Tipos partidos** en 1072 cartas: cada tipo impreso es una entrada de `traits`
+  (`["Supernovas", "Kid Pirates"]`, no `"Kid Pirates Supernovas"`). Además los 38 arreglos de "otros
+  tipos", revisados contra la lista y 9 imágenes (OP01-034, OP10-064, OP11-031, OP02-040, OP02-041,
+  OP01-018, ST01-014, P-084 y OP15-009/OP17-026 para el coste): "Film" pasa a "FILM", los "NULL" y
+  vacíos reciben sus tipos (OP03-036, OP03-038, OP05-040, OP05-096, P-084), "Mountain Bandits" deja
+  de estar duplicado, OP01-008 Cavendish y OP01-034 Inuarashi pierden tipos que no tienen
+  ("Straw Hat Crew", "Former Whitebeard Pirates") y OP03-114/OP16-003 ganan "The Four Emperors".
+- **Filtros de tipo**: inventario de todos los bloques (958 comprobaciones: 641 filtros `trait` y 317
+  condiciones `leaderTrait`). Antes 954 comparaban por subcadena y 4 de forma exacta (el recuento de
+  "110 exactos" de arriba contaba líneas de texto). Cada una se ha comparado con el texto impreso:
+  `{Tipo}` es exacto (regla 2-4-3) y `a type including "X"` es subcadena (2-4-3-1). Resultado: 828
+  pasan a `match: "exact"`, 123 siguen por subcadena (incluidos "CP" y "GERMA") y 3 no casaban con
+  el texto: OP01-003 buscaba "Supernova" (ahora `{Supernovas}` exacto), OP11-110 Fukaboshi trataba
+  `[Fish-Man Island]` como tipo del Líder cuando es el nombre del Escenario OP11-117 (ahora descansa
+  ese Escenario o un Líder [Shirahoshi]) y OP11-020 X Calibur, que se deja porque su bloque es de
+  otra carta. Además OP17-007 Oden exigía los dos tipos a la vez cuando la carta dice "o" (solo
+  funcionaba porque Inuarashi tenía un "Former Whitebeard Pirates" falso). Ningún filtro dependía de
+  la cadena unida (todos los valores son un tipo oficial o parte de uno).
+- **Qué cambia en partida**: 219 filtros ya no aceptan tipos que solo contienen la palabra:
+  `{Straw Hat Crew}` no acepta EB02-005 Fake Straw Hat Crew; `{Big Mom Pirates}` no acepta a Charlotte
+  Chiffon (OP11-105/OP17-105, Former Big Mom Pirates); `{Navy}` no acepta Neo Navy ni Former Navy;
+  `{Fish-Man}` no acepta Fish-Man Island; `{Blackbeard Pirates}`, `{Red-Haired Pirates}` y
+  `{Whitebeard Pirates}` no aceptan sus "Allies"; `{Animal}` no acepta Animal Kingdom Pirates;
+  `{Baroque Works}` no acepta Former Baroque Works. Los filtros exactos que antes no veían cartas con
+  tipos unidos ahora sí las ven.
+- **Nombres** (38, también `i18n.en.name`, que es el nombre que usa el motor), **counters** (9:
+  OP17-027 Benn.Beckman sin counter, OP06-051 Tsuru 2000...), **atributos** (4: OP15-092 Luffy
+  Special...) y **costes** (OP15-009 y OP17-026 cuestan 1; el motor había leído el icono de bloque).
+  Ninguna carta buscaba un nombre antiguo; los renombres arreglan las búsquedas de [Trafalgar Law]
+  (ST10-010), Mr.2, Mr.3, Who's.Who, Uta, Cavendish y Jewelry Bonney.
+- **[Trigger] de 13 cartas** (EB04-028, OP01-029, OP03-039, OP03-110, OP06-056, OP06-102, OP06-103,
+  OP08-076, OP12-101, OP13-059, OP15-115, OP17-076 y OP17-104): campo `trigger` y bloque ejecutable,
+  con el texto oficial, sin cambios en el motor.
+
+Tests nuevos (todos fallan con los datos anteriores): `tests/cards/exact-type-filters.test.ts` (las
+13 cartas del meta en las que el cambio se nota con cartas reales, más una comprobación del modo de
+comparación en 25 cartas del meta), `tests/cards/printed-trigger-blocks.test.ts` (los 13
+[Trigger], revelándolos desde la Vida) y casos en las pruebas de OP11-110 y OP17-007. Seis tests de
+upstream suponían la subcadena para un `{Tipo}` y se han corregido citando 2-4-3 (OP09-095,
+OP10-082, OP09-099, EB01-009, OP05-075 y OP07-071); los que construían cartas con tipos unidos
+(OP05-012, OP05-015, OP05-033, OP05-034, OP05-064, OP05-090, OP07-060, OP08-033, OP10-007 y
+OP10-071) usan ahora la lista partida; el de OP14-009 comprueba los tres tipos, y el de
+OP17-118 usa a OP04-008 Chaka porque OP16-016 Ramba tiene counter +1000.
+
+Queda: el importador de upstream (`tools/op-card-parser`) sigue generando `match: "includes"` para
+`{Tipo}`; las cartas nuevas que traiga habrá que revisarlas con este mismo inventario.
+
+Después del parche (`pnpm opbot catalog-check --offline`):
+
+| Categoría | Antes | Después |
+|---|--:|--:|
+| `name` | 38 | 0 |
+| `cost` | 2 | 0 |
+| `counter` | 9 | 0 |
+| `attribute` | 4 | 0 |
+| `types-joined` | 1072 | 0 |
+| `types` | 38 | 0 |
+| `trigger` | 13 | 0 |
+| `structure:trigger` | 32 | 19 |
+| `effect-text` | 19 | 17 |
+| resto (`alias`, `structure:*`, `effect-text-missing`) | 25 | 25 |
+
 ## Para un set nuevo (EB-05, OP-18)
 
 1. Sincroniza el motor cuando upstream añada el set (`scripts/sync-engine.sh`).

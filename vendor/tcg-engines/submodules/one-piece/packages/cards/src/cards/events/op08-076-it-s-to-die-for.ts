@@ -5,7 +5,7 @@ export const op08ItSToDieFor076: EventCard = {
   id: "OP08-076",
   canonicalId: "OP08-076",
   slug: "it-s-to-die-for",
-  name: "It's to Die For",
+  name: "It's to Die For...",
   printings: [
     {
       id: "OP08-076",
@@ -38,7 +38,8 @@ export const op08ItSToDieFor076: EventCard = {
   rarity: "UC",
   setId: "OP08",
   cost: 3,
-  traits: ["The Four Emperors Big Mom Pirates"],
+  trigger: "Add up to 1 DON!! card from your DON!! deck and set it as active.",
+  traits: ["The Four Emperors", "Big Mom Pirates"],
   effect:
     "[Main] Add up to 1 DON!! card from your DON!! deck and set it as active. Then, if your opponent has a Character with 6000 power or more, add up to 1 DON!! card from your DON!! deck and set it as active.",
   effects: {
@@ -64,6 +65,16 @@ export const op08ItSToDieFor076: EventCard = {
               zone: "character",
               filters: [{ filter: "power", comparison: "gte", value: 6000 }],
             },
+          },
+        ],
+      },
+      {
+        trigger: "trigger",
+        actions: [
+          {
+            action: "addDon",
+            count: { amount: 1, upTo: true },
+            state: "active",
           },
         ],
       },

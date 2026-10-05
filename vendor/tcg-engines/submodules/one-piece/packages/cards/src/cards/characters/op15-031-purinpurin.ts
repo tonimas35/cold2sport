@@ -23,7 +23,7 @@ export const op15Purinpurin031: CharacterCard = {
   cost: 2,
   power: 2000,
   counter: 1000,
-  traits: ["Navy East Blue"],
+  traits: ["East Blue", "Navy"],
   attribute: "wisdom",
   effect:
     "[On Play] Select up to 1 of your opponent's rested Characters. If the chosen Character has a cost equal to the number of DON!! cards given to it, K.O. it.",

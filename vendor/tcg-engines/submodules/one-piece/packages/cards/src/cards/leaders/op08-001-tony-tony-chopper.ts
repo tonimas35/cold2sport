@@ -39,7 +39,7 @@ export const op08TonyTonyChopper001: LeaderCard = {
   setId: "OP08",
   power: 5000,
   life: 4,
-  traits: ["Animal Drum Kingdom Straw Hat Crew"],
+  traits: ["Animal", "Drum Kingdom", "Straw Hat Crew"],
   attribute: "strike",
 
   effect:
@@ -62,8 +62,8 @@ export const op08TonyTonyChopper001: LeaderCard = {
                 {
                   filter: "anyOf",
                   groups: [
-                    [{ filter: "trait", value: "Animal", match: "includes" }],
-                    [{ filter: "trait", value: "Drum Kingdom", match: "includes" }],
+                    [{ filter: "trait", value: "Animal", match: "exact" }],
+                    [{ filter: "trait", value: "Drum Kingdom", match: "exact" }],
                   ],
                 },
               ],

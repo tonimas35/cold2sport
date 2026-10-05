@@ -24,7 +24,7 @@ export const op16SanjuanWolf106: CharacterCard = {
   power: 5000,
   counter: 1000,
   trigger: "Activate this card's [On K.O.] effect.",
-  traits: ["Blackbeard Pirates Giant Impel Down"],
+  traits: ["Giant", "Impel Down", "Blackbeard Pirates"],
   attribute: "strike",
   effect:
     "[On K.O.] If your Leader has the {Blackbeard Pirates} type, draw 1 card, then up to 1 of your Leader or Character cards' base power becomes 7000 during this turn.",
@@ -36,7 +36,7 @@ export const op16SanjuanWolf106: CharacterCard = {
           {
             condition: "leaderTrait",
             trait: "Blackbeard Pirates",
-            match: "includes",
+            match: "exact",
           },
         ],
         actions: [

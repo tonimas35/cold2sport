@@ -30,7 +30,7 @@ export const op08Kaido079: CharacterCard = {
   setId: "OP08",
   cost: 9,
   power: 9000,
-  traits: ["Animal Kingdom Pirates Former Rocks Pirates"],
+  traits: ["Former Rocks Pirates", "Animal Kingdom Pirates"],
   attribute: "strike",
   effect:
     "[Activate:Main] [Once Per Turn] You may trash 1 card from your hand: If this Character was played on this turn, trash up to 1 of your opponent's Characters with a cost of 7 or less. Then, your opponent trashes 1 card from their hand.",

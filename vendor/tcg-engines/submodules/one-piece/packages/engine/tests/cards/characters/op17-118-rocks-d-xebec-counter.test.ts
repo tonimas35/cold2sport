@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vite-plus/test";
 import {
   eb01Doma005,
-  op16Ramba016,
+  op04Chaka008,
   op17RocksDXebec039,
   op17RocksDXebec118,
   op17Streusen050,
@@ -13,6 +13,8 @@ import { getCardCounter } from "../../../src/shared.ts";
 // OP17-118 Rocks.D.Xebec: "If you only have Characters without a Counter, this
 // card in your hand has a +2000 Counter." OP17 FAQ: with 0 Characters it does
 // NOT have Counter +2000. The printed card has no Counter of its own.
+// OP04-008 Chaka is a Character without a Counter (OP16-016 Ramba, used here
+// before, has Counter +1000 on the official card list).
 function setup(character: FixtureCardEntry[]) {
   const engine = OnePieceTestEngine.create(
     {
@@ -40,7 +42,7 @@ function counterOption(engine: OnePieceTestEngine, instanceId: string) {
 
 describe("OP17-118 Rocks.D.Xebec counter in hand", () => {
   test("with only Counter-less Characters it is a +2000 Counter that saves the Leader", () => {
-    const { engine, xebecId } = setup([op16Ramba016, op17Streusen050]);
+    const { engine, xebecId } = setup([op04Chaka008, op17Streusen050]);
     const lifeBefore = engine.getView("south").players.south.lifeCount;
     expect(getCardCounter(engine.getState(), xebecId)).toBe(2000);
 
@@ -75,7 +77,7 @@ describe("OP17-118 Rocks.D.Xebec counter in hand", () => {
   });
 
   test("a Character with a Counter on the field turns the +2000 Counter off", () => {
-    const { engine, xebecId } = setup([op16Ramba016, eb01Doma005]);
+    const { engine, xebecId } = setup([op04Chaka008, eb01Doma005]);
     const lifeBefore = engine.getView("south").players.south.lifeCount;
     expect(getCardCounter(engine.getState(), xebecId)).toBe(0);
 
@@ -86,7 +88,7 @@ describe("OP17-118 Rocks.D.Xebec counter in hand", () => {
   });
 
   test("only the copy in hand gains the Counter; other hand cards keep their own", () => {
-    const { engine, xebecId } = setup([op16Ramba016]);
+    const { engine, xebecId } = setup([op04Chaka008]);
     const domaId = engine.findCardInZone("south", "hand", eb01Doma005);
     expect(getCardCounter(engine.getState(), xebecId)).toBe(2000);
     expect(getCardCounter(engine.getState(), domaId)).toBe(1000);

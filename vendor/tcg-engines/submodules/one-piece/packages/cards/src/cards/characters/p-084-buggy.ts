@@ -18,12 +18,13 @@ export const pBuggy084: CharacterCard = {
     },
   ],
   cardType: "character",
-  attribute: "strike",
+  attribute: "slash",
   color: ["blue"],
   rarity: "P",
   setId: "P",
   cost: 7,
   power: 8000,
+  traits: ["The Four Emperors", "Cross Guild"],
   effects: {
     permanentEffects: [
       {
@@ -91,7 +92,7 @@ export const pBuggy084: CharacterCard = {
               {
                 filter: "trait",
                 value: "Cross Guild",
-                match: "includes",
+                match: "exact",
               },
               {
                 filter: "cost",

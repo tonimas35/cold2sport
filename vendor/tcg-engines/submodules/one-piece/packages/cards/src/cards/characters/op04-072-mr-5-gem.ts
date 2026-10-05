@@ -5,7 +5,7 @@ export const op04Mr5Gem072: CharacterCard = {
   id: "OP04-072",
   canonicalId: "OP04-072",
   slug: "mr-5-gem/op04-072",
-  name: "Mr.5 (Gem)",
+  name: "Mr.5(Gem)",
   printings: [
     {
       id: "OP04-072",

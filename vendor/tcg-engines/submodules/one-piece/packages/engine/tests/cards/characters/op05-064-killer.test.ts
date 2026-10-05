@@ -17,7 +17,7 @@ const compoundKidPirates: CharacterCard = {
   id: "TEST-OP05-064-COMPOUND-KID-PIRATES",
   canonicalId: "TEST-OP05-064-COMPOUND-KID-PIRATES",
   name: "Heat",
-  traits: ["Supernovas/Kid Pirates"],
+  traits: ["Supernovas", "Kid Pirates"],
 };
 
 registerCards([compoundKidPirates]);

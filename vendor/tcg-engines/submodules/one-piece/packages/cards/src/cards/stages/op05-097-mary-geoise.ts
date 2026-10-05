@@ -72,7 +72,7 @@ export const op05MaryGeoise097: StageCard = {
                 {
                   filter: "trait",
                   value: "Celestial Dragons",
-                  match: "includes",
+                  match: "exact",
                 },
                 {
                   filter: "cardCategory",

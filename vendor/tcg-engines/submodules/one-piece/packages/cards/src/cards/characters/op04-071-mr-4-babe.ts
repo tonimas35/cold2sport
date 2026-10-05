@@ -5,7 +5,7 @@ export const op04Mr4Babe071: CharacterCard = {
   id: "OP04-071",
   canonicalId: "OP04-071",
   slug: "mr-4-babe/op04-071",
-  name: "Mr.4 (Babe)",
+  name: "Mr.4(Babe)",
   printings: [
     {
       id: "OP04-071",

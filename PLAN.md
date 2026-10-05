@@ -105,7 +105,10 @@ Decisiones clave:
 - [ ] Parche del motor con las cartas y costes que faltan (ST34, ST30-001, costes OP15-074…078). En curso.
 - [x] Comprobación sistemática del catálogo contra la lista oficial EN (`pnpm opbot catalog-check`,
       `docs/CATALOGO.md`), con la lista de arreglos de datos mecánicos en `docs/catalogo-arreglos.json`.
-- [ ] Parche con esos arreglos de datos y los bloques que faltan en cartas del meta.
+- [x] Parche con esos arreglos de datos: tipos partidos y filtros de tipo exactos o por subcadena
+      según el texto impreso, nombres, counters, atributos, costes y los 13 [Trigger] sin bloque
+      (`docs/CATALOGO.md`, "Arreglos aplicados al motor").
+- [ ] Parche con los bloques que faltan en cartas del meta (categorías `structure:*`).
 - [ ] Matriz de enfrentamientos del meta según el bot.
 
 ### Fase 3. Bot de búsqueda (en curso)

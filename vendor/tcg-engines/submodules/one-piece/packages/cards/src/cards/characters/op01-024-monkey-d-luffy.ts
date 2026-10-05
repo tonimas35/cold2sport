@@ -48,7 +48,7 @@ export const op01MonkeyDLuffy024: CharacterCard = {
   cost: 2,
   power: 3000,
   counter: 1000,
-  traits: ["Straw Hat Crew Supernovas"],
+  traits: ["Supernovas", "Straw Hat Crew"],
   attribute: "strike",
 
   effect:

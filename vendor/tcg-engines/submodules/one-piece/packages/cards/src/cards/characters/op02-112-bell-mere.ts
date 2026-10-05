@@ -5,7 +5,7 @@ export const op02BellMere112: CharacterCard = {
   id: "OP02-112",
   canonicalId: "OP02-112",
   slug: "bell-mere/op02-112",
-  name: "Bell-mere",
+  name: "Bell-mère",
   printings: [
     {
       id: "OP02-112",
