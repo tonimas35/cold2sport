@@ -22,7 +22,7 @@ export interface SampleRow {
   y: number;
 }
 
-/** Agent spec (see agents/factory.ts) and its relative weight in the mix. */
+/** Agent spec (see agents/spec.ts) and its relative weight in the mix. */
 export interface AgentMixEntry {
   readonly spec: string;
   readonly weight: number;

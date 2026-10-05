@@ -5,6 +5,7 @@ posiciones, simula enfrentamientos entre mazos y juega con un bot de búsqueda q
 información que tendría un jugador. **No es para usar durante torneos.**
 
 - **Guía para entrenar con la herramienta: [`docs/GUIA.md`](docs/GUIA.md)**
+- **Jugar contra el bot en el móvil o el PC, en el navegador: [`docs/WEB.md`](docs/WEB.md)**
 - Plan, estado y decisiones: [`PLAN.md`](PLAN.md)
 - Cómo funciona el motor de reglas y qué hemos cambiado: [`docs/NOTAS_MOTOR.md`](docs/NOTAS_MOTOR.md)
 - Resultados medidos: [`docs/RESULTADOS.md`](docs/RESULTADOS.md)
@@ -70,6 +71,17 @@ Agentes disponibles: `heuristic`, `heuristic-honest`, `aggressive`, `random`,
   la regla de la política, sin simular. `search:...,rollout=policy0` es la búsqueda tal como era
   antes de las reglas de DON!! y `search:...,rollout=engine` usa la política más antigua (la
   heurística del motor con dos arreglos).
+
+### Jugar en el navegador (móvil o PC)
+
+```bash
+pnpm web:dev       # http://127.0.0.1:5173
+pnpm web:build     # web estática en packages/web/dist/ (sin servidor: se puede alojar en cualquier sitio)
+```
+
+Partidas completas contra el bot (Rápido, Normal o Fuerte) con los mazos del meta o una lista
+pegada, el bot dentro del navegador y la partida descargable para `pnpm opbot review`. Cómo
+publicarla en privado y sus límites: [`docs/WEB.md`](docs/WEB.md).
 
 ### Otros
 

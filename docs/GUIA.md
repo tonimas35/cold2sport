@@ -105,6 +105,11 @@ Marca tus decisiones como imprecisión (≥ 3 puntos de % de victoria perdidos),
 grave (≥ 15), **solo cuando la diferencia es estadísticamente significativa**. Úsalo para encontrar
 patrones (¿cuándo haces counter de más?, ¿atacas al personaje equivocado?).
 
+**En el móvil o en el PC, con tablero**: la web de `packages/web` (`pnpm web:dev`, o publicada en
+privado; ver [`WEB.md`](WEB.md)) juega la misma partida en el navegador, con el bot en tres niveles.
+No da pistas durante la partida; al acabar, "Descargar partida" guarda un fichero que se revisa con
+el mismo `pnpm opbot review --game <fichero> --seat south`.
+
 ## 3. Enfrentamientos entre mazos: úsalos con cuidado
 
 ```bash

@@ -17,9 +17,27 @@ importers:
       '@tcg/engine-core':
         specifier: link:./packages/engine-core
         version: link:packages/engine-core
+      '@tcg/op-cards':
+        specifier: link:../one-piece/packages/cards
+        version: link:../one-piece/packages/cards
+      '@tcg/op-engine':
+        specifier: link:../one-piece/packages/engine
+        version: link:../one-piece/packages/engine
       '@tcg/protocol':
         specifier: link:./packages/protocol
         version: link:packages/protocol
+      '@tcg/simulator-contract':
+        specifier: link:./packages/simulator-contract
+        version: link:packages/simulator-contract
+      '@tcg/simulator-runtime':
+        specifier: link:./packages/simulator-runtime
+        version: link:packages/simulator-runtime
+      '@tcg/simulator-ui':
+        specifier: link:./packages/simulator-ui
+        version: link:packages/simulator-ui
+      '@tcg/typescript-config':
+        specifier: link:./packages/typescript-config
+        version: link:packages/typescript-config
       mutative:
         specifier: 1.3.0
         version: 1.3.0

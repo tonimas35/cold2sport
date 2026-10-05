@@ -137,6 +137,8 @@ Decisiones clave:
 - [x] Ajuste de mazo (`pnpm opbot tune`): base contra variante con las mismas partidas.
 - [x] Batería de puzzles con respuesta conocida como test de regresión (`examples/puzzles`).
 - [ ] Importar partidas de OPTCGSim / OPBounty (formato de log por investigar).
+- [x] **Web para jugar contra el bot en el móvil o el PC** (`packages/web`, `docs/WEB.md`): primera
+      versión estática, con el bot honesto en un Web Worker y revisión al acabar.
 
 ### Fase 5. Aprendizaje (adelantada en parte)
 - [x] Modelo de valor logístico entrenado por autojuego.
@@ -154,34 +156,43 @@ Decisiones clave:
 
 ---
 
-### Futuro posible (siguiente paso, no empezado): app de simulador para el móvil
+### App para el móvil: primera versión hecha (web estática)
 
 Idea surgida al hablar con otros jugadores: la app de OPTCGSim para el móvil es mala y mucha gente
 solo practica en el PC. Una app para el móvil con un rival fuerte (nuestro bot) tendría público.
-**No está planificada todavía**; se decidirá cuando el motor y el bot estén terminados para el meta.
 
-Cómo se haría:
+**Hecho (octubre de 2026)**: `packages/web`, guía en `docs/WEB.md`.
 
-- **Partir del simulador web de upstream** (`TheCardGoat/tcg-engines`, `agnostic-simulator`,
-  licencia MIT): ya juega a One Piece y tiene diseño para móvil en vertical y táctil. No está
-  vendorizado; habría que traerlo con el mismo método que el motor (`vendor/`, parches).
-- **El bot se ejecuta en el propio teléfono** (Web Worker en el navegador). Así no hace falta
-  servidor y basta un alojamiento estático. Hoy tarda ~0,2 s por decisión con 32 simulaciones en
-  el servidor; en el iPhone habrá que medirlo y ajustar el número de simulaciones.
-- **Web instalable** (se añade a la pantalla de inicio), no App Store: Apple rechazaría una app con
-  cartas de Bandai.
-- Primera versión: jugar contra el bot con los mazos del pool del meta y revisar la partida al
-  acabar (`review`). Juego online entre personas: fuera de alcance (servidores, emparejamiento).
+- Parte del simulador web de upstream (`agnostic-simulator`, MIT), vendorizado con el mismo método
+  que el motor (`vendor/`, sin parches): tablero de PC, proyección del estado y animaciones. En el
+  móvil en vertical, un tablero propio más compacto.
+- **El bot se ejecuta en el propio navegador** (Web Worker), así que basta un alojamiento estático.
+  Tres niveles: Rápido (`policy-honest`), Normal (`search:sims=16`) y Fuerte (`search:sims=32`).
+  Fuerte tarda ~0,27 s por decisión de media en un PC y ~1,1 s con la CPU 4 veces más lenta.
+- Mazos del meta, de prueba o pegados de OPTCGSim; partida descargable en el formato de
+  `pnpm opbot play` y revisión en el navegador o con `pnpm opbot review`.
+- Sin asistente en directo: el bot es honesto y la página solo recibe lo que ve el jugador.
 
-Condiciones y riesgos:
+**Pendiente**:
 
-- **Derechos de Bandai**: empezar como beta privada (enlace solo para amigos); decidir qué hacer
-  con las imágenes de las cartas antes de abrirla a más gente (ver sección 6).
+- Probarla en un iPhone real (Safari): las pruebas automáticas usan Chromium con su pantalla.
+- Publicarla en privado (recomendado: Cloudflare Pages + Access, pasos en `docs/WEB.md`).
+- Textos del motor y del tablero de upstream en español (hoy salen en inglés).
+- Modo sin conexión (PWA con caché) y qué hacer con las imágenes de las cartas antes de abrirla a
+  más gente (hoy se piden a `optcgapi.com`, no se alojan).
+- Medir en la arena la fuerza de Rápido y Normal.
+
+Condiciones y riesgos (siguen vigentes):
+
+- **Derechos de Bandai**: beta privada (enlace solo para amigos, detrás de un inicio de sesión);
+  decidir qué hacer con las imágenes de las cartas antes de abrirla a más gente (ver sección 6).
+  Web instalable (pantalla de inicio), no App Store: Apple rechazaría una app con cartas de Bandai.
 - **Nada de asistente en directo**: las partidas online de torneo se juegan en simuladores; la app
   no debe decir qué jugar en una partida en curso ajena (mismo principio que el resto del
   proyecto). Solo rival y revisión posterior.
 - **Fidelidad del motor**: solo los mazos auditados (pool del meta y lo que cubra
   `pnpm opbot catalog-check`) son fiables; el resto de cartas puede fallar.
+- Juego online entre personas: fuera de alcance (servidores, emparejamiento).
 
 ## 5. Cómo trabajar con Claude Code
 

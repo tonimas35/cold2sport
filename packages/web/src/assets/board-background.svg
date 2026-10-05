@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <!-- Neutral playmat for the upstream board (replaces its map image, which is not vendored). -->
+  <defs>
+    <radialGradient id="sea" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#d6ece9"/>
+      <stop offset="60%" stop-color="#c3dfdc"/>
+      <stop offset="100%" stop-color="#e9dcc0"/>
+    </radialGradient>
+    <pattern id="waves" width="120" height="40" patternUnits="userSpaceOnUse">
+      <path d="M0 20 Q15 10 30 20 T60 20 T90 20 T120 20" fill="none" stroke="#7fb0b0" stroke-opacity="0.25" stroke-width="2"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sea)"/>
+  <rect width="1600" height="900" fill="url(#waves)"/>
+  <g fill="none" stroke="#8a6a44" stroke-opacity="0.18" stroke-width="2">
+    <circle cx="1380" cy="760" r="90"/>
+    <circle cx="1380" cy="760" r="60"/>
+    <path d="M1380 650 L1380 870 M1270 760 L1490 760 M1302 682 L1458 838 M1458 682 L1302 838"/>
+  </g>
+</svg>

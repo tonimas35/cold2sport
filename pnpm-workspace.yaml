@@ -2,3 +2,24 @@
 # upstream pnpm workspaces and is installed by scripts/setup.sh.
 packages:
   - packages/*
+
+# The vendored browser UI (vendor/tcg-engines/.../simulator-ui and the One
+# Piece board components) imports React, Mantine and friends by bare name.
+# Those files live outside packages/web, so Node-style resolution walks up to
+# the repository root: hoist exactly these packages/web dependencies there, so
+# the vendored UI and our code share one copy of each (one React, one Mantine
+# context) without editing upstream files.
+publicHoistPattern:
+  - react
+  - react-dom
+  - "@types/react"
+  - "@types/react-dom"
+  - "@mantine/core"
+  - "@mantine/hooks"
+  - "@dnd-kit/core"
+  - "@floating-ui/dom"
+  - "@radix-ui/react-popover"
+  - "@tabler/icons-react"
+  - motion
+  - canvas-confetti
+  - "@types/canvas-confetti"

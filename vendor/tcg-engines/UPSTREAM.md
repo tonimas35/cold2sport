@@ -9,26 +9,68 @@
 
 ## What is vendored
 
-Only what the One Piece engine needs at runtime and for its own test suite:
+Only what the One Piece engine needs at runtime and for its own test suite,
+plus the browser board UI that `packages/web` builds on:
 
 | Path | Why |
 |---|---|
 | `submodules/one-piece/` | Engine, cards, types, utils, card parser, rules skill and tests (unchanged upstream workspace, own `pnpm-lock.yaml`) |
 | `submodules/agnostic-simulator/packages/{bot-core,engine-core,protocol,card-model}` | Imported by the engine at runtime (seeded RNG, bot helpers, card model) |
 | `submodules/agnostic-simulator/packages/typescript-config` | `tsconfig.json` base that the four packages above extend (the engine's test runner needs it) |
+| `submodules/agnostic-simulator/packages/{simulator-ui,simulator-contract,simulator-runtime}` | Web simulator UI (see "Web simulator UI" below): board components, viewport shell, animation runtime and the board data contract |
+| `submodules/agnostic-simulator/apps/multi-game-simulator/src/games/one-piece/{components,data,animation,styles.css}` | The One Piece tabletop board, its state-to-board projection (`buildOnePieceBoardFromState`) and its animation adapter |
 
 Paths are kept identical to upstream so the engine's `link:` dependencies
 (`../../../agnostic-simulator/packages/...`) resolve without changes.
 
-Not vendored: the other games, the browser simulator, `tools/bot-lab` and
-`tools/play-cli` (they link every other game's engine). Our own arena in
-`packages/opbot` reimplements the evaluation protocol we need.
+Not vendored: the other games, the rest of the browser simulator app (pages,
+platform client, accounts, telemetry), `tools/bot-lab` and `tools/play-cli`
+(they link every other game's engine). Our own arena in `packages/opbot`
+reimplements the evaluation protocol we need.
 
 ## Local files (not upstream)
 
 - `submodules/agnostic-simulator/package.json`, `pnpm-workspace.yaml`,
   `pnpm-lock.yaml`: a tiny install that provides the runtime dependencies
-  (`zod`, `mutative`) of the four vendored agnostic packages.
+  (`zod`, `mutative`) of the four vendored agnostic packages, and `link:`s
+  the `@tcg/*` packages that the vendored UI imports by name (`op-engine`,
+  `op-cards`, `simulator-*`, and `typescript-config`, whose `base.json` the
+  bundler reads through the UI packages' `tsconfig.json`).
+
+## Web simulator UI (used by `packages/web`)
+
+Vendored unchanged, at the same commit, by `scripts/sync-engine.sh`:
+`packages/simulator-ui`, `packages/simulator-contract`,
+`packages/simulator-runtime` and, from `apps/multi-game-simulator`, only
+`src/games/one-piece/{components,data,animation,styles.css}`.
+
+- **Left out on purpose**: the app's pages and shared modules (they talk to
+  the hosted platform: sign-in, game gateway, telemetry, bug reports) and the
+  board background image `src/games/one-piece/assets/one-piece-map-background.jpeg`
+  (artwork whose rights the MIT license of the code does not settle). The board
+  CSS still references it, so `packages/web/vite.config.ts` aliases that import
+  to our own neutral `packages/web/src/assets/board-background.svg`.
+- **Third-party dependencies** of the UI (React, Mantine, motion, dnd-kit,
+  Radix, Floating UI, Tabler icons, canvas-confetti) are `packages/web`
+  dependencies, hoisted to the root `node_modules` by `publicHoistPattern` in
+  the root `pnpm-workspace.yaml`, so the vendored files resolve them without
+  their own install.
+- **Adapted copies, not vendored files** (in `packages/web/src/ui/`, each with
+  an MIT attribution header): `GameShell.tsx` (from `OnePieceSimulatorShell`),
+  `GameSidebar.tsx` (from `OnePieceSidebar`) and `CardActions.tsx` (from
+  `OnePieceCardContextController`). The originals import the platform modules
+  left out above (account menu, support dialog, sound packs); the copies keep
+  the board wiring and drop those. `packages/web/src/app.css` copies the app's
+  CSS tokens.
+- **Layout fixes from outside**, in `packages/web/src/ui/board-fixes.css`,
+  instead of patches: the Leader card and the deck/trash/stage piles collapsed
+  because the board sizes them with percentages of an unsized animation anchor;
+  the top card of the deck and trash kept its tiny default size; the move tray
+  buttons rendered as big squares; the opponent's mat column minimums (1006 px)
+  pushed the right edge off screen below ~1500 px of window; the dark match
+  sidebar got the light theme's event-log colours. Each rule says which upstream
+  rule it compensates. Worth reporting upstream.
+- No patch in `vendor/patches/` touches the UI: the UI files are pristine.
 
 ## Local changes to upstream code
 

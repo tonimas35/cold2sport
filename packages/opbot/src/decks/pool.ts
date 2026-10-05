@@ -5,12 +5,10 @@
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
-import { checkDeck, engineTestDecks, parseDeckText, type DeckList } from "./deck.ts";
+import { checkDeck, engineTestDecks, parseDeckFile, type DeckList } from "./deck.ts";
 
 export function loadDeckFile(path: string): DeckList {
-  const text = readFileSync(path, "utf8");
-  const source = /^#\s*source:\s*(.+)$/m.exec(text)?.[1]?.trim();
-  return parseDeckText(basename(path).replace(/\.txt$/, ""), text, source);
+  return parseDeckFile(basename(path), readFileSync(path, "utf8"));
 }
 
 export function loadDeckPool(spec: string): DeckList[] {
