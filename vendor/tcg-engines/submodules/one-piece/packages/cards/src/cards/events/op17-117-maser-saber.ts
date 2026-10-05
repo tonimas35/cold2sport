@@ -32,9 +32,11 @@ export const op17MaserSaber117: EventCard = {
         actions: [
           {
             action: "modifyPower",
+            // "your [Charlotte Linlin]" is a Leader or a Character with that
+            // name (e.g. the OP17-099 Leader), not only Characters.
             target: {
               player: "self",
-              zones: ["character"],
+              zones: ["leader", "character"],
               count: {
                 amount: 1,
                 upTo: true,
@@ -48,6 +50,50 @@ export const op17MaserSaber117: EventCard = {
             },
             value: 3000,
             duration: "thisBattle",
+          },
+        ],
+      },
+      {
+        // OP17 FAQ: the opponent chooses to trash 3 cards from their own hand
+        // or do nothing; if they do not trash 3, K.O. up to 1 of their
+        // Characters with a cost of 6 or less. With fewer than 3 cards in
+        // hand they cannot trash 3, so the K.O. happens.
+        trigger: "trigger",
+        actions: [
+          {
+            action: "conditional",
+            predicate: { condition: "handCount", player: "opponent", comparison: "gte", value: 3 },
+            whenTrue: [
+              {
+                action: "choice",
+                player: "opponent",
+                options: [
+                  [{ action: "trashFromHand", player: "opponent", amount: 3 }],
+                  [
+                    {
+                      action: "ko",
+                      target: {
+                        player: "opponent",
+                        zones: ["character"],
+                        count: { amount: 1, upTo: true },
+                        filters: [{ filter: "cost", comparison: "lte", value: 6 }],
+                      },
+                    },
+                  ],
+                ],
+              },
+            ],
+            whenFalse: [
+              {
+                action: "ko",
+                target: {
+                  player: "opponent",
+                  zones: ["character"],
+                  count: { amount: 1, upTo: true },
+                  filters: [{ filter: "cost", comparison: "lte", value: 6 }],
+                },
+              },
+            ],
           },
         ],
       },

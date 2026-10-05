@@ -70,6 +70,20 @@ export const op16Mahoroba101: EventCard = {
           },
         ],
       },
+      {
+        trigger: "trigger",
+        actions: [
+          {
+            action: "returnToHand",
+            target: {
+              player: "self",
+              zones: ["trash"],
+              count: { amount: 1, upTo: true },
+              filters: [{ filter: "name", value: "Yamato" }],
+            },
+          },
+        ],
+      },
     ],
   },
   i18n: op16Mahoroba101I18n,

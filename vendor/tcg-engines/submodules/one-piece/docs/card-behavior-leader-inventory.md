@@ -95,7 +95,7 @@ reconciles catalog entries.
 | OP13-002     | Portgas.D.Ace                    | verified | Opponent-attack power reduction; Life Trigger before damage reaction draw; qualifying Character K.O. branch                             |
 | OP13-003     | Gol.D.Roger                      | verified | Pre-placement DON!!-field gate; DON!!-Phase Leader attachment; dynamic 9-DON!! power boundary                                           |
 | OP13-004     | Sabo                             | verified | Dynamic Life-4 Leader power; DON!! x1 plus cost-8 field gate; Leader-and-Character power                                                |
-| OP13-079 | Imu | verified | activateMain |
+| OP13-079 | Imu | verified | activateMain; deck rule excludes Events of cost 2 or more (deck validation); start-of-game Mary Geoise Stage play not implemented |
 | OP13-100     | Jewelry Bonney                   | verified | Optional Trigger-Character play reaction; 0–2 rested-DON!! count; Leader-or-Character recipient                                         |
 | OP14-001     | Trafalgar Law                    | verified | Alternative included-type candidate mapping; two-Character base-power swap; external DON!! modifier preservation and expiry             |
 | OP14-020     | Dracule Mihawk                   | verified | Opposing Slash permanent power; selectable card-rest cost; post-cost cost-5 gate; 0–3 reactivation; Character play restriction          |

@@ -295,10 +295,11 @@ export function mergePrintings(printings: readonly OfficialPrinting[]): Map<stri
 
 export interface SiteCorrection {
   readonly id: string;
-  readonly field: "name" | "attributes";
+  /** `effect`: official errata the card list page has not taken in. */
+  readonly field: "name" | "attributes" | "effect";
   /** What the card list page shows. */
   readonly shown: string | readonly string[];
-  /** What the printed card says. */
+  /** What the printed card says (for `effect`, the text after the errata). */
   readonly printed: string | readonly string[];
 }
 
@@ -316,6 +317,26 @@ export const SITE_CORRECTIONS: readonly SiteCorrection[] = [
   { id: "OP06-105", field: "attributes", shown: ["slash"], printed: ["ranged"] },
   // The page writes "Kozuki"; the card (and every other Kouzuki) prints "Kouzuki".
   { id: "EB04-014", field: "name", shown: "Kozuki Sukiyaki", printed: "Kouzuki Sukiyaki" },
+  // Official errata (https://en.onepiece-cardgame.com/rules/errata_card/, read
+  // 2026-10-05) that the card list pages still show unfixed. The engine
+  // already plays the corrected text.
+  {
+    // Errata of 2023-07-14: "rest up to 1" became "rest 1".
+    id: "OP05-032",
+    field: "effect",
+    shown:
+      "[End of Your Turn] ①: Set this Character as active.\n[Once Per Turn] If this Character would be K.O.'d, you may rest up to 1 of your Characters with a cost of 3 or more other than [Pica] instead.",
+    printed:
+      "[End of Your Turn] ①: Set this Character as active.\n[Once Per Turn] If this Character would be K.O.'d, you may rest 1 of your Characters with a cost of 3 or more other than [Pica] instead.",
+  },
+  {
+    // Errata of 2024-12-13: the opponent chooses the Character to return.
+    id: "OP09-058",
+    field: "effect",
+    shown: "[Main] Return up to 1 of your opponent's Characters with a cost of 6 or less to the owner's hand.",
+    printed:
+      "[Main] Your opponent chooses 1 of their Character with a cost of 6 or less and return to the owner's hand.",
+  },
 ];
 
 /** `cards` with the corrections that still apply; returns which were applied. */
@@ -327,7 +348,12 @@ export function applySiteCorrections(
   for (const c of corrections) {
     const card = cards.get(c.id);
     if (!card || JSON.stringify(card[c.field]) !== JSON.stringify(c.shown)) continue;
-    cards.set(c.id, c.field === "name" ? { ...card, name: String(c.printed) } : { ...card, attributes: [...c.printed] });
+    cards.set(
+      c.id,
+      c.field === "attributes"
+        ? { ...card, attributes: [...c.printed] }
+        : { ...card, [c.field]: String(c.printed) },
+    );
     applied.push(c);
   }
   return applied;

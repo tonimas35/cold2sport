@@ -54,19 +54,9 @@ export const op17WoRoRoRoRoIThinkIVeSoberedUp076: EventCard = {
       },
       {
         trigger: "trigger",
-        costs: [
-          {
-            cost: "returnDon",
-            amount: 1,
-          },
-        ],
-        actions: [
-          {
-            action: "draw",
-            player: "self",
-            amount: 2,
-          },
-        ],
+        costs: [{ cost: "returnDon", amount: 1 }],
+        actions: [{ action: "draw", player: "self", amount: 2 }],
+        optional: true,
       },
     ],
   },

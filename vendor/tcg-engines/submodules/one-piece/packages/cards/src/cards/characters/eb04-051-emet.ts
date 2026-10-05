@@ -28,6 +28,23 @@ export const eb04Emet051: CharacterCard = {
   attribute: "strike",
   effect: "This Character cannot attack unless there is a Character with 12000 base power or more.",
   effects: {
+    effects: [
+      {
+        trigger: "trigger",
+        actions: [
+          {
+            action: "modifyPower",
+            target: { player: "opponent", zones: ["character"], count: { amount: "all" } },
+            value: -3000,
+            duration: "thisTurn",
+          },
+          {
+            action: "playThisCard",
+            condition: { condition: "lifeCount", player: "self", comparison: "eq", value: 0 },
+          },
+        ],
+      },
+    ],
     permanentEffects: [
       {
         actions: [

@@ -43,6 +43,12 @@ export const op16JesusBurgess107: CharacterCard = {
           },
         ],
       },
+      {
+        trigger: "trigger",
+        costs: [{ cost: "trashFromHand", amount: 1 }],
+        actions: [{ action: "playThisCard" }],
+        optional: true,
+      },
     ],
   },
   i18n: op16JesusBurgess107I18n,

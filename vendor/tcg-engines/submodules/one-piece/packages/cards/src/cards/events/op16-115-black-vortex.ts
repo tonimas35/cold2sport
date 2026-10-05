@@ -61,6 +61,20 @@ export const op16BlackVortex115: EventCard = {
           },
         ],
       },
+      {
+        trigger: "trigger",
+        actions: [
+          {
+            action: "negateEffects",
+            target: {
+              player: "opponent",
+              zones: ["leader", "character"],
+              count: { amount: 1, upTo: true },
+            },
+            duration: "thisTurn",
+          },
+        ],
+      },
     ],
   },
   i18n: op16BlackVortex115I18n,

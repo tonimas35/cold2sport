@@ -56,6 +56,10 @@ export const op16AvaloPizarro102: CharacterCard = {
           },
         ],
       },
+      {
+        trigger: "trigger",
+        actions: [{ action: "activateEffect", effectTrigger: "onKo" }],
+      },
     ],
   },
   i18n: op16AvaloPizarro102I18n,

@@ -58,6 +58,29 @@ export const op16TheThreeAdmirals076: EventCard = {
         ],
         optional: true,
       },
+      {
+        trigger: "counter",
+        conditions: [
+          {
+            condition: "hasCard",
+            player: "self",
+            zone: "character",
+            filters: [{ filter: "trait", value: "Admiral", match: "includes" }],
+          },
+        ],
+        actions: [
+          {
+            action: "modifyPower",
+            target: {
+              player: "self",
+              zones: ["leader", "character"],
+              count: { amount: 1, upTo: true },
+            },
+            value: 4000,
+            duration: "thisBattle",
+          },
+        ],
+      },
     ],
   },
   i18n: op16TheThreeAdmirals076I18n,

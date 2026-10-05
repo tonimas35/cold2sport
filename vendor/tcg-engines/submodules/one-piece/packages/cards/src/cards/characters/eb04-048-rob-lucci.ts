@@ -34,8 +34,46 @@ export const eb04RobLucci048: CharacterCard = {
   traits: ["Egghead", "CP0"],
   attribute: "strike",
   effect:
-    'If your Leader\'s type includes "CP", this Character gains +1000 power and -2 cost for every 5 cards in your trash.\n[On Play] You may trash 1 of your Characters: Draw 1 card.',
-  effects: {},
+    'If your Leader\'s type includes "CP", this Character gains +1000 power and +2 cost for every 5 cards in your trash.\n[On Play] You may trash 1 of your Characters: Draw 1 card.',
+  effects: {
+    // Both modifiers count complete groups of 5 cards in your trash, live.
+    // Only on the field: "this Character" text does not work in hand (2-8-2).
+    permanentEffects: [
+      {
+        conditions: [{ condition: "leaderTrait", trait: "CP", match: "includes" }],
+        actions: [
+          {
+            action: "modifyPower",
+            target: { player: "self", zones: ["character"], count: { amount: 1 }, self: true },
+            value: 1000,
+            valuePerCardGroup: {
+              target: { player: "self", zones: ["trash"], count: { amount: "all" } },
+              size: 5,
+            },
+            duration: "permanent",
+          },
+          {
+            action: "modifyCost",
+            target: { player: "self", zones: ["character"], count: { amount: 1 }, self: true },
+            value: 2,
+            valuePerCardGroup: {
+              target: { player: "self", zones: ["trash"], count: { amount: "all" } },
+              size: 5,
+            },
+            duration: "permanent",
+          },
+        ],
+      },
+    ],
+    effects: [
+      {
+        trigger: "onPlay",
+        costs: [{ cost: "trashCharacter", amount: 1 }],
+        actions: [{ action: "draw", player: "self", amount: 1 }],
+        optional: true,
+      },
+    ],
+  },
 
   i18n: eb04RobLucci048I18n,
 };

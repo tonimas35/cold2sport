@@ -26,7 +26,7 @@ export const st27MarshallDTeach005: CharacterCard = {
   traits: ["The Four Emperors", "Blackbeard Pirates"],
   attribute: "special",
   effect:
-    "[Activate:Main] You may rest this Character: K.O. up to 1 Character with a cost of 3 or less.[On K.O.] Add up to 1 black card from your trash to your hand.",
+    "[Activate:Main] You may rest this Character: K.O. up to 1 Character with a cost of 3 or less.\n[On K.O.] Add up to 1 black card from your trash to your hand.",
   effects: {
     effects: [
       {
@@ -57,6 +57,20 @@ export const st27MarshallDTeach005: CharacterCard = {
           },
         ],
         optional: true,
+      },
+      {
+        trigger: "onKo",
+        actions: [
+          {
+            action: "returnToHand",
+            target: {
+              player: "self",
+              zones: ["trash"],
+              count: { amount: 1, upTo: true },
+              filters: [{ filter: "color", value: "black" }],
+            },
+          },
+        ],
       },
     ],
   },

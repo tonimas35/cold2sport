@@ -34,8 +34,23 @@ export const op13Imu079: LeaderCard = {
   traits: ["?"],
   attribute: "?",
   effect:
-    "Under the rules of this game, you cannot include Events with a cost of 2 or more in your deck and at the start of the game, play up to 1 [Mary Geoise] type Stage card from your deck.[Activate: Main] [Once Per Turn] You may trash 1 of your [Celestial Dragons] type Characters or 1 card from your hand: Draw 1 card.",
+    "Under the rules of this game, you cannot include Events with a cost of 2 or more in your deck and at the start of the game, play up to 1 {Mary Geoise} type Stage card from your deck.\n[Activate: Main] [Once Per Turn] You may trash 1 of your {Celestial Dragons} type Characters or 1 card from your hand: Draw 1 card.",
   effects: {
+    // "Under the rules of this game, you cannot include Events with a cost of
+    // 2 or more in your deck" (5-1-2-4), enforced by deck validation.
+    // Not implemented: "at the start of the game, play up to 1 {Mary Geoise}
+    // type Stage card from your deck" (5-2-1-5-1; OP13 FAQ: after deciding
+    // who goes first, before the opening hands are drawn). The engine draws
+    // the opening hands when the match is created, before that point exists.
+    deckBuildingRules: [
+      {
+        rule: "cannotInclude",
+        filters: [
+          { filter: "cardCategory", value: "event" },
+          { filter: "cost", comparison: "gte", value: 2 },
+        ],
+      },
+    ],
     effects: [
       {
         trigger: "activateMain",

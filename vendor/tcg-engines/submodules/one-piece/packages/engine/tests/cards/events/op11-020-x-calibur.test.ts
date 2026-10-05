@@ -1,69 +1,98 @@
 import { describe, expect, test } from "vite-plus/test";
-import { eb01Doma005, eb01MountainGod018, op10Issho023, op11XCalibur020 } from "@tcg/op-cards";
+import { eb01Doma005, eb01Fourtricks025, eb01MountainGod018, op11XCalibur020 } from "@tcg/op-cards";
 
 import { OnePieceTestEngine } from "../../../src/index.ts";
 import { SOUTH_ATTACKS_WITHOUT_TURN_SETUP } from "./battle-fixture.shared.ts";
 
+// [Counter] Up to 1 of your Leader or Character cards gains +2000 power during
+// this battle. Then, if your opponent has a Character with 6000 power or more,
+// up to 1 of your Leader or Character cards gains +1000 power during this turn.
+// [Trigger] Up to 1 of your Leader or Character cards gains +1000 power during
+// this turn.
+//
+// The import carried another card's [Main] (−2000 to two Characters) and
+// [Trigger] (K.O. 4000 power or less); these tests encode the printed card.
+function defending(attacker: { id: string }) {
+  return OnePieceTestEngine.create(
+    { character: [{ card: attacker, playedOnTurn: 0 }] },
+    { hand: [op11XCalibur020], character: [eb01Doma005], activeDon: 2 },
+    SOUTH_ATTACKS_WITHOUT_TURN_SETUP,
+  );
+}
+
 describe("OP11-020 X Calibur", () => {
-  test("Main gives up to two opposing Characters −2000 before an included Navy Character +1000", () => {
-    const engine = OnePieceTestEngine.create(
-      {
-        hand: [op11XCalibur020],
-        character: [op10Issho023],
-        activeDon: 2,
-      },
-      { character: [eb01MountainGod018, eb01Doma005] },
-    );
-    const navyId = engine.findCardInZone("south", "character", op10Issho023);
-    const highId = engine.findCardInZone("north", "character", eb01MountainGod018);
-    const lowId = engine.findCardInZone("north", "character", eb01Doma005);
+  test("[Counter] +2000 this battle, then +1000 this turn because the opponent has a 7000 Character", () => {
+    const engine = defending(eb01MountainGod018);
+    const south = engine.asSouth();
+    const north = engine.asNorth();
+    const leaderId = north.leader();
+    const lifeBefore = north.view().players.north.lifeCount;
 
-    engine.playCard(op11XCalibur020);
-    engine.resolveDecision("effectTargetSelection", { selectedIds: [highId, lowId] }, "south");
-    engine.resolveDecision("effectTargetSelection", { selectedIds: [navyId] }, "south");
+    south.attack(eb01MountainGod018, leaderId);
+    north.chooseCounter(op11XCalibur020);
+    north.chooseTargets(leaderId);
+    expect(north.view().players.north.leader?.power).toBe(7000);
+    const second = north.pendingDecision("effectTargetSelection").steps[0];
+    expect(second).toMatchObject({ kind: "selectEntity", min: 0, max: 1 });
+    north.chooseTargets(leaderId);
 
-    const view = engine.getView("south");
-    expect(view.players.north.characters.find((card) => card?.instanceId === highId)?.power).toBe(
-      5000,
-    );
-    expect(view.players.north.characters.find((card) => card?.instanceId === lowId)?.power).toBe(
-      1000,
-    );
-    expect(view.players.south.characters.find((card) => card?.instanceId === navyId)?.power).toBe(
-      7000,
-    );
-    expect(view.prompts).toHaveLength(0);
+    // 7000 attacker against a 8000 Leader: no damage.
+    let view = north.view();
+    expect(view.players.north.lifeCount).toBe(lifeBefore);
+    expect(view.players.north.activeDon).toBe(0);
+    expect(view.players.north.trash.map((card) => card.cardId)).toEqual([op11XCalibur020.id]);
+    // The +2000 ended with the battle; the +1000 lasts until the end of the turn.
+    expect(view.players.north.leader?.power).toBe(6000);
     expect(engine.getState().capabilityHistory).toHaveLength(0);
+
+    south.endTurn();
+    view = north.view();
+    expect(view.players.north.leader?.power).toBe(5000);
   });
 
-  test("Life Trigger K.O.s the power-4000 boundary without activating Main", () => {
+  test("[Counter] against an opponent whose Characters are all below 6000 gives only +2000", () => {
+    const engine = defending(eb01Fourtricks025);
+    const south = engine.asSouth();
+    const north = engine.asNorth();
+    const leaderId = north.leader();
+    const lifeBefore = north.view().players.north.lifeCount;
+
+    south.attack(eb01Fourtricks025, leaderId);
+    north.chooseCounter(op11XCalibur020);
+    north.chooseTargets(leaderId);
+
+    expect(north.hasPendingChoice()).toBe(false);
+    expect(north.view().players.north.leader?.power).toBe(5000);
+    expect(north.view().players.north.lifeCount).toBe(lifeBefore);
+  });
+
+  test("[Trigger] gives up to 1 of your Leader or Character cards +1000 this turn", () => {
     const engine = OnePieceTestEngine.create(
-      {
-        character: [
-          { card: eb01MountainGod018, playedOnTurn: 0 },
-          { card: eb01Doma005, playedOnTurn: 0 },
-        ],
-      },
-      { life: [op11XCalibur020] },
+      { character: [{ card: eb01MountainGod018, playedOnTurn: 0 }] },
+      { life: [op11XCalibur020], character: [eb01Doma005] },
       SOUTH_ATTACKS_WITHOUT_TURN_SETUP,
     );
-    const attackerId = engine.findCardInZone("south", "character", eb01MountainGod018);
-    const selectedId = engine.findCardInZone("south", "character", eb01Doma005);
+    const south = engine.asSouth();
+    const north = engine.asNorth();
+    const domaId = north.findOnField(eb01Doma005);
 
-    engine.declareAttack(attackerId, engine.leader("north"), "south");
-    engine.resolveDecision("lifeTrigger", { optionId: "activate" }, "north");
-    const decision = engine.pendingDecision("effectTargetSelection", "north");
-    const step = decision.steps[0];
-    expect(step?.kind).toBe("selectEntity");
-    if (step?.kind !== "selectEntity") throw new Error("Expected a power-4000 K.O. choice.");
-    expect(step.candidates.map((candidate) => candidate.ref.id)).toEqual([selectedId]);
-    expect(step.candidates.map((candidate) => candidate.ref.id)).not.toContain(attackerId);
-    engine.resolveDecision("effectTargetSelection", { selectedIds: [selectedId] }, "north");
-
-    expect(engine.getView("north").players.south.trash.map((card) => card.instanceId)).toContain(
-      selectedId,
+    south.attack(eb01MountainGod018, north.leader());
+    north.activateLifeTrigger();
+    const target = north.pendingDecision("effectTargetSelection").steps[0];
+    if (target?.kind !== "selectEntity") throw new Error("Expected the +1000 target.");
+    expect(target.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
+      [north.leader(), domaId].sort(),
     );
-    expect(engine.getView("north").prompts).toHaveLength(0);
+    north.chooseTargets(domaId);
+
+    expect(
+      north.view().players.north.characters.find((card) => card?.instanceId === domaId)?.power,
+    ).toBe(4000);
+    expect(north.view().players.north.trash.map((card) => card.cardId)).toEqual([
+      op11XCalibur020.id,
+    ]);
+    // Nothing of the opponent's is K.O.'d any more.
+    expect(south.view().players.south.characters.filter(Boolean)).toHaveLength(1);
     expect(engine.getState().capabilityHistory).toHaveLength(0);
   });
 });

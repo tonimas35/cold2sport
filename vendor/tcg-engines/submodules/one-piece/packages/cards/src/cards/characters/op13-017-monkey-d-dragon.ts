@@ -26,7 +26,7 @@ export const op13MonkeyDDragon017: CharacterCard = {
   traits: ["Revolutionary Army"],
   attribute: "special",
   effect:
-    '[Once Per Turn] If your "Revolutionary Army" type Character would be removed from the field by your opponent\'s effect, you may give this Character 2000 power during this turn instead.',
+    '[Once Per Turn] If your "Revolutionary Army" type Character would be removed from the field by your opponent\'s effect, you may give this Character -2000 power during this turn instead.',
   effects: {
     replacementEffects: [
       {
@@ -56,7 +56,7 @@ export const op13MonkeyDDragon017: CharacterCard = {
             },
             self: true,
           },
-          value: 2000,
+          value: -2000,
           duration: "thisTurn",
         },
         oncePerTurn: true,

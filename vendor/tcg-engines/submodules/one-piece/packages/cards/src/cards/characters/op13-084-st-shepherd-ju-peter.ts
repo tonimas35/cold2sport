@@ -34,37 +34,29 @@ export const op13StShepherdJuPeter084: CharacterCard = {
   traits: ["Celestial Dragons", "Five Elders"],
   attribute: "special",
   effect:
-    'If you have 7 or more cards in your trash, this Character cannot be removed from the field by your opponent\'s effects.\n[On Play] Look at 5 cards from the top of your deck; reveal up to 1 "Five Elders" type card and add it to your hand. Then, place the rest at the bottom of your deck in any order.',
+    "If you have 7 or more cards in your trash, this Character cannot be removed from the field by your opponent's effects.\n[Your Turn] If you have 10 or more cards in your trash, set the base power of all of your {Five Elders} type Characters to 7000.",
+  // The import had another Five Elder's [On Play] search instead of the
+  // printed [Your Turn] ability (official card list).
   effects: {
-    effects: [
+    permanentEffects: [
       {
-        trigger: "onPlay",
+        conditions: [
+          { condition: "turn", value: "your" },
+          { condition: "zoneCount", player: "self", zone: "trash", comparison: "gte", value: 10 },
+        ],
         actions: [
           {
-            action: "search",
-            lookCount: 5,
-            source: {
+            action: "setBasePower",
+            target: {
               player: "self",
-              zone: "deck",
+              zones: ["character"],
+              count: { amount: "all" },
+              filters: [{ filter: "trait", value: "Five Elders", match: "exact" }],
             },
-            revealCount: {
-              amount: 1,
-              upTo: true,
-            },
-            revealFilters: [
-              {
-                filter: "trait",
-                value: "Five Elders",
-                match: "exact",
-              },
-            ],
-            revealDestination: "hand",
-            remainderPosition: "bottom",
+            value: 7000,
           },
         ],
       },
-    ],
-    permanentEffects: [
       {
         conditions: [
           {

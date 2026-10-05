@@ -58,6 +58,10 @@ export const op16VascoShot110: CharacterCard = {
           },
         ],
       },
+      {
+        trigger: "trigger",
+        actions: [{ action: "activateEffect", effectTrigger: "onKo" }],
+      },
     ],
   },
   i18n: op16VascoShot110I18n,

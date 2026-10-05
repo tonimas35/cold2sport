@@ -35,7 +35,7 @@ export const op11Arlong023: CharacterCard = {
   traits: ["Fish-Man", "Fish-Man Island", "The Sun Pirates"],
   attribute: "slash",
   effect:
-    'If your Leader has the "Fish-Man" type, you have 3 or less Life cards and your opponent has 5 or more rested cards, give this card in your hand 3 cost.',
+    'If your Leader has the "Fish-Man" type, you have 3 or less Life cards and your opponent has 5 or more rested cards, give this card in your hand -3 cost.',
   effects: {
     effects: [
       {
@@ -82,14 +82,17 @@ export const op11Arlong023: CharacterCard = {
         ],
         actions: [
           {
-            action: "setCost",
+            // "give this card in your hand -3 cost": a reduction, not a set
+            // cost (it costs 4 while the conditions hold).
+            action: "modifyCost",
             target: {
               player: "self",
               zones: ["hand"],
               count: { amount: 1 },
               self: true,
             },
-            value: 3,
+            value: -3,
+            duration: "permanent",
           },
         ],
       },

@@ -60,6 +60,13 @@ export const op16CaptainBuggySOurSavior057: EventCard = {
           },
         ],
       },
+      {
+        trigger: "trigger",
+        actions: [
+          { action: "draw", player: "self", amount: 2 },
+          { action: "trashFromHand", player: "self", amount: 1 },
+        ],
+      },
     ],
   },
 

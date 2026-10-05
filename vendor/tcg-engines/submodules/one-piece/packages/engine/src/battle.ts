@@ -498,8 +498,12 @@ export function finalizeBattle(state: MatchState) {
       );
       const canOfferTrashReplacement =
         (hasSnapshotTrashReplacement || trashReplacement !== null) && replacementHandIds.length > 0;
+      // Trashing exactly 1 card uses the hand selection prompt above; any other
+      // replacement (including trashing 2 cards, OP17-043 Ganzui) is confirmed
+      // first and then resolved as an action. Its availability (enough cards
+      // in hand) was already checked when the replacement was found (8-1-3-4-5).
       const canOfferActionReplacement =
-        replacementAction !== undefined && replacementAction.action !== "trashFromHand";
+        replacementAction !== undefined && trashReplacement === null;
       if (canOfferActionReplacement && replacementSource?.effect.mandatory) {
         getInstance(state, replacementSource!.sourceInstanceId).usedEffectKeys.push(
           replacementSource!.effectKey,

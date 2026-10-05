@@ -57,6 +57,22 @@ export const op16CatarinaDevon104: CharacterCard = {
           },
         ],
       },
+      {
+        trigger: "trigger",
+        actions: [
+          { action: "draw", player: "self", amount: 1 },
+          {
+            action: "play",
+            source: { player: "self", zone: "trash" },
+            count: { amount: 1, upTo: true },
+            filters: [
+              { filter: "trait", value: "Blackbeard Pirates", match: "includes" },
+              { filter: "cardCategory", value: "character" },
+              { filter: "cost", comparison: "eq", value: 1 },
+            ],
+          },
+        ],
+      },
     ],
   },
   i18n: op16CatarinaDevon104I18n,

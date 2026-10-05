@@ -21,6 +21,7 @@ export const op12JewelryBonney101: CharacterCard = {
   rarity: "C",
   setId: "OP12",
   cost: 3,
+  trigger: "If your Leader has the {Supernovas} type, play this card.",
   power: 1000,
   counter: 1000,
   trigger: "If your Leader has the {Supernovas} type, play this card.",

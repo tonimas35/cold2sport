@@ -49,6 +49,31 @@ export const op17Fulgora116: EventCard = {
         ],
         optional: true,
       },
+      {
+        trigger: "counter",
+        conditions: [
+          {
+            condition: "zoneCount",
+            player: "self",
+            zone: "character",
+            comparison: "gte",
+            value: 2,
+            filters: [{ filter: "hasTrigger", value: true }],
+          },
+        ],
+        actions: [
+          {
+            action: "modifyPower",
+            target: {
+              player: "self",
+              zones: ["leader", "character"],
+              count: { amount: 1, upTo: true },
+            },
+            value: 4000,
+            duration: "thisBattle",
+          },
+        ],
+      },
     ],
   },
   i18n: op17Fulgora116I18n,

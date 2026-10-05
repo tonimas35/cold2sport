@@ -64,6 +64,10 @@ export const op16VanAugur103: CharacterCard = {
           },
         ],
       },
+      {
+        trigger: "trigger",
+        actions: [{ action: "activateEffect", effectTrigger: "onKo" }],
+      },
     ],
   },
   i18n: op16VanAugur103I18n,

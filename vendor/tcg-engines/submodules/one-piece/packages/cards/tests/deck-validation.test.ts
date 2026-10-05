@@ -170,3 +170,48 @@ describe("One Piece deck construction rules", () => {
     expect(result.valid).toBe(true);
   });
 });
+
+describe("Leader deck-construction rules (5-1-2-4)", () => {
+  // Characters of cost 4 or less sharing a color with the Leader, so only the
+  // card a test adds can break a Leader rule.
+  function restrictedDeck(leaderId: string, required: DeckValidationEntry[] = []) {
+    const leader = getCard(leaderId);
+    const mainDeck = required.map((entry) => ({ ...entry }));
+    let total = mainDeck.reduce((sum, entry) => sum + entry.quantity, 0);
+    for (const card of getAllCards()) {
+      if (total >= 50) break;
+      if (card.cardType !== "character" || card.cost >= 5) continue;
+      if (!card.color.some((color) => leader.color.includes(color))) continue;
+      const quantity = Math.min(4, 50 - total);
+      mainDeck.push({ cardId: card.id, quantity });
+      total += quantity;
+    }
+    return [{ cardId: leaderId, quantity: 1 }, ...mainDeck];
+  }
+
+  it("OP13-079 Imu: Events with a cost of 2 or more cannot be included", () => {
+    // OP16-101 Mahoroba is a black Event with a cost of 2.
+    const withEvent = validateDeckForFormat(
+      "standard",
+      restrictedDeck("OP13-079", [{ cardId: "OP16-101", quantity: 1 }]),
+    );
+    expect(ruleOf(withEvent, "leader-deck-rules")).toMatchObject({
+      passed: false,
+      details: ["OP16-101"],
+    });
+    expect(withEvent.valid).toBe(false);
+
+    const without = validateDeckForFormat("standard", restrictedDeck("OP13-079"));
+    expect(ruleOf(without, "leader-deck-rules")).toMatchObject({ passed: true });
+    expect(without.valid).toBe(true);
+  });
+
+  it("the same Event is legal under a Leader without that rule", () => {
+    const result = validateDeckForFormat(
+      "standard",
+      restrictedDeck("OP16-079", [{ cardId: "OP16-101", quantity: 1 }]),
+    );
+    expect(ruleOf(result, "leader-deck-rules")).toMatchObject({ passed: true });
+    expect(result.valid).toBe(true);
+  });
+});

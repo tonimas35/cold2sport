@@ -65,6 +65,10 @@ export const op16DocQ109: CharacterCard = {
           },
         ],
       },
+      {
+        trigger: "trigger",
+        actions: [{ action: "activateEffect", effectTrigger: "onKo" }],
+      },
     ],
   },
   i18n: op16DocQ109I18n,

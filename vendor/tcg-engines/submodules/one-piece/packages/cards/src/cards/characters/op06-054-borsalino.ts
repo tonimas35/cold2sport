@@ -25,7 +25,7 @@ export const op06Borsalino054: CharacterCard = {
   traits: ["Navy"],
   attribute: "special",
   effect:
-    "If you have 4 or less cards in your hand, this Character gains [Blocker].\n(After your opponent declares an attack, you may rest this card to make it the new target of the attack.)",
+    "If you have 5 or less cards in your hand, this Character gains [Blocker].\n(After your opponent declares an attack, you may rest this card to make it the new target of the attack.)",
   effects: {
     permanentEffects: [
       {
@@ -34,7 +34,7 @@ export const op06Borsalino054: CharacterCard = {
             condition: "handCount",
             player: "self",
             comparison: "lte",
-            value: 4,
+            value: 5,
           },
         ],
         actions: [

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vite-plus/test";
 import type { EventCard } from "@tcg/op-types";
-import { eb01Doma005, eb01Fourtricks025, eb01MountainGod018, op01Kaido094 } from "@tcg/op-cards";
+import { eb01Doma005, eb01Fourtricks025 } from "@tcg/op-cards";
 import { op13StJaygarciaSaturn083 } from "../../../../../cards/src/cards/characters/op13-083-st-jaygarcia-saturn.ts";
 import { op13StShepherdJuPeter084 } from "../../../../../cards/src/cards/characters/op13-084-st-shepherd-ju-peter.ts";
 
@@ -43,34 +43,55 @@ const koByEffect: EventCard = {
 registerCards([koByEffect]);
 
 describe("OP13-084 St. Shepherd Ju Peter", () => {
-  test("may reveal no Five Elders card and bottom-orders all five looked cards", () => {
-    const engine = OnePieceTestEngine.create({
-      hand: [op13StShepherdJuPeter084],
-      deck: [
-        op13StJaygarciaSaturn083,
-        eb01Doma005,
-        eb01MountainGod018,
-        op01Kaido094,
-        eb01Fourtricks025,
-      ],
-      activeDon: op13StShepherdJuPeter084.cost,
-    });
+  // The printed card has no [On Play]: the import carried another Five Elder's
+  // search. Its second ability is "[Your Turn] If you have 10 or more cards in
+  // your trash, set the base power of all of your {Five Elders} type
+  // Characters to 7000." (official card list).
+  test("[Your Turn] with 10 trash cards sets every own Five Elders base power to 7000", () => {
+    const fiveElders = (trash: number) =>
+      OnePieceTestEngine.create(
+        {
+          hand: [op13StShepherdJuPeter084],
+          character: [op13StJaygarciaSaturn083, eb01Doma005],
+          trash,
+          activeDon: op13StShepherdJuPeter084.cost,
+        },
+        { character: [op13StJaygarciaSaturn083] },
+        { firstPlayer: "north", activeSeat: "south" },
+      );
+    const engine = fiveElders(10);
+    const saturnId = engine.findCardInZone("south", "character", op13StJaygarciaSaturn083);
+    const domaId = engine.findCardInZone("south", "character", eb01Doma005);
+    const opposingSaturnId = engine.findCardInZone("north", "character", op13StJaygarciaSaturn083);
+    const powerOf = (seat: "south" | "north", id: string) =>
+      engine.getView("south").players[seat].characters.find((card) => card?.instanceId === id)
+        ?.power;
 
+    // No [On Play]: playing it opens no search.
     engine.playCard(op13StShepherdJuPeter084, "south");
-    const search = engine.pendingDecision("effectSearchSelection", "south").steps[0];
-    if (search?.kind !== "selectEntity") throw new Error("Expected Ju Peter's search choice.");
-    expect(search).toMatchObject({ min: 0, max: 1 });
-    engine.resolveDecision("effectSearchSelection", { selectedIds: [] }, "south");
+    const juPeterId = engine.findCardInZone("south", "character", op13StShepherdJuPeter084);
+    expect(engine.getView("south").prompts).toHaveLength(0);
+    expect(engine.getView("south").players.south.deckCount).toBe(10);
 
-    const remainder = engine.pendingDecision("effectSearchRemainderOrder", "south").steps[0];
-    if (remainder?.kind !== "orderItems") throw new Error("Expected Ju Peter's remainder order.");
-    const order = remainder.candidates.map((candidate) => candidate.ref.id).reverse();
-    expect(order).toHaveLength(5);
-    engine.resolveDecision("effectSearchRemainderOrder", { selectedIds: order }, "south");
+    expect(powerOf("south", juPeterId)).toBe(7000);
+    expect(powerOf("south", saturnId)).toBe(7000);
+    expect(powerOf("south", domaId)).toBe(eb01Doma005.power);
+    expect(powerOf("north", opposingSaturnId)).toBe(op13StJaygarciaSaturn083.power);
 
-    const view = engine.getView("south");
-    expect(view.players.south).toMatchObject({ handCount: 0, deckCount: 5 });
-    expect(view.prompts).toHaveLength(0);
+    // Only during your turn.
+    engine.endTurn("south");
+    expect(powerOf("south", juPeterId)).toBe(op13StShepherdJuPeter084.power);
+    expect(powerOf("south", saturnId)).toBe(op13StJaygarciaSaturn083.power);
+
+    // 9 trash cards is not enough.
+    const nine = fiveElders(9);
+    nine.playCard(op13StShepherdJuPeter084, "south");
+    expect(
+      nine
+        .getView("south")
+        .players.south.characters.find((card) => card?.cardId === op13StShepherdJuPeter084.id)
+        ?.power,
+    ).toBe(op13StShepherdJuPeter084.power);
   });
 
   test("at seven trash cards survives an opponent effect while another Character is removable", () => {

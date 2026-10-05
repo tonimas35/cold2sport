@@ -60,6 +60,10 @@ export const op15IFindItEmbarrassingAsAHumanBeing097: EventCard = {
           },
         ],
       },
+      {
+        trigger: "trigger",
+        actions: [{ action: "activateEffect", effectTrigger: "main" }],
+      },
     ],
   },
   i18n: op15IFindItEmbarrassingAsAHumanBeing097I18n,

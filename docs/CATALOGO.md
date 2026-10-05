@@ -72,9 +72,12 @@ muestra distintas entre sí (por ejemplo EB01-023_p1 con poder 8000 frente a 600
 
 **Errores de la propia web.** La web no siempre coincide con la carta impresa. Los casos
 comprobados con la imagen están en `SITE_CORRECTIONS` (`official-catalog.ts`) y se corrigen antes
-de comparar; si la web los arregla, la corrección deja de aplicarse sola. Hoy son cuatro: OP06-004,
+de comparar; si la web los arregla, la corrección deja de aplicarse sola. Hoy son seis: OP06-004,
 OP06-032 y OP06-105 salen como Slash y son Ranged; EB04-014 sale como "Kozuki Sukiyaki" y la carta
-dice "Kouzuki Sukiyaki". En los cuatro el motor tenía razón.
+dice "Kouzuki Sukiyaki"; y dos erratas oficiales que la lista de cartas aún no recoge
+(`field: "effect"`, texto según la [página de erratas](https://en.onepiece-cardgame.com/rules/errata_card/)):
+OP05-032 Pica ("rest 1", no "up to 1") y OP09-058 Special Muggy Ball (elige el rival). En los seis
+el motor tenía razón.
 
 ## Resultado (5-oct-2026)
 

@@ -21,6 +21,7 @@ export const op06Kawamatsu103: CharacterCard = {
   rarity: "C",
   setId: "OP06",
   cost: 3,
+  trigger: "If your opponent has 3 or less Life cards, play this card.",
   power: 5000,
   trigger: "If your opponent has 3 or less Life cards, play this card.",
   traits: ["Fish-Man", "Land of Wano", "The Akazaya Nine"],

@@ -40,7 +40,20 @@ export type Condition =
   | BattledOpponentCharacterThisTurnCondition
   | ActiveDonCountCondition
   | PlayerTurnCountCondition
-  | ActivatedEventCondition;
+  | ActivatedEventCondition
+  | LeaderMonocoloredCondition
+  | CharacterKodThisTurnCondition;
+
+/** "your monocolored Leader": a Leader with exactly 1 color (OP17 FAQ, OP17-005). */
+export interface LeaderMonocoloredCondition {
+  condition: "leaderMonocolored";
+}
+
+/** True when one of `player`'s Characters has been K.O.'d during the current turn. */
+export interface CharacterKodThisTurnCondition {
+  condition: "characterKodThisTurn";
+  player: Player;
+}
 
 export interface ActiveDonCountCondition {
   condition: "activeDonCount";
@@ -113,6 +126,11 @@ export interface ZoneCountCondition {
   comparison: Comparison;
   value: number;
   filters?: TargetFilter[];
+  /**
+   * Count distinct card names among the matching cards instead of cards
+   * ("5 {Impel Down} type Characters with different card names").
+   */
+  distinctNames?: boolean;
 }
 
 export interface ZoneValueTotalCondition {

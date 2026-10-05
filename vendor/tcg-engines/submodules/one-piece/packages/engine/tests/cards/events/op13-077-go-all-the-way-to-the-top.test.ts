@@ -35,7 +35,9 @@ describe("OP13-077 Go All the Way to the Top!!", () => {
     expect(engine.getView("south").prompts).toHaveLength(0);
   });
 
-  test("Counter leaves the defending Leader at +3000 for the rest of the turn", () => {
+  // The card prints "+3000 power during this battle" (official card image);
+  // the import had "during this turn".
+  test("Counter gives the defending Leader +3000 for this battle only", () => {
     const engine = OnePieceTestEngine.create(
       { character: [{ card: eb01MountainGod018, playedOnTurn: 0 }] },
       { hand: [op13GoAllTheWayToTheTop077], activeDon: 1 },
@@ -43,11 +45,14 @@ describe("OP13-077 Go All the Way to the Top!!", () => {
     );
     const attackerId = engine.findCardInZone("south", "character", eb01MountainGod018);
     const eventId = engine.findCardInZone("north", "hand", op13GoAllTheWayToTheTop077);
+    const lifeBefore = engine.getView("north").players.north.lifeCount;
 
     engine.declareAttack(attackerId, engine.leader("north"), "south");
     engine.resolveDecision("battleCounter", { selectedIds: [eventId] }, "north");
 
-    expect(engine.getView("north").players.north.leader.power).toBe(8000);
+    // 7000 against 8000: no damage; after the battle the Leader is back to 5000.
+    expect(engine.getView("north").players.north.lifeCount).toBe(lifeBefore);
+    expect(engine.getView("north").players.north.leader.power).toBe(5000);
     expect(engine.getView("north").prompts).toHaveLength(0);
     expect(engine.getState().capabilityHistory).toHaveLength(0);
   });

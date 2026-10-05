@@ -44,6 +44,8 @@ export const eb04Koby044: CharacterCard = {
   counter: 1000,
   traits: ["Navy", "SWORD"],
   attribute: "strike",
+  effect:
+    "[Once Per Turn] If your Leader's type includes \"Navy\" and this Character would be removed from the field, you may trash 1 card from your hand instead.\n[Your Turn] [Once Per Turn] When your opponent's Character is K.O.'d, draw 1 card.",
   effects: {
     replacementEffects: [
       {

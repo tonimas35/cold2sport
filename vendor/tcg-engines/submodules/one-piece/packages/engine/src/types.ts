@@ -1170,6 +1170,12 @@ export interface PlayerState {
    * for the turn number it happened so stale turns never satisfy conditions.
    */
   activatedEvent?: { turnNumber: number; bestBaseCost: number };
+  /**
+   * Turn number of the last K.O. of one of this seat's Characters, by battle
+   * or by effect (OP16-100: "If your opponent's Character has been K.O.'d
+   * during this turn"). Compared with the current turn, so it never goes stale.
+   */
+  characterKodOnTurn?: number;
 }
 
 export interface EngineEvent {

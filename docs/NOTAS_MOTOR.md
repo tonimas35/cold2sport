@@ -309,3 +309,30 @@ Los patrones 1, 2 y 4, y los errores de datos (counter, atributo, nombre, coste,
 busca ahora `pnpm opbot catalog-check` en todo el catálogo contra la lista oficial EN
 (`docs/CATALOGO.md`). Los patrones 3 y 5, y en general un bloque que existe pero hace otra cosa,
 siguen necesitando la auditoría a mano.
+
+### Arreglos a partir de `catalog-check` (cartas legales en Standard)
+
+- **Signo al revés**: OP17-042 Kaido (−3000 al rival), OP13-017 Monkey.D.Dragon (−2000 a sí mismo al
+  sustituir) y OP11-023 Arlong (−3 de coste en mano: cuesta 4, no 3).
+- **Efecto de otra carta**: OP11-020 X Calibur (su [Counter] y su [Trigger] impresos) y OP13-084
+  St. Shepherd Ju Peter (su [Your Turn]: poder base 7000 a sus {Five Elders} con 10 cartas en la
+  papelera, en lugar de un [On Play] de búsqueda que no tiene).
+- **27 [Trigger] sin bloque** (16 de OP-16): una carta con el texto pero sin bloque pedía activar un
+  [Trigger] que no hacía nada y se perdía; una sin ninguno de los dos iba a la mano.
+- **Habilidades que faltaban**: [On Play] de OP17-003, OP17-005 y OP17-043; [On K.O.] de ST27-005;
+  [Main] de OP16-038 y OP16-100; [Counter] de OP16-076 y OP17-116; sustitución de OP17-015 Marco;
+  todo EB04-048 Rob Lucci; regla de mazo de OP13-079 Imu.
+- **Texto distinto**: OP06-054 Borsalino (5 cartas, no 4), OP13-077 (+3000 "durante esta batalla"),
+  OP17-007 Oden ({Land of Wano} *o* "Whitebeard Pirates"), OP17-117 Maser Saber (también al Líder
+  [Charlotte Linlin]) y ST26-005 Luffy (el DON!! −2 es opcional). OP05-032 Pica y OP09-058 Special
+  Muggy Ball no eran errores: el motor ya juega su errata oficial.
+- **Mecanismos generales nuevos**: condición `leaderMonocolored` (OP17-005), condición
+  `characterKodThisTurn` (OP16-100; el estado del jugador guarda el turno del último K.O. de uno de
+  sus Personajes), `zoneCount.distinctNames` (OP16-038), `valuePerCardGroup` también en
+  `modifyCost` (EB04-048), sustitución de un K.O. en batalla con descartes de 2 o más cartas
+  (OP17-043 Ganzui: "removed from the field" sin "por un efecto rival" incluye la batalla; el texto
+  japonés dice "dejar el campo") y la validación de mazos aplica las reglas `cannotInclude` del
+  Líder (Imu, Rayleigh OP12-001).
+- **Pendiente**: el "al empezar la partida, juega hasta 1 Escenario {Mary Geoise} de tu mazo" de
+  Imu. El motor reparte la mano inicial al crear la partida, antes de decidir quién empieza, y la
+  regla 5-2-1-5-1 lo procesa entre esas dos cosas.

@@ -9,13 +9,13 @@ import {
 import { OnePieceTestEngine } from "../../../index.ts";
 
 describe("OP11-023 Arlong", () => {
-  test("has cost 3 in hand only while all three permanent conditions are live", () => {
+  test("has cost 4 (7 - 3) in hand only while all three permanent conditions are live", () => {
     const engine = OnePieceTestEngine.create(
       {
         leaderCardId: op14eb04JinbeOp14040040,
         hand: [op11Arlong023],
         life: 3,
-        activeDon: 3,
+        activeDon: 4,
       },
       {
         character: Array.from({ length: 5 }, () => ({ card: eb01Doma005, rested: true })),
@@ -26,12 +26,12 @@ describe("OP11-023 Arlong", () => {
 
     expect(
       engine.getView("south").players.south.hand.find((card) => card.instanceId === arlongId)?.cost,
-    ).toBe(3);
+    ).toBe(4);
     engine.playCard(op11Arlong023, "south");
 
     const view = engine.getView("south");
     expect(view.players.south.characters.map((card) => card?.instanceId)).toContain(arlongId);
-    expect(view.players.south).toMatchObject({ activeDon: 0, restedDon: 3 });
+    expect(view.players.south).toMatchObject({ activeDon: 0, restedDon: 4 });
 
     const boundary = OnePieceTestEngine.create(
       {

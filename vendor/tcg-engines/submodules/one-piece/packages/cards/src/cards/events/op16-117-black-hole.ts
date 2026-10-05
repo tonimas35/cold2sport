@@ -64,6 +64,20 @@ export const op16BlackHole117: EventCard = {
         ],
         optional: true,
       },
+      {
+        trigger: "trigger",
+        actions: [
+          {
+            action: "returnToHand",
+            target: {
+              player: "self",
+              zones: ["trash"],
+              count: { amount: 1, upTo: true },
+              filters: [{ filter: "trait", value: "Blackbeard Pirates", match: "includes" }],
+            },
+          },
+        ],
+      },
     ],
   },
   i18n: op16BlackHole117I18n,

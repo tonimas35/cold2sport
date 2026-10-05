@@ -23,7 +23,7 @@ export const op13GoAllTheWayToTheTop077: EventCard = {
   cost: 1,
   traits: ["Former Roger Pirates"],
   effect:
-    "[Main] You may rest 3 of your DON!! cards: If you have any DON!! cards given, K.O. up to 1 of your opponent's Characters with 4000 base power or less and up to 1 of your opponent's Characters with 3000 base power or less.\n[Counter] Your Leader gains +3000 power during this turn.",
+    "[Main] You may rest 3 of your DON!! cards: If you have any DON!! cards given, K.O. up to 1 of your opponent's Characters with 4000 base power or less and up to 1 of your opponent's Characters with 3000 base power or less.\n[Counter] Your Leader gains +3000 power during this battle.",
   effects: {
     effects: [
       {
@@ -96,7 +96,7 @@ export const op13GoAllTheWayToTheTop077: EventCard = {
               },
             },
             value: 3000,
-            duration: "thisTurn",
+            duration: "thisBattle",
           },
         ],
       },

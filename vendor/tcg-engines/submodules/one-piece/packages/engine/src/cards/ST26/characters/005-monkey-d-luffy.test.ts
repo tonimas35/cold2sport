@@ -20,6 +20,8 @@ describe("ST26-005 Monkey.D.Luffy", () => {
     const donDeckBefore = engine.getView("south").players.south.donDeckCount;
 
     engine.playCard(st26MonkeyDLuffy005, "south");
+    // DON!! -2 reads "You may return ...": the player is asked first.
+    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
     const payment = engine.pendingDecision("effectCostReturnDon", "south").steps[0];
     if (payment?.kind !== "payCost") throw new Error("Expected the DON!! -2 cost.");
     engine.resolveDecision(
@@ -52,10 +54,36 @@ describe("ST26-005 Monkey.D.Luffy", () => {
       engine.leader("north"),
       "south",
     );
+    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
     // Active DON!! cards are fungible, so the 2-DON!! return auto-pays.
     expect(leaderPower(engine)).toBe(7000);
     expect(engine.getView("south").players.south.donDeckCount).toBe(donDeckBefore + 2);
     expect(engine.getView("south").prompts).toHaveLength(0);
+  });
+
+  test("[When Attacking] declining the DON!! -2 keeps the DON!! and the Leader's power", () => {
+    const engine = OnePieceTestEngine.create(
+      {
+        leaderCardId: "OP13-001",
+        character: [{ card: st26MonkeyDLuffy005, playedOnTurn: 0 }],
+        activeDon: 8,
+        donDeckCount: 2,
+      },
+      { activeDon: 5 },
+    );
+    const before = engine.getView("south").players.south;
+
+    engine.declareAttack(
+      engine.findCardInZone("south", "character", st26MonkeyDLuffy005),
+      engine.leader("north"),
+      "south",
+    );
+    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
+
+    const after = engine.getView("south").players.south;
+    expect(after.leader?.power).toBe(5000);
+    expect(after.activeDon).toBe(before.activeDon);
+    expect(after.donDeckCount).toBe(before.donDeckCount);
   });
 
   test("the boost expires after the opponent's next turn and needs the opponent's DON!!", () => {

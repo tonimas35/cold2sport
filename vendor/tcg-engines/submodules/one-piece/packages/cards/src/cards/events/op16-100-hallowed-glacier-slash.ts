@@ -27,6 +27,23 @@ export const op16HallowedGlacierSlash100: EventCard = {
   effects: {
     effects: [
       {
+        trigger: "main",
+        costs: [{ cost: "restDon", amount: 2 }],
+        conditions: [{ condition: "characterKodThisTurn", player: "opponent" }],
+        actions: [
+          {
+            action: "setActive",
+            target: {
+              player: "self",
+              zones: ["leader"],
+              count: { amount: 1 },
+              filters: [{ filter: "name", value: "Yamato" }],
+            },
+          },
+        ],
+        optional: true,
+      },
+      {
         trigger: "counter",
         actions: [
           {

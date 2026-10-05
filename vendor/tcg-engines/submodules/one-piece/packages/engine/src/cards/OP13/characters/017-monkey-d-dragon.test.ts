@@ -5,7 +5,7 @@ import { op13MonkeyDDragon017 } from "../../../../../cards/src/cards/characters/
 import { OnePieceTestEngine } from "../../../index.ts";
 
 describe("OP13-017 Monkey.D.Dragon", () => {
-  test("once replaces opponent-effect removal of a Revolutionary Army Character with its power bonus", () => {
+  test("once replaces opponent-effect removal of a Revolutionary Army Character with -2000 power on Dragon", () => {
     const engine = OnePieceTestEngine.create(
       { character: [op13MonkeyDDragon017, op12Karasu085, op12Karasu085] },
       { hand: [op04GumGumRedRoc056, op04GumGumRedRoc056], activeDon: 12 },
@@ -22,7 +22,9 @@ describe("OP13-017 Monkey.D.Dragon", () => {
     let view = engine.getView("south");
     expect(view.players.south.characters.map((card) => card?.instanceId)).toContain(protectedId);
     expect(view.players.south.characters.find((card) => card?.instanceId === dragonId)?.power).toBe(
-      (op13MonkeyDDragon017.power ?? 0) + 2000,
+      // "you may give this Character -2000 power during this turn instead":
+      // the replacement costs Dragon power (it was imported as +2000).
+      (op13MonkeyDDragon017.power ?? 0) - 2000,
     );
 
     engine.playCard(op04GumGumRedRoc056, "north");
@@ -32,5 +34,10 @@ describe("OP13-017 Monkey.D.Dragon", () => {
       protectedId,
     );
     expect(view.prompts).toHaveLength(0);
+    engine.endTurn("north");
+    expect(
+      engine.getView("south").players.south.characters.find((card) => card?.instanceId === dragonId)
+        ?.power,
+    ).toBe(op13MonkeyDDragon017.power);
   });
 });

@@ -21,6 +21,7 @@ export const op06Kamakiri102: CharacterCard = {
   rarity: "C",
   setId: "OP06",
   cost: 3,
+  trigger: "If you have 2 or less Life cards, play this card.",
   power: 4000,
   counter: 1000,
   trigger: "If you have 2 or less Life cards, play this card.",

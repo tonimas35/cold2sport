@@ -418,6 +418,11 @@ export function enqueueKoEffectsForTrigger(
   targetController: MatchSeat,
   triggerEvent: Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"],
 ) {
+  // Every battle and effect K.O. passes here while the card is still on the
+  // field; remember that a Character (not a Stage) was K.O.'d this turn.
+  if (getInstance(state, targetId).zone === "character") {
+    getPlayer(state, targetController).characterKodOnTurn = state.turnNumber;
+  }
   for (const seat of [state.activeSeat, otherSeat(state.activeSeat)]) {
     if (targetController === seat) {
       enqueueEffectsForTrigger(state, targetId, targetController, "onKo", undefined, triggerEvent);

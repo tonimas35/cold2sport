@@ -409,6 +409,14 @@ export interface ModifyCostAction {
   action: "modifyCost";
   target: Target;
   value: number;
+  /**
+   * Multiplies the value by complete groups of `size` cards in `target`'s
+   * pool, for text such as "+2 cost for every 5 cards in your trash".
+   */
+  valuePerCardGroup?: {
+    target: Target;
+    size: number;
+  };
   duration?: Duration;
   consumeOnPlay?: boolean;
   condition?: Condition;

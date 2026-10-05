@@ -593,8 +593,12 @@ export function getPermanentModifierTotal(
           if (pool.supported && pool.candidateIds.includes(targetInstanceId)) {
             const restedDonGroupSize =
               action.action === "modifyPower" ? action.restedDonGroupSize : undefined;
+            // "for every N cards" scales power (modifyPower) and, since
+            // EB04-048 Rob Lucci, cost (modifyCost) the same way.
             const valuePerCardGroup =
-              action.action === "modifyPower" ? action.valuePerCardGroup : undefined;
+              action.action === "modifyPower" || action.action === "modifyCost"
+                ? action.valuePerCardGroup
+                : undefined;
             const cardGroupPool = valuePerCardGroup
               ? candidatePoolForTarget(
                   state,

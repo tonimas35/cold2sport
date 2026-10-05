@@ -60,6 +60,10 @@ export const op16SanjuanWolf106: CharacterCard = {
           },
         ],
       },
+      {
+        trigger: "trigger",
+        actions: [{ action: "activateEffect", effectTrigger: "onKo" }],
+      },
     ],
   },
   i18n: op16SanjuanWolf106I18n,

@@ -60,21 +60,16 @@ export const op17KouzukiOden007: CharacterCard = {
             },
             filters: [
               // Printed "{Land of Wano} type Character card or Character card
-              // with a type including "Whitebeard Pirates"": either type
-              // qualifies (2-4-3 exact, 2-4-3-1 substring).
+              // with a type including "Whitebeard Pirates" with 6000 power or
+              // less": either type qualifies (it was imported as requiring
+              // both); {Land of Wano} is an exact type (2-4-3), the quoted part
+              // a substring (2-4-3-1); the 6000 cap applies to both (Japanese
+              // text).
               {
                 filter: "anyOf",
-                filters: [
-                  {
-                    filter: "trait",
-                    value: "Land of Wano",
-                    match: "exact",
-                  },
-                  {
-                    filter: "trait",
-                    value: "Whitebeard Pirates",
-                    match: "includes",
-                  },
+                groups: [
+                  [{ filter: "trait", value: "Land of Wano", match: "exact" }],
+                  [{ filter: "trait", value: "Whitebeard Pirates", match: "includes" }],
                 ],
               },
               {

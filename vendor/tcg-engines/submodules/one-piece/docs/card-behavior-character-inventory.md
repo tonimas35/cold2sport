@@ -188,8 +188,8 @@ reconciles catalog entries.
 | EB04-045 | Ginny | verified | Printed behavior is unstructured |
 | EB04-046 | Doll | verified | permanent |
 | EB04-047 | Helmeppo | verified | activateMain |
-| EB04-048 | Rob Lucci | verified | onPlay |
-| EB04-051 | Emet | verified | Life Trigger |
+| EB04-048 | Rob Lucci | verified | CP Leader gate: +1000 power and +2 cost per complete group of 5 trash cards on the field only; optional trash-a-Character On Play draw with decline |
+| EB04-051 | Emet | verified | Life Trigger gives all opposing Characters -3000 and plays itself only at 0 Life |
 | EB04-052 | Sanji | verified | whenAttacking, onKo |
 | EB04-053 | Sentomaru | verified | onBlock |
 | EB04-054 | Bartholomew Kuma | verified | onPlay, onKo |
@@ -698,7 +698,7 @@ reconciles catalog entries.
 | OP06-051     | Tsuru                                           | verified | may trash two hand cards, then lets the opponent return one of their Characters; may decline without trashing cards or returning a Character |
 | OP06-052 | Tokikake | verified | Battle K.O. prevention requires one DON!! and four-or-fewer cards in hand; both failure boundaries |
 | OP06-053 | Jaguar.D.Saul | verified | Battle On K.O. may bottom-deck either player's cost-2-or-less Character; decline path |
-| OP06-054 | Borsalino | verified | Conditional Blocker at four hand cards and its five-card boundary |
+| OP06-054 | Borsalino | verified | Conditional Blocker at five hand cards and its six-card boundary (card image says 5 or less; was 4) |
 | OP06-055 | Monkey.D.Garp | verified | DON!! and hand-count attack restriction prevents Blocker; both condition boundaries |
 | OP06-060 | Vinsmoke Ichiji | verified | Ordered DON!!/self-trash costs; conditional cost-7 named play from hand or trash |
 | OP06-061 | Vinsmoke Ichiji | verified | Equal-DON!! opposing power reduction and same-turn Rush; greater-DON!! failure boundary |
@@ -1133,7 +1133,7 @@ reconciles catalog entries.
 | OP11-015     | Mocha                                           | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
 | OP11-016 | Roronoa Zoro | verified | Once-per-turn selectable rested DON!! attachment to own Leader or Character |
 | OP11-017     | X.Drake                                         | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
-| OP11-023 | Arlong | verified | Three live hand-cost conditions; damaged-player Life Trigger and opposing low-cost rest |
+| OP11-023 | Arlong | verified | Three live hand-cost conditions give -3 cost (7 to 4; was set to 3), 3-DON!! rejection; damaged-player Life Trigger and opposing low-cost rest |
 | OP11-024 | Aladine | verified | Opponent-effect K.O. provenance, compound costs, and eligible hand play |
 | OP11-025 | Ishilly | verified | Opponent-attack compound rests and own-card battle power target |
 | OP11-026     | Scaled Neptunian                                | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
@@ -1315,7 +1315,7 @@ reconciles catalog entries.
 | OP13-014     | Portgas.D.Rouge                                 | verified | Life Trigger gives a chosen Portgas.D.Ace +3000 for the turn |
 | OP13-015     | Makino                                          | verified | rests itself to give a chosen Monkey.D.Luffy +2000 for the turn |
 | OP13-016     | Monkey.D.Garp                                   | verified | Three printed Leader-name gates, cost-3 search boundary, physical selection/order, and negative Leader gate |
-| OP13-017 | Monkey.D.Dragon | verified | Opponent-effect removal provenance, Revolutionary Army target, replacement power result, and once-per-turn boundary |
+| OP13-017 | Monkey.D.Dragon | verified | Opponent-effect removal provenance, Revolutionary Army target, replacement gives Dragon -2000 this turn (was +2000), and once-per-turn boundary |
 | OP13-018     | Wapol                                           | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
 | OP13-023 | Uta | verified | Up-to-2 DON!! activation, base-cost-5 play restriction, On K.O. hand filtering, selected identity, and rested entry |
 | OP13-024 | Gordon | verified | Optional owner, Music/FILM reveal filtering and identity, delayed end-turn up-to-2 DON!! activation, and decline branch |
@@ -1367,7 +1367,7 @@ reconciles catalog entries.
 | OP13-081 | Koala | verified | Included Revolutionary Army Leader cost gain; once-per-turn selected trash-to-deck cost, optional rested DON!! transfer to an own card, and decline |
 | OP13-082 | Five Elders | verified | activateMain |
 | OP13-083 | St. Jaygarcia Saturn | verified | Optional included Five Elders top-five search, ordered deck-bottom remainder, and seven-trash opponent-effect removal protection |
-| OP13-084 | St. Shepherd Ju Peter | verified | Optional zero-result Five Elders top-five search, ordered deck-bottom remainder, and seven-trash opponent-effect removal protection |
+| OP13-084 | St. Shepherd Ju Peter | verified | [Your Turn] 10-trash gate sets every own Five Elders base power to 7000 (replaces another card's imported On Play search); seven-trash opponent-effect removal protection |
 | OP13-085     | Saint Jalmac                                    | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
 | OP13-086 | Saint Shalria | verified | Optional included Celestial Dragons search excluding Shalria; selected identity, looked-card trash, and mandatory hand trash |
 | OP13-087 | Saint Charlos | verified | Physical top-deck trash on play plus defender-owned optional Blocker selection, retargeting, battle result, and decline |
@@ -1662,25 +1662,25 @@ reconciles catalog entries.
 | OP16-096 | Yamato | verified | On K.O. plays a [Yamato] of cost 6 or less from trash |
 | OP16-097 | Yamato | verified | On Play returns a LoW cost-6-or-less Character from trash to hand then plays cost-2-or-less |
 | OP16-098 | Yamato | verified | On Play draws and trashes 1; Activate Main self-trash plays a black [Yamato] of cost 8 from trash |
-| OP16-102 | Avalo Pizarro | verified | On K.O. draws 1 and plays a [Fullalead] stage from hand; empty-pool draw-only boundary |
-| OP16-103 | Van Augur | verified | On K.O. Blackbeard Leader gate draws and gives an opposing card -3000 power |
-| OP16-104 | Catarina Devon | verified | When Attacking copies the base power of a chosen opposing Character with no-selection boundary |
+| OP16-102 | Avalo Pizarro | verified | On K.O. draws 1 and plays a [Fullalead] stage from hand; empty-pool draw-only boundary; Life Trigger activates the On K.O. |
+| OP16-103 | Van Augur | verified | On K.O. Blackbeard Leader gate draws and gives an opposing card -3000 power; Life Trigger activates it on the opponent's turn |
+| OP16-104 | Catarina Devon | verified | When Attacking copies the base power of a chosen opposing Character with no-selection boundary; Life Trigger draws and plays a cost-1 Blackbeard Pirates Character from trash |
 | OP16-105 | Gecko Moria | verified | [Trigger] at 1-or-less Life plays Absalom, Hogback, and Perona from trash after life damage |
-| OP16-106 | Sanjuan.Wolf | verified | On K.O. Blackbeard Leader gate draws and sets a card's base power to 7000 |
-| OP16-107 | Jesus Burgess | verified | On K.O. moves the top card of the opponent's Life to its owner's hand |
+| OP16-106 | Sanjuan.Wolf | verified | On K.O. Blackbeard Leader gate draws and sets a card's base power to 7000; Life Trigger activates the On K.O. |
+| OP16-107 | Jesus Burgess | verified | On K.O. moves the top card of the opponent's Life to its owner's hand; Life Trigger trashes 1 hand card to play it, with decline |
 | OP16-108 | Shiryu | verified | On Play trash cost adds a Blackbeard card to Life face-up; [Trigger] draws 2 on life damage |
-| OP16-109 | Doc Q | verified | On K.O. Blackbeard Leader gate draws and K.O.s up to 2 cost-1-or-less Characters |
-| OP16-110 | Vasco Shot | verified | On K.O. draws 1 and rests a cost-6-or-less opposing Character with cost filter |
-| OP16-111 | Boa Sandersonia | verified | Blocker intercepts the attack and rests while the Leader takes no damage |
+| OP16-109 | Doc Q | verified | On K.O. Blackbeard Leader gate draws and K.O.s up to 2 cost-1-or-less Characters; Life Trigger activates the On K.O. |
+| OP16-110 | Vasco Shot | verified | On K.O. draws 1 and rests a cost-6-or-less opposing Character with cost filter; Life Trigger activates the On K.O. |
+| OP16-111 | Boa Sandersonia | verified | Blocker intercepts the attack and rests while the Leader takes no damage; Life Trigger plays it at 2 or less Life |
 | OP16-112 | Boa Hancock | vanilla | Parameterized vanilla invariant batch |
 | OP16-113 | Boa Marigold | verified | Conditional [Blocker] at 2-or-less Life intercepts and is K.O.'d; no-blocker boundary above the threshold |
-| OP16-114 | Laffitte | verified | On K.O. K.O.s up to 1 opposing Character of cost 4 or less |
+| OP16-114 | Laffitte | verified | On K.O. K.O.s up to 1 opposing Character of cost 4 or less; Life Trigger activates the On K.O. |
 | OP16-118 | Portgas.D.Ace | verified | Hand counters of 8000-power Characters become +2000 (counter battle save); On Play/K.O. look-5 search |
 | OP16-119 | Marshall.D.Teach | verified | On Play look-3 adds a card face-down to the top of Life and bottom-orders the rest; decline boundary |
 | OP17-002 | Atmos | verified | permanent |
-| OP17-003 | Izo | verified | RushCharacter |
+| OP17-003 | Izo | verified | RushCharacter; On Play Newgate or Land of Wano Leader gate gives a rested opposing Character -6000 this turn |
 | OP17-004 | Inuarashi & Nekomamushi | verified | Printed behavior is unstructured |
-| OP17-005 | Edward.Newgate | verified | permanent |
+| OP17-005 | Edward.Newgate | verified | In-hand -4 cost; On Play sets a monocolored Leader's base power to 8000 until the end of the opponent's next End Phase; multicolored boundary |
 | OP17-006 | Kingdew | vanilla | Parameterized vanilla invariant batch |
 | OP17-007 | Kouzuki Oden | verified | Newgate-or-{Land of Wano} Leader gate; plays a {Land of Wano} or "Whitebeard Pirates"-including Character of 6000 power or less from hand |
 | OP17-008 | Jozu | verified | Printed behavior is unstructured |
@@ -1690,7 +1690,7 @@ reconciles catalog entries.
 | OP17-012 | Blenheim | verified | onKo |
 | OP17-013 | Portgas.D.Ace | verified | onPlay, permanent |
 | OP17-014 | Whitey Bay | verified | onPlay, onOpponentAttack |
-| OP17-015 | Marco | verified | onKo |
+| OP17-015 | Marco | verified | Opponent-effect removal replacement K.O.s Marco instead (bottom-deck and K.O. effects; not battle), then his On K.O. can replay him |
 | OP17-016 | Rakuyo | verified | onPlay |
 | OP17-021 | Crone Oil | verified | replacement |
 | OP17-022 | Shanks | verified | onPlay |
@@ -1709,8 +1709,8 @@ reconciles catalog entries.
 | OP17-035 | Roronoa Zoro | vanilla | Parameterized vanilla invariant batch |
 | OP17-040 | Edward.Newgate | verified | On Play draw; once-per-turn trash-1 Leader +3000 this battle when the Rocks Leader attacks (whenYouAttack, ordered against the Leader [When Attacking]) or is attacked (before Blocker/Counter); Character attack, Character target and non-Rocks Leader do not activate |
 | OP17-041 | Wang Zhi | verified | Blocker |
-| OP17-042 | Kaido | verified | onPlay |
-| OP17-043 | Ganzui | verified | replacement |
+| OP17-042 | Kaido | verified | Optional 3-card Rocks Pirates reveal cost gives an opposing Character -3000 this turn (was +3000); unpayable-cost and decline boundaries |
+| OP17-043 | Ganzui | verified | On Play Leader base power 6000 until the opponent's next End Phase; leave-the-field replacement (battle K.O. and opposing removal) trashes 2 hand cards, not offered with 1 card |
 | OP17-044 | Captain John | verified | activateMain, permanent |
 | OP17-045 | Kyo | verified | onPlay draw 1; optional removeFromField replacement for every own Character vs opponent effects: trash 2 chosen hand cards, not once per turn, not offered with 0-1 cards, not for battle K.O. |
 | OP17-046 | Gloriosa | verified | onPlay; two types Amazon Lily/Rocks Pirates (exact {Rocks Pirates} matches) |
@@ -1869,8 +1869,8 @@ reconciles catalog entries.
 | ST20-003 | Charlotte Brulee (Pirate Foil) | verified | Controller-owned Life Trigger; either-owner or skip choice; private physical top-Life placement; same Trigger card returned to hand |
 | ST21-003 | Sanji - ST21-003 (Pirate Foil) | verified | Optional own included-Straw-Hat power-6000 target; selected-attacker-only Blocker prohibition; decline leaves attack blockable |
 | ST21-014 | Monkey.D.Luffy | verified | Rush attack on the turn played; When Attacking gives 0-1 rested DON!! to the Leader or a Character |
-| ST26-005 | Monkey.D.Luffy | verified | Dual-trigger DON!!-2 set-base-power 7000 on multicolored Straw Hat Leader (opponent-DON negative; expiry via duration) |
-| ST27-005 | Marshall.D.Teach | verified | activateMain |
+| ST26-005 | Monkey.D.Luffy | verified | Dual-trigger optional DON!!-2 set-base-power 7000 on multicolored Straw Hat Leader until the opponent's next End Phase; decline keeps DON!!; opponent-DON negative |
+| ST27-005 | Marshall.D.Teach | verified | activateMain; On K.O. adds up to 1 black card from trash to hand (Teach included), non-black excluded |
 | ST30-012 | Monkey.D.Luffy | verified | Optional rest-1-DON!! On Play cost grants Rush this turn (unpayable with 0 active DON!!, ST-30 FAQ); When Attacking rests only an opposing [Blocker] Character |
 | ST31-001 | Sanji | verified | DON!! x2 Rush on the turn played; On Play draw then play a Straw Hat Crew Character of cost 5 or less other than [Sanji] (drawn card eligible) |
 | ST31-004 | Monkey.D.Luffy | verified | On Play per-Straw-Hat debuff via amountFromMatchingCards (trait mutation killed); Rush threshold; self-count always >=1 |

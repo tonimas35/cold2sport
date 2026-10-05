@@ -1,3 +1,4 @@
+import type { DeckBuildingRule, OPCard, TargetFilter } from "@tcg/op-types";
 import { getAllCards, getCard, hasCard } from "./index.ts";
 
 /**
@@ -144,6 +145,29 @@ export function validateDeckForFormat(
           return !card.color.some((color) => leaderColors.includes(color));
         });
   const colorLegalityPassed = offColorCards.length === 0;
+  // 5-1-2-4 / 5-1-2-4-1: a Leader's "Under the rules of this game, you cannot
+  // include ..." text (e.g. OP13-079 Imu: no Events with a cost of 2 or more;
+  // OP12-001 Silvers Rayleigh: no cards with a cost of 5 or more) is part of
+  // deck construction.
+  const exclusionRules =
+    leaderCount === 1
+      ? (getCard(leaderEntries[0]!.cardId).effects?.deckBuildingRules ?? []).filter(
+          (rule): rule is Extract<DeckBuildingRule, { rule: "cannotInclude" }> =>
+            rule.rule === "cannotInclude",
+        )
+      : [];
+  const excludedCards =
+    exclusionRules.length === 0
+      ? []
+      : [...copiesByCanonicalId.keys()].filter((canonicalId) => {
+          if (!hasCard(canonicalId)) return false;
+          const card = getCard(canonicalId);
+          if (card.cardType === "leader") return false;
+          return exclusionRules.some((rule) =>
+            rule.filters.every((filter) => printedCardMatches(card, filter)),
+          );
+        });
+  const leaderRulesPassed = excludedCards.length === 0;
 
   return {
     formatId,
@@ -155,7 +179,8 @@ export function validateDeckForFormat(
       cardTypesPassed &&
       colorLegalityPassed &&
       leaderCount === 1 &&
-      copyLimitPassed,
+      copyLimitPassed &&
+      leaderRulesPassed,
     rules: [
       {
         kind: "card-pool",
@@ -216,6 +241,53 @@ export function validateDeckForFormat(
               .join(", ")}`,
         details: overCopyLimit.map(([canonicalId, quantity]) => ({ canonicalId, quantity })),
       },
+      {
+        kind: "leader-deck-rules",
+        passed: leaderRulesPassed,
+        message: leaderRulesPassed
+          ? "No card is excluded by the leader's deck rules"
+          : `Cards the leader's deck rules exclude: ${excludedCards.join(", ")}`,
+        details: excludedCards,
+      },
     ],
   };
+}
+
+/**
+ * Printed-value match for deck-construction filters (no game state: costs and
+ * types are the card's own). A filter kind with no printed meaning never
+ * matches, so an unknown restriction cannot reject a deck.
+ */
+function printedCardMatches(card: OPCard, filter: TargetFilter): boolean {
+  const compare = (actual: number | undefined, comparison: string, value: number) => {
+    if (actual === undefined) return false;
+    switch (comparison) {
+      case "eq":
+        return actual === value;
+      case "lt":
+        return actual < value;
+      case "lte":
+        return actual <= value;
+      case "gt":
+        return actual > value;
+      case "gte":
+        return actual >= value;
+      default:
+        return false;
+    }
+  };
+  const cost = "cost" in card ? card.cost : undefined;
+  switch (filter.filter) {
+    case "cardCategory":
+      return card.cardType === filter.value;
+    case "cost":
+    case "baseCost":
+      return compare(cost, filter.comparison, filter.value);
+    case "color":
+      return card.color.includes(filter.value);
+    case "name":
+      return card.name === filter.value || (card.alternateNames ?? []).includes(filter.value);
+    default:
+      return false;
+  }
 }

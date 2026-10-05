@@ -271,6 +271,16 @@ describe("site corrections, fixes and report", () => {
     expect(cards.get("OP17-021")!.attributes).toEqual(["slash"]);
   });
 
+  test("an errata correction replaces the effect text the page still shows", () => {
+    const cards = mergePrintings(parsed.printings);
+    const shown = cards.get("OP17-027")!.effect;
+    const errata = { id: "OP17-027", field: "effect" as const, shown, printed: "[On Play] Draw 1 card." };
+    expect(applySiteCorrections(cards, [errata])).toEqual([errata]);
+    expect(cards.get("OP17-027")!.effect).toBe("[On Play] Draw 1 card.");
+    // Applied once: the page no longer shows the old text in this map.
+    expect(applySiteCorrections(cards, [errata])).toEqual([]);
+  });
+
   test("fixes copy the official value, with evidence and the file to edit", () => {
     const beckman = { ...engineCopy(card("OP17-027")), counter: 9000, traits: ["Red-Haired Pirates"] };
     const law = { ...engineCopy(card("OP01-002")), name: "Trafalgar Law (TR)", traits: ["Heart Pirates Supernovas"] };

@@ -25,10 +25,15 @@ export const st26MonkeyDLuffy005: CharacterCard = {
   power: 7000,
   traits: ["Straw Hat Crew"],
   attribute: "strike",
+  effect:
+    "[On Play]/[When Attacking] DON!! -2 (You may return the specified number of DON!! cards from your field to your DON!! deck.): If your Leader is multicolored and your opponent has 5 or more DON!! cards on their field, your {Straw Hat Crew} type Leader's base power becomes 7000 until the end of your opponent's next End Phase.",
   effects: {
     effects: [
       {
         trigger: "onPlay",
+        // DON!! -2 reads "You may return ...": paying is the player's choice
+        // (8-3-1-4); it was paid without asking.
+        optional: true,
         costs: [
           {
             cost: "returnDon",
@@ -64,12 +69,13 @@ export const st26MonkeyDLuffy005: CharacterCard = {
               ],
             },
             value: 7000,
-            duration: "untilEndOfOpponentNextTurn",
+            duration: "untilEndOfOpponentNextEndPhase",
           },
         ],
       },
       {
         trigger: "whenAttacking",
+        optional: true,
         costs: [
           {
             cost: "returnDon",
@@ -105,7 +111,7 @@ export const st26MonkeyDLuffy005: CharacterCard = {
               ],
             },
             value: 7000,
-            duration: "untilEndOfOpponentNextTurn",
+            duration: "untilEndOfOpponentNextEndPhase",
           },
         ],
       },

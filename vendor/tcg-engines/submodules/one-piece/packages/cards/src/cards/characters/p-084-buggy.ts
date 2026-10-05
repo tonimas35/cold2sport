@@ -19,6 +19,8 @@ export const pBuggy084: CharacterCard = {
   ],
   cardType: "character",
   attribute: "slash",
+  effect:
+    "This Character cannot attack.\nIf your Leader is [Buggy], all Characters with a cost of 3 or 4 cannot attack.\n[On Play] Play up to 1 {Cross Guild} type Character card with a cost of 6 or less from your hand.",
   color: ["blue"],
   rarity: "P",
   setId: "P",

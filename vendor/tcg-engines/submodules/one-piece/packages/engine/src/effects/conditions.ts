@@ -15,6 +15,13 @@ import type { MatchSeat, MatchState, ResolutionItem } from "../types.ts";
 
 type TriggerEvent = Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"];
 
+/** Number of different card names among the given cards. */
+function distinctCardNameCount(state: MatchState, instanceIds: readonly string[]): number {
+  return new Set(
+    instanceIds.map((instanceId) => getCard(getInstance(state, instanceId).cardId).name),
+  ).size;
+}
+
 function evaluateCondition(
   state: MatchState,
   controller: MatchSeat,
@@ -96,6 +103,13 @@ function evaluateCondition(
       };
     case "leaderMulticolored":
       return { supported: true, matches: leader.color.length > 1 };
+    // OP17 FAQ (OP17-005): "your monocolored Leader" has exactly 1 color.
+    case "leaderMonocolored":
+      return { supported: true, matches: leader.color.length === 1 };
+    case "characterKodThisTurn": {
+      const player = condition.player === "self" ? controllerPlayer : opponentPlayer;
+      return { supported: true, matches: player.characterKodOnTurn === state.turnNumber };
+    }
     case "leaderColor":
       return { supported: true, matches: leader.color.includes(condition.color) };
     case "zoneCount": {
@@ -148,16 +162,19 @@ function evaluateCondition(
           return { supported: false, matches: false };
         }
         let supported = true;
-        total = instanceIds.filter((instanceId) =>
+        const matching = instanceIds.filter((instanceId) =>
           condition.filters!.every((filter) => {
             const result = matchesTargetFilter(state, sourceInstanceId, instanceId, filter);
             supported &&= result.supported;
             return result.matches;
           }),
-        ).length;
+        );
         if (!supported) {
           return { supported: false, matches: false };
         }
+        total = condition.distinctNames ? distinctCardNameCount(state, matching) : matching.length;
+      } else if (condition.distinctNames) {
+        total = distinctCardNameCount(state, instanceIds);
       }
       switch (condition.comparison) {
         case "eq":
