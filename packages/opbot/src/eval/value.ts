@@ -7,11 +7,15 @@
  */
 import type { MatchSeat, MatchState } from "@tcg/op-engine";
 import { extractFeatures, FEATURE_NAMES, type FeatureVector } from "./features.ts";
+import { mlpPredict, type MlpWeights } from "./mlp.ts";
 
 export interface ValueModel {
   readonly version: string;
   readonly featureNames: readonly string[];
+  /** Logistic-regression weights (used when `mlp` is absent). */
   readonly weights: readonly number[];
+  /** Optional one-hidden-layer network over the same features; takes precedence. */
+  readonly mlp?: MlpWeights;
   readonly trainedOn?: string;
   readonly metrics?: Record<string, number>;
 }
@@ -23,6 +27,7 @@ export function sigmoid(z: number): number {
 }
 
 export function predictFeatures(model: ValueModel, f: FeatureVector): number {
+  if (model.mlp) return mlpPredict(model.mlp, f);
   let z = 0;
   const w = model.weights;
   for (let i = 0; i < f.length; i++) z += (w[i] ?? 0) * f[i]!;

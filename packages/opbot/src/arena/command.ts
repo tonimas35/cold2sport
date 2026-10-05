@@ -130,6 +130,16 @@ export function summarize(lines: GameLine[]): string {
     for (const p of problems) kinds.set(p.result.termination, (kinds.get(p.result.termination) ?? 0) + 1);
     out.push(`non-rules endings: ${[...kinds].map(([k, n]) => `${k}=${n}`).join(" ")}`);
   }
+  let illegalCandidate = 0;
+  let illegalBaseline = 0;
+  for (const l of lines) {
+    const base: MatchSeat = l.candidateSeat === "south" ? "north" : "south";
+    illegalCandidate += l.result.illegal[l.candidateSeat];
+    illegalBaseline += l.result.illegal[base];
+  }
+  if (illegalCandidate || illegalBaseline) {
+    out.push(`rejected commands (replaced by a legal fallback): candidate ${illegalCandidate}, baseline ${illegalBaseline}`);
+  }
   const byMatchup = new Map<string, { score: number; n: number }>();
   for (const l of lines) {
     const candDeck = l.candidateSeat === "south" ? l.decks.south : l.decks.north;
