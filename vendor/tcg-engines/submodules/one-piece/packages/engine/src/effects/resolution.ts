@@ -2962,6 +2962,12 @@ export function resolveEffectChoicePrompt(
       ) {
         return false;
       }
+      // Reject an over-budget pick here, like effectTargetSelection does: the
+      // play action re-checks the total and, past this point, would just play
+      // nothing after the prompt was already consumed.
+      if (!selectionSatisfiesTotalConstraint(state, selectedIds, context.action.totalConstraint)) {
+        return false;
+      }
       enqueueResolution(
         state,
         {

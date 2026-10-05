@@ -35,6 +35,17 @@ describe("OP17-050 Streusen", () => {
             "south",
           );
         }
+      } else if (intent === "effectRearrangeDeckOrder") {
+        // Look at 2 and reorganize them: keep the looked-at order.
+        const step = engine.pendingDecision(intent, "south").steps[0];
+        if (step?.kind !== "orderItems") throw new Error("Expected the deck ordering step.");
+        engine.resolveDecision(
+          intent,
+          { selectedIds: step.candidates.map((candidate) => candidate.ref.id!) },
+          "south",
+        );
+      } else if (intent === "effectRearrangeDeckPosition") {
+        engine.resolveDecision(intent, { optionId: "top" }, "south");
       } else {
         engine.resolveDecision(
           intent as Parameters<typeof engine.resolveDecision>[0],
@@ -47,6 +58,9 @@ describe("OP17-050 Streusen", () => {
     expect(engine.getView("south").players.south.characters.map((c) => c?.cardId)).toContain(
       "OP17-050",
     );
+    // Then, draw 1 card.
+    expect(engine.getView("south").players.south.hand).toHaveLength(1);
+    expect(engine.getView("south").prompts).toHaveLength(0);
   });
 
   test("[Continuous] survives the turn handoff", () => {

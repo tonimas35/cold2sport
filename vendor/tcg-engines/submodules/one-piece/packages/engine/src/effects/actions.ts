@@ -835,11 +835,21 @@ export function candidatesForPlayAction(
   const candidateIds = topDeckOnly
     ? pool.candidateIds.filter((instanceId) => instanceId === getPlayer(state, controller).deck[0])
     : pool.candidateIds;
+  // "A total cost of N or less": costs are never negative, so a card that
+  // breaks an upper-bound total on its own cannot belong to any legal
+  // selection. Leaving it out keeps the prompt to choices that can resolve.
+  const totalConstraint = action.totalConstraint;
+  const upperBoundTotal =
+    totalConstraint && (totalConstraint.comparison === "lte" || totalConstraint.comparison === "lt")
+      ? totalConstraint
+      : undefined;
 
   return candidateIds.filter((instanceId) => {
     const card = getCardForInstance(state, instanceId);
     return (
       (card.cardType === "stage" || card.cardType === "character") &&
+      (!upperBoundTotal ||
+        selectionSatisfiesTotalConstraint(state, [instanceId], upperBoundTotal)) &&
       !isCardPlayRestricted(
         state,
         controller,

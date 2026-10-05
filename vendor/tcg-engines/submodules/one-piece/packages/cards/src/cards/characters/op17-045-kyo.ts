@@ -48,6 +48,24 @@ export const op17Kyo045: CharacterCard = {
         ],
       },
     ],
+    replacementEffects: [
+      {
+        replacedEvent: "removeFromField",
+        target: {
+          player: "self",
+          zones: ["character"],
+          count: {
+            amount: 1,
+          },
+        },
+        source: "opponentEffect",
+        replacementAction: {
+          action: "trashFromHand",
+          player: "self",
+          amount: 2,
+        },
+      },
+    ],
   },
   i18n: op17Kyo045I18n,
 };

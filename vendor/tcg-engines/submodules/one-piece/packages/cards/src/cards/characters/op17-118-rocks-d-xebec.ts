@@ -71,11 +71,12 @@ export const op17RocksDXebec118: CharacterCard = {
               comparison: "lte",
               value: 9,
             },
+            // {Rocks Pirates} is an exact type (2-4-3): OP08-051 Buckin's
+            // "Former Rocks Pirates" does not qualify.
             filters: [
               {
                 filter: "trait",
                 value: "Rocks Pirates",
-                match: "includes",
               },
             ],
           },

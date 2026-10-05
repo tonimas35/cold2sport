@@ -3,7 +3,7 @@
  * at every decision point of random games (all six test decks).
  */
 import { expect, test } from "bun:test";
-import { applyCommand, createMatch, type MatchSeat } from "@tcg/op-engine";
+import { applyCommand, createMatch, createTestMatchState, type MatchSeat } from "@tcg/op-engine";
 import { actingSeat, enumerateActions } from "../src/engine/actions.ts";
 import { applyInPlace, cloneState } from "../src/engine/sim.ts";
 import { matchConfig } from "../src/arena/game.ts";
@@ -52,3 +52,39 @@ test(`every enumerated action is legal (${GAMES} random games)`, () => {
   }
   expect(checked).toBeGreaterThan(GAMES * 50);
 }, 600_000);
+
+test("OP17-118 replay: every enumerated pick respects the total cost of 9 and different names", () => {
+  // Shiki 7, Stussy 3 (x2), Kyo 2: Shiki+Stussy (10) and Stussy+Stussy (same
+  // name) are rejected by the engine, so they must not be offered as actions.
+  const state = cloneState(
+    createTestMatchState(
+      {
+        leaderCardId: "OP17-039",
+        hand: ["OP17-118", "OP17-048", "OP17-054", "OP17-054", "OP17-045"],
+        deck: ["OP13-013", "OP13-013", "OP13-013"],
+        activeDon: 10,
+      },
+      {},
+      { firstPlayer: "north", activeSeat: "south" },
+    ),
+  );
+  const xebec = state.players.south.hand.find((id) => state.cards[id]!.cardId === "OP17-118")!;
+  expect(applyInPlace(state, { type: "playCard", seat: "south", instanceId: xebec })).toBe(true);
+
+  const actions = enumerateActions(state, "south");
+  const picks = actions.map((a) =>
+    ((a.command as { selectedIds?: string[] }).selectedIds ?? [])
+      .map((id) => state.cards[id]!.cardId)
+      .sort()
+      .join("+"),
+  );
+  expect(picks).toContain("OP17-045+OP17-048");
+  expect(picks).toContain("OP17-045+OP17-054");
+  expect(picks).not.toContain("OP17-048+OP17-054");
+  expect(picks).not.toContain("OP17-054+OP17-054");
+  const frozenView = JSON.parse(JSON.stringify(state));
+  for (const action of actions) {
+    const result = applyCommand(frozenView, action.command);
+    expect(result.accepted ? action.key : `${action.key}: ${result.reason}`).toBe(action.key);
+  }
+});
