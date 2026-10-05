@@ -1,0 +1,2264 @@
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+index 551ac0b..3f51e28 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+@@ -1557,7 +1557,7 @@ reconciles catalog entries.
+ | OP15-085 | Tony Tony.Chopper | verified |On-play 3-card deck trash; Straw-Hat-gated self-trash returning named-excluded Character from trash|
+ | OP15-086 | Nami | verified | Printed behavior is unstructured |
+ | OP15-087 | Nico Robin | verified |10-trash Blocker via battleBlocker; on-play draw-2 with hand trash|
+-| OP15-088 | Pirates Docking Six | verified |Hand-zone +6 cost play gate; on-play deck-3 trash cost replaying Straw Hat <=2 from trash|
++| OP15-088 | Pirates Docking Six | verified | +6 cost on the field only (2-8-2, OP17 FAQ): played for 5, cost 11 on the field, 12 with Thousand Sunny (OP17-079 Leader Blocker), 5 in trash; on-play deck-3 trash cost replaying Straw Hat <=2 from trash |
+ | OP15-089 | Franky | vanilla | Parameterized vanilla invariant batch |
+ | OP15-090 | Perona | verified |Removal replacement trashing the lone hand card automatically, saving the Character|
+ | OP15-091 | Margarita | verified |On-play opposing trash card to owner deck bottom|
+@@ -1585,7 +1585,7 @@ reconciles catalog entries.
+ | OP16-002 | Izo | verified | On Play reveal 8000 Character from hand pays for the draw 1; decline and empty-pool boundaries |
+ | OP16-003 | Edward.Newgate | verified | Your-turn Leader +2000 power; On Play reveal 2x8000 Characters pays for up-to-1 -6000 this turn with decline boundary |
+ | OP16-004 | Curiel | vanilla | Parameterized vanilla invariant batch |
+-| OP16-005 | Thatch | verified | Conditional in-hand -3 cost gated by an 8000+ power Whitebeard Pirates Character; full-cost boundary without the condition |
++| OP16-005 | Thatch | verified | Conditional in-hand -3 cost gated by an 8000+ power Whitebeard Pirates Character; full-cost boundary without the condition; printed cost 8 on the field (out of reach of a cost-5 K.O.) |
+ | OP16-006 | Shanks | verified | On Play rest-2-DON!! cost K.O.s up to 1 Character of 4000 power or less; decline keeps DON and board |
+ | OP16-007 | Jozu | verified | On Play reveal 8000 Character pays for up-to-1 -1000 this turn; decline boundary |
+ | OP16-008 | Squard | verified | On Play trash-own-10000-base-power cost K.O.s up to 1 Character of 8000 power or less; unpayable-cost boundary |
+@@ -1595,7 +1595,7 @@ reconciles catalog entries.
+ | OP16-012 | Benn.Beckman | verified | On Play rest-1 cost with Red-Haired Pirates Leader and 10 DON!! gates effect-playing a [Shanks] from hand |
+ | OP16-013 | McGuy | verified | On K.O. up-to-1 K.O. of 8000 base power or less; empty selection declines |
+ | OP16-014 | Marco | verified | Removal replacement K.O.s itself instead of an opposing-effect removal; allow and decline boundaries |
+-| OP16-015 | Monkey.D.Luffy | verified | Printed behavior is unstructured |
++| OP16-015 | Monkey.D.Luffy | verified | In-hand -2 cost under an Ace Leader with 6+ DON!!; printed cost 4 once on the field |
+ | OP16-016 | Ramba | vanilla | Parameterized vanilla invariant batch |
+ | OP16-017 | LittleOars Jr. | verified | Conditional -4000 power without a cost-8+ Whitebeard Pirates Character; satisfied and unsatisfied boundaries |
+ | OP16-018 | Rockstar | verified | Printed behavior is unstructured |
+@@ -1645,7 +1645,7 @@ reconciles catalog entries.
+ | OP16-074 | Magellan | verified | On Play Impel Down gate returns an opposing DON!!; On K.O. returns 4 |
+ | OP16-075 | Monkey.D.Garp | verified | On Play Navy Leader gate adds 1 active and 1 rested DON!!; non-Navy boundary |
+ | OP16-081 | Otama | verified | Activate Main rest cost with cost-8+ ally gives an opposing Character -2000; missing-ally decline boundary |
+-| OP16-082 | Kin'emon | verified | +3 cost raises play cost to 7; On Play Land of Wano Leader gate look-5 takes a LoW card and trashes the rest |
++| OP16-082 | Kin'emon | verified | +3 cost on the field only (2-8-2): played for 4, cost 7 on the field; On Play Land of Wano Leader gate look-5 takes a LoW card and trashes the rest |
+ | OP16-083 | Kouzuki Oden | verified | On Play trash cost-8-or-more Character cost draws 2; empty-pool boundary |
+ | OP16-084 | Kouzuki Momonosuke | verified | Cost-20 gate rejects self-trash until raised; raised chain plays cost-9 Kouzuki Momonosuke from trash |
+ | OP16-085 | Kouzuki Momonosuke | verified | On Play plays a Land of Wano cost-6-or-less Character from trash with decline boundary |
+@@ -1754,7 +1754,7 @@ reconciles catalog entries.
+ | OP17-092 | Brogy | verified | onPlay, permanent |
+ | OP17-093 | Monkey.D.Luffy | verified | onPlay, permanent |
+ | OP17-094 | Rodo | verified | permanent |
+-| OP17-095 | Roronoa Zoro | verified | permanent |
++| OP17-095 | Roronoa Zoro | verified | +3000 with a cost-12+ Character; optional, unlimited replacement of an opponent's effect removal (K.O., trash, bottom of deck) by 3 ordered trash cards to the deck bottom, Zoro included; one payment saves Characters removed at the same time; not offered with <3 trash cards or for a battle K.O. |
+ | OP17-100 | Capone"Gang"Bege | vanilla | Parameterized vanilla invariant batch |
+ | OP17-101 | Caribou | verified | activateMain, Life Trigger |
+ | OP17-102 | Charlotte Oven | verified | onKo, Life Trigger |
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-088-pirates-docking-six.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-088-pirates-docking-six.ts
+index 38d4731..e06f134 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-088-pirates-docking-six.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-088-pirates-docking-six.ts
+@@ -80,10 +80,13 @@ export const op15PiratesDockingSix088: CharacterCard = {
+       {
+         actions: [
+           {
++            // Rule 2-8-2: Character text only works in the Character area, so
++            // the +6 does not apply in hand (play cost 5) or trash (OP17 FAQ on
++            // the identical "This Character gains +12 cost." wording).
+             action: "modifyCost",
+             target: {
+               player: "self",
+-              zones: ["hand", "character"],
++              zones: ["character"],
+               count: {
+                 amount: 1,
+               },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-005-thatch.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-005-thatch.ts
+index 39c2c9b..9a7082c 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-005-thatch.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-005-thatch.ts
+@@ -54,10 +54,13 @@ export const op16Thatch005: CharacterCard = {
+         ],
+         actions: [
+           {
++            // "give this card in your hand -3 cost": the reduction exists only
++            // in hand. On the field Thatch keeps his printed cost 8, even
++            // though he satisfies the condition himself.
+             action: "modifyCost",
+             target: {
+               player: "self",
+-              zones: ["hand", "character"],
++              zones: ["hand"],
+               count: {
+                 amount: 1,
+               },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-015-monkey-d-luffy.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-015-monkey-d-luffy.ts
+index a2cccb5..8676939 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-015-monkey-d-luffy.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-015-monkey-d-luffy.ts
+@@ -52,10 +52,12 @@ export const op16MonkeyDLuffy015: CharacterCard = {
+         ],
+         actions: [
+           {
++            // "give this card in your hand -2 cost": the reduction exists only
++            // in hand; on the field Luffy keeps his printed cost 4.
+             action: "modifyCost",
+             target: {
+               player: "self",
+-              zones: ["hand", "character"],
++              zones: ["hand"],
+               count: {
+                 amount: 1,
+               },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-082-kin-emon.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-082-kin-emon.ts
+index 852d1ba..83ae6f0 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-082-kin-emon.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-082-kin-emon.ts
+@@ -75,10 +75,12 @@ export const op16KinEmon082: CharacterCard = {
+       {
+         actions: [
+           {
++            // Rule 2-8-2: Character text only works in the Character area, so
++            // the +3 does not apply in hand (play cost 4).
+             action: "modifyCost",
+             target: {
+               player: "self",
+-              zones: ["hand", "character"],
++              zones: ["character"],
+               count: {
+                 amount: 1,
+               },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-095-roronoa-zoro.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-095-roronoa-zoro.ts
+index 30b15ea..5a026cd 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-095-roronoa-zoro.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-095-roronoa-zoro.ts
+@@ -61,6 +61,35 @@ export const op17RoronoaZoro095: CharacterCard = {
+         ],
+       },
+     ],
++    // Optional and unlimited (no [Once Per Turn]). The target pool includes
++    // Zoro himself (OP17 FAQ), and one application replaces the removal of
++    // every Character the same opponent effect removes at once (OP17 FAQ;
++    // comprehensive rules 8-1-3-4-4). The "in any order" part is the engine's
++    // ordering prompt for cards placed at the bottom of the deck.
++    replacementEffects: [
++      {
++        replacedEvent: "removeFromField",
++        target: {
++          player: "self",
++          zones: ["character"],
++          count: {
++            amount: 1,
++          },
++        },
++        source: "opponentEffect",
++        replacementAction: {
++          action: "returnToDeck",
++          target: {
++            player: "self",
++            zones: ["trash"],
++            count: {
++              amount: 3,
++            },
++          },
++          position: "bottom",
++        },
++      },
++    ],
+   },
+   i18n: op17RoronoaZoro095I18n,
+ };
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-strategy.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-strategy.ts
+index f3a80e6..0cb4773 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-strategy.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-strategy.ts
+@@ -18,6 +18,7 @@ import {
+   getPlayer,
+   otherSeat,
+ } from "../shared.ts";
++import { selectionSatisfiesTotalConstraint } from "../effects/targeting.ts";
+ import {
+   commandFromDescriptor,
+   type OnePieceBotAgent,
+@@ -959,6 +960,24 @@ function resolveEffectSelection(state: MatchState, prompt: PromptState): EngineC
+     // Optional pick: take one only when it is clearly beneficial.
+     count = goodForUs ? Math.min(1, prompt.maxSelections) : 0;
+   }
++  // An upper-bound total ("K.O. ... with a total cost of 4 or less", OP17-119
++  // Loki) is checked on the whole selection, and the prompt also lists cards
++  // that break it on their own. Taking the first cards in preference order
++  // could submit a selection the engine rejects (an illegal-command loss), so
++  // skip any card that would push the running total over the bound.
++  const totalConstraint = action && "target" in action ? action.target?.totalConstraint : undefined;
++  if (totalConstraint?.comparison === "lte" || totalConstraint?.comparison === "lt") {
++    const picked: string[] = [];
++    for (const id of ordered) {
++      if (picked.length >= count) {
++        break;
++      }
++      if (selectionSatisfiesTotalConstraint(state, [...picked, id], totalConstraint)) {
++        picked.push(id);
++      }
++    }
++    return selectCommand(prompt, picked);
++  }
+   return selectCommand(prompt, ordered.slice(0, count));
+ }
+ 
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-total-constraint.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-total-constraint.test.ts
+new file mode 100644
+index 0000000..e23be7d
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-total-constraint.test.ts
+@@ -0,0 +1,59 @@
++/**
++ * The heuristic prompt resolver must not submit a target selection that breaks
++ * an upper-bound total ("K.O. your opponent's Characters with a total cost of
++ * 4 or less", OP17-119 Loki). The engine lists every opposing Character in
++ * that prompt, including ones that break the total on their own, and rejects
++ * a selection over the total; before this, the bot picked the strongest
++ * candidate regardless and lost the game to an illegal command.
++ */
++import { describe, expect, test } from "vite-plus/test";
++import { eb01Doma005, op15PiratesDockingSix088, op17Loki119 } from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../testing/test-engine.ts";
++import { heuristicPromptResolver } from "./heuristic-strategy.ts";
++
++function lokiPrompt(northCharacters: (typeof eb01Doma005)[]) {
++  const engine = OnePieceTestEngine.create(
++    { hand: [op17Loki119], activeDon: op17Loki119.cost },
++    { character: northCharacters, activeDon: 3 },
++  );
++  engine.playCard(op17Loki119, "south");
++  const prompt = engine
++    .getState()
++    .promptQueue.find(
++      (candidate) =>
++        candidate.status === "pending" &&
++        candidate.resolutionContext?.intent === "effectTargetSelection",
++    );
++  if (!prompt) throw new Error("Expected Loki's K.O. choice.");
++  return { engine, prompt };
++}
++
++describe("heuristic resolver: upper-bound total constraints", () => {
++  test("skips a stronger Character that alone breaks the total cost of 4", () => {
++    const { engine, prompt } = lokiPrompt([op15PiratesDockingSix088, eb01Doma005]);
++    const dockingSixId = engine.findCardInZone("north", "character", op15PiratesDockingSix088);
++    const domaId = engine.findCardInZone("north", "character", eb01Doma005);
++    // Docking Six is cost 11 on the field, yet the prompt still offers it.
++    expect(prompt.options.map((option) => option.id)).toContain(dockingSixId);
++
++    const command = heuristicPromptResolver(engine.getState(), prompt);
++
++    expect(command).toMatchObject({ type: "resolvePrompt", selectedIds: [domaId] });
++    expect(engine.exec(command!).accepted).toBe(true);
++    const north = engine.getView("north").players.north;
++    expect(north.trash.map((card) => card.instanceId)).toEqual([domaId]);
++    expect(north.characters.map((card) => card?.instanceId)).toContain(dockingSixId);
++  });
++
++  test("selects nothing when no Character fits the total", () => {
++    const { engine, prompt } = lokiPrompt([op15PiratesDockingSix088]);
++
++    const command = heuristicPromptResolver(engine.getState(), prompt);
++
++    expect(command).toMatchObject({ type: "resolvePrompt", selectedIds: [] });
++    expect(engine.exec(command!).accepted).toBe(true);
++    expect(engine.getView("north").players.north.trash).toEqual([]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/characters/088-pirates-docking-six.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/characters/088-pirates-docking-six.test.ts
+index 66d93e8..e4c376f 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/characters/088-pirates-docking-six.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/characters/088-pirates-docking-six.test.ts
+@@ -32,15 +32,21 @@ describe("OP15-088 Pirates Docking Six", () => {
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
+-  test("costs 11 with the +6 cost modifier", () => {
++  // This test used to require 11 DON!!, applying the +6 in hand. Rule 2-8-2
++  // limits Character text to the Character area, and the OP17 FAQ rules the
++  // identical "This Character gains +12 cost." wording applies only on the
++  // field. So it is played for its printed 5 and is cost 11 once on the field.
++  test("is played for its printed cost 5; the +6 cost applies on the field", () => {
+     const engine = OnePieceTestEngine.create(
+-      { hand: [op15PiratesDockingSix088], activeDon: 11 },
++      { hand: [op15PiratesDockingSix088], activeDon: 5 },
+       {},
+     );
+ 
+     engine.playCard("OP15-088");
+ 
+-    expect(engine.getView("south").players.south.activeDon).toBe(0);
++    const south = engine.getView("south").players.south;
++    expect(south.activeDon).toBe(0);
++    expect(south.characters.find((card) => card?.cardId === "OP15-088")?.cost).toBe(11);
+   });
+ 
+   test("[On Play] may be declined", () => {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/082-kin-emon.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/082-kin-emon.test.ts
+index f9f9460..d11a4e7 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/082-kin-emon.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/082-kin-emon.test.ts
+@@ -2,17 +2,24 @@ import { describe, expect, test } from "vite-plus/test";
+ 
+ import { OnePieceTestEngine } from "../../../index.ts";
+ 
++// These tests used to apply the +3 in hand (play cost 7). "This Character
++// gains +3 cost." is Character text, which rule 2-8-2 limits to the Character
++// area; the OP17 FAQ rules the same way on the identical "+12 cost" wording.
++// So Kin'emon is played for its printed 4 and is cost 7 on the field.
+ describe("OP16-082 Kin'emon", () => {
+-  test("+3 cost is added to its printed cost", () => {
+-    const engine = OnePieceTestEngine.create({ hand: ["OP16-082"], activeDon: 7 }, {});
++  test("is played for its printed cost 4; the +3 cost applies on the field", () => {
++    const engine = OnePieceTestEngine.create({ hand: ["OP16-082"], activeDon: 4 }, {});
++    expect(engine.getView("south").players.south.hand[0]?.cost).toBe(4);
+ 
+     engine.playCard("OP16-082");
+ 
+-    expect(engine.getView("south").players.south.activeDon).toBe(0);
++    const south = engine.getView("south").players.south;
++    expect(south.activeDon).toBe(0);
++    expect(south.characters.find((card) => card?.cardId === "OP16-082")?.cost).toBe(7);
+   });
+ 
+-  test("cannot be played with fewer than 7 DON!!", () => {
+-    const engine = OnePieceTestEngine.create({ hand: ["OP16-082"], activeDon: 6 }, {});
++  test("cannot be played with fewer than 4 DON!!", () => {
++    const engine = OnePieceTestEngine.create({ hand: ["OP16-082"], activeDon: 3 }, {});
+ 
+     expect(() => engine.playCard("OP16-082")).toThrow();
+   });
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts
+index c4d67ca..484ad67 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts
+@@ -56,6 +56,9 @@ import {
+   findKoReplacement,
+   findRemoveFromFieldReplacement,
+   findRestReplacement,
++  koReplacementCovers,
++  markReplacementUsed,
++  removeFromFieldReplacementCovers,
+   restActionCandidateIds,
+ } from "./replacements.ts";
+ import type { TargetFilter } from "@tcg/op-types";
+@@ -333,8 +336,15 @@ export function promptForEffectRemovalReplacement(
+   remainingTargetIds: string[],
+   returnToDeckContinuation?: ReturnToDeckContinuation,
+   returnCharacterCostContinuation?: EffectBlockContinuation,
++  declinedReplacementKeys?: string[],
+ ): boolean {
+-  const replacement = findRemoveFromFieldReplacement(state, targetId, controller, sourceInstanceId);
++  const replacement = findRemoveFromFieldReplacement(
++    state,
++    targetId,
++    controller,
++    sourceInstanceId,
++    declinedReplacementKeys,
++  );
+   if (!replacement) {
+     return false;
+   }
+@@ -342,8 +352,31 @@ export function promptForEffectRemovalReplacement(
+   if (replacementEvent !== "removeFromField" && replacementEvent !== "leaveField") {
+     return false;
+   }
++  // 8-1-3-4-4: one application of a replacement effect replaces the whole
++  // removal processing, so the other cards this same effect removes at the
++  // same time that the same replacement would also cover are saved together
++  // with one payment (OP15 FAQ on OP15-090 Perona and OP17 FAQ on OP17-095
++  // Roronoa Zoro: two Characters removed at once, one payment keeps both).
++  // This mirrors the grouping the effect K.O. path does. The test asks
++  // whether this replacement covers each other target, not which replacement
++  // is found first for it (another copy of the same card may be).
++  const replacementTargetIds = [
++    targetId,
++    ...remainingTargetIds.filter((remainingTargetId) =>
++      removeFromFieldReplacementCovers(
++        state,
++        replacement,
++        remainingTargetId,
++        controller,
++        sourceInstanceId,
++      ),
++    ),
++  ];
+   if (replacement.effect.mandatory) {
+-    if (remainingTargetIds.length > 0) {
++    const unreplacedTargetIds = remainingTargetIds.filter(
++      (remainingTargetId) => !replacementTargetIds.includes(remainingTargetId),
++    );
++    if (unreplacedTargetIds.length > 0) {
+       enqueueResolution(
+         state,
+         {
+@@ -351,8 +384,9 @@ export function promptForEffectRemovalReplacement(
+           sourceInstanceId,
+           controller,
+           action,
+-          selectedTargetIds: remainingTargetIds,
++          selectedTargetIds: unreplacedTargetIds,
+           returnToDeckContinuation,
++          ...declinedReplacementKeysField(declinedReplacementKeys),
+         },
+         { next: true },
+       );
+@@ -370,7 +404,7 @@ export function promptForEffectRemovalReplacement(
+         { next: true },
+       );
+     }
+-    getInstance(state, replacement.sourceInstanceId).usedEffectKeys.push(replacement.effectKey);
++    markReplacementUsed(state, replacement.sourceInstanceId, replacement.effectKey);
+     enqueueResolution(
+       state,
+       {
+@@ -378,7 +412,7 @@ export function promptForEffectRemovalReplacement(
+         sourceInstanceId: replacement.sourceInstanceId,
+         controller: replacement.controller,
+         action: replacement.effect.replacementAction,
+-        previousActionTargetIds: [targetId],
++        previousActionTargetIds: replacementTargetIds,
+       },
+       { next: true },
+     );
+@@ -411,9 +445,154 @@ export function promptForEffectRemovalReplacement(
+       removalSourceInstanceId: sourceInstanceId,
+       removalController: controller,
+       removalAction: action,
++      replacementTargetIds,
+       remainingTargetIds,
+       returnToDeckContinuation,
+       returnCharacterCostContinuation,
++      ...declinedReplacementKeysField(declinedReplacementKeys),
++    },
++  });
++  return true;
++}
++
++/**
++ * Spread into a resolution item or prompt context: keeps the field absent
++ * (not an empty array) when nothing was declined, so states without declines
++ * keep their exact shape.
++ */
++export function declinedReplacementKeysField(declinedReplacementKeys?: string[]) {
++  return declinedReplacementKeys && declinedReplacementKeys.length > 0
++    ? { declinedReplacementKeys }
++    : {};
++}
++
++/** Re-enqueues an effect K.O. for the targets still to be processed. */
++export function enqueueRemainingEffectKo(
++  state: MatchState,
++  sourceInstanceId: string,
++  controller: MatchSeat,
++  targetIds: string[],
++  declinedReplacementKeys?: string[],
++) {
++  enqueueResolution(
++    state,
++    {
++      kind: "effectAction",
++      sourceInstanceId,
++      controller,
++      action: {
++        action: "ko",
++        target: {
++          player: "both",
++          zones: ["character"],
++          count: { amount: "all" },
++        },
++        previousActionTargets: true,
++      },
++      previousActionTargetIds: targetIds,
++      ...declinedReplacementKeysField(declinedReplacementKeys),
++    },
++    { next: true },
++  );
++}
++
++/**
++ * Offers (or, when mandatory, applies) a replacement for the effect K.O. of
++ * targetId. remainingTargetIds are the other cards the same effect K.O.s at
++ * the same time; those this replacement also covers are saved with it
++ * (8-1-3-4-4). Returns true when a replacement took over the processing.
++ */
++export function promptForEffectKoReplacement(
++  state: MatchState,
++  targetId: string,
++  controller: MatchSeat,
++  sourceInstanceId: string,
++  remainingTargetIds: string[],
++  declinedReplacementKeys?: string[],
++): boolean {
++  const replacement = findKoReplacement(
++    state,
++    targetId,
++    controller,
++    "effect",
++    sourceInstanceId,
++    declinedReplacementKeys,
++  );
++  if (!replacement) {
++    return false;
++  }
++  // Ask whether this replacement covers each other target, not which
++  // replacement is found first for it: with two OP17-095 Roronoa Zoro, each
++  // targeted Zoro finds its own copy first, yet either copy covers both.
++  const replacementTargetIds = [
++    targetId,
++    ...remainingTargetIds.filter((remainingTargetId) =>
++      koReplacementCovers(
++        state,
++        replacement,
++        remainingTargetId,
++        controller,
++        "effect",
++        sourceInstanceId,
++      ),
++    ),
++  ];
++  if (replacement.effect.mandatory) {
++    markReplacementUsed(state, replacement.sourceInstanceId, replacement.effectKey);
++    const unreplacedTargetIds = remainingTargetIds.filter(
++      (remainingTargetId) => !replacementTargetIds.includes(remainingTargetId),
++    );
++    if (unreplacedTargetIds.length > 0) {
++      enqueueRemainingEffectKo(
++        state,
++        sourceInstanceId,
++        controller,
++        unreplacedTargetIds,
++        declinedReplacementKeys,
++      );
++    }
++    enqueueResolution(
++      state,
++      {
++        kind: "effectAction",
++        sourceInstanceId: replacement.sourceInstanceId,
++        controller: replacement.controller,
++        action: replacement.effect.replacementAction,
++        previousActionTargetIds: replacementTargetIds,
++      },
++      { next: true },
++    );
++    return true;
++  }
++  createChoicePrompt(state, {
++    choiceKind: "confirm",
++    seat: replacement.controller,
++    label: `${effectSourceName(state, replacement.sourceInstanceId)} may replace the K.O.`,
++    details: "Apply the replacement effect instead of allowing the K.O.?",
++    sourceCardId: getInstance(state, replacement.sourceInstanceId).cardId,
++    sourceInstanceId: replacement.sourceInstanceId,
++    eventId: null,
++    options: [
++      { id: "no", label: "Allow K.O.", value: "no" },
++      { id: "yes", label: "Apply replacement", value: "yes" },
++    ],
++    minSelections: 1,
++    maxSelections: 1,
++    context: { action: "ko", replacement: true },
++    resolutionContext: {
++      intent: "effectKoReplacement",
++      targetId,
++      controller: replacement.controller,
++      replacementSourceInstanceId: replacement.sourceInstanceId,
++      replacementEffectIndex: replacement.replacementEffectIndex,
++      replacementEvent: replacement.effect.replacedEvent as "ko" | "removeFromField",
++      replacementEffectKey: replacement.effectKey,
++      replacementAction: replacement.effect.replacementAction,
++      koSourceInstanceId: sourceInstanceId,
++      koController: controller,
++      replacementTargetIds,
++      remainingTargetIds,
++      ...declinedReplacementKeysField(declinedReplacementKeys),
+     },
+   });
+   return true;
+@@ -1950,6 +2129,7 @@ export function processEffectAction(
+   skipRemovalReplacementIds?: string[],
+   returnToDeckContinuation?: ReturnToDeckContinuation,
+   setPowerFromSourceIds?: string[],
++  declinedReplacementKeys?: string[],
+ ): boolean {
+   switch (action.action) {
+     case "sequence":
+@@ -2920,101 +3100,16 @@ export function processEffectAction(
+           );
+           continue;
+         }
+-        const replacement = findKoReplacement(
+-          state,
+-          targetId,
+-          controller,
+-          "effect",
+-          sourceInstanceId,
+-        );
+-        if (replacement) {
+-          const remainingTargetIds = targetIds.slice(targetIndex + 1);
+-          const replacementTargetIds = [
++        if (
++          promptForEffectKoReplacement(
++            state,
+             targetId,
+-            ...remainingTargetIds.filter((remainingTargetId) => {
+-              const remainingReplacement = findKoReplacement(
+-                state,
+-                remainingTargetId,
+-                controller,
+-                "effect",
+-                sourceInstanceId,
+-              );
+-              return (
+-                remainingReplacement?.sourceInstanceId === replacement.sourceInstanceId &&
+-                remainingReplacement.replacementEffectIndex === replacement.replacementEffectIndex
+-              );
+-            }),
+-          ];
+-          if (replacement.effect.mandatory) {
+-            getInstance(state, replacement.sourceInstanceId).usedEffectKeys.push(
+-              replacement.effectKey,
+-            );
+-            if (remainingTargetIds.length > 0) {
+-              enqueueResolution(
+-                state,
+-                {
+-                  kind: "effectAction",
+-                  sourceInstanceId,
+-                  controller,
+-                  action: {
+-                    action: "ko",
+-                    target: {
+-                      player: "both",
+-                      zones: ["character"],
+-                      count: { amount: "all" },
+-                    },
+-                    previousActionTargets: true,
+-                  },
+-                  previousActionTargetIds: remainingTargetIds.filter(
+-                    (remainingTargetId) => !replacementTargetIds.includes(remainingTargetId),
+-                  ),
+-                },
+-                { next: true },
+-              );
+-            }
+-            enqueueResolution(
+-              state,
+-              {
+-                kind: "effectAction",
+-                sourceInstanceId: replacement.sourceInstanceId,
+-                controller: replacement.controller,
+-                action: replacement.effect.replacementAction,
+-                previousActionTargetIds: replacementTargetIds,
+-              },
+-              { next: true },
+-            );
+-            return false;
+-          }
+-          createChoicePrompt(state, {
+-            choiceKind: "confirm",
+-            seat: replacement.controller,
+-            label: `${effectSourceName(state, replacement.sourceInstanceId)} may replace the K.O.`,
+-            details: "Apply the replacement effect instead of allowing the K.O.?",
+-            sourceCardId: getInstance(state, replacement.sourceInstanceId).cardId,
+-            sourceInstanceId: replacement.sourceInstanceId,
+-            eventId: null,
+-            options: [
+-              { id: "no", label: "Allow K.O.", value: "no" },
+-              { id: "yes", label: "Apply replacement", value: "yes" },
+-            ],
+-            minSelections: 1,
+-            maxSelections: 1,
+-            context: { action: "ko", replacement: true },
+-            resolutionContext: {
+-              intent: "effectKoReplacement",
+-              targetId,
+-              controller: replacement.controller,
+-              replacementSourceInstanceId: replacement.sourceInstanceId,
+-              replacementEffectIndex: replacement.replacementEffectIndex,
+-              replacementEvent: replacement.effect.replacedEvent as "ko" | "removeFromField",
+-              replacementEffectKey: replacement.effectKey,
+-              replacementAction: replacement.effect.replacementAction,
+-              koSourceInstanceId: sourceInstanceId,
+-              koController: controller,
+-              replacementTargetIds,
+-              remainingTargetIds,
+-            },
+-          });
++            controller,
++            sourceInstanceId,
++            targetIds.slice(targetIndex + 1),
++            declinedReplacementKeys,
++          )
++        ) {
+           return false;
+         }
+         koCharacterByEffect(state, targetId, controller, sourceInstanceId);
+@@ -3316,6 +3411,9 @@ export function processEffectAction(
+             sourceInstanceId,
+             action,
+             targetIds.slice(targetIndex + 1),
++            undefined,
++            undefined,
++            declinedReplacementKeys,
+           )
+         ) {
+           return false;
+@@ -3470,6 +3568,9 @@ export function processEffectAction(
+               sourceInstanceId,
+               action,
+               targetIds.slice(targetIndex + 1),
++              undefined,
++              undefined,
++              declinedReplacementKeys,
+             )
+           ) {
+             return false;
+@@ -3500,6 +3601,8 @@ export function processEffectAction(
+             action,
+             targetIds.slice(targetIndex + 1),
+             returnToDeckContinuation,
++            undefined,
++            declinedReplacementKeys,
+           )
+         ) {
+           return false;
+@@ -4240,6 +4343,9 @@ export function processEffectAction(
+             sourceInstanceId,
+             action,
+             targetIds.slice(targetIndex + 1),
++            undefined,
++            undefined,
++            declinedReplacementKeys,
+           )
+         ) {
+           return false;
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/replacements.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/replacements.ts
+index d49aef9..6402a33 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/replacements.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/replacements.ts
+@@ -26,6 +26,48 @@ export function replacementEffectKey(effect: ReplacementEffect, replacementEffec
+     : `replacement:${effect.replacedEvent}:${replacementEffectIndex}`;
+ }
+ 
++/** One replacement effect of one card instance. */
++export interface ReplacementRef {
++  sourceInstanceId: string;
++  replacementEffectIndex: number;
++}
++
++/**
++ * Identifies one replacement effect of one card instance within a single
++ * removal. Two copies of the same card give different keys: each copy's
++ * replacement is a separate replacement effect (8-1-3-4-2).
++ */
++export function replacementInstanceKey(replacement: ReplacementRef): string {
++  return `${replacement.sourceInstanceId}#${replacement.replacementEffectIndex}`;
++}
++
++/**
++ * Records that a replacement was applied, for [Once Per Turn]. The check is a
++ * membership test, so one entry per key is enough; unlimited replacements
++ * (e.g. OP17-095 Roronoa Zoro) would otherwise grow the list on every use.
++ */
++export function markReplacementUsed(
++  state: MatchState,
++  sourceInstanceId: string,
++  effectKey: string,
++) {
++  const usedEffectKeys = getInstance(state, sourceInstanceId).usedEffectKeys;
++  if (!usedEffectKeys.includes(effectKey)) {
++    usedEffectKeys.push(effectKey);
++  }
++}
++
++interface RemovalReplacementScope {
++  /** Only this replacement is considered (does it also cover the target?). */
++  only?: ReplacementRef;
++  /**
++   * replacementInstanceKey()s the affected player already declined for this
++   * same removal. 8-1-3-4-1: a declined replacement is not applied, so it is
++   * not offered again for another card the same effect removes at once.
++   */
++  declinedReplacementKeys?: readonly string[];
++}
++
+ export function restActionCandidateIds(
+   state: MatchState,
+   controller: MatchSeat,
+@@ -155,8 +197,18 @@ function findRemovalReplacement(
+   koCause: "battle" | "effect",
+   replacedEvents: ReadonlySet<ReplacementEffect["replacedEvent"]>,
+   effectSourceInstanceId?: string,
++  scope: RemovalReplacementScope = {},
+ ): KoReplacementCandidate | null {
+   const target = getInstance(state, targetId);
++  // K.O., rest and leave/removed-from-the-field events only happen to cards on
++  // the field. The shared removal actions also move cards between other zones
++  // (e.g. trash cards placed at the bottom of the deck to pay OP17-095's
++  // replacement); such a card does not leave the field, so a self-referencing
++  // "if this Character would leave the field" replacement printed on it (rule
++  // 2-8-2: Character text only works in the Character area) must not apply.
++  if (target.zone !== "character" && target.zone !== "stage" && target.zone !== "leader") {
++    return null;
++  }
+   const targetController = target.controller;
+   const player = getPlayer(state, targetController);
+   const sourceIds = [
+@@ -169,12 +221,23 @@ function findRemovalReplacement(
+   ];
+ 
+   for (const sourceInstanceId of sourceIds) {
+-    if (effectsAreNegated(state, sourceInstanceId)) {
++    if (
++      (scope.only && scope.only.sourceInstanceId !== sourceInstanceId) ||
++      effectsAreNegated(state, sourceInstanceId)
++    ) {
+       continue;
+     }
+     const source = getInstance(state, sourceInstanceId);
+     const effects = getCardForInstance(state, sourceInstanceId).effects?.replacementEffects ?? [];
+     for (const [replacementEffectIndex, effect] of effects.entries()) {
++      if (
++        (scope.only && scope.only.replacementEffectIndex !== replacementEffectIndex) ||
++        scope.declinedReplacementKeys?.includes(
++          replacementInstanceKey({ sourceInstanceId, replacementEffectIndex }),
++        )
++      ) {
++        continue;
++      }
+       const effectKey = replacementEffectKey(effect, replacementEffectIndex);
+       if (
+         !replacedEvents.has(effect.replacedEvent) ||
+@@ -265,20 +328,62 @@ function findRemovalReplacement(
+   return null;
+ }
+ 
++function koReplacedEvents(koCause: "battle" | "effect") {
++  return new Set<ReplacementEffect["replacedEvent"]>(
++    koCause === "effect" ? ["ko", "removeFromField", "leaveField"] : ["ko", "leaveField"],
++  );
++}
++
++const REMOVE_FROM_FIELD_EVENTS = new Set<ReplacementEffect["replacedEvent"]>([
++  "removeFromField",
++  "leaveField",
++]);
++
+ export function findKoReplacement(
+   state: MatchState,
+   targetId: string,
+   effectController: MatchSeat,
+   koCause: "battle" | "effect",
+   effectSourceInstanceId?: string,
++  declinedReplacementKeys?: readonly string[],
+ ): KoReplacementCandidate | null {
+   return findRemovalReplacement(
+     state,
+     targetId,
+     effectController,
+     koCause,
+-    new Set(koCause === "effect" ? ["ko", "removeFromField", "leaveField"] : ["ko", "leaveField"]),
++    koReplacedEvents(koCause),
+     effectSourceInstanceId,
++    { declinedReplacementKeys },
++  );
++}
++
++/**
++ * Whether this specific replacement would also replace the K.O. of targetId.
++ * Used to group the cards one effect K.O.s at the same time: one application
++ * of a replacement replaces the whole K.O. processing it covers (8-1-3-4-4).
++ * It must ask about the chosen replacement itself, not about the first
++ * replacement found for targetId, which may be another copy's (e.g. a
++ * targeted OP17-095 Roronoa Zoro finds its own replacement first).
++ */
++export function koReplacementCovers(
++  state: MatchState,
++  replacement: ReplacementRef,
++  targetId: string,
++  effectController: MatchSeat,
++  koCause: "battle" | "effect",
++  effectSourceInstanceId?: string,
++): boolean {
++  return (
++    findRemovalReplacement(
++      state,
++      targetId,
++      effectController,
++      koCause,
++      koReplacedEvents(koCause),
++      effectSourceInstanceId,
++      { only: replacement },
++    ) !== null
+   );
+ }
+ 
+@@ -287,14 +392,37 @@ export function findRemoveFromFieldReplacement(
+   targetId: string,
+   effectController: MatchSeat,
+   effectSourceInstanceId: string,
++  declinedReplacementKeys?: readonly string[],
+ ): KoReplacementCandidate | null {
+   return findRemovalReplacement(
+     state,
+     targetId,
+     effectController,
+     "effect",
+-    new Set(["removeFromField", "leaveField"]),
++    REMOVE_FROM_FIELD_EVENTS,
+     effectSourceInstanceId,
++    { declinedReplacementKeys },
++  );
++}
++
++/** koReplacementCovers() for the non-K.O. removal path (8-1-3-4-4). */
++export function removeFromFieldReplacementCovers(
++  state: MatchState,
++  replacement: ReplacementRef,
++  targetId: string,
++  effectController: MatchSeat,
++  effectSourceInstanceId: string,
++): boolean {
++  return (
++    findRemovalReplacement(
++      state,
++      targetId,
++      effectController,
++      "effect",
++      REMOVE_FROM_FIELD_EVENTS,
++      effectSourceInstanceId,
++      { only: replacement },
++    ) !== null
+   );
+ }
+ 
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
+index 2dfda86..0c23d8b 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
+@@ -55,7 +55,10 @@ import {
+   koCharacterByEffect,
+   playCardFromEffect,
+   playCardsFromEffectSequence,
++  declinedReplacementKeysField,
++  enqueueRemainingEffectKo,
+   promptForEffectCharacterReplacement,
++  promptForEffectKoReplacement,
+   promptForEffectRemovalReplacement,
+   promptForRearrangeDeckOrder,
+   processEffectAction,
+@@ -70,6 +73,7 @@ import {
+ } from "./actions.ts";
+ import { evaluateConditions } from "./conditions.ts";
+ import { isCardPlayRestricted } from "./permanent.ts";
++import { markReplacementUsed, replacementInstanceKey } from "./replacements.ts";
+ import {
+   candidatePoolForTarget,
+   matchesTargetFilter,
+@@ -1484,6 +1488,7 @@ export function processQueuedEffectAction(
+     item.skipRemovalReplacementIds,
+     item.returnToDeckContinuation,
+     item.setPowerFromSourceIds,
++    item.declinedReplacementKeys,
+   );
+   if (!completed) {
+     return;
+@@ -1978,31 +1983,21 @@ export function resolveEffectChoicePrompt(
+         return false;
+       }
+       if (command.optionId === "yes") {
+-        getInstance(state, context.replacementSourceInstanceId).usedEffectKeys.push(
++        markReplacementUsed(
++          state,
++          context.replacementSourceInstanceId,
+           context.replacementEffectKey,
+         );
+         const remainingTargetIds = context.remainingTargetIds.filter(
+           (targetId) => !context.replacementTargetIds.includes(targetId),
+         );
+         if (remainingTargetIds.length > 0) {
+-          enqueueResolution(
++          enqueueRemainingEffectKo(
+             state,
+-            {
+-              kind: "effectAction",
+-              sourceInstanceId: context.koSourceInstanceId,
+-              controller: context.koController,
+-              action: {
+-                action: "ko",
+-                target: {
+-                  player: "both",
+-                  zones: ["character"],
+-                  count: { amount: "all" },
+-                },
+-                previousActionTargets: true,
+-              },
+-              previousActionTargetIds: remainingTargetIds,
+-            },
+-            { next: true },
++            context.koSourceInstanceId,
++            context.koController,
++            remainingTargetIds,
++            context.declinedReplacementKeys,
+           );
+         }
+         enqueueResolution(
+@@ -2017,6 +2012,30 @@ export function resolveEffectChoicePrompt(
+           { next: true },
+         );
+       } else {
++        // 8-1-3-4-1: a declined replacement is not applied to this K.O. at
++        // all, so it is not offered again for the other Characters the same
++        // effect K.O.s at once (OP15 FAQ Leo, OP17 FAQ Zoro: keep both or let
++        // both go). 8-1-3-4-2: another applicable replacement (e.g. a second
++        // copy) may still be applied, and it covers the same group.
++        const declinedReplacementKeys = [
++          ...(context.declinedReplacementKeys ?? []),
++          replacementInstanceKey({
++            sourceInstanceId: context.replacementSourceInstanceId,
++            replacementEffectIndex: context.replacementEffectIndex,
++          }),
++        ];
++        if (
++          promptForEffectKoReplacement(
++            state,
++            context.targetId,
++            context.koController,
++            context.koSourceInstanceId,
++            context.remainingTargetIds,
++            declinedReplacementKeys,
++          )
++        ) {
++          return true;
++        }
+         koCharacterByEffect(
+           state,
+           context.targetId,
+@@ -2024,24 +2043,12 @@ export function resolveEffectChoicePrompt(
+           context.koSourceInstanceId,
+         );
+         if (context.remainingTargetIds.length > 0) {
+-          enqueueResolution(
++          enqueueRemainingEffectKo(
+             state,
+-            {
+-              kind: "effectAction",
+-              sourceInstanceId: context.koSourceInstanceId,
+-              controller: context.koController,
+-              action: {
+-                action: "ko",
+-                target: {
+-                  player: "both",
+-                  zones: ["character"],
+-                  count: { amount: "all" },
+-                },
+-                previousActionTargets: true,
+-              },
+-              previousActionTargetIds: context.remainingTargetIds,
+-            },
+-            { next: true },
++            context.koSourceInstanceId,
++            context.koController,
++            context.remainingTargetIds,
++            declinedReplacementKeys,
+           );
+         }
+       }
+@@ -2095,7 +2102,45 @@ export function resolveEffectChoicePrompt(
+       if (command.optionId !== "yes" && command.optionId !== "no") {
+         return false;
+       }
+-      if (context.remainingTargetIds.length > 0) {
++      // 8-1-3-4-1 / 8-1-3-4-2: as for an effect K.O. above, a declined
++      // replacement is not offered again within this removal, and another
++      // applicable one may still be offered for the same target.
++      const declinedReplacementKeys =
++        command.optionId === "no"
++          ? [
++              ...(context.declinedReplacementKeys ?? []),
++              replacementInstanceKey({
++                sourceInstanceId: context.replacementSourceInstanceId,
++                replacementEffectIndex: context.replacementEffectIndex,
++              }),
++            ]
++          : context.declinedReplacementKeys;
++      if (
++        command.optionId === "no" &&
++        promptForEffectRemovalReplacement(
++          state,
++          context.targetId,
++          context.removalController,
++          context.removalSourceInstanceId,
++          context.removalAction,
++          context.remainingTargetIds,
++          context.returnToDeckContinuation,
++          context.returnCharacterCostContinuation,
++          declinedReplacementKeys,
++        )
++      ) {
++        return true;
++      }
++      // 8-1-3-4-4: an applied replacement also saves the other targets it
++      // covers in this same removal, so only the rest are removed afterwards.
++      const replacementTargetIds = context.replacementTargetIds ?? [context.targetId];
++      const remainingTargetIds =
++        command.optionId === "yes"
++          ? context.remainingTargetIds.filter(
++              (targetId) => !replacementTargetIds.includes(targetId),
++            )
++          : context.remainingTargetIds;
++      if (remainingTargetIds.length > 0) {
+         enqueueResolution(
+           state,
+           {
+@@ -2103,8 +2148,9 @@ export function resolveEffectChoicePrompt(
+             sourceInstanceId: context.removalSourceInstanceId,
+             controller: context.removalController,
+             action: context.removalAction,
+-            selectedTargetIds: context.remainingTargetIds,
++            selectedTargetIds: remainingTargetIds,
+             returnToDeckContinuation: context.returnToDeckContinuation,
++            ...declinedReplacementKeysField(declinedReplacementKeys),
+           },
+           { next: true },
+         );
+@@ -2133,7 +2179,9 @@ export function resolveEffectChoicePrompt(
+         );
+       }
+       if (command.optionId === "yes") {
+-        getInstance(state, context.replacementSourceInstanceId).usedEffectKeys.push(
++        markReplacementUsed(
++          state,
++          context.replacementSourceInstanceId,
+           context.replacementEffectKey,
+         );
+         enqueueResolution(
+@@ -2143,7 +2191,7 @@ export function resolveEffectChoicePrompt(
+             sourceInstanceId: context.replacementSourceInstanceId,
+             controller: context.controller,
+             action: context.replacementAction,
+-            previousActionTargetIds: [context.targetId],
++            previousActionTargetIds: replacementTargetIds,
+           },
+           { next: true },
+         );
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/types.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/types.ts
+index 8918fac..958eed2 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/types.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/types.ts
+@@ -349,6 +349,11 @@ export type PromptResolutionContext =
+       koController: MatchSeat;
+       replacementTargetIds: string[];
+       remainingTargetIds: string[];
++      /**
++       * Replacements (sourceInstanceId#index) the affected player declined
++       * earlier in this same removal; they are not offered again (8-1-3-4-1).
++       */
++      declinedReplacementKeys?: string[];
+     }
+   | {
+       intent: "effectRestReplacement";
+@@ -378,9 +383,20 @@ export type PromptResolutionContext =
+         Action,
+         { action: "returnToHand" | "returnToDeck" | "trashFromField" }
+       >;
++      /**
++       * targetId plus the remaining targets that the same replacement also
++       * saves when applied (8-1-3-4-4). Absent in states saved before this
++       * field existed, which means just [targetId].
++       */
++      replacementTargetIds?: string[];
+       remainingTargetIds: string[];
+       returnToDeckContinuation?: ReturnToDeckContinuation;
+       returnCharacterCostContinuation?: EffectBlockContinuation;
++      /**
++       * Replacements (sourceInstanceId#index) the affected player declined
++       * earlier in this same removal; they are not offered again (8-1-3-4-1).
++       */
++      declinedReplacementKeys?: string[];
+     }
+   | {
+       intent: "effectGuessTopDeckCost";
+@@ -1060,6 +1076,12 @@ export type ResolutionItem =
+       skipRemovalReplacementIds?: string[];
+       returnToDeckContinuation?: ReturnToDeckContinuation;
+       setPowerFromSourceIds?: string[];
++      /**
++       * Replacements (sourceInstanceId#index) the affected player declined
++       * earlier in the removal this item continues; they are not offered
++       * again for its remaining targets (8-1-3-4-1).
++       */
++      declinedReplacementKeys?: string[];
+     }
+   | {
+       id: string;
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op15-088-pirates-docking-six.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op15-088-pirates-docking-six.test.ts
+new file mode 100644
+index 0000000..280ed17
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op15-088-pirates-docking-six.test.ts
+@@ -0,0 +1,198 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  op15PiratesDockingSix088,
++  op17Gerd081,
++  op17MonkeyDLuffy079,
++  op17MonkeyDLuffy093,
++  op17RoronoaZoro095,
++  prb02ThousandSunnyPirateFoil017,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// "This Character gains +6 cost." is Character text: by rule 2-8-2 it only
++// works in the Character area. The OP17 FAQ answers the identical "+12 cost"
++// wording (Dorry, Saul, Brook, Brogy): the card does not gain the cost in
++// hand, trash or deck. So Docking Six is played for its printed 5 and is a
++// cost-11 Character on the field (cost 12 with Thousand Sunny ST14-017, which
++// the OP17-079 Luffy Leader turns into a [Blocker]).
++
++function cardCost(engine: OnePieceTestEngine, instanceId: string) {
++  const south = engine.getView("south").players.south;
++  return [...south.hand, ...south.trash, ...south.characters].find(
++    (card) => card?.instanceId === instanceId,
++  )?.cost;
++}
++
++describe("OP15-088 Pirates Docking Six", () => {
++  test("costs its printed 5 in hand, is played with 5 DON!!, and costs 11 on the field", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op17MonkeyDLuffy079,
++        hand: [op15PiratesDockingSix088],
++        activeDon: 5,
++        deck: 10,
++      },
++      {},
++    );
++    const dockingId = engine.findCardInZone("south", "hand", op15PiratesDockingSix088);
++    expect(cardCost(engine, dockingId)).toBe(5);
++
++    engine.playCard(op15PiratesDockingSix088, "south");
++    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
++
++    const south = engine.getView("south").players.south;
++    expect(south).toMatchObject({ activeDon: 0, restedDon: 5 });
++    expect(south.characters.map((card) => card?.instanceId)).toContain(dockingId);
++    expect(cardCost(engine, dockingId)).toBe(11);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("cannot be played with 4 DON!!", () => {
++    const engine = OnePieceTestEngine.create(
++      { leaderCardId: op17MonkeyDLuffy079, hand: [op15PiratesDockingSix088], activeDon: 4 },
++      {},
++    );
++
++    expect(() => engine.playCard(op15PiratesDockingSix088, "south")).toThrow();
++    expect(engine.getView("south").players.south.hand).toHaveLength(1);
++  });
++
++  test("[On Play] still replays a cost-2 Straw Hat Crew Character from the trash", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op17MonkeyDLuffy079,
++        hand: [op15PiratesDockingSix088],
++        trash: [op17RoronoaZoro095],
++        activeDon: 5,
++        deck: 10,
++      },
++      {},
++    );
++    const zoroId = engine.findCardInZone("south", "trash", op17RoronoaZoro095);
++
++    engine.playCard(op15PiratesDockingSix088, "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    const play = engine.pendingDecision("effectPlaySelection", "south").steps[0];
++    if (play?.kind !== "selectEntity") throw new Error("Expected the replay choice.");
++    expect(play.candidates.map((candidate) => candidate.ref.id)).toContain(zoroId);
++    engine.resolveDecision("effectPlaySelection", { selectedIds: [zoroId] }, "south");
++
++    const south = engine.getView("south").players.south;
++    expect(south.characters.map((card) => card?.instanceId)).toContain(zoroId);
++    expect(south.deckCount).toBe(7);
++    expect(south.activeDon).toBe(0);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("with Thousand Sunny it costs 12 on the field and the Luffy Leader gives it [Blocker]", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op17MonkeyDLuffy079,
++        stage: prb02ThousandSunnyPirateFoil017,
++        hand: [op15PiratesDockingSix088],
++        activeDon: 5,
++        deck: 10,
++      },
++      { deck: 10 },
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const dockingId = engine.findCardInZone("south", "hand", op15PiratesDockingSix088);
++    // Thousand Sunny's +1 reaches Characters only, so the hand cost stays 5.
++    expect(cardCost(engine, dockingId)).toBe(5);
++
++    engine.playCard(op15PiratesDockingSix088, "south");
++    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
++    expect(cardCost(engine, dockingId)).toBe(12);
++
++    engine.endTurn("south");
++    engine.declareAttack(engine.leader("north"), engine.leader("south"), "north");
++    const blocker = engine.pendingDecision("battleBlocker", "south").steps[0];
++    if (blocker?.kind !== "selectEntity") throw new Error("Expected a Blocker choice.");
++    expect(blocker.candidates.map((candidate) => candidate.ref.id)).toContain(dockingId);
++  });
++
++  test("without Thousand Sunny it stays at 11 and gains no [Blocker]", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op17MonkeyDLuffy079,
++        character: [op15PiratesDockingSix088],
++        deck: 10,
++      },
++      { deck: 10 },
++      { firstPlayer: "south", activeSeat: "north" },
++    );
++    const dockingId = engine.findCardInZone("south", "character", op15PiratesDockingSix088);
++    expect(cardCost(engine, dockingId)).toBe(11);
++
++    engine.declareAttack(engine.leader("north"), engine.leader("south"), "north");
++    expect(() => engine.pendingDecision("battleBlocker", "south")).toThrow();
++  });
++
++  test("costs 5 in the trash: Gerd's cost-8-or-less retrieval offers it", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op17MonkeyDLuffy079,
++        hand: [op17Gerd081, eb01Doma005],
++        trash: [op15PiratesDockingSix088],
++        activeDon: 10,
++        deck: 10,
++      },
++      {},
++    );
++    const dockingId = engine.findCardInZone("south", "trash", op15PiratesDockingSix088);
++    const domaId = engine.findCardInZone("south", "hand", eb01Doma005);
++    expect(cardCost(engine, dockingId)).toBe(5);
++
++    engine.playCard(op17Gerd081, "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    // Doma is the only card left in hand, so it pays the trash cost directly.
++    expect(engine.getView("south").players.south.trash.map((card) => card.instanceId)).toContain(
++      domaId,
++    );
++    const retrieve = engine.pendingDecision("effectTargetSelection", "south").steps[0];
++    if (retrieve?.kind !== "selectEntity") throw new Error("Expected Gerd's retrieval choice.");
++    expect(
++      retrieve.candidates
++        .filter((candidate) => candidate.legal)
++        .map((candidate) => candidate.ref.id),
++    ).toContain(dockingId);
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [dockingId] }, "south");
++
++    expect(engine.getView("south").players.south.hand.map((card) => card.instanceId)).toEqual([
++      dockingId,
++    ]);
++    expect(cardCost(engine, dockingId)).toBe(5);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("costs 5 in the trash: Luffy OP17-093's cost-2-or-less replay does not offer it", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op17MonkeyDLuffy079,
++        hand: [op17MonkeyDLuffy093],
++        trash: [op15PiratesDockingSix088, op17RoronoaZoro095],
++        activeDon: 10,
++        deck: 10,
++      },
++      {},
++    );
++    const dockingId = engine.findCardInZone("south", "trash", op15PiratesDockingSix088);
++    const zoroId = engine.findCardInZone("south", "trash", op17RoronoaZoro095);
++    expect(cardCost(engine, dockingId)).toBe(5);
++
++    engine.playCard(op17MonkeyDLuffy093, "south");
++    const play = engine.pendingDecision("effectPlaySelection", "south").steps[0];
++    if (play?.kind !== "selectEntity") throw new Error("Expected Luffy's replay choice.");
++    const legalIds = play.candidates
++      .filter((candidate) => candidate.legal !== false)
++      .map((candidate) => candidate.ref.id);
++    expect(legalIds).toContain(zoroId);
++    expect(legalIds).not.toContain(dockingId);
++    expect(() =>
++      engine.resolveDecision("effectPlaySelection", { selectedIds: [dockingId] }, "south"),
++    ).toThrow();
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op16-005-thatch.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op16-005-thatch.test.ts
+new file mode 100644
+index 0000000..1072fb5
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op16-005-thatch.test.ts
+@@ -0,0 +1,59 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  op03ThunderBolt121,
++  op16EdwardNewgate003,
++  op16Thatch005,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// "If you have a Character with 8000 power or more and a type including
++// "Whitebeard Pirates" give this card in your hand -3 cost." The reduction is
++// printed for the card in hand only. On the field Thatch (8000, Whitebeard
++// Pirates) satisfies the condition himself, so applying it there would make
++// him a cost-5 Character; he must keep his printed cost 8.
++
++describe("OP16-005 Thatch", () => {
++  test("is played for 5 under the condition and then costs 8 on the field", () => {
++    const engine = OnePieceTestEngine.create(
++      { character: [op16EdwardNewgate003], hand: [op16Thatch005], activeDon: 5 },
++      {},
++    );
++    const thatchId = engine.findCardInZone("south", "hand", op16Thatch005);
++    expect(engine.getView("south").players.south.hand[0]?.cost).toBe(5);
++
++    engine.playCard(op16Thatch005, "south");
++
++    const south = engine.getView("south").players.south;
++    expect(south).toMatchObject({ activeDon: 0, restedDon: 5 });
++    expect(south.characters.find((card) => card?.instanceId === thatchId)?.cost).toBe(8);
++  });
++
++  test("on the field it is out of reach of an opponent's cost-5-or-less K.O.", () => {
++    const engine = OnePieceTestEngine.create(
++      { character: [op16Thatch005, eb01Doma005] },
++      { hand: [op03ThunderBolt121], life: [eb01Doma005, eb01Doma005], activeDon: 2 },
++      { firstPlayer: "south", activeSeat: "north" },
++    );
++    const thatchId = engine.findCardInZone("south", "character", op16Thatch005);
++    const domaId = engine.findCardInZone("south", "character", eb01Doma005);
++    expect(
++      engine.getView("south").players.south.characters.find((card) => card?.instanceId === thatchId)
++        ?.cost,
++    ).toBe(8);
++
++    engine.playCard(op03ThunderBolt121, "north");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "north");
++    const target = engine.pendingDecision("effectTargetSelection", "north").steps[0];
++    if (target?.kind !== "selectEntity") throw new Error("Expected Thunder Bolt's K.O. target.");
++    const legalIds = target.candidates
++      .filter((candidate) => candidate.legal !== false)
++      .map((candidate) => candidate.ref.id);
++    expect(legalIds).toContain(domaId);
++    expect(legalIds).not.toContain(thatchId);
++    expect(() =>
++      engine.resolveDecision("effectTargetSelection", { selectedIds: [thatchId] }, "north"),
++    ).toThrow();
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op16-015-monkey-d-luffy.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op16-015-monkey-d-luffy.test.ts
+new file mode 100644
+index 0000000..999d87e
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op16-015-monkey-d-luffy.test.ts
+@@ -0,0 +1,54 @@
++import { describe, expect, test } from "vite-plus/test";
++import { eb01Doma005, eb01TBone049, op16MonkeyDLuffy015, op16PortgasDAce001 } from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// "If your Leader's card name includes "Ace" and you have 6 or more DON!!
++// cards on your field, give this card in your hand -2 cost." The reduction is
++// printed for the card in hand only: on the field Luffy keeps his printed 4.
++
++describe("OP16-015 Monkey.D.Luffy", () => {
++  test("is played for 2 under the condition and then costs 4 on the field", () => {
++    const engine = OnePieceTestEngine.create(
++      { leaderCardId: op16PortgasDAce001, hand: [op16MonkeyDLuffy015], activeDon: 6 },
++      {},
++    );
++    const luffyId = engine.findCardInZone("south", "hand", op16MonkeyDLuffy015);
++    expect(engine.getView("south").players.south.hand[0]?.cost).toBe(2);
++
++    engine.playCard(op16MonkeyDLuffy015, "south");
++
++    const south = engine.getView("south").players.south;
++    // Paying 2 rests 2 of the 6 DON!!, so the 6-DON!!-on-field condition
++    // still holds; the cost stays 4 because the card is no longer in hand.
++    expect(south).toMatchObject({ activeDon: 4, restedDon: 2 });
++    expect(south.characters.find((card) => card?.instanceId === luffyId)?.cost).toBe(4);
++  });
++
++  test("on the field under the condition it is out of reach of a cost-2-or-less K.O.", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op16PortgasDAce001,
++        character: [op16MonkeyDLuffy015, eb01Doma005],
++        activeDon: 6,
++      },
++      { hand: [eb01TBone049], activeDon: 5 },
++      { firstPlayer: "south", activeSeat: "north" },
++    );
++    const luffyId = engine.findCardInZone("south", "character", op16MonkeyDLuffy015);
++    const domaId = engine.findCardInZone("south", "character", eb01Doma005);
++    expect(
++      engine.getView("south").players.south.characters.find((card) => card?.instanceId === luffyId)
++        ?.cost,
++    ).toBe(4);
++
++    engine.playCard(eb01TBone049, "north");
++    const target = engine.pendingDecision("effectTargetSelection", "north").steps[0];
++    if (target?.kind !== "selectEntity") throw new Error("Expected T-Bone's K.O. target.");
++    const legalIds = target.candidates
++      .filter((candidate) => candidate.legal !== false)
++      .map((candidate) => candidate.ref.id);
++    expect(legalIds).toContain(domaId);
++    expect(legalIds).not.toContain(luffyId);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-095-roronoa-zoro.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-095-roronoa-zoro.test.ts
+new file mode 100644
+index 0000000..9edfaad
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-095-roronoa-zoro.test.ts
+@@ -0,0 +1,510 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  eb01Fourtricks025,
++  eb01MountainGod018,
++  eb01TBone049,
++  op01MsAllSunday079,
++  op05Enel100,
++  op06GravityBladeRagingTiger058,
++  op09BennBeckman009,
++  op17Loki119,
++  op17MonkeyDLuffy079,
++  op17Nami086,
++  op17RoronoaZoro095,
++  op17Sanji082,
++} from "@tcg/op-cards";
++import type { CharacterCard, EventCard } from "@tcg/op-types";
++
++import type { OnePieceTestEngine as Engine } from "../../../src/index.ts";
++import { OnePieceTestEngine } from "../../../src/index.ts";
++import type { PromptResolutionContext } from "../../../src/types.ts";
++
++// "If one of your Characters would be removed from the field by your
++// opponent's effect, you may place 3 cards from your trash at the bottom of
++// your deck in any order instead."
++// OP17 FAQ: it also saves Zoro himself, and if 2 Characters would leave the
++// field at the same time, placing 3 cards keeps both (rule 8-1-3-4-4). It is
++// optional and has no [Once Per Turn] limit; battle K.O.s are not effects.
++
++const FIVE_TRASH = [
++  eb01Doma005,
++  eb01Fourtricks025,
++  eb01MountainGod018,
++  op01MsAllSunday079,
++  op17Sanji082,
++];
++
++const OPPONENTS_TURN = { firstPlayer: "south", activeSeat: "north" } as const;
++
++function southIds(engine: Engine, zone: "trash" | "character") {
++  const south = engine.getView("south").players.south;
++  return (zone === "trash" ? south.trash : south.characters)
++    .map((card) => card?.instanceId)
++    .filter((id): id is string => Boolean(id));
++}
++
++function setup(
++  north: { hand: (CharacterCard | EventCard)[]; activeDon: number },
++  trash: CharacterCard[] = FIVE_TRASH,
++) {
++  const engine = OnePieceTestEngine.create(
++    {
++      leaderCardId: op17MonkeyDLuffy079,
++      character: [op17RoronoaZoro095, op17Nami086],
++      trash,
++      deck: 10,
++    },
++    { ...north, deck: 10 },
++    OPPONENTS_TURN,
++  );
++  return {
++    engine,
++    zoroId: engine.findCardInZone("south", "character", op17RoronoaZoro095),
++    namiId: engine.findCardInZone("south", "character", op17Nami086),
++    trashIds: southIds(engine, "trash"),
++  };
++}
++
++/** The pending replacement prompt for south: whose copy offers it, and what it covers. */
++function pendingReplacement(
++  engine: Engine,
++  intent: "effectKoReplacement" | "effectRemovalReplacement",
++) {
++  const context = engine
++    .getState()
++    .promptQueue.find(
++      (prompt) => prompt.status === "pending" && prompt.resolutionContext?.intent === intent,
++    )?.resolutionContext as Extract<PromptResolutionContext, { intent: typeof intent }> | undefined;
++  if (!context) throw new Error(`Expected a pending ${intent} prompt.`);
++  return {
++    sourceId: context.replacementSourceInstanceId,
++    covers: context.replacementTargetIds,
++  };
++}
++
++/** South chooses 3 trash cards, then their order at the bottom of the deck. */
++function payThreeFromTrash(engine: Engine, chosen: string[], order: string[]) {
++  const pick = engine.pendingDecision("effectTargetSelection", "south").steps[0];
++  if (pick?.kind !== "selectEntity") throw new Error("Expected Zoro's trash payment choice.");
++  expect(pick).toMatchObject({ min: 3, max: 3 });
++  engine.resolveDecision("effectTargetSelection", { selectedIds: chosen }, "south");
++  engine.resolveDecision("effectReturnToDeckOwnerOrder", { selectedIds: order }, "south");
++  expect(engine.getState().players.south.deck.slice(-3)).toEqual(order);
++}
++
++describe("OP17-095 Roronoa Zoro", () => {
++  test("replaces an opponent's effect K.O. of another Character with 3 trash cards in chosen order", () => {
++    const { engine, zoroId, namiId, trashIds } = setup({ hand: [op17Loki119], activeDon: 6 });
++
++    engine.playCard(op17Loki119, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [namiId] }, "north");
++    expect(engine.pendingDecision("effectKoReplacement", "south").actorId).toBe("south");
++    engine.resolveDecision("effectKoReplacement", { optionId: "yes" }, "south");
++    const [t0, t1, t2, t3, t4] = trashIds as [string, string, string, string, string];
++    payThreeFromTrash(engine, [t2, t0, t4], [t4, t2, t0]);
++
++    expect(southIds(engine, "character")).toEqual([zoroId, namiId]);
++    expect(southIds(engine, "trash")).toEqual([t1, t3]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("may be declined, and the Character is K.O.'d", () => {
++    const { engine, namiId, trashIds } = setup({ hand: [op17Loki119], activeDon: 6 });
++
++    engine.playCard(op17Loki119, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [namiId] }, "north");
++    engine.resolveDecision("effectKoReplacement", { optionId: "no" }, "south");
++
++    expect(southIds(engine, "trash")).toEqual([...trashIds, namiId]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("replaces a non-K.O. removal: an opponent's effect trashing a Character", () => {
++    const { engine, zoroId, namiId, trashIds } = setup({
++      hand: [op09BennBeckman009],
++      activeDon: 7,
++    });
++
++    engine.playCard(op09BennBeckman009, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [namiId] }, "north");
++    engine.resolveDecision("effectRemovalReplacement", { optionId: "yes" }, "south");
++    const [t0, t1, t2] = trashIds as [string, string, string];
++    payThreeFromTrash(engine, [t0, t1, t2], [t0, t1, t2]);
++
++    expect(southIds(engine, "character")).toEqual([zoroId, namiId]);
++    expect(southIds(engine, "trash")).toHaveLength(2);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("also saves Zoro himself (OP17 FAQ)", () => {
++    const { engine, zoroId, namiId, trashIds } = setup(
++      { hand: [eb01TBone049], activeDon: 5 },
++      FIVE_TRASH.slice(0, 3),
++    );
++
++    engine.playCard(eb01TBone049, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [zoroId] }, "north");
++    engine.resolveDecision("effectKoReplacement", { optionId: "yes" }, "south");
++    // Exactly 3 trash cards: all of them are paid, only their order is chosen.
++    const order = [trashIds[1]!, trashIds[2]!, trashIds[0]!];
++    engine.resolveDecision("effectReturnToDeckOwnerOrder", { selectedIds: order }, "south");
++
++    expect(engine.getState().players.south.deck.slice(-3)).toEqual(order);
++    expect(southIds(engine, "character")).toEqual([zoroId, namiId]);
++    expect(southIds(engine, "trash")).toEqual([]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("two Characters K.O.'d at the same time cost only 3 cards and neither leaves (OP17 FAQ)", () => {
++    const { engine, zoroId, namiId, trashIds } = setup({ hand: [op17Loki119], activeDon: 6 });
++
++    engine.playCard(op17Loki119, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [zoroId, namiId] }, "north");
++    engine.resolveDecision("effectKoReplacement", { optionId: "yes" }, "south");
++    const [t0, t1, t2, t3, t4] = trashIds as [string, string, string, string, string];
++    payThreeFromTrash(engine, [t0, t1, t2], [t2, t1, t0]);
++
++    expect(southIds(engine, "character")).toEqual([zoroId, namiId]);
++    expect(southIds(engine, "trash")).toEqual([t3, t4]);
++    // A single replacement covered both: no second offer for Nami.
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("two Characters placed at the bottom of the deck at the same time cost only 3 cards", () => {
++    const { engine, zoroId, namiId, trashIds } = setup({
++      hand: [op06GravityBladeRagingTiger058],
++      activeDon: 7,
++    });
++
++    engine.playCard(op06GravityBladeRagingTiger058, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [zoroId, namiId] }, "north");
++    // The owner orders the two Characters for the deck before replacements are
++    // checked (existing engine order for multi-card bottom-deck placement).
++    engine.resolveDecision(
++      "effectReturnToDeckOwnerOrder",
++      { selectedIds: [zoroId, namiId] },
++      "south",
++    );
++    engine.resolveDecision("effectRemovalReplacement", { optionId: "yes" }, "south");
++    const [t0, t1, t2, t3, t4] = trashIds as [string, string, string, string, string];
++    payThreeFromTrash(engine, [t4, t3, t2], [t4, t3, t2]);
++
++    expect(southIds(engine, "character")).toEqual([zoroId, namiId]);
++    expect(southIds(engine, "trash")).toEqual([t0, t1]);
++    expect(engine.getState().players.south.deck).not.toContain(namiId);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("has no once-per-turn limit: two separate removals in one turn are both replaced", () => {
++    const { engine, zoroId, namiId, trashIds } = setup(
++      { hand: [eb01TBone049, eb01TBone049], activeDon: 10 },
++      [...FIVE_TRASH, eb01Doma005],
++    );
++
++    engine.playCard(eb01TBone049, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [zoroId] }, "north");
++    engine.resolveDecision("effectKoReplacement", { optionId: "yes" }, "south");
++    payThreeFromTrash(engine, trashIds.slice(0, 3), trashIds.slice(0, 3));
++
++    engine.playCard(eb01TBone049, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [namiId] }, "north");
++    engine.resolveDecision("effectKoReplacement", { optionId: "yes" }, "south");
++    // The last 3 trash cards are all that is left: only their order is asked.
++    const lastThree = trashIds.slice(3);
++    engine.resolveDecision("effectReturnToDeckOwnerOrder", { selectedIds: lastThree }, "south");
++
++    expect(southIds(engine, "character")).toEqual([zoroId, namiId]);
++    expect(southIds(engine, "trash")).toEqual([]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    // Uses are recorded once per key (only [Once Per Turn] reads them), so an
++    // unlimited replacement does not grow the list on every application.
++    expect(engine.getState().cards[zoroId]?.usedEffectKeys).toEqual([
++      "replacement:removeFromField:0",
++    ]);
++  });
++
++  test("is not offered with fewer than 3 cards in the trash", () => {
++    const { engine, namiId, trashIds } = setup(
++      { hand: [op17Loki119], activeDon: 6 },
++      FIVE_TRASH.slice(0, 2),
++    );
++
++    engine.playCard(op17Loki119, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [namiId] }, "north");
++
++    expect(() => engine.pendingDecision("effectKoReplacement", "south")).toThrow();
++    expect(southIds(engine, "trash")).toEqual([...trashIds, namiId]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("does not replace a battle K.O.", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op17MonkeyDLuffy079,
++        character: [op17RoronoaZoro095, { card: op17Nami086, rested: true }],
++        trash: FIVE_TRASH,
++        deck: 10,
++      },
++      { character: [{ card: eb01MountainGod018, playedOnTurn: 0 }], deck: 10 },
++      OPPONENTS_TURN,
++    );
++    const namiId = engine.findCardInZone("south", "character", op17Nami086);
++    const attackerId = engine.findCardInZone("north", "character", eb01MountainGod018);
++
++    engine.declareAttack(attackerId, namiId, "north");
++
++    expect(() => engine.pendingDecision("battleKoReplacement", "south")).toThrow();
++    expect(southIds(engine, "trash")).toContain(namiId);
++    expect(southIds(engine, "trash")).toHaveLength(6);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("a trash card it places in the deck does not 'leave the field' (no self-replacement offered)", () => {
++    // Enel's "If this Character would leave the field ... instead" is Character
++    // text (rule 2-8-2); paying Zoro's cost with Enel from the trash must not
++    // offer it.
++    const { engine, zoroId, namiId } = setup({ hand: [eb01TBone049], activeDon: 5 }, [
++      op05Enel100,
++      eb01Doma005,
++      eb01Fourtricks025,
++    ]);
++    const enelId = engine.findCardInZone("south", "trash", op05Enel100);
++
++    engine.playCard(eb01TBone049, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [zoroId] }, "north");
++    engine.resolveDecision("effectKoReplacement", { optionId: "yes" }, "south");
++    const order = southIds(engine, "trash");
++    engine.resolveDecision("effectReturnToDeckOwnerOrder", { selectedIds: order }, "south");
++
++    expect(() => engine.pendingDecision("effectRemovalReplacement", "south")).toThrow();
++    expect(engine.getState().players.south.deck.slice(-3)).toEqual(order);
++    expect(engine.getState().players.south.deck).toContain(enelId);
++    expect(southIds(engine, "character")).toEqual([zoroId, namiId]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  // OP17 FAQ: for 2 Characters leaving at once the choice is "place 3 cards
++  // and neither leaves" or let both leave. Rule 8-1-3-4-1: a declined
++  // replacement is not applied, so it is not offered again for the second
++  // Character of the same removal (that would save one of the two for 3).
++  test("declining for 2 Characters K.O.'d at once K.O.s both, with no second offer", () => {
++    const { engine, zoroId, namiId, trashIds } = setup({ hand: [op17Loki119], activeDon: 6 });
++
++    engine.playCard(op17Loki119, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [namiId, zoroId] }, "north");
++    expect(pendingReplacement(engine, "effectKoReplacement")).toEqual({
++      sourceId: zoroId,
++      covers: [namiId, zoroId],
++    });
++    engine.resolveDecision("effectKoReplacement", { optionId: "no" }, "south");
++
++    expect(southIds(engine, "character")).toEqual([]);
++    expect(southIds(engine, "trash")).toEqual([...trashIds, namiId, zoroId]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("declining for 2 Characters placed in the deck at once removes both, with no second offer", () => {
++    const { engine, zoroId, namiId, trashIds } = setup({
++      hand: [op06GravityBladeRagingTiger058],
++      activeDon: 7,
++    });
++
++    engine.playCard(op06GravityBladeRagingTiger058, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [namiId, zoroId] }, "north");
++    engine.resolveDecision(
++      "effectReturnToDeckOwnerOrder",
++      { selectedIds: [namiId, zoroId] },
++      "south",
++    );
++    expect(pendingReplacement(engine, "effectRemovalReplacement").covers).toEqual([namiId, zoroId]);
++    engine.resolveDecision("effectRemovalReplacement", { optionId: "no" }, "south");
++
++    expect(southIds(engine, "character")).toEqual([]);
++    expect(southIds(engine, "trash")).toEqual(trashIds);
++    expect(engine.getState().players.south.deck.slice(-2)).toEqual([namiId, zoroId]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++});
++
++// Two copies on the field. Each copy has its own replacement effect, and a
++// targeted Zoro finds its own copy first. Either copy covers every Character
++// the opponent's effect removes at once (8-1-3-4-4, OP17 FAQ), so the group
++// must be built from the offered copy, not from each target's first match.
++describe("OP17-095 Roronoa Zoro, two copies", () => {
++  function setupTwo(
++    north: { hand: (CharacterCard | EventCard)[]; activeDon: number },
++    trash: CharacterCard[] = FIVE_TRASH,
++    withNami = false,
++  ) {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op17MonkeyDLuffy079,
++        character: withNami
++          ? [op17RoronoaZoro095, op17Nami086, op17RoronoaZoro095]
++          : [op17RoronoaZoro095, op17RoronoaZoro095],
++        trash,
++        deck: 10,
++      },
++      { ...north, deck: 10 },
++      OPPONENTS_TURN,
++    );
++    const characters = southIds(engine, "character");
++    const zoroIds = characters.filter(
++      (id) => engine.getState().cards[id]?.cardId === op17RoronoaZoro095.id,
++    ) as [string, string];
++    return {
++      engine,
++      zoroA: zoroIds[0],
++      zoroB: zoroIds[1],
++      namiId: withNami ? engine.findCardInZone("south", "character", op17Nami086) : "",
++      trashIds: southIds(engine, "trash"),
++    };
++  }
++
++  test("both Zoros K.O.'d at once: one offer, 3 cards, both stay", () => {
++    const { engine, zoroA, zoroB, trashIds } = setupTwo({ hand: [op17Loki119], activeDon: 6 });
++
++    engine.playCard(op17Loki119, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [zoroA, zoroB] }, "north");
++    expect(pendingReplacement(engine, "effectKoReplacement")).toEqual({
++      sourceId: zoroA,
++      covers: [zoroA, zoroB],
++    });
++    engine.resolveDecision("effectKoReplacement", { optionId: "yes" }, "south");
++    const [t0, t1, t2, t3, t4] = trashIds as [string, string, string, string, string];
++    payThreeFromTrash(engine, [t0, t1, t2], [t0, t1, t2]);
++
++    expect(southIds(engine, "character")).toEqual([zoroA, zoroB]);
++    expect(southIds(engine, "trash")).toEqual([t3, t4]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("both Zoros K.O.'d at once with exactly 3 trash cards: both stay", () => {
++    const { engine, zoroA, zoroB, trashIds } = setupTwo(
++      { hand: [op17Loki119], activeDon: 6 },
++      FIVE_TRASH.slice(0, 3),
++    );
++
++    engine.playCard(op17Loki119, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [zoroA, zoroB] }, "north");
++    engine.resolveDecision("effectKoReplacement", { optionId: "yes" }, "south");
++    engine.resolveDecision("effectReturnToDeckOwnerOrder", { selectedIds: trashIds }, "south");
++
++    expect(southIds(engine, "character")).toEqual([zoroA, zoroB]);
++    expect(southIds(engine, "trash")).toEqual([]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("Nami and the second Zoro K.O.'d at once, first Zoro untouched: both saved for 3", () => {
++    const { engine, zoroA, zoroB, namiId, trashIds } = setupTwo(
++      { hand: [op17Loki119], activeDon: 6 },
++      FIVE_TRASH,
++      true,
++    );
++
++    engine.playCard(op17Loki119, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [namiId, zoroB] }, "north");
++    expect(pendingReplacement(engine, "effectKoReplacement").covers).toEqual([namiId, zoroB]);
++    engine.resolveDecision("effectKoReplacement", { optionId: "yes" }, "south");
++    const [t0, t1, t2, t3, t4] = trashIds as [string, string, string, string, string];
++    payThreeFromTrash(engine, [t2, t3, t4], [t4, t3, t2]);
++
++    expect(southIds(engine, "character")).toEqual([zoroA, namiId, zoroB]);
++    expect(southIds(engine, "trash")).toEqual([t0, t1]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("both Zoros placed at the bottom of the deck at once: one offer covers both", () => {
++    const { engine, zoroA, zoroB, trashIds } = setupTwo(
++      { hand: [op06GravityBladeRagingTiger058], activeDon: 7 },
++      FIVE_TRASH.slice(0, 4),
++    );
++
++    engine.playCard(op06GravityBladeRagingTiger058, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [zoroA, zoroB] }, "north");
++    engine.resolveDecision(
++      "effectReturnToDeckOwnerOrder",
++      { selectedIds: [zoroA, zoroB] },
++      "south",
++    );
++    expect(pendingReplacement(engine, "effectRemovalReplacement").covers).toEqual([zoroA, zoroB]);
++    engine.resolveDecision("effectRemovalReplacement", { optionId: "yes" }, "south");
++    const [t0, t1, t2, t3] = trashIds as [string, string, string, string];
++    payThreeFromTrash(engine, [t0, t1, t2], [t0, t1, t2]);
++
++    expect(southIds(engine, "character")).toEqual([zoroA, zoroB]);
++    expect(southIds(engine, "trash")).toEqual([t3]);
++    expect(engine.getState().players.south.deck).not.toContain(zoroA);
++    expect(engine.getState().players.south.deck).not.toContain(zoroB);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  // 8-1-3-4-2: when several replacements could apply, declining one leaves
++  // the others available. The second copy's replacement is then offered for
++  // the same group, so the outcomes stay "keep both" or "lose both".
++  test("declining the first copy offers the second copy for the same group", () => {
++    const { engine, zoroA, zoroB, trashIds } = setupTwo({ hand: [op17Loki119], activeDon: 6 });
++
++    engine.playCard(op17Loki119, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [zoroA, zoroB] }, "north");
++    engine.resolveDecision("effectKoReplacement", { optionId: "no" }, "south");
++    expect(pendingReplacement(engine, "effectKoReplacement")).toEqual({
++      sourceId: zoroB,
++      covers: [zoroA, zoroB],
++    });
++    engine.resolveDecision("effectKoReplacement", { optionId: "yes" }, "south");
++    payThreeFromTrash(engine, trashIds.slice(0, 3), trashIds.slice(0, 3));
++
++    expect(southIds(engine, "character")).toEqual([zoroA, zoroB]);
++    expect(southIds(engine, "trash")).toEqual(trashIds.slice(3));
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("declining both copies K.O.s both Zoros, with no further offer", () => {
++    const { engine, zoroA, zoroB, trashIds } = setupTwo({ hand: [op17Loki119], activeDon: 6 });
++
++    engine.playCard(op17Loki119, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [zoroA, zoroB] }, "north");
++    engine.resolveDecision("effectKoReplacement", { optionId: "no" }, "south");
++    // Nothing has been K.O.'d yet: the second copy is offered for both.
++    expect(southIds(engine, "character")).toEqual([zoroA, zoroB]);
++    expect(pendingReplacement(engine, "effectKoReplacement")).toEqual({
++      sourceId: zoroB,
++      covers: [zoroA, zoroB],
++    });
++    engine.resolveDecision("effectKoReplacement", { optionId: "no" }, "south");
++
++    expect(southIds(engine, "character")).toEqual([]);
++    expect(southIds(engine, "trash")).toEqual([...trashIds, zoroA, zoroB]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("declining both copies for a deck placement removes both, with no further offer", () => {
++    const { engine, zoroA, zoroB, trashIds } = setupTwo({
++      hand: [op06GravityBladeRagingTiger058],
++      activeDon: 7,
++    });
++
++    engine.playCard(op06GravityBladeRagingTiger058, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [zoroA, zoroB] }, "north");
++    engine.resolveDecision(
++      "effectReturnToDeckOwnerOrder",
++      { selectedIds: [zoroA, zoroB] },
++      "south",
++    );
++    engine.resolveDecision("effectRemovalReplacement", { optionId: "no" }, "south");
++    expect(pendingReplacement(engine, "effectRemovalReplacement")).toEqual({
++      sourceId: zoroB,
++      covers: [zoroA, zoroB],
++    });
++    engine.resolveDecision("effectRemovalReplacement", { optionId: "no" }, "south");
++
++    expect(southIds(engine, "character")).toEqual([]);
++    expect(southIds(engine, "trash")).toEqual(trashIds);
++    expect(engine.getState().players.south.deck.slice(-2)).toEqual([zoroA, zoroB]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/simultaneous-removal-replacement.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/simultaneous-removal-replacement.test.ts
+new file mode 100644
+index 0000000..4f970d4
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/simultaneous-removal-replacement.test.ts
+@@ -0,0 +1,168 @@
++import { describe, expect, test } from "vite-plus/test";
++import type { EventCard } from "@tcg/op-types";
++import {
++  eb01Doma005,
++  eb01Fourtricks025,
++  eb01OffWhite019,
++  op02IceAge117,
++  op15Leo052,
++  op15Perona090,
++  op17Loki119,
++  op17Nami086,
++} from "@tcg/op-cards";
++
++import { registerCards } from "../../../../cards/src/runtime-catalog.ts";
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// Rule 8-1-3-4-4: a replacement effect replaces the whole part of the
++// processing it names. When one effect removes several Characters at the same
++// time, one application of a replacement that covers them saves all of them.
++// OP15 FAQ, OP15-090 Perona: "If two of my Characters with 7000 base power or
++// less would be simultaneously removed from the field by my opponent's effect"
++// -> "trash 1 of your cards to keep both Characters on the field". The effect
++// K.O. path already grouped targets this way; this covers the non-K.O.
++// removal path (return to hand / deck, trash).
++
++const bounceTwoEvent: EventCard = {
++  ...eb01OffWhite019,
++  id: "TEST-BOUNCE-TWO",
++  canonicalId: "TEST-BOUNCE-TWO",
++  name: "Test Bounce Two",
++  cost: 0,
++  effect: "[Main] Return up to 2 of your opponent's Characters to the owner's hand.",
++  effects: {
++    effects: [
++      {
++        trigger: "main",
++        actions: [
++          {
++            action: "returnToHand",
++            target: {
++              player: "opponent",
++              zones: ["character"],
++              count: { amount: 2, upTo: true },
++            },
++          },
++        ],
++      },
++    ],
++  },
++};
++
++registerCards([bounceTwoEvent]);
++
++function setup() {
++  const engine = OnePieceTestEngine.create(
++    {
++      character: [op15Perona090, eb01Doma005, eb01Fourtricks025],
++      hand: [op02IceAge117, eb01Doma005],
++    },
++    { hand: [bounceTwoEvent] },
++    { firstPlayer: "south", activeSeat: "north" },
++  );
++  return {
++    engine,
++    domaId: engine.findCardInZone("south", "character", eb01Doma005),
++    fourtricksId: engine.findCardInZone("south", "character", eb01Fourtricks025),
++    iceAgeId: engine.findCardInZone("south", "hand", op02IceAge117),
++  };
++}
++
++function southCharacterIds(engine: OnePieceTestEngine) {
++  return engine
++    .getView("south")
++    .players.south.characters.map((card) => card?.instanceId)
++    .filter(Boolean);
++}
++
++describe("simultaneous removal replacement (8-1-3-4-4)", () => {
++  test("one Perona payment keeps both Characters returned to hand at the same time", () => {
++    const { engine, domaId, fourtricksId, iceAgeId } = setup();
++
++    engine.playCard(bounceTwoEvent, "north");
++    engine.resolveDecision(
++      "effectTargetSelection",
++      { selectedIds: [domaId, fourtricksId] },
++      "north",
++    );
++    engine.resolveDecision("effectRemovalReplacement", { optionId: "yes" }, "south");
++    engine.resolveDecision("effectTrashFromHandSelection", { selectedIds: [iceAgeId] }, "south");
++
++    const south = engine.getView("south").players.south;
++    expect(southCharacterIds(engine)).toEqual(expect.arrayContaining([domaId, fourtricksId]));
++    expect(south.trash.map((card) => card.instanceId)).toEqual([iceAgeId]);
++    expect(south.hand).toHaveLength(1);
++    // The single application covered both targets: no second offer.
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  // The FAQ's options are "keep both" or "let both be removed" (OP15 FAQ on
++  // Perona and on OP15-052 Leo). 8-1-3-4-1: the declined replacement is not
++  // applied, so it is not offered again for the second Character.
++  test("declining once removes both Characters", () => {
++    const { engine, domaId, fourtricksId } = setup();
++
++    engine.playCard(bounceTwoEvent, "north");
++    engine.resolveDecision(
++      "effectTargetSelection",
++      { selectedIds: [domaId, fourtricksId] },
++      "north",
++    );
++    engine.resolveDecision("effectRemovalReplacement", { optionId: "no" }, "south");
++
++    const south = engine.getView("south").players.south;
++    expect(southCharacterIds(engine)).not.toContain(domaId);
++    expect(southCharacterIds(engine)).not.toContain(fourtricksId);
++    expect(south.hand).toHaveLength(4);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++});
++
++// OP15 FAQ, OP15-052 Leo: "If two of my Characters with 7000 base power or less
++// would be simultaneously removed from the field by my opponent's effect, can
++// I choose to place 2 of my Characters at the bottom of the owner's deck
++// instead?" -> "you can either choose to place 1 of your Characters at the
++// bottom of the owner's deck to keep both Characters on the field, or do
++// nothing and let your opponent remove both Characters from the field."
++describe("OP15-052 Leo: simultaneous effect K.O. (OP15 FAQ)", () => {
++  function setupLeo() {
++    const engine = OnePieceTestEngine.create(
++      { character: [op15Leo052, eb01Doma005, op17Nami086], deck: 5 },
++      { hand: [op17Loki119], activeDon: 6, deck: 5 },
++      { firstPlayer: "south", activeSeat: "north" },
++    );
++    return {
++      engine,
++      leoId: engine.findCardInZone("south", "character", op15Leo052),
++      domaId: engine.findCardInZone("south", "character", eb01Doma005),
++      namiId: engine.findCardInZone("south", "character", op17Nami086),
++    };
++  }
++
++  test("placing 1 Character keeps both K.O. targets on the field", () => {
++    const { engine, leoId, domaId, namiId } = setupLeo();
++
++    engine.playCard(op17Loki119, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [domaId, namiId] }, "north");
++    engine.resolveDecision("effectKoReplacement", { optionId: "yes" }, "south");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [leoId] }, "south");
++
++    expect(southCharacterIds(engine)).toEqual([domaId, namiId]);
++    expect(engine.getState().players.south.deck.at(-1)).toBe(leoId);
++    expect(engine.getState().players.south.trash).toEqual([]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("doing nothing lets both be K.O.'d, with no second offer", () => {
++    const { engine, leoId, domaId, namiId } = setupLeo();
++
++    engine.playCard(op17Loki119, "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [domaId, namiId] }, "north");
++    engine.resolveDecision("effectKoReplacement", { optionId: "no" }, "south");
++
++    expect(southCharacterIds(engine)).toEqual([leoId]);
++    expect(engine.getState().players.south.trash).toEqual([domaId, namiId]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/self-cost-modifier-zones.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/self-cost-modifier-zones.test.ts
+new file mode 100644
+index 0000000..d10500e
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/self-cost-modifier-zones.test.ts
+@@ -0,0 +1,45 @@
++import * as cardExports from "@tcg/op-cards";
++import type { OPCard } from "@tcg/op-types";
++import { describe, expect, test } from "vite-plus/test";
++
++/**
++ * Catalog invariant: a permanent cost modifier a card applies to itself is
++ * either Character text ("This Character gains +X cost.", which rule 2-8-2
++ * limits to the Character area) or hand text ("give this card in your hand -X
++ * cost", which exists only in hand). No printed text does both, so a target
++ * listing both the "hand" and "character" zones makes the card pay the field
++ * cost from hand or keep the hand discount on the field (both happened: a
++ * cost-5 Character that could only be played for 11, a cost-8 one that was
++ * cost 5 on the field).
++ */
++
++function isCard(value: unknown): value is OPCard {
++  return typeof value === "object" && value !== null && "id" in value && "cardType" in value;
++}
++
++function walk(value: unknown, visit: (node: Record<string, unknown>) => void) {
++  if (typeof value !== "object" || value === null) return;
++  visit(value as Record<string, unknown>);
++  for (const child of Object.values(value)) walk(child, visit);
++}
++
++describe("self cost modifiers", () => {
++  test("never target both the hand and the Character area", () => {
++    const offenders = new Set<string>();
++    for (const card of Object.values(cardExports as Record<string, unknown>).filter(isCard)) {
++      const permanentEffects = card.effects?.permanentEffects ?? [];
++      walk(permanentEffects, (node) => {
++        const target = node.target as { self?: boolean; zones?: string[] } | undefined;
++        if (
++          (node.action === "modifyCost" || node.action === "setCost") &&
++          target?.self === true &&
++          target.zones?.includes("hand") &&
++          target.zones.includes("character")
++        ) {
++          offenders.add(card.id);
++        }
++      });
++    }
++    expect([...offenders].sort()).toEqual([]);
++  });
++});

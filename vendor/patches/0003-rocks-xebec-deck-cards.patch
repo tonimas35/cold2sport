@@ -1,0 +1,1096 @@
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+index e906e5b..478b74a 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+@@ -1712,15 +1712,15 @@ reconciles catalog entries.
+ | OP17-042 | Kaido | verified | onPlay |
+ | OP17-043 | Ganzui | verified | replacement |
+ | OP17-044 | Captain John | verified | activateMain, permanent |
+-| OP17-045 | Kyo | verified | onPlay |
+-| OP17-046 | Gloriosa | verified | onPlay |
++| OP17-045 | Kyo | verified | onPlay draw 1; optional removeFromField replacement for every own Character vs opponent effects: trash 2 chosen hand cards, not once per turn, not offered with 0-1 cards, not for battle K.O. |
++| OP17-046 | Gloriosa | verified | onPlay; two types Amazon Lily/Rocks Pirates (exact {Rocks Pirates} matches) |
+ | OP17-047 | Shiki | verified | endOfYourTurn |
+ | OP17-048 | Shiki | verified | whenAttacking, onOpponentAttack |
+-| OP17-049 | Charlotte Linlin | verified | onOpponentAttack |
+-| OP17-050 | Streusen | verified | onPlay |
++| OP17-049 | Charlotte Linlin | verified | onPlay opponent-seat choice: Linlin's player draws 2, or the opponent trashes 2 of their choice (1 or 0 cards allowed); onOpponentAttack trash 1 for +1000 |
++| OP17-050 | Streusen | verified | onPlay looks at top 2, orders them, all top or all bottom (no split), then draws 1 |
+ | OP17-051 | Jinbe | vanilla | Parameterized vanilla invariant batch |
+ | OP17-052 | Don Marlon | verified | onPlay |
+-| OP17-053 | Barbell | verified | onKo, activateMain |
++| OP17-053 | Barbell | verified | onKo, activateMain; two types Fish-Man/Rocks Pirates |
+ | OP17-054 | Miss Buckingham Stussy | verified | onPlay, activateMain |
+ | OP17-059 | Aramaki | verified | onPlay |
+ | OP17-060 | Ulti & Page One | verified | onPlay |
+@@ -1770,7 +1770,7 @@ reconciles catalog entries.
+ | OP17-112 | Charlotte Linlin | verified | onPlay |
+ | OP17-113 | Streusen | verified | onPlay |
+ | OP17-114 | Sweet 3 Generals | verified | onPlay, Life Trigger |
+-| OP17-118 | Rocks.D.Xebec | verified | On Play draw + Rocks replay under total cost 9 (pair and cap outcomes) |
++| OP17-118 | Rocks.D.Xebec | verified | On Play draw + exact {Rocks Pirates} replay (Former Rocks Pirates excluded) with different names under total cost 9; over-budget picks rejected, cards over 9 alone not offered |
+ | OP17-119 | Loki | verified | Printed behavior is unstructured |
+ | P-014        | Koby (Jolly Roger Foil)                         | verified | Controller-owned Blocker redirection and battle result; physical self-play Life Trigger and decline-to-hand branch                                                                                    |
+ | P-029        | Bartolomeo (P-029) (Jolly Roger Foil)           | verified | Optional end-turn self-rest cost; included FILM ownership/name filtering; selected physical set-active result and decline                                                                              |
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
+index 59b34d2..55a8ad8 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
+@@ -352,8 +352,8 @@ reconciles catalog entries.
+ | OP17-036 | Withdraw Now and Allow Me to Save Face | verified | Main rest-6-DON rests a Character then K.O.s rested cost-6-or-less targets |
+ | OP17-037 | Are You That Afraid of the New Era?! | verified | Main look-5 Red-Haired Pirates reveal with bottom-order |
+ | OP17-038 | I Think He's Seen an Ugly Future... | verified | Main rest-4-cards cost rests an opposing Character; [Counter] optional trash +3000 save |
+-| OP17-055 | There's No Authority in the World That Lasts Forever!!! | verified | ('gap', 'Main rest-DON gives a [Rocks.D.Xebec] [Unblockable]; [Counter] Rocks Pirates +2000 save') |
+-| OP17-056 | Rocks Pirates | verified | Main rest-5-DON returns a cost-6-or-less Character to its owner's hand |
++| OP17-055 | There's No Authority in the World That Lasts Forever!!! | verified | Main rest-DON gives a [Rocks.D.Xebec] Leader or Character [Unblockable] (opposing Blocker not offered); [Counter] Rocks Pirates +2000 save |
++| OP17-056 | Rocks Pirates | verified | Main rest-5-DON returns a cost-6-or-less Character to its owner's hand; [Counter] cost-0 +2000 for the battle to a Leader or Character whose type includes Rocks Pirates |
+ | OP17-076 | Wo Ro Ro Ro Ro... I Think I've Sobered Up | verified | [Counter] optional hand trash saves the Leader with +3000 |
+ | OP17-077 | Kundali Dragon Swarm | verified | Main Animal-Kingdom-gated rest-3-DON + trash 2 hand adds 3 rested DON with DON accounting |
+ | OP17-078 | Drunken Dragon Bagua | verified | Main rest-2-DON + trash 2 hand adds 3 rested DON for an Animal Kingdom Leader |
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-045-kyo.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-045-kyo.ts
+index 3e810af..bb35207 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-045-kyo.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-045-kyo.ts
+@@ -48,6 +48,24 @@ export const op17Kyo045: CharacterCard = {
+         ],
+       },
+     ],
++    replacementEffects: [
++      {
++        replacedEvent: "removeFromField",
++        target: {
++          player: "self",
++          zones: ["character"],
++          count: {
++            amount: 1,
++          },
++        },
++        source: "opponentEffect",
++        replacementAction: {
++          action: "trashFromHand",
++          player: "self",
++          amount: 2,
++        },
++      },
++    ],
+   },
+   i18n: op17Kyo045I18n,
+ };
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-046-gloriosa.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-046-gloriosa.ts
+index 6f4ee53..1f73c03 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-046-gloriosa.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-046-gloriosa.ts
+@@ -31,7 +31,7 @@ export const op17Gloriosa046: CharacterCard = {
+   setId: "OP17",
+   cost: 4,
+   power: 1000,
+-  traits: ["Amazon Lily Rocks Pirates"],
++  traits: ["Amazon Lily", "Rocks Pirates"],
+   attribute: "wisdom",
+   effect:
+     "[Blocker] (After your opponent declares an attack, you may rest this card to make it the new target of the attack.)\n[On Play] Place up to 1 Character with a cost of 5 or less at the bottom of the owner's deck.",
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-049-charlotte-linlin.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-049-charlotte-linlin.ts
+index c8ac769..feec37f 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-049-charlotte-linlin.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-049-charlotte-linlin.ts
+@@ -38,6 +38,31 @@ export const op17CharlotteLinlin049: CharacterCard = {
+     "[On Play] Your opponent chooses one:\n• Draw 2 cards.\n• Your opponent trashes 2 cards from their hand.\n[On Your Opponent's Attack] [Once Per Turn] You may trash 1 card from your hand: Up to 1 of your Leader or Characters gains +1000 power during this battle.",
+   effects: {
+     effects: [
++      {
++        trigger: "onPlay",
++        actions: [
++          {
++            action: "choice",
++            player: "opponent",
++            options: [
++              [
++                {
++                  action: "draw",
++                  player: "self",
++                  amount: 2,
++                },
++              ],
++              [
++                {
++                  action: "trashFromHand",
++                  player: "opponent",
++                  amount: 2,
++                },
++              ],
++            ],
++          },
++        ],
++      },
+       {
+         trigger: "onOpponentAttack",
+         costs: [
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-050-streusen.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-050-streusen.ts
+index b8e8557..1895bd5 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-050-streusen.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-050-streusen.ts
+@@ -32,6 +32,12 @@ export const op17Streusen050: CharacterCard = {
+       {
+         trigger: "onPlay",
+         actions: [
++          {
++            action: "rearrangeDeck",
++            player: "self",
++            count: 2,
++            position: "topOrBottom",
++          },
+           {
+             action: "draw",
+             player: "self",
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-053-barbell.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-053-barbell.ts
+index dcac936..e066d5f 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-053-barbell.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-053-barbell.ts
+@@ -22,7 +22,7 @@ export const op17Barbell053: CharacterCard = {
+   setId: "OP17",
+   cost: 5,
+   power: 7000,
+-  traits: ["Fish-Man Rocks Pirates"],
++  traits: ["Fish-Man", "Rocks Pirates"],
+   attribute: "strike",
+   effect:
+     "[On K.O.] Your opponent places 2 cards from their hand at the bottom of their deck in any order.\n\n[Activate: Main] [Once Per Turn] You may trash 1 card from your hand: This Character gains +3000 power during this turn",
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-118-rocks-d-xebec.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-118-rocks-d-xebec.ts
+index 9925c96..be9cf4e 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-118-rocks-d-xebec.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-118-rocks-d-xebec.ts
+@@ -71,11 +71,12 @@ export const op17RocksDXebec118: CharacterCard = {
+               comparison: "lte",
+               value: 9,
+             },
++            // {Rocks Pirates} is an exact type (2-4-3): OP08-051 Buckin's
++            // "Former Rocks Pirates" does not qualify.
+             filters: [
+               {
+                 filter: "trait",
+                 value: "Rocks Pirates",
+-                match: "includes",
+               },
+             ],
+           },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-055-there-s-no-authority-in-the-world-that-lasts-forever.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-055-there-s-no-authority-in-the-world-that-lasts-forever.ts
+index 6bf27c6..186c21e 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-055-there-s-no-authority-in-the-world-that-lasts-forever.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-055-there-s-no-authority-in-the-world-that-lasts-forever.ts
+@@ -38,9 +38,11 @@ export const op17ThereSNoAuthorityInTheWorldThatLastsForever055: EventCard = {
+         actions: [
+           {
+             action: "grantKeyword",
++            // [Rocks.D.Xebec] names a card (2-1-2), so the Leader OP17-039 is a
++            // legal target as well as the OP17-118 Character.
+             target: {
+               player: "self",
+-              zones: ["character"],
++              zones: ["leader", "character"],
+               count: {
+                 amount: 1,
+                 upTo: true,
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-056-rocks-pirates.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-056-rocks-pirates.ts
+index a8e40c3..e0d59a0 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-056-rocks-pirates.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-056-rocks-pirates.ts
+@@ -56,6 +56,31 @@ export const op17RocksPirates056: EventCard = {
+         ],
+         optional: true,
+       },
++      {
++        trigger: "counter",
++        actions: [
++          {
++            action: "modifyPower",
++            target: {
++              player: "self",
++              zones: ["leader", "character"],
++              count: {
++                amount: 1,
++                upTo: true,
++              },
++              filters: [
++                {
++                  filter: "trait",
++                  value: "Rocks Pirates",
++                  match: "includes",
++                },
++              ],
++            },
++            value: 2000,
++            duration: "thisBattle",
++          },
++        ],
++      },
+     ],
+   },
+   i18n: op17RocksPirates056I18n,
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/050.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/050.test.ts
+index 2347c52..a078f62 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/050.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/050.test.ts
+@@ -35,6 +35,17 @@ describe("OP17-050 Streusen", () => {
+             "south",
+           );
+         }
++      } else if (intent === "effectRearrangeDeckOrder") {
++        // Look at 2 and reorganize them: keep the looked-at order.
++        const step = engine.pendingDecision(intent, "south").steps[0];
++        if (step?.kind !== "orderItems") throw new Error("Expected the deck ordering step.");
++        engine.resolveDecision(
++          intent,
++          { selectedIds: step.candidates.map((candidate) => candidate.ref.id!) },
++          "south",
++        );
++      } else if (intent === "effectRearrangeDeckPosition") {
++        engine.resolveDecision(intent, { optionId: "top" }, "south");
+       } else {
+         engine.resolveDecision(
+           intent as Parameters<typeof engine.resolveDecision>[0],
+@@ -47,6 +58,9 @@ describe("OP17-050 Streusen", () => {
+     expect(engine.getView("south").players.south.characters.map((c) => c?.cardId)).toContain(
+       "OP17-050",
+     );
++    // Then, draw 1 card.
++    expect(engine.getView("south").players.south.hand).toHaveLength(1);
++    expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
+   test("[Continuous] survives the turn handoff", () => {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/118-rocks-d-xebec.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/118-rocks-d-xebec.test.ts
+index c5b55bb..2b546cc 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/118-rocks-d-xebec.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/118-rocks-d-xebec.test.ts
+@@ -1,19 +1,28 @@
+ import { describe, expect, test } from "vite-plus/test";
+-import { op07CaptainJohn082, op08Kaido079, op17RocksDXebec118 } from "@tcg/op-cards";
++import {
++  op07CaptainJohn082,
++  op08Kaido079,
++  op17CaptainJohn044,
++  op17Kyo045,
++  op17RocksDXebec118,
++  op17Shiki048,
++} from "@tcg/op-cards";
+ 
+ import { OnePieceTestEngine } from "../../../index.ts";
+ 
++// {Rocks Pirates} is an exact type (2-4-3): OP07-082 Captain John and
++// OP08-079 Kaido are {Former Rocks Pirates} and cannot be replayed.
+ describe("OP17-118 Rocks.D.Xebec", () => {
+   test("draws 1 and replays {Rocks Pirates} Characters within a total cost of 9", () => {
+     const engine = OnePieceTestEngine.create(
+       {
+-        hand: [op17RocksDXebec118, op07CaptainJohn082, op08Kaido079],
++        hand: [op17RocksDXebec118, op17Kyo045, op17Shiki048, op07CaptainJohn082, op08Kaido079],
+         deck: ["OP16-096", "OP16-095"],
+         activeDon: op17RocksDXebec118.cost,
+       },
+       {},
+     );
+-    const johnId = engine.findCardInZone("south", "hand", op07CaptainJohn082);
++    const kyoId = engine.findCardInZone("south", "hand", op17Kyo045);
+ 
+     engine.playCard(op17RocksDXebec118, "south");
+     // Draw 1 happened as part of the On Play.
+@@ -22,39 +31,40 @@ describe("OP17-118 Rocks.D.Xebec", () => {
+     const play = engine.pendingDecision("effectPlaySelection", "south").steps[0];
+     if (play?.kind !== "selectEntity") throw new Error("Expected the replay choice.");
+     const candidates = play.candidates.map((candidate) => candidate.ref.id);
+-    expect(candidates).toContain(johnId);
+-    expect(candidates).toContain(engine.findCardInZone("south", "hand", op08Kaido079));
+-    // Kaido alone (9) fits, but pairing him with any other Rocks card would
+-    // blow the total of 9 — so the replay takes only John (cost 2).
+-    engine.resolveDecision("effectPlaySelection", { selectedIds: [johnId] }, "south");
++    expect(candidates).toContain(kyoId);
++    expect(candidates).toContain(engine.findCardInZone("south", "hand", op17Shiki048));
++    expect(candidates).not.toContain(engine.findCardInZone("south", "hand", op07CaptainJohn082));
++    expect(candidates).not.toContain(engine.findCardInZone("south", "hand", op08Kaido079));
++    // The replay takes only Kyo (cost 2); Kyo's own [On Play] draws 1 more.
++    engine.resolveDecision("effectPlaySelection", { selectedIds: [kyoId] }, "south");
+ 
+     const view = engine.getView("south").players.south;
+-    expect(view.characters.map((card) => card?.instanceId)).toContain(johnId);
+-    expect(view.hand.map((card) => card.cardId)).toContain(op08Kaido079.id);
++    expect(view.characters.map((card) => card?.instanceId)).toContain(kyoId);
++    expect(view.hand.map((card) => card.cardId)).toContain(op17Shiki048.id);
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
+   test("a pair within the total cost replays both Rocks cards", () => {
+     const engine = OnePieceTestEngine.create(
+       {
+-        hand: [op17RocksDXebec118, op07CaptainJohn082, "OP08-051"],
++        hand: [op17RocksDXebec118, op17Kyo045, op17CaptainJohn044],
+         deck: ["OP16-096", "OP16-095"],
+         activeDon: op17RocksDXebec118.cost,
+       },
+       {},
+     );
+-    const johnId = engine.findCardInZone("south", "hand", op07CaptainJohn082);
+-    const buckinId = engine.findCardInZone("south", "hand", "OP08-051");
++    const kyoId = engine.findCardInZone("south", "hand", op17Kyo045);
++    const johnId = engine.findCardInZone("south", "hand", op17CaptainJohn044);
+ 
+     engine.playCard(op17RocksDXebec118, "south");
+     const play = engine.pendingDecision("effectPlaySelection", "south").steps[0];
+     if (play?.kind !== "selectEntity") throw new Error("Expected the replay choice.");
+-    // John (2) + Buckin (1) total 3 — well under the cap.
+-    engine.resolveDecision("effectPlaySelection", { selectedIds: [johnId, buckinId] }, "south");
++    // Kyo (2) + Captain John (4) total 6 — well under the cap.
++    engine.resolveDecision("effectPlaySelection", { selectedIds: [kyoId, johnId] }, "south");
+ 
+     const view = engine.getView("south").players.south;
++    expect(view.characters.map((card) => card?.instanceId)).toContain(kyoId);
+     expect(view.characters.map((card) => card?.instanceId)).toContain(johnId);
+-    expect(view.characters.map((card) => card?.instanceId)).toContain(buckinId);
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ });
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts
+index d2a245b..c4d67ca 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts
+@@ -835,11 +835,21 @@ export function candidatesForPlayAction(
+   const candidateIds = topDeckOnly
+     ? pool.candidateIds.filter((instanceId) => instanceId === getPlayer(state, controller).deck[0])
+     : pool.candidateIds;
++  // "A total cost of N or less": costs are never negative, so a card that
++  // breaks an upper-bound total on its own cannot belong to any legal
++  // selection. Leaving it out keeps the prompt to choices that can resolve.
++  const totalConstraint = action.totalConstraint;
++  const upperBoundTotal =
++    totalConstraint && (totalConstraint.comparison === "lte" || totalConstraint.comparison === "lt")
++      ? totalConstraint
++      : undefined;
+ 
+   return candidateIds.filter((instanceId) => {
+     const card = getCardForInstance(state, instanceId);
+     return (
+       (card.cardType === "stage" || card.cardType === "character") &&
++      (!upperBoundTotal ||
++        selectionSatisfiesTotalConstraint(state, [instanceId], upperBoundTotal)) &&
+       !isCardPlayRestricted(
+         state,
+         controller,
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
+index 068606c..d50da86 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
+@@ -2962,6 +2962,12 @@ export function resolveEffectChoicePrompt(
+       ) {
+         return false;
+       }
++      // Reject an over-budget pick here, like effectTargetSelection does: the
++      // play action re-checks the total and, past this point, would just play
++      // nothing after the prompt was already consumed.
++      if (!selectionSatisfiesTotalConstraint(state, selectedIds, context.action.totalConstraint)) {
++        return false;
++      }
+       enqueueResolution(
+         state,
+         {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-045-kyo.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-045-kyo.test.ts
+new file mode 100644
+index 0000000..0c3f603
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-045-kyo.test.ts
+@@ -0,0 +1,185 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  eb01Fourtricks025,
++  op03ThunderBolt121,
++  op08CountNiwatori071,
++  op13Higuma013,
++  op17DonMarlon052,
++  op17Gloriosa046,
++  op17Kyo045,
++  op17RocksDXebec039,
++  op17RocksPirates056,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine, type FixtureCardEntry } from "../../../src/index.ts";
++
++// If one of your Characters would be removed from the field by your opponent's
++// effect, you may trash 2 cards from your hand instead.
++// [On Play] Draw 1 card.
++//
++// A replacement effect (8-1-3-4) for every Character you control, Kyo included,
++// with no once-per-turn limit. OP17 FAQ: it cannot be chosen with 0 or 1 cards
++// in hand (8-1-3-4-5).
++function setup({
++  southHand = [eb01Doma005, eb01Fourtricks025, op13Higuma013] as FixtureCardEntry[],
++  southCharacters = [op17Kyo045, op17DonMarlon052] as FixtureCardEntry[],
++  northHand = [op17Gloriosa046, op17RocksPirates056] as FixtureCardEntry[],
++} = {}) {
++  return OnePieceTestEngine.create(
++    {
++      leaderCardId: op17RocksDXebec039,
++      hand: southHand,
++      character: southCharacters,
++    },
++    { hand: northHand, character: [op08CountNiwatori071], activeDon: 10 },
++    { firstPlayer: "south", activeSeat: "north" },
++  );
++}
++
++function southCharacterIds(engine: OnePieceTestEngine) {
++  return engine
++    .getView("south")
++    .players.south.characters.filter((card) => card !== null)
++    .map((card) => card!.instanceId);
++}
++
++describe("OP17-045 Kyo", () => {
++  test("an opposing effect aimed at another of your Characters can be replaced by trashing 2 chosen hand cards", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const marlonId = south.findOnField(op17DonMarlon052);
++    const keptId = engine.findCardInZone("south", "hand", eb01Fourtricks025);
++    const trashedIds = [
++      engine.findCardInZone("south", "hand", eb01Doma005),
++      engine.findCardInZone("south", "hand", op13Higuma013),
++    ];
++
++    north.play(op17Gloriosa046);
++    north.chooseTargets(marlonId);
++
++    const replacement = south.pendingDecision("effectRemovalReplacement").steps[0];
++    if (replacement?.kind !== "confirm") throw new Error("Expected Kyo's optional replacement.");
++    expect(replacement.options.map((option) => option.id).sort()).toEqual(["no", "yes"]);
++    expect(engine.getState().promptQueue.find((p) => p.status === "pending")).toMatchObject({
++      seat: "south",
++      sourceInstanceId: south.findOnField(op17Kyo045),
++    });
++    south.chooseOption("effectRemovalReplacement", "yes");
++
++    const trash = south.pendingDecision("effectTrashFromHandSelection").steps[0];
++    expect(trash).toMatchObject({ kind: "selectEntity", min: 2, max: 2 });
++    south.trashFromHand(...trashedIds);
++
++    expect(southCharacterIds(engine)).toContain(marlonId);
++    expect(south.view().players.south.hand.map((card) => card.instanceId)).toEqual([keptId]);
++    expect(new Set(south.view().players.south.trash.map((card) => card.instanceId))).toEqual(
++      new Set(trashedIds),
++    );
++    expect(engine.getState().players.south.deck).not.toContain(marlonId);
++    expect(south.view().prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("it is not once per turn and protects Kyo itself: two removals in one turn are both replaced", () => {
++    const engine = setup({
++      southHand: [eb01Doma005, eb01Fourtricks025, op13Higuma013, op13Higuma013],
++    });
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const kyoId = south.findOnField(op17Kyo045);
++    const marlonId = south.findOnField(op17DonMarlon052);
++    const domaId = engine.findCardInZone("south", "hand", eb01Doma005);
++    const fourtricksId = engine.findCardInZone("south", "hand", eb01Fourtricks025);
++
++    north.play(op17Gloriosa046);
++    north.chooseTargets(marlonId);
++    south.chooseOption("effectRemovalReplacement", "yes");
++    south.trashFromHand(domaId, fourtricksId);
++
++    north.play(op17RocksPirates056);
++    north.acceptOptional();
++    north.chooseTargets(kyoId);
++    south.chooseOption("effectRemovalReplacement", "yes");
++    // Exactly 2 cards left: both are trashed without a selection prompt.
++
++    expect(new Set(southCharacterIds(engine))).toEqual(new Set([kyoId, marlonId]));
++    expect(south.view().players.south.hand).toHaveLength(0);
++    expect(south.view().players.south.trash).toHaveLength(4);
++    expect(north.view().players.north.hand).toHaveLength(0);
++    expect(south.view().prompts).toHaveLength(0);
++  });
++
++  test("an opposing K.O. effect is a removal too and can be replaced", () => {
++    const engine = setup({ northHand: [op03ThunderBolt121] });
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const marlonId = south.findOnField(op17DonMarlon052);
++    const trashedIds = [
++      engine.findCardInZone("south", "hand", eb01Doma005),
++      engine.findCardInZone("south", "hand", op13Higuma013),
++    ];
++
++    north.play(op03ThunderBolt121);
++    north.acceptOptional();
++    north.chooseTargets(marlonId);
++    south.chooseOption("effectKoReplacement", "yes");
++    south.trashFromHand(...trashedIds);
++
++    expect(southCharacterIds(engine)).toContain(marlonId);
++    expect(new Set(south.view().players.south.trash.map((card) => card.instanceId))).toEqual(
++      new Set(trashedIds),
++    );
++    expect(south.view().prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("declining lets the removal happen and keeps the hand", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const marlonId = south.findOnField(op17DonMarlon052);
++
++    north.play(op17Gloriosa046);
++    north.chooseTargets(marlonId);
++    south.chooseOption("effectRemovalReplacement", "no");
++
++    expect(southCharacterIds(engine)).not.toContain(marlonId);
++    expect(engine.getState().players.south.deck.at(-1)).toBe(marlonId);
++    expect(south.view().players.south.hand).toHaveLength(3);
++    expect(south.view().players.south.trash).toHaveLength(0);
++    expect(south.view().prompts).toHaveLength(0);
++  });
++
++  test("with only 1 card in hand the replacement is not offered", () => {
++    const engine = setup({ southHand: [eb01Doma005] });
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const marlonId = south.findOnField(op17DonMarlon052);
++
++    north.play(op17Gloriosa046);
++    north.chooseTargets(marlonId);
++
++    expect(south.hasPendingChoice()).toBe(false);
++    expect(southCharacterIds(engine)).not.toContain(marlonId);
++    expect(south.view().players.south.hand).toHaveLength(1);
++  });
++
++  test("a K.O. in battle is not an opponent's effect, so it is not replaced", () => {
++    const engine = setup({
++      southCharacters: [op17Kyo045, { card: op17DonMarlon052, rested: true }],
++    });
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const marlonId = south.findOnField(op17DonMarlon052);
++
++    north.attack(op08CountNiwatori071, marlonId);
++    south.chooseCounter();
++
++    expect(south.hasPendingChoice()).toBe(false);
++    expect(southCharacterIds(engine)).not.toContain(marlonId);
++    expect(south.view().players.south.trash.map((card) => card.instanceId)).toEqual([marlonId]);
++    expect(south.view().players.south.hand).toHaveLength(3);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-049-charlotte-linlin.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-049-charlotte-linlin.test.ts
+new file mode 100644
+index 0000000..d521448
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-049-charlotte-linlin.test.ts
+@@ -0,0 +1,139 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  eb01Fourtricks025,
++  op08CountNiwatori071,
++  op13Higuma013,
++  op17CharlotteLinlin049,
++  op17RocksDXebec039,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine, type FixtureCardEntry } from "../../../src/index.ts";
++
++// [On Play] Your opponent chooses one:
++// • Draw 2 cards.
++// • Your opponent trashes 2 cards from their hand.
++// [On Your Opponent's Attack] [Once Per Turn] You may trash 1 card from your
++// hand: Up to 1 of your Leader or Characters gains +1000 power during this battle.
++//
++// OP17 FAQ: "Draw 2" makes the Linlin player draw; on "trash 2" the opponent
++// picks 2 cards from their own hand, and may pick that branch with 1 or 0 cards
++// in hand (1 card: it is trashed; 0 cards: nothing happens).
++function setup({
++  northHand = [eb01Doma005, eb01Fourtricks025, op13Higuma013] as FixtureCardEntry[],
++} = {}) {
++  return OnePieceTestEngine.create(
++    {
++      leaderCardId: op17RocksDXebec039,
++      hand: [op17CharlotteLinlin049],
++      deck: [eb01Doma005, eb01Fourtricks025, op13Higuma013],
++      activeDon: 5,
++    },
++    { hand: northHand },
++    { firstPlayer: "south", activeSeat: "south" },
++  );
++}
++
++describe("OP17-049 Charlotte Linlin", () => {
++  test("[On Play] the opponent is the one who chooses; picking Draw 2 makes Linlin's player draw 2", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const [firstId, secondId] = engine.getState().players.south.deck;
++
++    south.play(op17CharlotteLinlin049);
++
++    expect(south.hasPendingChoice()).toBe(false);
++    const choice = north.pendingDecision("effectActionChoice").steps[0];
++    if (choice?.kind !== "chooseOption") throw new Error("Expected the opponent's choice.");
++    expect(choice.options.map((option) => option.id)).toEqual(["0", "1"]);
++    north.chooseOption("effectActionChoice", "0");
++
++    expect(south.view().players.south.hand.map((card) => card.instanceId)).toEqual([
++      firstId,
++      secondId,
++    ]);
++    expect(north.view().players.north.hand).toHaveLength(3);
++    expect(north.view().players.north.trash).toHaveLength(0);
++    expect(south.view().prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("[On Play] picking the trash branch makes the opponent trash 2 cards of their own choice", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const domaId = engine.findCardInZone("north", "hand", eb01Doma005);
++    const fourtricksId = engine.findCardInZone("north", "hand", eb01Fourtricks025);
++    const higumaId = engine.findCardInZone("north", "hand", op13Higuma013);
++
++    south.play(op17CharlotteLinlin049);
++    north.chooseOption("effectActionChoice", "1");
++
++    expect(south.hasPendingChoice()).toBe(false);
++    const trash = north.pendingDecision("effectTrashFromHandSelection").steps[0];
++    expect(trash).toMatchObject({ kind: "selectEntity", min: 2, max: 2 });
++    if (trash?.kind !== "selectEntity") throw new Error("Expected the opponent's trash choice.");
++    expect(trash.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
++      [domaId, fourtricksId, higumaId].sort(),
++    );
++    north.trashFromHand(domaId, higumaId);
++
++    expect(north.view().players.north.hand.map((card) => card.instanceId)).toEqual([fourtricksId]);
++    expect(new Set(north.view().players.north.trash.map((card) => card.instanceId))).toEqual(
++      new Set([domaId, higumaId]),
++    );
++    expect(south.view().players.south.hand).toHaveLength(0);
++    expect(south.view().prompts).toHaveLength(0);
++  });
++
++  test("[On Play] the opponent may pick the trash branch with 1 card (it is trashed) or 0 cards (nothing happens)", () => {
++    const one = setup({ northHand: [eb01Doma005] });
++    const domaId = one.findCardInZone("north", "hand", eb01Doma005);
++    one.asSouth().play(op17CharlotteLinlin049);
++    one.asNorth().chooseOption("effectActionChoice", "1");
++
++    expect(one.asNorth().view().players.north.hand).toHaveLength(0);
++    expect(
++      one
++        .asNorth()
++        .view()
++        .players.north.trash.map((card) => card.instanceId),
++    ).toEqual([domaId]);
++    expect(one.asSouth().view().players.south.hand).toHaveLength(0);
++    expect(one.getView("south").prompts).toHaveLength(0);
++
++    const none = setup({ northHand: [] });
++    none.asSouth().play(op17CharlotteLinlin049);
++    none.asNorth().chooseOption("effectActionChoice", "1");
++
++    expect(none.asNorth().view().players.north.trash).toHaveLength(0);
++    expect(none.asSouth().view().players.south.hand).toHaveLength(0);
++    expect(none.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("[On Your Opponent's Attack] still trades 1 hand card for +1000 on the attacked Leader", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op17RocksDXebec039,
++        character: [op17CharlotteLinlin049],
++        hand: [eb01Doma005, op13Higuma013],
++      },
++      { character: [op08CountNiwatori071] },
++      { firstPlayer: "south", activeSeat: "north" },
++    );
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const leaderId = south.leader();
++    const trashedId = engine.findCardInZone("south", "hand", op13Higuma013);
++
++    north.attack(op08CountNiwatori071, leaderId);
++    south.acceptOptional();
++    south.choose("effectCostTrashFromHand", [trashedId]);
++    south.chooseTargets(leaderId);
++
++    expect(south.view().players.south.leader?.power).toBe(6000);
++    expect(south.view().players.south.trash.map((card) => card.instanceId)).toEqual([trashedId]);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-050-streusen.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-050-streusen.test.ts
+new file mode 100644
+index 0000000..4802149
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-050-streusen.test.ts
+@@ -0,0 +1,71 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  eb01Fourtricks025,
++  op13Higuma013,
++  op17RocksDXebec039,
++  op17Streusen050,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// [On Play] Look at 2 cards from the top of your deck, reorganize them in any
++// order and place them at the top or bottom of your deck. Then, draw 1 card.
++// OP17 FAQ: the two cards cannot be split (1 on top, 1 at the bottom).
++function setup() {
++  return OnePieceTestEngine.create(
++    {
++      leaderCardId: op17RocksDXebec039,
++      hand: [op17Streusen050],
++      deck: [eb01Doma005, eb01Fourtricks025, op13Higuma013],
++      activeDon: 1,
++    },
++    {},
++    { firstPlayer: "south", activeSeat: "south" },
++  );
++}
++
++describe("OP17-050 Streusen", () => {
++  test("orders the top 2, keeps both on top, then draws the card chosen to be first", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++    const [domaId, fourtricksId, higumaId] = engine.getState().players.south.deck;
++
++    south.play(op17Streusen050);
++
++    const order = south.pendingDecision("effectRearrangeDeckOrder").steps[0];
++    expect(order).toMatchObject({ kind: "orderItems" });
++    if (order?.kind !== "orderItems") throw new Error("Expected Streusen's ordering step.");
++    expect(order.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
++      [domaId, fourtricksId].sort(),
++    );
++    // Nothing is drawn before the looked-at cards are placed.
++    expect(south.view().players.south.hand).toHaveLength(0);
++    south.orderCards("effectRearrangeDeckOrder", [fourtricksId!, domaId!]);
++
++    const position = south.pendingDecision("effectRearrangeDeckPosition").steps[0];
++    if (position?.kind !== "chooseOption") throw new Error("Expected the top-or-bottom choice.");
++    // One choice for both cards: there is no option to split them.
++    expect(position.options.map((option) => option.id)).toEqual(["top", "bottom"]);
++    south.chooseOption("effectRearrangeDeckPosition", "top");
++
++    expect(south.view().players.south.hand.map((card) => card.instanceId)).toEqual([fourtricksId]);
++    expect(engine.getState().players.south.deck).toEqual([domaId, higumaId]);
++    expect(south.view().prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("placing both at the bottom draws the third card and keeps the chosen order below", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++    const [domaId, fourtricksId, higumaId] = engine.getState().players.south.deck;
++
++    south.play(op17Streusen050);
++    south.orderCards("effectRearrangeDeckOrder", [fourtricksId!, domaId!]);
++    south.chooseOption("effectRearrangeDeckPosition", "bottom");
++
++    expect(south.view().players.south.hand.map((card) => card.instanceId)).toEqual([higumaId]);
++    expect(engine.getState().players.south.deck).toEqual([fourtricksId, domaId]);
++    expect(south.view().prompts).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-118-rocks-d-xebec.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-118-rocks-d-xebec.test.ts
+new file mode 100644
+index 0000000..88613c2
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-118-rocks-d-xebec.test.ts
+@@ -0,0 +1,114 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  op07CaptainJohn082,
++  op08Buckin051,
++  op17Barbell053,
++  op17Gloriosa046,
++  op17Kyo045,
++  op17MissBuckinghamStussy054,
++  op17RocksDXebec039,
++  op17RocksDXebec118,
++  op17Shiki048,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine, type FixtureCardEntry } from "../../../src/index.ts";
++
++// [On Play] Draw 1 card and play up to 2 {Rocks Pirates} type cards with
++// different card names and a total cost of 9 or less from your hand.
++//
++// {Rocks Pirates} is an exact type (2-4-3), unlike "a type including"
++// (2-4-3-1): {Former Rocks Pirates} cards do not qualify, while multi-type
++// cards such as Gloriosa (Amazon Lily/Rocks Pirates) and Barbell
++// (Fish-Man/Rocks Pirates) do (2-4-2).
++function setup(hand: FixtureCardEntry[]) {
++  return OnePieceTestEngine.create(
++    {
++      leaderCardId: op17RocksDXebec039,
++      hand: [op17RocksDXebec118, ...hand],
++      deck: [eb01Doma005, eb01Doma005, eb01Doma005],
++      activeDon: 10,
++    },
++    {},
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++}
++
++function fieldIds(engine: OnePieceTestEngine) {
++  return engine
++    .getView("south")
++    .players.south.characters.filter((card) => card !== null)
++    .map((card) => card!.instanceId);
++}
++
++describe("OP17-118 Rocks.D.Xebec", () => {
++  test("[On Play] offers only exact {Rocks Pirates} cards: Former Rocks Pirates are left out, multi-type Rocks cards are in", () => {
++    const engine = setup([op08Buckin051, op07CaptainJohn082, op17Gloriosa046, op17Barbell053]);
++    const south = engine.asSouth();
++    const gloriosaId = engine.findCardInZone("south", "hand", op17Gloriosa046);
++    const barbellId = engine.findCardInZone("south", "hand", op17Barbell053);
++
++    south.play(op17RocksDXebec118);
++
++    // The draw happened first.
++    expect(south.view().players.south.hand).toHaveLength(5);
++    const play = south.pendingDecision("effectPlaySelection").steps[0];
++    expect(play).toMatchObject({ kind: "selectEntity", min: 0, max: 2 });
++    if (play?.kind !== "selectEntity") throw new Error("Expected the replay choice.");
++    expect(play.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
++      [gloriosaId, barbellId].sort(),
++    );
++    expect(op17Gloriosa046.traits).toEqual(["Amazon Lily", "Rocks Pirates"]);
++    expect(op17Barbell053.traits).toEqual(["Fish-Man", "Rocks Pirates"]);
++
++    // Gloriosa (4) + Barbell (5) = 9 fits the cap.
++    south.choosePlay(gloriosaId, barbellId);
++    // Gloriosa's own [On Play] then asks for its optional bottom-deck target.
++    south.chooseNoTargets();
++
++    expect(fieldIds(engine)).toEqual(
++      expect.arrayContaining([south.findOnField(op17RocksDXebec118), gloriosaId, barbellId]),
++    );
++    expect(south.view().prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("[On Play] a selection over the total cost of 9 is rejected and the choice stays open", () => {
++    const engine = setup([op17Shiki048, op17MissBuckinghamStussy054, op17Kyo045]);
++    const south = engine.asSouth();
++    const shikiId = engine.findCardInZone("south", "hand", op17Shiki048);
++    const stussyId = engine.findCardInZone("south", "hand", op17MissBuckinghamStussy054);
++    const kyoId = engine.findCardInZone("south", "hand", op17Kyo045);
++
++    south.play(op17RocksDXebec118);
++    const prompt = south.pendingDecision("effectPlaySelection");
++
++    // Shiki (7) + Stussy (3) = 10.
++    south.expectFailure({
++      type: "resolvePrompt",
++      promptId: prompt.id,
++      selectedIds: [shikiId, stussyId],
++    });
++    expect(south.pendingDecision("effectPlaySelection").id).toBe(prompt.id);
++    expect(fieldIds(engine)).not.toContain(shikiId);
++
++    // Shiki (7) + Kyo (2) = 9 is accepted; Kyo's [On Play] draws 1.
++    south.choosePlay(shikiId, kyoId);
++
++    expect(fieldIds(engine)).toEqual(expect.arrayContaining([shikiId, kyoId]));
++    expect(south.view().players.south.hand.map((card) => card.instanceId)).toContain(stussyId);
++    expect(south.view().prompts).toHaveLength(0);
++  });
++
++  test("[On Play] a card whose own cost is over 9 is never offered", () => {
++    const engine = setup([op17RocksDXebec118, op17Kyo045]);
++    const south = engine.asSouth();
++    const kyoId = engine.findCardInZone("south", "hand", op17Kyo045);
++
++    south.play(op17RocksDXebec118);
++
++    const play = south.pendingDecision("effectPlaySelection").steps[0];
++    if (play?.kind !== "selectEntity") throw new Error("Expected the replay choice.");
++    expect(play.candidates.map((candidate) => candidate.ref.id)).toEqual([kyoId]);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op17-055-there-s-no-authority-in-the-world-that-lasts-forever.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op17-055-there-s-no-authority-in-the-world-that-lasts-forever.test.ts
+new file mode 100644
+index 0000000..18fcc11
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op17-055-there-s-no-authority-in-the-world-that-lasts-forever.test.ts
+@@ -0,0 +1,72 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  op17Gloriosa046,
++  op17Kyo045,
++  op17RocksDXebec039,
++  op17RocksDXebec118,
++  op17ThereSNoAuthorityInTheWorldThatLastsForever055,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// [Main] You may rest 1 of your DON!! cards: Up to 1 of your [Rocks.D.Xebec]
++// gains [Unblockable] during this turn.
++//
++// [Rocks.D.Xebec] means any card with that name (2-1-2), so the Leader OP17-039
++// is a legal target, not only the OP17-118 Character.
++const event = op17ThereSNoAuthorityInTheWorldThatLastsForever055;
++
++describe("OP17-055 There's No Authority in the World That Lasts Forever!!!", () => {
++  test("[Main] makes the Leader Rocks.D.Xebec unblockable: the opposing Blocker is never offered", () => {
++    const engine = OnePieceTestEngine.create(
++      { leaderCardId: op17RocksDXebec039, hand: [event], activeDon: 1 },
++      { character: [op17Gloriosa046] },
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const leaderId = south.leader();
++    const gloriosaId = north.findOnField(op17Gloriosa046);
++    const lifeBefore = north.view().players.north.lifeCount;
++
++    south.play(event);
++    south.acceptOptional();
++    const target = south.pendingDecision("effectTargetSelection").steps[0];
++    expect(target).toMatchObject({ kind: "selectEntity", min: 0, max: 1 });
++    if (target?.kind !== "selectEntity") throw new Error("Expected the Unblockable target.");
++    expect(target.candidates.map((candidate) => candidate.ref.id)).toEqual([leaderId]);
++    south.chooseTargets(leaderId);
++    expect(south.view().players.south).toMatchObject({ activeDon: 0, restedDon: 1 });
++
++    south.attack(leaderId, north.leader());
++
++    expect(north.hasPendingChoice()).toBe(false);
++    expect(north.view().players.north.lifeCount).toBe(lifeBefore - 1);
++    expect(
++      north.view().players.north.characters.find((card) => card?.instanceId === gloriosaId)?.rested,
++    ).toBe(false);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("[Main] offers the Leader and the OP17-118 Character, but no other Character", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op17RocksDXebec039,
++        hand: [event],
++        character: [op17RocksDXebec118, op17Kyo045],
++        activeDon: 1,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++
++    south.play(event);
++    south.acceptOptional();
++    const target = south.pendingDecision("effectTargetSelection").steps[0];
++    if (target?.kind !== "selectEntity") throw new Error("Expected the Unblockable target.");
++    expect(target.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
++      [south.leader(), south.findOnField(op17RocksDXebec118)].sort(),
++    );
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op17-056-rocks-pirates.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op17-056-rocks-pirates.test.ts
+new file mode 100644
+index 0000000..a99e5c2
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op17-056-rocks-pirates.test.ts
+@@ -0,0 +1,86 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  eb01Fourtricks025,
++  op08Buckin051,
++  op17Kyo045,
++  op17RocksDXebec039,
++  op17RocksPirates056,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// [Main] You may rest 5 of your DON!! cards: Return up to 1 Character with a
++// cost of 6 or less to the owner's hand.
++// [Counter] Up to 1 of your Leader with a type including "Rocks Pirates" or up
++// to 1 of your Characters with a type including "Rocks Pirates" gains +2000
++// power during this battle.
++//
++// "A type including" matches part of a type (2-4-3-1), so OP08-051 Buckin
++// ({Former Rocks Pirates}) is a legal target and a non-Rocks Character is not.
++function setup({ kyoRested = false } = {}) {
++  return OnePieceTestEngine.create(
++    {
++      character: [{ card: eb01Fourtricks025, playedOnTurn: 0 }],
++    },
++    {
++      leaderCardId: op17RocksDXebec039,
++      hand: [op17RocksPirates056],
++      character: [{ card: op17Kyo045, rested: kyoRested }, op08Buckin051, eb01Doma005],
++    },
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++}
++
++describe("OP17-056 Rocks Pirates", () => {
++  test("[Counter] costs no DON!! and gives the attacked Rocks Pirates Leader +2000, repelling the attack", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const leaderId = north.leader();
++    const eventId = engine.findCardInZone("north", "hand", op17RocksPirates056);
++    const lifeBefore = north.view().players.north.lifeCount;
++    expect(north.view().players.north.activeDon).toBe(0);
++
++    south.attack(eb01Fourtricks025, leaderId);
++    const counter = north.pendingDecision("battleCounter").steps[0];
++    if (counter?.kind !== "selectEntity") throw new Error("Expected the Counter step.");
++    expect(counter.candidates.map((candidate) => candidate.ref.id)).toContain(eventId);
++    north.chooseCounter(op17RocksPirates056);
++
++    const target = north.pendingDecision("effectTargetSelection").steps[0];
++    expect(target).toMatchObject({ kind: "selectEntity", min: 0, max: 1 });
++    if (target?.kind !== "selectEntity") throw new Error("Expected the +2000 target.");
++    expect(target.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
++      [leaderId, north.findOnField(op17Kyo045), north.findOnField(op08Buckin051)].sort(),
++    );
++    expect(north.view().players.north.leader?.power).toBe(5000);
++    north.chooseTargets(leaderId);
++
++    const view = north.view();
++    expect(view.players.north.lifeCount).toBe(lifeBefore);
++    expect(view.players.north.trash.map((card) => card.instanceId)).toEqual([eventId]);
++    expect(view.prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("[Counter] saves an attacked Rocks Pirates Character, and the +2000 ends with the battle", () => {
++    const engine = setup({ kyoRested: true });
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const kyoId = north.findOnField(op17Kyo045);
++    const powerOf = (instanceId: string) =>
++      north.view().players.north.characters.find((card) => card?.instanceId === instanceId)?.power;
++
++    // Kyo 4000 would lose to a 5000 attacker; with +2000 it holds at 6000.
++    south.attack(eb01Fourtricks025, kyoId);
++    north.chooseCounter(op17RocksPirates056);
++    north.chooseTargets(kyoId);
++
++    expect(powerOf(kyoId)).toBe(4000);
++    expect(north.view().players.north.trash.map((card) => card.cardId)).toEqual([
++      op17RocksPirates056.id,
++    ]);
++    expect(north.view().prompts).toHaveLength(0);
++  });
++});

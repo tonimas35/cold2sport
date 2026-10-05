@@ -1,0 +1,1965 @@
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+index 3f51e28..edcb1c2 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+@@ -210,7 +210,7 @@ reconciles catalog entries.
+ | OP01-013     | Sanji                                           | verified | Official top-Life cost, turn power, rested DON!! transfer, and once per turn                                                                                                                             |
+ | OP01-014     | Jinbe                                           | verified | Blocker, attached-DON On Block timing, filtered hand play, and battle resume                                                                                                                             |
+ | OP01-015     | Tony Tony.Chopper                               | verified | Attached-DON attack, hand-trash cost, and included-trait trash recovery                                                                                                                                  |
+-| OP01-016     | Nami                                            | verified | Included Straw Hat search, self-name exclusion, reveal, and remainder ordering                                                                                                                           |
++| OP01-016     | Nami                                            | verified | Included Straw Hat search of any card category (2023 errata), self-name exclusion, reveal, and remainder ordering; Counter 1000                                                                                                                           |
+ | OP01-017     | Nico Robin                                      | verified | DON!! x1 When Attacking; opposing current-power filter; selected Character K.O.                                                                                                                          |
+ | OP01-018     | Hajrudin                                        | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
+ | OP01-019     | Bartolomeo                                      | verified | Public Blocker retarget; DON!! x2 opponent-turn power and Refresh cleanup                                                                                                                                |
+@@ -1127,7 +1127,7 @@ reconciles catalog entries.
+ | OP11-009 | Nico Robin | verified | DON!! x2 opposing power reduction through the opponent's next turn |
+ | OP11-010 | Hibari | verified | On Play opposing -2000; attack power gain and Navy Leader active-Character permission |
+ | OP11-011     | Bins                                            | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
+-| OP11-012 | Franky | verified | Own-turn opponent Event Counter provenance, all-Character boost, and once-per-turn limit |
++| OP11-012 | Franky | verified | Own-turn opponent Event Counter provenance, all-Character boost, and once-per-turn limit; Straw Hat Crew type (not SWORD) |
+ | OP11-013 | Prince Grus | verified | Attack-time Blocker suppression for power-2000-or-less Characters |
+ | OP11-014 | Borsalino | verified | Blocker; self-rest activation and included Navy active-Character attack permission |
+ | OP11-015     | Mocha                                           | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
+@@ -1421,7 +1421,7 @@ reconciles catalog entries.
+ | OP14-028 | Johnny | verified | Self-only own-turn rest trigger, optional rested cost-2-or-less opposing K.O. filtering, ownership, selected identity, visible trash result, and decline |
+ | OP14-029 | Tashigi | verified | Opponent-turn self-removal replacement with optional selected own-card rest and decline; Activate: Main optional two-card rest cost, +2000 duration through opponent next End Phase, cleanup, and once-per-turn |
+ | OP14-030     | Chaka & Pell - OP14-030                         | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
+-| OP14-031 | Nami | verified | Blocker; On Play optional two-target cost-8 rest filtering and physical identities; independent delayed end-of-turn up-to-5 DON!! activation |
++| OP14-031 | Nami | verified | Blocker; On Play optional two-target cost-8 rest filtering and physical identities; independent delayed end-of-turn up-to-5 DON!! activation; Counter 1000 |
+ | OP14-032 | Humandrill | verified | Self-only own-turn rest trigger, optional cost-4-or-less opposing Character filtering, ownership, selected rest result, and other-card-rest negative |
+ | OP14-033 | Perona - OP14-033 | verified | On Play optional two-target cost-5 cannot-rest selection through opponent next End Phase and expiry; On K.O. optional own-card rest cost, filtered green cost-5 hand play, ownership, and decline |
+ | OP14-034 | Monkey.D.Luffy - OP14-34 | verified | Own-turn all-green included Straw Hat base-cost-4 +1000 aura with negatives/cleanup; once-per-turn opponent-effect K.O. replacement for another matching Character, own-Character rest, decline, trait/source negatives, and battle exclusion |
+@@ -1868,8 +1868,11 @@ reconciles catalog entries.
+ | ST19-002     | Sengoku - ST19-002 (Pirate Foil)                | verified | Two black included-Navy hand-trash cost and included-Navy Leader-gated draw                                                                                                                              |
+ | ST20-003 | Charlotte Brulee (Pirate Foil) | verified | Controller-owned Life Trigger; either-owner or skip choice; private physical top-Life placement; same Trigger card returned to hand |
+ | ST21-003 | Sanji - ST21-003 (Pirate Foil) | verified | Optional own included-Straw-Hat power-6000 target; selected-attacker-only Blocker prohibition; decline leaves attack blockable |
++| ST21-014 | Monkey.D.Luffy | verified | Rush attack on the turn played; When Attacking gives 0-1 rested DON!! to the Leader or a Character |
+ | ST26-005 | Monkey.D.Luffy | verified | Dual-trigger DON!!-2 set-base-power 7000 on multicolored Straw Hat Leader (opponent-DON negative; expiry via duration) |
+ | ST27-005 | Marshall.D.Teach | verified | activateMain |
++| ST30-012 | Monkey.D.Luffy | verified | Optional rest-1-DON!! On Play cost grants Rush this turn (unpayable with 0 active DON!!, ST-30 FAQ); When Attacking rests only an opposing [Blocker] Character |
++| ST31-001 | Sanji | verified | DON!! x2 Rush on the turn played; On Play draw then play a Straw Hat Crew Character of cost 5 or less other than [Sanji] (drawn card eligible) |
+ | ST31-004 | Monkey.D.Luffy | verified | On Play per-Straw-Hat debuff via amountFromMatchingCards (trait mutation killed); Rush threshold; self-count always >=1 |
+ | ST32-002 | Kouzuki Oden | verified | onPlay |
+ | ST34-002 | Charlotte Cracker | verified | On Play action-level Big Mom Pirates Leader gate on the rested DON!! add only; Then K.O. cost 2 or less resolves with any Leader |
+@@ -1878,7 +1881,7 @@ reconciles catalog entries.
+ 
+ ## Progress
+ 
+-- Canonical characters: 1868.
++- Canonical characters: 1871.
+ - Verified: 1344.
+ - Structured pending: 262.
+ - Printed but unstructured: 37.
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
+index 55a8ad8..0a1e025 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
+@@ -256,7 +256,7 @@ reconciles catalog entries.
+ | OP11-116 | Merman Combat Ultramarine | verified | Owner-neutral Main and opponent-only Trigger route chosen Characters to top/bottom owner Life face-up |
+ | OP12-016 | To Never Doubt--That Is Power! | verified | Main give-2-DON blocker denial; [Counter] +2000 Character save |
+ | OP12-017 | Color of Observation Haki | verified | Main give-DON look-4 red Event reveal with bottom-order |
+-| OP12-018 | Color of the Supreme King Haki | verified | [Counter] +2000 Character boost with optional rest-DON -1000 opponent board drop |
++| OP12-018 | Color of the Supreme King Haki | verified | [Counter] +2000 Character boost, then a separate optional rest-1-DON!! (not offered with 0 active DON!!) for the -1000 opponent board drop |
+ | OP12-019 | Color of Arms Haki | verified | Main give-DON boosts [Silvers Rayleigh]; [Counter] +2000 save |
+ | OP12-037 | Demon Aura Nine Sword Style Asura Blades Drawn Dead Man's Game | verified | Optional three-DON!! cost and aggregate Character/DON!! rest choice; mandatory Leader Counter power |
+ | OP12-038 | Two-Sword Style Rashomon | verified | Optional two-DON!! cost before two rested base-cost-4 K.O.s; mandatory Leader Counter power |
+@@ -294,7 +294,7 @@ reconciles catalog entries.
+ | OP13-117 | Gum-Gum Dawn Stamp | verified | Face-up top-Life cost before base-cost-6 K.O.; Trigger draws one without payment |
+ | OP14-017 | Chambres | verified | Exactly two opposing base-power-9000-or-less Characters swap printed base power for the turn |
+ | OP14-018 | Time for the Counterattack | verified | Either-field power-8000 gate before Counter power; Trigger plays a red power-2000 Character |
+-| OP14-019 | I Have a Plan to Take Down One of the Four Emperors!! | verified | Alternative included Supernovas/Straw Hat Crew Character search and ordering; Trigger draws one |
++| OP14-019 | I Have a Plan to Take Down One of the Four Emperors!! | verified | Cost 1; alternative included Supernovas/Straw Hat Crew Character search and ordering; Trigger draws one |
+ | OP14-036 | Strive to Surpass me, Roronoa Zoro!!! | verified | Own-card rest cost before Counter power or Trigger's opposing base-power-7000 rest |
+ | OP14-037 | For Fun | verified | Controller-selected three-card rest cost before rested base-power-7000 K.O.; Leader Counter power |
+ | OP14-038 | I Never Bother to Remember the Faces of Trash | verified | Controller-selected two-card rest cost, draw then opposing rest; Leader Counter power |
+@@ -372,10 +372,11 @@ reconciles catalog entries.
+ | ST12-017 | Plastic Surgery Shot - ST12-017 (Pirate Foil) | verified | Counter power, top-card reveal, eligible cost-2 play or controller top/bottom remainder choice |
+ | ST13-019 | The Three Brothers' Bond (Pirate Foil) | verified | Trigger activates cost-5 Sabo/Ace/Luffy alternative search and ordered bottom remainder |
+ | ST14-016 | I Have My Crew!! (Pirate Foil) | verified | Main draws then grants cost through opponent turn; Trigger K.O.s eligible opposing Character |
++| ST21-017 | Gum-Gum Mole Pistol | verified | Main -5000, then K.O. 2000-or-less only with an own 6000-power Character (current power; may differ from the -5000 target, ST-21 FAQ); Trigger activates Main |
+ 
+ ## Progress
+ 
+-- Canonical events: 365.
++- Canonical events: 366.
+ - Verified: 303.
+ - Structured pending: 54.
+ - Printed but unstructured: 8.
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-leader-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-leader-inventory.md
+index 0efa9c9..7aff6ed 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-leader-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-leader-inventory.md
+@@ -124,10 +124,11 @@ reconciles catalog entries.
+ | OP17-099 | Charlotte Linlin | verified | Printed behavior is unstructured |
+ | PRB01-001    | Sanji (PRB01-001)                | verified | No-On-Play and cost-8 candidate boundary; granted Rush; same-turn public Character attack                                               |
+ | ST01-001     | Monkey.D.Luffy                   | verified | Direct 0–1 rested-DON!! choice; Leader-or-Character recipient mapping; attachment and power                                             |
++| ST30-001 | Luffy & Ace | verified | Permanent -2000 while an own Character has 7000+ base power (DON!!-boosted 6000 does not count); Opponent's Turn +3000 to [Portgas.D.Ace]/[Monkey.D.Luffy] Characters only, not this Leader (ST-30 FAQ) |
+ 
+ ## Progress
+ 
+-- Canonical leaders: 117.
++- Canonical leaders: 118.
+ - Verified: 97.
+ - Structured pending: 15.
+ - Printed but unstructured: 5.
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-stage-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-stage-inventory.md
+index 5e63dc8..215ab00 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-stage-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-stage-inventory.md
+@@ -51,10 +51,11 @@ reconciles catalog entries.
+ | OP17-057 | Fullalead | verified | Opponent-attack window: rest Stage + trash hand card, Rocks-trait Leader +1000 for the battle (trait mutation killed; non-Rocks decline) |
+ | ST01-017 | Thousand Sunny | verified | Stage-rest activation; inclusive Straw Hat Crew Leader-or-Character candidates; exclusion, power, and duration boundaries |
+ | ST14-017 | Thousand Sunny (Pirate Foil) | verified | On Play Leader power and permanent trait-based cost modifier with canonical default duration |
++| ST31-005 | Thousand Sunny | verified | On Play top-5 search of any Straw Hat Crew card, remainder to bottom; Stage-rest activation gives 0-1 rested DON!! only to a [Monkey.D.Luffy] Leader or Character |
+ 
+ ## Progress
+ 
+-- Canonical stages: 44.
++- Canonical stages: 45.
+ - Verified: 39.
+ - Structured pending: 4.
+ - Printed but unstructured: 1.
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/index.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/index.ts
+index 764e945..9e74206 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/index.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/index.ts
+@@ -1866,3 +1866,6 @@ export { st32KouzukiOden002 } from "./st32-002-kouzuki-oden.ts";
+ export { st34CharlotteBrulee003 } from "./st34-003-charlotte-brulee.ts";
+ export { st34CharlotteCracker002 } from "./st34-002-charlotte-cracker.ts";
+ export { st34CharlotteLinlin004 } from "./st34-004-charlotte-linlin.ts";
++export { st21MonkeyDLuffy014 } from "./st21-014-monkey-d-luffy.ts";
++export { st30MonkeyDLuffy012 } from "./st30-012-monkey-d-luffy.ts";
++export { st31Sanji001 } from "./st31-001-sanji.ts";
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op01-016-nami.i18n.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op01-016-nami.i18n.ts
+index ae0aec3..73a2c8b 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op01-016-nami.i18n.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op01-016-nami.i18n.ts
+@@ -4,7 +4,7 @@ export const op01Nami016I18n: OPCardI18n = {
+   en: {
+     name: "Nami",
+     effect:
+-      '[On Play] Look at 5 cards from the top of your deck; reveal up to 1 "Straw Hat Crew" type Character card other than [Nami] and add it to your hand. Then, place the rest at the bottom of your deck in any order.  This card has been officially errata\'d.',
++      "[On Play] Look at 5 cards from the top of your deck; reveal up to 1 {Straw Hat Crew} type card other than [Nami] and add it to your hand. Then, place the rest at the bottom of your deck in any order.",
+     imageUrl: "https://www.optcgapi.com/media/static/Card_Images/OP01-016.jpg",
+   },
+ };
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op01-016-nami.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op01-016-nami.ts
+index d0053c1..372f8eb 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op01-016-nami.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op01-016-nami.ts
+@@ -46,12 +46,13 @@ export const op01Nami016: CharacterCard = {
+   setId: "OP01",
+   cost: 1,
+   power: 2000,
+-  counter: 2000,
++  // Official card list (series 569101) prints Counter 1000.
++  counter: 1000,
+   traits: ["Straw Hat Crew"],
+   attribute: "special",
+ 
+   effect:
+-    '[On Play] Look at 5 cards from the top of your deck; reveal up to 1 "Straw Hat Crew" type Character card other than [Nami] and add it to your hand. Then, place the rest at the bottom of your deck in any order.  This card has been officially errata\'d.',
++    "[On Play] Look at 5 cards from the top of your deck; reveal up to 1 {Straw Hat Crew} type card other than [Nami] and add it to your hand. Then, place the rest at the bottom of your deck in any order.",
+   effects: {
+     effects: [
+       {
+@@ -73,15 +74,13 @@ export const op01Nami016: CharacterCard = {
+                 filter: "excludeName",
+                 value: "Nami",
+               },
++              // Errata of 2023-02-17: "{Straw Hat Crew} type card" of any
++              // category, no longer "Character card" (official errata list).
+               {
+                 filter: "trait",
+                 value: "Straw Hat Crew",
+                 match: "includes",
+               },
+-              {
+-                filter: "cardCategory",
+-                value: "character",
+-              },
+             ],
+             revealDestination: "hand",
+             remainderPosition: "bottom",
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op11-012-franky.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op11-012-franky.ts
+index fbfd395..fa8989a 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op11-012-franky.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op11-012-franky.ts
+@@ -23,7 +23,8 @@ export const op11Franky012: CharacterCard = {
+   cost: 4,
+   power: 4000,
+   counter: 2000,
+-  traits: ["Navy SWORD"],
++  // Official card list (series 569111): Type "Straw Hat Crew"; the imported data said "Navy SWORD".
++  traits: ["Straw Hat Crew"],
+   attribute: "strike",
+   effect:
+     "[Your Turn] [Once Per Turn] When your opponent activates an Event, all of your Characters gain +2000 power during this turn.",
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op14-031-nami.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op14-031-nami.ts
+index 4b28f53..6405744 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op14-031-nami.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op14-031-nami.ts
+@@ -31,6 +31,8 @@ export const op14eb04Nami031: CharacterCard = {
+   setId: "OP14",
+   cost: 4,
+   power: 2000,
++  // Official card list (series 569114) prints Counter 1000; the imported data had none.
++  counter: 1000,
+   traits: ["FILM", "Straw Hat Crew"],
+   attribute: "special",
+   effect:
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st21-014-monkey-d-luffy.i18n.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st21-014-monkey-d-luffy.i18n.ts
+new file mode 100644
+index 0000000..f1dfba4
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st21-014-monkey-d-luffy.i18n.ts
+@@ -0,0 +1,10 @@
++import type { OPCardI18n } from "@tcg/op-types";
++
++export const st21MonkeyDLuffy014I18n: OPCardI18n = {
++  en: {
++    name: "Monkey.D.Luffy",
++    effect:
++      "[Rush] (This card can attack on the turn in which it is played.)\n[When Attacking] Give up to 1 rested DON!! card to your Leader or 1 of your Characters.",
++    imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST21-014.jpg",
++  },
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st21-014-monkey-d-luffy.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st21-014-monkey-d-luffy.ts
+new file mode 100644
+index 0000000..074fed7
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st21-014-monkey-d-luffy.ts
+@@ -0,0 +1,52 @@
++// Official text: https://en.onepiece-cardgame.com/cardlist/?series=569021
++import type { CharacterCard } from "@tcg/op-types";
++import { st21MonkeyDLuffy014I18n } from "./st21-014-monkey-d-luffy.i18n.ts";
++
++export const st21MonkeyDLuffy014: CharacterCard = {
++  id: "ST21-014",
++  canonicalId: "ST21-014",
++  slug: "monkey-d-luffy/st21-014",
++  name: "Monkey.D.Luffy",
++  printings: [
++    {
++      id: "ST21-014",
++      artId: "ST21-014",
++      setCode: "ST21",
++      collectorNumber: "014",
++      rarity: "SR",
++      imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST21-014.jpg",
++      label: "Monkey.D.Luffy (014)",
++    },
++  ],
++  cardType: "character",
++  color: ["red"],
++  rarity: "SR",
++  setId: "ST21",
++  cost: 5,
++  power: 6000,
++  traits: ["The Four Emperors", "Straw Hat Crew"],
++  attribute: "strike",
++  effect:
++    "[Rush] (This card can attack on the turn in which it is played.)\n[When Attacking] Give up to 1 rested DON!! card to your Leader or 1 of your Characters.",
++  effects: {
++    keywords: ["rush"],
++    effects: [
++      {
++        trigger: "whenAttacking",
++        actions: [
++          {
++            action: "giveDon",
++            target: {
++              player: "self",
++              zones: ["leader", "character"],
++              count: { amount: 1 },
++            },
++            count: { amount: 1, upTo: true },
++            donState: "rested",
++          },
++        ],
++      },
++    ],
++  },
++  i18n: st21MonkeyDLuffy014I18n,
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st30-012-monkey-d-luffy.i18n.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st30-012-monkey-d-luffy.i18n.ts
+new file mode 100644
+index 0000000..dadbf51
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st30-012-monkey-d-luffy.i18n.ts
+@@ -0,0 +1,10 @@
++import type { OPCardI18n } from "@tcg/op-types";
++
++export const st30MonkeyDLuffy012I18n: OPCardI18n = {
++  en: {
++    name: "Monkey.D.Luffy",
++    effect:
++      "[On Play] You may rest 1 of your DON!! cards: This Character gains [Rush] during this turn.\n(This card can attack on the turn in which it is played.)\n[When Attacking] Rest up to 1 of your opponent's [Blocker] Characters.",
++    imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST30-012.jpg",
++  },
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st30-012-monkey-d-luffy.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st30-012-monkey-d-luffy.ts
+new file mode 100644
+index 0000000..4c58b78
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st30-012-monkey-d-luffy.ts
+@@ -0,0 +1,70 @@
++// Official text: https://en.onepiece-cardgame.com/cardlist/?series=569030
++// ST-30 FAQ: with no active DON!! left after paying for this Character, the
++// "rest 1 of your DON!! cards" cost cannot be paid, so it does not gain [Rush].
++import type { CharacterCard } from "@tcg/op-types";
++import { st30MonkeyDLuffy012I18n } from "./st30-012-monkey-d-luffy.i18n.ts";
++
++export const st30MonkeyDLuffy012: CharacterCard = {
++  id: "ST30-012",
++  canonicalId: "ST30-012",
++  slug: "monkey-d-luffy/st30-012",
++  name: "Monkey.D.Luffy",
++  printings: [
++    {
++      id: "ST30-012",
++      artId: "ST30-012",
++      setCode: "ST30",
++      collectorNumber: "012",
++      rarity: "SR",
++      imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST30-012.jpg",
++      label: "Monkey.D.Luffy (012)",
++    },
++  ],
++  cardType: "character",
++  color: ["green"],
++  rarity: "SR",
++  setId: "ST30",
++  cost: 4,
++  power: 6000,
++  traits: ["Impel Down", "Straw Hat Crew"],
++  attribute: "strike",
++  effect:
++    "[On Play] You may rest 1 of your DON!! cards: This Character gains [Rush] during this turn.\n(This card can attack on the turn in which it is played.)\n[When Attacking] Rest up to 1 of your opponent's [Blocker] Characters.",
++  effects: {
++    effects: [
++      {
++        trigger: "onPlay",
++        costs: [{ cost: "restDon", amount: 1 }],
++        actions: [
++          {
++            action: "grantKeyword",
++            target: {
++              player: "self",
++              zones: ["character"],
++              count: { amount: 1 },
++              self: true,
++            },
++            keyword: "rush",
++            duration: "thisTurn",
++          },
++        ],
++        optional: true,
++      },
++      {
++        trigger: "whenAttacking",
++        actions: [
++          {
++            action: "rest",
++            target: {
++              player: "opponent",
++              zones: ["character"],
++              count: { amount: 1, upTo: true },
++              filters: [{ filter: "hasKeyword", value: "blocker" }],
++            },
++          },
++        ],
++      },
++    ],
++  },
++  i18n: st30MonkeyDLuffy012I18n,
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st31-001-sanji.i18n.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st31-001-sanji.i18n.ts
+new file mode 100644
+index 0000000..924f8e1
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st31-001-sanji.i18n.ts
+@@ -0,0 +1,10 @@
++import type { OPCardI18n } from "@tcg/op-types";
++
++export const st31Sanji001I18n: OPCardI18n = {
++  en: {
++    name: "Sanji",
++    effect:
++      "[DON!! x2] This Character gains [Rush].\n(This card can attack on the turn in which it is played.)\n[On Play] Draw 1 card and play up to 1 {Straw Hat Crew} type Character card with a cost of 5 or less other than [Sanji] from your hand.",
++    imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST31-001.jpg",
++  },
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st31-001-sanji.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st31-001-sanji.ts
+new file mode 100644
+index 0000000..f21cfa6
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st31-001-sanji.ts
+@@ -0,0 +1,73 @@
++// Official text: https://en.onepiece-cardgame.com/cardlist/?series=569031
++import type { CharacterCard } from "@tcg/op-types";
++import { st31Sanji001I18n } from "./st31-001-sanji.i18n.ts";
++
++export const st31Sanji001: CharacterCard = {
++  id: "ST31-001",
++  canonicalId: "ST31-001",
++  slug: "sanji/st31-001",
++  name: "Sanji",
++  printings: [
++    {
++      id: "ST31-001",
++      artId: "ST31-001",
++      setCode: "ST31",
++      collectorNumber: "001",
++      rarity: "SR",
++      imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST31-001.jpg",
++      label: "Sanji (001)",
++    },
++  ],
++  cardType: "character",
++  color: ["red"],
++  rarity: "SR",
++  setId: "ST31",
++  cost: 5,
++  power: 3000,
++  counter: 1000,
++  traits: ["Straw Hat Crew"],
++  attribute: "strike",
++  effect:
++    "[DON!! x2] This Character gains [Rush].\n(This card can attack on the turn in which it is played.)\n[On Play] Draw 1 card and play up to 1 {Straw Hat Crew} type Character card with a cost of 5 or less other than [Sanji] from your hand.",
++  effects: {
++    permanentEffects: [
++      {
++        conditions: [{ condition: "donAttached", amount: 2 }],
++        actions: [
++          {
++            action: "grantKeyword",
++            target: {
++              player: "self",
++              zones: ["character"],
++              count: { amount: 1 },
++              self: true,
++            },
++            keyword: "rush",
++            duration: "permanent",
++          },
++        ],
++      },
++    ],
++    effects: [
++      {
++        trigger: "onPlay",
++        // The draw resolves first, so the card just drawn may be the one played.
++        actions: [
++          { action: "draw", player: "self", amount: 1 },
++          {
++            action: "play",
++            source: { player: "self", zone: "hand" },
++            count: { amount: 1, upTo: true },
++            filters: [
++              { filter: "cardCategory", value: "character" },
++              { filter: "trait", value: "Straw Hat Crew", match: "includes" },
++              { filter: "cost", comparison: "lte", value: 5 },
++              { filter: "excludeName", value: "Sanji" },
++            ],
++          },
++        ],
++      },
++    ],
++  },
++  i18n: st31Sanji001I18n,
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/index.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/index.ts
+index 9008b24..3b8291a 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/index.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/index.ts
+@@ -363,3 +363,4 @@ export { op17ThePowerToDestroyTheWorld018 } from "./op17-018-the-power-to-destro
+ export { op17ThereSNoAuthorityInTheWorldThatLastsForever055 } from "./op17-055-there-s-no-authority-in-the-world-that-lasts-forever.ts";
+ export { op17WithdrawNowAndAllowMeToSaveFace036 } from "./op17-036-withdraw-now-and-allow-me-to-save-face.ts";
+ export { op17WoRoRoRoRoIThinkIVeSoberedUp076 } from "./op17-076-wo-ro-ro-ro-ro-i-think-i-ve-sobered-up.ts";
++export { st21GumGumMolePistol017 } from "./st21-017-gum-gum-mole-pistol.ts";
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op12-018-color-of-the-supreme-king-haki.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op12-018-color-of-the-supreme-king-haki.ts
+index 09a0992..10d8ed3 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op12-018-color-of-the-supreme-king-haki.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op12-018-color-of-the-supreme-king-haki.ts
+@@ -28,7 +28,6 @@ export const op12ColorOfTheSupremeKingHaki018: EventCard = {
+     effects: [
+       {
+         trigger: "counter",
+-        optional: true,
+         actions: [
+           {
+             action: "modifyPower",
+@@ -43,21 +42,16 @@ export const op12ColorOfTheSupremeKingHaki018: EventCard = {
+             value: 2000,
+             duration: "thisBattle",
+           },
+-          {
+-            action: "rest",
+-            target: {
+-              player: "self",
+-              zones: ["costArea"],
+-              count: {
+-                amount: 1,
+-              },
+-            },
+-            condition: {
+-              condition: "activeDonCount",
+-              comparison: "gte",
+-              value: 1,
+-            },
+-          },
++        ],
++      },
++      {
++        // "Then, you may rest 1 of your DON!! cards. If you do, ...": modelled
++        // like a "may" cost (8-3-1-3, 8-3-1-4). With no active DON!! nothing
++        // can be rested, so the -1000 does not happen; declining the rest
++        // keeps the +2000 above (it is a separate "Then" step, 4-10-2).
++        trigger: "counter",
++        costs: [{ cost: "restDon", amount: 1 }],
++        actions: [
+           {
+             action: "modifyPower",
+             target: {
+@@ -69,14 +63,9 @@ export const op12ColorOfTheSupremeKingHaki018: EventCard = {
+             },
+             value: -1000,
+             duration: "thisTurn",
+-            condition: {
+-              condition: "restedCardCount",
+-              player: "self",
+-              comparison: "gte",
+-              value: 1,
+-            },
+           },
+         ],
++        optional: true,
+       },
+     ],
+   },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op14-019-i-have-a-plan-to-take-down-one-of-the-four-emperors.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op14-019-i-have-a-plan-to-take-down-one-of-the-four-emperors.ts
+index 34d83dc..2fa5182 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op14-019-i-have-a-plan-to-take-down-one-of-the-four-emperors.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op14-019-i-have-a-plan-to-take-down-one-of-the-four-emperors.ts
+@@ -20,7 +20,8 @@ export const op14eb04IHaveAPlanToTakeDownOneOfTheFourEmperors019: EventCard = {
+   color: ["red"],
+   rarity: "UC",
+   setId: "OP14",
+-  cost: 4,
++  // Official card list (series 569114) prints cost 1; the imported data said 4.
++  cost: 1,
+   trigger: "Draw 1 card.",
+   traits: ["Heart Pirates Supernovas The Seven Warlords of the Sea"],
+   effect:
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/st21-017-gum-gum-mole-pistol.i18n.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/st21-017-gum-gum-mole-pistol.i18n.ts
+new file mode 100644
+index 0000000..2092ae0
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/st21-017-gum-gum-mole-pistol.i18n.ts
+@@ -0,0 +1,10 @@
++import type { OPCardI18n } from "@tcg/op-types";
++
++export const st21GumGumMolePistol017I18n: OPCardI18n = {
++  en: {
++    name: "Gum-Gum Mole Pistol",
++    effect:
++      "[Main] Give up to 1 of your opponent's Characters −5000 power during this turn. Then, if you have a Character with 6000 power or more, K.O. up to 1 of your opponent's Characters with 2000 power or less.",
++    imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST21-017.jpg",
++  },
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/st21-017-gum-gum-mole-pistol.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/st21-017-gum-gum-mole-pistol.ts
+new file mode 100644
+index 0000000..52809a1
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/st21-017-gum-gum-mole-pistol.ts
+@@ -0,0 +1,72 @@
++// Official text: https://en.onepiece-cardgame.com/cardlist/?series=569021
++// ST-21 FAQ: the −5000 and the K.O. may pick different Characters.
++import type { EventCard } from "@tcg/op-types";
++import { st21GumGumMolePistol017I18n } from "./st21-017-gum-gum-mole-pistol.i18n.ts";
++
++export const st21GumGumMolePistol017: EventCard = {
++  id: "ST21-017",
++  canonicalId: "ST21-017",
++  slug: "gum-gum-mole-pistol/st21-017",
++  name: "Gum-Gum Mole Pistol",
++  printings: [
++    {
++      id: "ST21-017",
++      artId: "ST21-017",
++      setCode: "ST21",
++      collectorNumber: "017",
++      rarity: "C",
++      imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST21-017.jpg",
++      label: "Gum-Gum Mole Pistol (017)",
++    },
++  ],
++  cardType: "event",
++  color: ["red"],
++  rarity: "C",
++  setId: "ST21",
++  cost: 4,
++  trigger: "Activate this card's [Main] effect.",
++  traits: ["The Four Emperors", "Straw Hat Crew"],
++  effect:
++    "[Main] Give up to 1 of your opponent's Characters −5000 power during this turn. Then, if you have a Character with 6000 power or more, K.O. up to 1 of your opponent's Characters with 2000 power or less.",
++  effects: {
++    effects: [
++      {
++        trigger: "main",
++        actions: [
++          {
++            action: "modifyPower",
++            target: {
++              player: "opponent",
++              zones: ["character"],
++              count: { amount: 1, upTo: true },
++            },
++            value: -5000,
++            duration: "thisTurn",
++          },
++          {
++            // The "if" is checked after the −5000 resolves (4-10): current
++            // power, so DON!! and other boosts count.
++            action: "ko",
++            target: {
++              player: "opponent",
++              zones: ["character"],
++              count: { amount: 1, upTo: true },
++              filters: [{ filter: "power", comparison: "lte", value: 2000 }],
++            },
++            condition: {
++              condition: "hasCard",
++              player: "self",
++              zone: "character",
++              filters: [{ filter: "power", comparison: "gte", value: 6000 }],
++            },
++          },
++        ],
++      },
++      {
++        trigger: "trigger",
++        actions: [{ action: "activateEffect", effectTrigger: "main" }],
++      },
++    ],
++  },
++  i18n: st21GumGumMolePistol017I18n,
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/index.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/index.ts
+index 02566de..b920d87 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/index.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/index.ts
+@@ -115,3 +115,4 @@ export { op17Kaido058 } from "./op17-058-kaido.ts";
+ export { op17MonkeyDLuffy079 } from "./op17-079-monkey-d-luffy.ts";
+ export { op17RocksDXebec039 } from "./op17-039-rocks-d-xebec.ts";
+ export { op17Shanks020 } from "./op17-020-shanks.ts";
++export { st30LuffyAce001 } from "./st30-001-luffy-ace.ts";
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/st30-001-luffy-ace.i18n.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/st30-001-luffy-ace.i18n.ts
+new file mode 100644
+index 0000000..2fe1a8f
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/st30-001-luffy-ace.i18n.ts
+@@ -0,0 +1,10 @@
++import type { OPCardI18n } from "@tcg/op-types";
++
++export const st30LuffyAce001I18n: OPCardI18n = {
++  en: {
++    name: "Luffy & Ace",
++    effect:
++      "If you have a Character with 7000 base power or more, give this Leader −2000 power.\n[Opponent's Turn] All of your [Portgas.D.Ace] and [Monkey.D.Luffy] cards gain +3000 power.",
++    imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST30-001.jpg",
++  },
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/st30-001-luffy-ace.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/st30-001-luffy-ace.ts
+new file mode 100644
+index 0000000..3e0d436
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/st30-001-luffy-ace.ts
+@@ -0,0 +1,90 @@
++// Official text: https://en.onepiece-cardgame.com/cardlist/?series=569030
++// ST-30 FAQ: with no Characters the Leader does not get −2000; the
++// [Opponent's Turn] boost cannot give this Leader +3000 (its name is
++// "Luffy & Ace", neither [Portgas.D.Ace] nor [Monkey.D.Luffy]).
++import type { LeaderCard } from "@tcg/op-types";
++import { st30LuffyAce001I18n } from "./st30-001-luffy-ace.i18n.ts";
++
++export const st30LuffyAce001: LeaderCard = {
++  id: "ST30-001",
++  canonicalId: "ST30-001",
++  slug: "luffy-ace/st30-001",
++  name: "Luffy & Ace",
++  printings: [
++    {
++      id: "ST30-001",
++      artId: "ST30-001",
++      setCode: "ST30",
++      collectorNumber: "001",
++      rarity: "L",
++      imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST30-001.jpg",
++      label: "Luffy & Ace (001)",
++    },
++  ],
++  cardType: "leader",
++  color: ["red", "green"],
++  rarity: "L",
++  setId: "ST30",
++  power: 6000,
++  life: 4,
++  traits: ["Impel Down", "Whitebeard Pirates", "Straw Hat Crew"],
++  attribute: ["strike", "special"],
++  effect:
++    "If you have a Character with 7000 base power or more, give this Leader −2000 power.\n[Opponent's Turn] All of your [Portgas.D.Ace] and [Monkey.D.Luffy] cards gain +3000 power.",
++  effects: {
++    permanentEffects: [
++      {
++        // "Base" power is the printed value (4-9-2): given DON!! and +power
++        // effects do not count; an effect that sets base power does (4-9-2-1).
++        conditions: [
++          {
++            condition: "hasCard",
++            player: "self",
++            zone: "character",
++            filters: [{ filter: "basePower", comparison: "gte", value: 7000 }],
++          },
++        ],
++        actions: [
++          {
++            action: "modifyPower",
++            target: {
++              player: "self",
++              zones: ["leader"],
++              count: { amount: 1 },
++              self: true,
++            },
++            value: -2000,
++            duration: "permanent",
++          },
++        ],
++      },
++      {
++        // [Opponent's Turn] (10-2-12); [Name] means that card name (2-1-2),
++        // so the Leader itself never matches.
++        conditions: [{ condition: "turn", value: "opponent" }],
++        actions: [
++          {
++            action: "modifyPower",
++            target: {
++              player: "self",
++              zones: ["leader", "character"],
++              count: { amount: "all" },
++              filters: [
++                {
++                  filter: "anyOf",
++                  filters: [
++                    { filter: "name", value: "Portgas.D.Ace" },
++                    { filter: "name", value: "Monkey.D.Luffy" },
++                  ],
++                },
++              ],
++            },
++            value: 3000,
++            duration: "permanent",
++          },
++        ],
++      },
++    ],
++  },
++  i18n: st30LuffyAce001I18n,
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/stages/index.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/stages/index.ts
+index 6816304..f944eb0 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/stages/index.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/stages/index.ts
+@@ -42,3 +42,4 @@ export { op15DressrosaKingdom057 } from "./op15-057-dressrosa-kingdom.ts";
+ export { op16Marineford078 } from "./op16-078-marineford.ts";
+ export { op16MobyDick021 } from "./op16-021-moby-dick.ts";
+ export { op17Fullalead057 } from "./op17-057-fullalead.ts";
++export { st31ThousandSunny005 } from "./st31-005-thousand-sunny.ts";
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/stages/st31-005-thousand-sunny.i18n.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/stages/st31-005-thousand-sunny.i18n.ts
+new file mode 100644
+index 0000000..21472ff
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/stages/st31-005-thousand-sunny.i18n.ts
+@@ -0,0 +1,10 @@
++import type { OPCardI18n } from "@tcg/op-types";
++
++export const st31ThousandSunny005I18n: OPCardI18n = {
++  en: {
++    name: "Thousand Sunny",
++    effect:
++      "[On Play] Look at 5 cards from the top of your deck; reveal up to 1 {Straw Hat Crew} type card and add it to your hand. Then, place the rest at the bottom of your deck in any order.\n[Activate: Main] You may rest this Stage: Give up to 1 rested DON!! card to 1 of your [Monkey.D.Luffy] cards.",
++    imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST31-005.jpg",
++  },
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/stages/st31-005-thousand-sunny.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/stages/st31-005-thousand-sunny.ts
+new file mode 100644
+index 0000000..7380fb1
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/stages/st31-005-thousand-sunny.ts
+@@ -0,0 +1,67 @@
++// Official text: https://en.onepiece-cardgame.com/cardlist/?series=569031
++import type { StageCard } from "@tcg/op-types";
++import { st31ThousandSunny005I18n } from "./st31-005-thousand-sunny.i18n.ts";
++
++export const st31ThousandSunny005: StageCard = {
++  id: "ST31-005",
++  canonicalId: "ST31-005",
++  slug: "thousand-sunny/st31-005",
++  name: "Thousand Sunny",
++  printings: [
++    {
++      id: "ST31-005",
++      artId: "ST31-005",
++      setCode: "ST31",
++      collectorNumber: "005",
++      rarity: "C",
++      imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST31-005.jpg",
++      label: "Thousand Sunny (005)",
++    },
++  ],
++  cardType: "stage",
++  color: ["red"],
++  rarity: "C",
++  setId: "ST31",
++  cost: 1,
++  traits: ["Straw Hat Crew"],
++  effect:
++    "[On Play] Look at 5 cards from the top of your deck; reveal up to 1 {Straw Hat Crew} type card and add it to your hand. Then, place the rest at the bottom of your deck in any order.\n[Activate: Main] You may rest this Stage: Give up to 1 rested DON!! card to 1 of your [Monkey.D.Luffy] cards.",
++  effects: {
++    effects: [
++      {
++        trigger: "onPlay",
++        actions: [
++          {
++            action: "search",
++            lookCount: 5,
++            source: { player: "self", zone: "deck" },
++            revealCount: { amount: 1, upTo: true },
++            revealFilters: [{ filter: "trait", value: "Straw Hat Crew", match: "includes" }],
++            revealDestination: "hand",
++            remainderPosition: "bottom",
++          },
++        ],
++      },
++      {
++        trigger: "activateMain",
++        costs: [{ cost: "restThisCard" }],
++        actions: [
++          {
++            // [Monkey.D.Luffy] cards: the Leader or Characters with that name (2-1-2).
++            action: "giveDon",
++            target: {
++              player: "self",
++              zones: ["leader", "character"],
++              count: { amount: 1 },
++              filters: [{ filter: "name", value: "Monkey.D.Luffy" }],
++            },
++            count: { amount: 1, upTo: true },
++            donState: "rested",
++          },
++        ],
++        optional: true,
++      },
++    ],
++  },
++  i18n: st31ThousandSunny005I18n,
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/test-decks.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/test-decks.ts
+index 7e4d22a..f4347e5 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/test-decks.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/test-decks.ts
+@@ -39,7 +39,7 @@ export const TEST_DECKS: Record<TestDeckId, TestDeckDefinition> = {
+       "OP01-016",
+       "OP01-016",
+       "OP01-016",
+-      "OP01-016", // Nami 1/2000 +2000, Straw Hat search
++      "OP01-016", // Nami 1/2000 +1000, Straw Hat search
+       "OP04-007",
+       "OP04-007",
+       "OP04-007",
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP11/characters/012-franky.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP11/characters/012-franky.test.ts
+index 049466d..d3d9ef6 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP11/characters/012-franky.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP11/characters/012-franky.test.ts
+@@ -1,9 +1,13 @@
+ import { describe, expect, test } from "vite-plus/test";
+ import {
+   eb01MountainGod018,
++  eb03Ain002,
++  eb03Hibari008,
+   op01RadicalBeam029,
+   op02IceAge117,
+   op11Franky012,
++  st30LuffyAce001,
++  st31Sanji001,
+ } from "@tcg/op-cards";
+ 
+ import { OnePieceTestEngine } from "../../../index.ts";
+@@ -77,4 +81,60 @@ describe("OP11-012 Franky", () => {
+         ?.power,
+     ).toBe(4000);
+   });
++
++  // Official card list (series 569111): Franky has the {Straw Hat Crew} type
++  // (the imported data said "Navy SWORD").
++  test("is a Straw Hat Crew Character: ST31-001 Sanji may play it from hand", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: st30LuffyAce001,
++        hand: [st31Sanji001, op11Franky012],
++        deck: [eb03Ain002, eb03Ain002],
++        activeDon: 5,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    const frankyId = engine.findCardInZone("south", "hand", op11Franky012);
++
++    south.play(st31Sanji001);
++    const play = south.pendingDecision("effectPlaySelection").steps[0];
++    if (play?.kind !== "selectEntity") throw new Error("Expected Sanji's play choice.");
++    expect(play.candidates.find((candidate) => candidate.ref.id === frankyId)?.legal).not.toBe(
++      false,
++    );
++    south.choosePlay(frankyId);
++    expect(south.view().players.south.characters.map((card) => card?.instanceId)).toContain(
++      frankyId,
++    );
++  });
++
++  test("is not a SWORD Character: Hibari cannot pick it", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        hand: [eb03Hibari008],
++        character: [{ card: op11Franky012, playedOnTurn: 0 }],
++        activeDon: 3,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const frankyId = engine.findCardInZone("south", "character", op11Franky012);
++    engine.playCard(eb03Hibari008, "south");
++    const hibariId = engine.findCardInZone("south", "character", eb03Hibari008);
++    // Only Hibari herself is a SWORD Character, so she is the only candidate.
++    const prompt = engine.getState().promptQueue.find((p) => p.status === "pending");
++    const candidateIds = prompt
++      ? engine
++          .pendingDecision("effectTargetSelection", "south")
++          .steps.flatMap((step) =>
++            step.kind === "selectEntity"
++              ? step.candidates.map((candidate) => candidate.ref.id)
++              : [],
++          )
++      : [];
++    expect(candidateIds).not.toContain(frankyId);
++    expect(candidateIds.every((id) => id === hibariId)).toBe(true);
++  });
+ });
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP12/events/018-color-of-the-supreme-king-haki.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP12/events/018-color-of-the-supreme-king-haki.test.ts
+index 808d23a..606b85c 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP12/events/018-color-of-the-supreme-king-haki.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP12/events/018-color-of-the-supreme-king-haki.test.ts
+@@ -17,9 +17,8 @@ describe("OP12-018 Color of the Supreme King Haki", () => {
+     const target = engine.pendingDecision("effectTargetSelection", "south").steps[0];
+     if (target?.kind !== "selectEntity") throw new Error("Expected the boost target.");
+     engine.resolveDecision("effectTargetSelection", { selectedIds: [rayleighId] }, "south");
+-    const restCount = engine.pendingDecision("effectRestDonCount", "south").steps[0];
+-    if (restCount?.kind !== "chooseOption") throw new Error("Expected the rest count.");
+-    engine.resolveDecision("effectRestDonCount", { optionId: "1" }, "south");
++    // "Then, you may rest 1 of your DON!! cards": a yes/no choice of its own.
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
+ 
+     const north = engine.getView("south").players.north;
+     // Opponent Leader and Characters each dropped by 1000 (6000 and 6000 base).
+@@ -43,9 +42,8 @@ describe("OP12-018 Color of the Supreme King Haki", () => {
+     const target = engine.pendingDecision("effectTargetSelection", "south").steps[0];
+     if (target?.kind !== "selectEntity") throw new Error("Expected the boost target.");
+     engine.resolveDecision("effectTargetSelection", { selectedIds: [] }, "south");
+-    const restCount = engine.pendingDecision("effectRestDonCount", "south").steps[0];
+-    if (restCount?.kind !== "chooseOption") throw new Error("Expected the rest count.");
+-    engine.resolveDecision("effectRestDonCount", { optionId: "1" }, "south");
++    // "Then, you may rest 1 of your DON!! cards": a yes/no choice of its own.
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
+ 
+     // No boost target selected; the optional rest still dropped the
+     // opponent's Leader by 1000. The 9000 attacker still overpowers the
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP14EB04/characters/031-nami.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP14EB04/characters/031-nami.test.ts
+index 92341ab..ee50ea8 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP14EB04/characters/031-nami.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP14EB04/characters/031-nami.test.ts
+@@ -1,4 +1,10 @@
+-import { eb01Doma005, eb01MountainGod018, op01Kaido094 } from "@tcg/op-cards";
++import {
++  eb01Doma005,
++  eb01MountainGod018,
++  eb03Ain002,
++  op01Kaido094,
++  st30LuffyAce001,
++} from "@tcg/op-cards";
+ import { describe, expect, test } from "vite-plus/test";
+ import { op14eb04Nami031 } from "../../../../../cards/src/cards/characters/op14-031-nami.ts";
+ 
+@@ -69,4 +75,26 @@ describe("OP14-031 Nami", () => {
+     expect(view.players.south.trash.map((card) => card.instanceId)).toContain(namiId);
+     expect(view.prompts).toHaveLength(0);
+   });
++
++  // Official card list (series 569114): Counter 1000 (the imported data had none).
++  test("can be used from hand as a +1000 Counter", () => {
++    const engine = OnePieceTestEngine.create(
++      { leaderCardId: st30LuffyAce001, hand: [op14eb04Nami031], life: 2 },
++      { character: [{ card: eb03Ain002, playedOnTurn: 0 }] },
++      { firstPlayer: "south", activeSeat: "north" },
++    );
++    const ainId = engine.findCardInZone("north", "character", eb03Ain002);
++    const namiId = engine.findCardInZone("south", "hand", op14eb04Nami031);
++
++    engine.declareAttack(ainId, engine.leader("south"), "north");
++    const counter = engine.pendingDecision("battleCounter", "south").steps[0];
++    if (counter?.kind !== "selectEntity") throw new Error("Expected the Counter Step choice.");
++    expect(counter.candidates.map((candidate) => candidate.ref.id)).toContain(namiId);
++    engine.resolveDecision("battleCounter", { selectedIds: [namiId] }, "south");
++
++    // 6000 Leader + 1000 = 7000 beats the 6000 attacker: no damage.
++    const south = engine.getView("south").players.south;
++    expect(south.trash.map((card) => card.instanceId)).toEqual([namiId]);
++    expect(south.lifeCount).toBe(2);
++  });
+ });
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/eb03-008-hibari.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/eb03-008-hibari.test.ts
+index ae531e6..77f333e 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/eb03-008-hibari.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/eb03-008-hibari.test.ts
+@@ -1,15 +1,18 @@
+ import { describe, expect, test } from "vite-plus/test";
+-import { eb01Doma005, eb03Hibari008, op11Franky012 } from "@tcg/op-cards";
++import { eb01Doma005, eb03Hibari008, op11XDrake017 } from "@tcg/op-cards";
+ 
+ import { OnePieceTestEngine } from "../../../src/index.ts";
+ 
++// The SWORD recipient is OP11-017 X.Drake (Navy/SWORD/Drake Pirates). These
++// tests used OP11-012 Franky, whose imported type was wrongly "Navy SWORD":
++// the official card list gives Franky the {Straw Hat Crew} type only.
+ describe("EB03-008 Hibari", () => {
+   test("maps her On Play SWORD recipient, active-Character attack, and once-per-turn reduction", () => {
+     const engine = OnePieceTestEngine.create(
+       {
+         hand: [eb03Hibari008],
+         character: [
+-          { card: op11Franky012, playedOnTurn: 0 },
++          { card: op11XDrake017, playedOnTurn: 0 },
+           { card: eb01Doma005, playedOnTurn: 0 },
+         ],
+         activeDon: 3,
+@@ -19,7 +22,7 @@ describe("EB03-008 Hibari", () => {
+       },
+       { firstPlayer: "north", activeSeat: "south" },
+     );
+-    const frankyId = engine.findCardInZone("south", "character", op11Franky012);
++    const swordId = engine.findCardInZone("south", "character", op11XDrake017);
+     const wrongTraitId = engine.findCardInZone("south", "character", eb01Doma005);
+     const opposingId = engine.findCardInZone("north", "character", eb01Doma005);
+ 
+@@ -31,13 +34,13 @@ describe("EB03-008 Hibari", () => {
+       throw new Error("Expected Hibari's SWORD attack recipient.");
+     }
+     expect(attackRecipient.candidates.map((candidate) => candidate.ref.id)).toEqual([
+-      frankyId,
++      swordId,
+       hibariId,
+     ]);
+     expect(attackRecipient.candidates.map((candidate) => candidate.ref.id)).not.toContain(
+       wrongTraitId,
+     );
+-    engine.resolveDecision("effectTargetSelection", { selectedIds: [frankyId] }, "south");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [swordId] }, "south");
+ 
+     engine.activateEffect(hibariId, "activateMain", "south");
+     const reduction = engine.pendingDecision("effectTargetSelection", "south").steps[0];
+@@ -53,7 +56,7 @@ describe("EB03-008 Hibari", () => {
+         .getView("south")
+         .players.north.characters.find((card) => card?.instanceId === opposingId)?.power,
+     ).toBe(2000);
+-    engine.declareAttack(frankyId, opposingId, "south");
++    engine.declareAttack(swordId, opposingId, "south");
+     expect(engine.getView("south").players.north.trash.map((card) => card.instanceId)).toContain(
+       opposingId,
+     );
+@@ -73,7 +76,7 @@ describe("EB03-008 Hibari", () => {
+       {
+         character: [
+           { card: eb03Hibari008, playedOnTurn: 0 },
+-          { card: op11Franky012, playedOnTurn: 0 },
++          { card: op11XDrake017, playedOnTurn: 0 },
+         ],
+       },
+       {
+@@ -82,7 +85,7 @@ describe("EB03-008 Hibari", () => {
+       { firstPlayer: "north", activeSeat: "south" },
+     );
+     const hibariId = engine.findCardInZone("south", "character", eb03Hibari008);
+-    const frankyId = engine.findCardInZone("south", "character", op11Franky012);
++    const swordId = engine.findCardInZone("south", "character", op11XDrake017);
+     const activeTargetId = engine.findCardInZone("north", "character", eb01Doma005);
+ 
+     engine.declareAttack(hibariId, engine.leader("north"), "south");
+@@ -91,9 +94,9 @@ describe("EB03-008 Hibari", () => {
+     if (recipient?.kind !== "selectEntity") {
+       throw new Error("Expected Hibari's When Attacking SWORD recipient.");
+     }
+-    engine.resolveDecision("effectTargetSelection", { selectedIds: [frankyId] }, "south");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [swordId] }, "south");
+ 
+-    engine.declareAttack(frankyId, activeTargetId, "south");
++    engine.declareAttack(swordId, activeTargetId, "south");
+     engine.resolveDecision("battleCounter", { selectedIds: [] }, "north");
+     expect(engine.getView("south").players.north.trash.map((card) => card.instanceId)).toContain(
+       activeTargetId,
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op01-016-nami.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op01-016-nami.test.ts
+index 8d55e2c..77c0235 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op01-016-nami.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op01-016-nami.test.ts
+@@ -4,7 +4,11 @@ import {
+   eb01Fourtricks025,
+   eb01MountainGod018,
+   eb01TonyTonyChopper006,
++  eb02Karoo001,
+   op01Nami016,
++  op12DemonAuraNineSwordStyleAsuraBladesDrawnDeadManSGame037,
++  st30LuffyAce001,
++  st31ThousandSunny005,
+ } from "@tcg/op-cards";
+ 
+ import { OnePieceTestEngine } from "../../../src/index.ts";
+@@ -48,4 +52,59 @@ describe("OP01-016 Nami", () => {
+     );
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
++
++  // Errata of 2023-02-17 (official errata list and current card list text):
++  // "reveal up to 1 {Straw Hat Crew} type card", no longer "Character card".
++  test("may also reveal a Straw Hat Crew Event or Stage", () => {
++    const engine = OnePieceTestEngine.create({
++      hand: [op01Nami016],
++      deck: [
++        op12DemonAuraNineSwordStyleAsuraBladesDrawnDeadManSGame037,
++        st31ThousandSunny005,
++        eb01Doma005,
++        eb01Fourtricks025,
++        eb01MountainGod018,
++        eb01Doma005,
++      ],
++      activeDon: op01Nami016.cost,
++    });
++    const eventId = engine.findCardInZone(
++      "south",
++      "deck",
++      op12DemonAuraNineSwordStyleAsuraBladesDrawnDeadManSGame037,
++    );
++    const stageId = engine.findCardInZone("south", "deck", st31ThousandSunny005);
++    const domaId = engine.findCardInZone("south", "deck", eb01Doma005);
++
++    engine.asSouth().play(op01Nami016);
++    const search = engine.pendingDecision("effectSearchSelection", "south").steps[0];
++    if (search?.kind !== "selectEntity") throw new Error("Expected Nami's search choice.");
++    const legal = (id: string) => search.candidates.find((c) => c.ref.id === id)?.legal;
++    expect(legal(eventId)).toBe(true);
++    expect(legal(stageId)).toBe(true);
++    expect(legal(domaId)).toBe(false);
++    engine.asSouth().chooseSearch(eventId);
++    expect(engine.getView("south").players.south.hand.map((card) => card.instanceId)).toEqual([
++      eventId,
++    ]);
++  });
++
++  // Official card list (series 569101): Counter 1000.
++  test("adds +1000 as a Counter: a 6000 Leader still loses to a 7000 attacker", () => {
++    const engine = OnePieceTestEngine.create(
++      { leaderCardId: st30LuffyAce001, hand: [op01Nami016], life: 2 },
++      { character: [{ card: eb02Karoo001, playedOnTurn: 0 }] },
++      { firstPlayer: "south", activeSeat: "north" },
++    );
++    const karooId = engine.findCardInZone("north", "character", eb02Karoo001);
++    const namiId = engine.findCardInZone("south", "hand", op01Nami016);
++
++    engine.declareAttack(karooId, engine.leader("south"), "north");
++    engine.resolveDecision("battleCounter", { selectedIds: [namiId] }, "south");
++
++    // 6000 + 1000 = 7000: the attacker's 7000 is not lower, so 1 damage lands.
++    const south = engine.getView("south").players.south;
++    expect(south.trash.map((card) => card.instanceId)).toEqual([namiId]);
++    expect(south.lifeCount).toBe(1);
++  });
+ });
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st21-014-monkey-d-luffy.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st21-014-monkey-d-luffy.test.ts
+new file mode 100644
+index 0000000..a097c20
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st21-014-monkey-d-luffy.test.ts
+@@ -0,0 +1,66 @@
++import { describe, expect, test } from "vite-plus/test";
++import { eb03Ain002, st21MonkeyDLuffy014, st30LuffyAce001 } from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// [Rush]
++// [When Attacking] Give up to 1 rested DON!! card to your Leader or 1 of your
++// Characters.
++describe("ST21-014 Monkey.D.Luffy", () => {
++  test("attacks the turn it is played and gives 1 rested DON!! to a chosen Character", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: st30LuffyAce001,
++        hand: [st21MonkeyDLuffy014],
++        character: [eb03Ain002],
++        activeDon: 5,
++        restedDon: 2,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    const ainId = south.findOnField(eb03Ain002);
++
++    south.play(st21MonkeyDLuffy014);
++    const luffyId = south.findOnField(st21MonkeyDLuffy014);
++    expect(south.view().players.south).toMatchObject({ activeDon: 0, restedDon: 7 });
++    south.attack(luffyId, south.opponentLeader());
++
++    const count = south.pendingDecision("effectGiveDonCount").steps[0];
++    if (count?.kind !== "chooseOption") throw new Error("Expected the DON!! count choice.");
++    expect(count.options.map((option) => option.id)).toEqual(["0", "1"]);
++    south.chooseAmount(1);
++
++    const recipient = south.pendingDecision("effectTargetSelection").steps[0];
++    if (recipient?.kind !== "selectEntity") throw new Error("Expected the DON!! recipient.");
++    expect(recipient.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
++      [south.leader(), ainId, luffyId].sort(),
++    );
++    south.chooseTargets(ainId);
++
++    const view = south.view().players.south;
++    expect(view.characters.find((card) => card?.instanceId === ainId)?.attachedDon).toBe(1);
++    expect(view.characters.find((card) => card?.instanceId === ainId)?.power).toBe(7000);
++    expect(view.restedDon).toBe(6);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("the DON!! is optional: choosing 0 gives nothing", () => {
++    const engine = OnePieceTestEngine.create(
++      { hand: [st21MonkeyDLuffy014], activeDon: 5 },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    south.play(st21MonkeyDLuffy014);
++    south.attack(st21MonkeyDLuffy014, south.opponentLeader());
++    south.chooseAmount(0);
++
++    const view = south.view().players.south;
++    expect(view.restedDon).toBe(5);
++    expect(view.leader.attachedDon ?? 0).toBe(0);
++    expect(view.characters.every((card) => (card?.attachedDon ?? 0) === 0)).toBe(true);
++    expect(south.view().prompts.filter((prompt) => prompt.seat === "south")).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st30-012-monkey-d-luffy.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st30-012-monkey-d-luffy.test.ts
+new file mode 100644
+index 0000000..cf170f5
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st30-012-monkey-d-luffy.test.ts
+@@ -0,0 +1,78 @@
++import { describe, expect, test } from "vite-plus/test";
++import { eb01Blueno017, eb03Ain002, st30LuffyAce001, st30MonkeyDLuffy012 } from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// [On Play] You may rest 1 of your DON!! cards: This Character gains [Rush]
++// during this turn.
++// [When Attacking] Rest up to 1 of your opponent's [Blocker] Characters.
++function setup(activeDon: number, restedDon = 0) {
++  return OnePieceTestEngine.create(
++    { leaderCardId: st30LuffyAce001, hand: [st30MonkeyDLuffy012], activeDon, restedDon },
++    {
++      character: [
++        { card: eb01Blueno017, playedOnTurn: 0 },
++        { card: eb03Ain002, playedOnTurn: 0 },
++      ],
++    },
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++}
++
++describe("ST30-012 Monkey.D.Luffy", () => {
++  test("rests 1 DON!! for [Rush], attacks at once and rests only a [Blocker] Character", () => {
++    const engine = setup(5);
++    const south = engine.asSouth();
++    const bluenoId = engine.findCardInZone("north", "character", eb01Blueno017);
++    const ainId = engine.findCardInZone("north", "character", eb03Ain002);
++
++    south.play(st30MonkeyDLuffy012);
++    south.acceptOptional();
++    expect(south.view().players.south).toMatchObject({ activeDon: 0, restedDon: 5 });
++    const luffyId = south.findOnField(st30MonkeyDLuffy012);
++
++    south.attack(luffyId, south.opponentLeader());
++    const rest = south.pendingDecision("effectTargetSelection").steps[0];
++    expect(rest).toMatchObject({ kind: "selectEntity", min: 0, max: 1 });
++    if (rest?.kind !== "selectEntity") throw new Error("Expected the [Blocker] rest target.");
++    const legal = rest.candidates.filter((candidate) => candidate.legal !== false);
++    expect(legal.map((candidate) => candidate.ref.id)).toEqual([bluenoId]);
++    expect(legal.map((candidate) => candidate.ref.id)).not.toContain(ainId);
++    south.chooseTargets(bluenoId);
++
++    const north = engine.getView("south").players.north;
++    expect(north.characters.find((card) => card?.instanceId === bluenoId)?.rested).toBe(true);
++    expect(north.characters.find((card) => card?.instanceId === ainId)?.rested).toBe(false);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("declining the optional cost keeps the DON!! active and gives no [Rush]", () => {
++    const engine = setup(5);
++    const south = engine.asSouth();
++
++    south.play(st30MonkeyDLuffy012);
++    south.declineOptional();
++    expect(south.view().players.south).toMatchObject({ activeDon: 1, restedDon: 4 });
++    const luffyId = south.findOnField(st30MonkeyDLuffy012);
++    south.expectFailure({
++      type: "declareAttack",
++      attackerId: luffyId,
++      targetId: south.opponentLeader(),
++    });
++  });
++
++  test("with no active DON!! left after paying 4, the cost cannot be paid (ST-30 FAQ)", () => {
++    const engine = setup(4, 2);
++    const south = engine.asSouth();
++
++    south.play(st30MonkeyDLuffy012);
++    expect(south.view().prompts).toHaveLength(0);
++    expect(south.view().players.south).toMatchObject({ activeDon: 0, restedDon: 6 });
++    const luffyId = south.findOnField(st30MonkeyDLuffy012);
++    south.expectFailure({
++      type: "declareAttack",
++      attackerId: luffyId,
++      targetId: south.opponentLeader(),
++    });
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st31-001-sanji.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st31-001-sanji.test.ts
+new file mode 100644
+index 0000000..831ff9e
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st31-001-sanji.test.ts
+@@ -0,0 +1,106 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb03Ain002,
++  op02RoronoaZoro043,
++  op04Sanji007,
++  op09Jinbe067,
++  op11Usopp003,
++  st30LuffyAce001,
++  st31Sanji001,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// [DON!! x2] This Character gains [Rush].
++// [On Play] Draw 1 card and play up to 1 {Straw Hat Crew} type Character card
++// with a cost of 5 or less other than [Sanji] from your hand.
++describe("ST31-001 Sanji", () => {
++  test("draws first, then plays a cost-5-or-less Straw Hat Crew Character other than Sanji", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: st30LuffyAce001,
++        hand: [st31Sanji001, op04Sanji007, op09Jinbe067, eb03Ain002, op11Usopp003],
++        deck: [op02RoronoaZoro043, eb03Ain002],
++        activeDon: 5,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    const zoroId = engine.findCardInZone("south", "deck", op02RoronoaZoro043);
++    const usoppId = engine.findCardInZone("south", "hand", op11Usopp003);
++    const otherSanjiId = engine.findCardInZone("south", "hand", op04Sanji007);
++    const jinbeId = engine.findCardInZone("south", "hand", op09Jinbe067);
++    const ainId = engine.findCardInZone("south", "hand", eb03Ain002);
++
++    south.play(st31Sanji001);
++    // Paying 5 leaves no DON!!: the play from hand is free.
++    expect(south.view().players.south.activeDon).toBe(0);
++    const play = south.pendingDecision("effectPlaySelection").steps[0];
++    expect(play).toMatchObject({ kind: "selectEntity", min: 0, max: 1 });
++    if (play?.kind !== "selectEntity") throw new Error("Expected Sanji's play choice.");
++    const legalIds = play.candidates
++      .filter((candidate) => candidate.legal !== false)
++      .map((candidate) => candidate.ref.id);
++    // The drawn Zoro (cost 4) and Usopp (cost 5) qualify; the other [Sanji],
++    // the cost-7 Jinbe and the non-Straw Hat Ain do not.
++    expect(legalIds.sort()).toEqual([zoroId, usoppId].sort());
++    expect(legalIds).not.toContain(otherSanjiId);
++    expect(legalIds).not.toContain(jinbeId);
++    expect(legalIds).not.toContain(ainId);
++    south.choosePlay(zoroId);
++
++    const view = south.view().players.south;
++    expect(view.characters.filter(Boolean).map((card) => card!.instanceId)).toContain(zoroId);
++    expect(view.hand).toHaveLength(4);
++    expect(view.hand.map((card) => card.instanceId)).toEqual(
++      expect.arrayContaining([otherSanjiId, jinbeId, ainId, usoppId]),
++    );
++    expect(view.deckCount).toBe(1);
++    expect(south.view().prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("may play nothing after drawing", () => {
++    const engine = OnePieceTestEngine.create(
++      { hand: [st31Sanji001, op02RoronoaZoro043], deck: [eb03Ain002, eb03Ain002], activeDon: 5 },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    south.play(st31Sanji001);
++    south.chooseNoPlay();
++    const view = south.view().players.south;
++    expect(view.characters.filter(Boolean)).toHaveLength(1);
++    expect(view.hand).toHaveLength(2);
++    expect(view.hand.map((card) => card.cardId)).toEqual(
++      expect.arrayContaining([eb03Ain002.id, op02RoronoaZoro043.id]),
++    );
++  });
++
++  test("[DON!! x2] gives [Rush]: it can attack the turn it is played only with 2 DON!! given", () => {
++    const engine = OnePieceTestEngine.create(
++      { hand: [st31Sanji001], deck: [eb03Ain002, eb03Ain002], activeDon: 7 },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    south.play(st31Sanji001);
++    const sanjiId = south.findOnField(st31Sanji001);
++    // Ain is not a Straw Hat Crew Character: nothing to play.
++    expect(south.view().prompts).toHaveLength(0);
++
++    south.attachDon(sanjiId, 1);
++    south.expectFailure({
++      type: "declareAttack",
++      attackerId: sanjiId,
++      targetId: south.opponentLeader(),
++    });
++
++    south.attachDon(sanjiId, 1);
++    south.attack(sanjiId, south.opponentLeader());
++    expect(
++      south.view().players.south.characters.find((card) => card?.instanceId === sanjiId)?.rested,
++    ).toBe(true);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op12-018-color-of-the-supreme-king-haki.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op12-018-color-of-the-supreme-king-haki.test.ts
+new file mode 100644
+index 0000000..5570242
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op12-018-color-of-the-supreme-king-haki.test.ts
+@@ -0,0 +1,84 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  eb02Karoo001,
++  eb03Ain002,
++  op12ColorOfTheSupremeKingHaki018,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// [Counter] Up to 1 of your Characters or [Silvers Rayleigh] gains +2000 power
++// during this battle. Then, you may rest 1 of your DON!! cards. If you do, give
++// your opponent's Leader and all of their Characters −1000 power during this
++// turn.
++function setup(activeDon: number, restedDon: number) {
++  const engine = OnePieceTestEngine.create(
++    {
++      hand: [op12ColorOfTheSupremeKingHaki018],
++      // Rested, so Karoo can attack it.
++      character: [{ card: eb03Ain002, rested: true }],
++      activeDon,
++      restedDon,
++    },
++    {
++      character: [
++        { card: eb02Karoo001, playedOnTurn: 0 },
++        { card: eb01Doma005, playedOnTurn: 0 },
++      ],
++    },
++    { firstPlayer: "south", activeSeat: "north" },
++  );
++  const ainId = engine.findCardInZone("south", "character", eb03Ain002);
++  const karooId = engine.findCardInZone("north", "character", eb02Karoo001);
++  const domaId = engine.findCardInZone("north", "character", eb01Doma005);
++  engine.declareAttack(karooId, ainId, "north");
++  const hakiId = engine.findCardInZone("south", "hand", op12ColorOfTheSupremeKingHaki018);
++  engine.resolveDecision("battleCounter", { selectedIds: [hakiId] }, "south");
++  return { engine, ainId, karooId, domaId };
++}
++
++const northPowers = (engine: OnePieceTestEngine, ids: string[]) => {
++  const north = engine.getView("south").players.north;
++  return [
++    north.leader.power,
++    ...ids.map((id) => north.characters.find((card) => card?.instanceId === id)?.power),
++  ];
++};
++
++describe("OP12-018 Color of the Supreme King Haki", () => {
++  test("with no active DON!! nothing can be rested, so the opponent gets no −1000", () => {
++    const { engine, ainId, karooId, domaId } = setup(0, 3);
++    engine.asSouth().chooseTargets(ainId);
++
++    // The +2000 saves Ain (6000 + 2000 > 7000); no "rest 1 DON!!" choice is offered.
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    expect(engine.getView("south").players.south.characters.map((c) => c?.instanceId)).toContain(
++      ainId,
++    );
++    expect(northPowers(engine, [karooId, domaId])).toEqual([5000, 7000, 3000]);
++    expect(engine.getView("south").players.south).toMatchObject({ activeDon: 0, restedDon: 3 });
++  });
++
++  test("declining the DON!! rest keeps the +2000 but gives no −1000", () => {
++    const { engine, ainId, karooId, domaId } = setup(2, 0);
++    engine.asSouth().chooseTargets(ainId);
++    engine.asSouth().declineOptional();
++
++    expect(engine.getView("south").players.south.characters.map((c) => c?.instanceId)).toContain(
++      ainId,
++    );
++    expect(northPowers(engine, [karooId, domaId])).toEqual([5000, 7000, 3000]);
++    expect(engine.getView("south").players.south).toMatchObject({ activeDon: 2, restedDon: 0 });
++  });
++
++  test("resting 1 DON!! gives the opponent's Leader and Characters −1000 this turn", () => {
++    const { engine, ainId, karooId, domaId } = setup(2, 0);
++    engine.asSouth().chooseTargets(ainId);
++    engine.asSouth().acceptOptional();
++
++    expect(northPowers(engine, [karooId, domaId])).toEqual([4000, 6000, 2000]);
++    expect(engine.getView("south").players.south).toMatchObject({ activeDon: 1, restedDon: 1 });
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op14-019-i-have-a-plan-to-take-down-one-of-the-four-emperors.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op14-019-i-have-a-plan-to-take-down-one-of-the-four-emperors.test.ts
+index 7ff3a9b..abd0f82 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op14-019-i-have-a-plan-to-take-down-one-of-the-four-emperors.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op14-019-i-have-a-plan-to-take-down-one-of-the-four-emperors.test.ts
+@@ -40,6 +40,20 @@ describe("OP14-019 I Have a Plan to Take Down One of the Four Emperors!!", () =>
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
++  test("costs 1: it can be played with a single active DON!!", () => {
++    const engine = OnePieceTestEngine.create({
++      hand: [op14eb04IHaveAPlanToTakeDownOneOfTheFourEmperors019],
++      deck: [op01Caribou007, eb01Doma005, eb01MountainGod018, eb01Doma005, eb01Doma005],
++      activeDon: 1,
++      restedDon: 3,
++    });
++    engine.asSouth().play(op14eb04IHaveAPlanToTakeDownOneOfTheFourEmperors019);
++    expect(engine.getView("south").players.south).toMatchObject({ activeDon: 0, restedDon: 4 });
++    expect(engine.pendingDecision("effectSearchSelection", "south").steps[0]?.kind).toBe(
++      "selectEntity",
++    );
++  });
++
+   test("Life Trigger draws one without Event payment", () => {
+     const engine = OnePieceTestEngine.create(
+       { character: [{ card: eb01MountainGod018, playedOnTurn: 0 }] },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/st21-017-gum-gum-mole-pistol.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/st21-017-gum-gum-mole-pistol.test.ts
+new file mode 100644
+index 0000000..7f72df6
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/st21-017-gum-gum-mole-pistol.test.ts
+@@ -0,0 +1,128 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Blueno017,
++  eb01Fourtricks025,
++  eb02Karoo001,
++  eb03Ain002,
++  st21GumGumMolePistol017,
++  st30LuffyAce001,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine, type FixtureCardEntry } from "../../../src/index.ts";
++
++// [Main] Give up to 1 of your opponent's Characters −5000 power during this
++// turn. Then, if you have a Character with 6000 power or more, K.O. up to 1 of
++// your opponent's Characters with 2000 power or less.
++// [Trigger] Activate this card's [Main] effect.
++function setup(own: FixtureCardEntry[]) {
++  return OnePieceTestEngine.create(
++    {
++      leaderCardId: st30LuffyAce001,
++      hand: [st21GumGumMolePistol017],
++      character: own,
++      activeDon: 4,
++    },
++    {
++      character: [
++        { card: eb03Ain002, playedOnTurn: 0 },
++        { card: eb01Blueno017, playedOnTurn: 0 },
++        { card: eb02Karoo001, playedOnTurn: 0 },
++      ],
++    },
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++}
++
++describe("ST21-017 Gum-Gum Mole Pistol", () => {
++  test("gives −5000, then with a 6000-power Character K.O.s a different 2000-or-less Character (ST-21 FAQ)", () => {
++    const engine = setup([eb03Ain002]);
++    const south = engine.asSouth();
++    const ainId = engine.findCardInZone("north", "character", eb03Ain002);
++    const bluenoId = engine.findCardInZone("north", "character", eb01Blueno017);
++    const karooId = engine.findCardInZone("north", "character", eb02Karoo001);
++
++    south.play(st21GumGumMolePistol017);
++    south.chooseTargets(ainId);
++    const powerOf = (id: string) =>
++      south.view().players.north.characters.find((card) => card?.instanceId === id)?.power;
++    expect(powerOf(ainId)).toBe(1000);
++
++    const ko = south.pendingDecision("effectTargetSelection").steps[0];
++    if (ko?.kind !== "selectEntity") throw new Error("Expected the K.O. target.");
++    const legalIds = ko.candidates
++      .filter((candidate) => candidate.legal !== false)
++      .map((candidate) => candidate.ref.id);
++    // The −5000 is already applied: Ain (1000) qualifies, Karoo (7000) does not.
++    expect(legalIds.sort()).toEqual([ainId, bluenoId].sort());
++    expect(legalIds).not.toContain(karooId);
++    south.chooseTargets(bluenoId);
++
++    const north = south.view().players.north;
++    expect(north.trash.map((card) => card.instanceId)).toEqual([bluenoId]);
++    expect(powerOf(ainId)).toBe(1000);
++    expect(south.view().players.south.trash.map((card) => card.cardId)).toEqual([
++      st21GumGumMolePistol017.id,
++    ]);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++
++    south.endTurn();
++    expect(powerOf(ainId)).toBe(6000);
++  });
++
++  test("the 6000 check reads current power: a 5000 Character with 1 DON!! given counts", () => {
++    const engine = setup([{ card: eb01Fourtricks025, attachedDon: 1 }]);
++    const south = engine.asSouth();
++    const bluenoId = engine.findCardInZone("north", "character", eb01Blueno017);
++
++    south.play(st21GumGumMolePistol017);
++    south.chooseNoTargets();
++    south.chooseTargets(bluenoId);
++    expect(south.view().players.north.trash.map((card) => card.instanceId)).toEqual([bluenoId]);
++  });
++
++  test("without a Character with 6000 power or more there is no K.O.", () => {
++    const engine = setup([eb01Fourtricks025]);
++    const south = engine.asSouth();
++    const ainId = engine.findCardInZone("north", "character", eb03Ain002);
++
++    south.play(st21GumGumMolePistol017);
++    south.chooseTargets(ainId);
++    expect(south.view().prompts).toHaveLength(0);
++    expect(south.view().players.north.characters.filter(Boolean)).toHaveLength(3);
++  });
++
++  test("[Trigger] activates the [Main] effect for the defending player", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        character: [
++          { card: eb02Karoo001, playedOnTurn: 0 },
++          { card: eb01Blueno017, playedOnTurn: 0 },
++        ],
++      },
++      {
++        leaderCardId: st30LuffyAce001,
++        life: [st21GumGumMolePistol017],
++        character: [{ card: eb03Ain002, playedOnTurn: 0 }],
++      },
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const karooId = south.findOnField(eb02Karoo001);
++    const bluenoId = south.findOnField(eb01Blueno017);
++
++    south.attack(karooId, south.opponentLeader());
++    north.activateLifeTrigger();
++    north.chooseTargets(karooId);
++    expect(
++      south.view().players.south.characters.find((card) => card?.instanceId === karooId)?.power,
++    ).toBe(2000);
++    // North's Ain (6000) meets the condition: K.O. one of south's 2000-power Characters.
++    north.chooseTargets(bluenoId);
++    expect(south.view().players.south.trash.map((card) => card.instanceId)).toEqual([bluenoId]);
++    expect(north.view().players.north.trash.map((card) => card.cardId)).toContain(
++      st21GumGumMolePistol017.id,
++    );
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/leaders/st30-001-luffy-ace.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/leaders/st30-001-luffy-ace.test.ts
+new file mode 100644
+index 0000000..24ab668
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/leaders/st30-001-luffy-ace.test.ts
+@@ -0,0 +1,116 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb02Karoo001,
++  eb03Ain002,
++  op13MonkeyDLuffy001,
++  op16PortgasDAce118,
++  st30LuffyAce001,
++  st30MonkeyDLuffy012,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// If you have a Character with 7000 base power or more, give this Leader
++// −2000 power.
++// [Opponent's Turn] All of your [Portgas.D.Ace] and [Monkey.D.Luffy] cards
++// gain +3000 power.
++describe("ST30-001 Luffy & Ace", () => {
++  test("is a red/green 6000-power Leader with 4 Life", () => {
++    const engine = OnePieceTestEngine.create({ leaderCardId: st30LuffyAce001 });
++    const south = engine.getView("south").players.south;
++    expect(south.leader.power).toBe(6000);
++    expect(south.lifeCount).toBe(4);
++    expect(st30LuffyAce001.color).toEqual(["red", "green"]);
++  });
++
++  test("gets −2000 once a Character with 7000 base power is played, not for a 6000 one with DON!!", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: st30LuffyAce001,
++        hand: [eb02Karoo001],
++        character: [{ card: eb03Ain002, attachedDon: 1 }],
++        activeDon: 5,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    const ainId = south.findOnField(eb03Ain002);
++
++    // Ain has 7000 power with the given DON!!, but its base power is 6000.
++    expect(
++      south.view().players.south.characters.find((card) => card?.instanceId === ainId)?.power,
++    ).toBe(7000);
++    expect(south.view().players.south.leader.power).toBe(6000);
++
++    south.play(eb02Karoo001);
++    expect(south.view().players.south.leader.power).toBe(4000);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("with no Characters the Leader keeps its power (ST-30 FAQ)", () => {
++    const engine = OnePieceTestEngine.create({ leaderCardId: st30LuffyAce001 });
++    expect(engine.getView("south").players.south.characters.filter(Boolean)).toHaveLength(0);
++    expect(engine.getView("south").players.south.leader.power).toBe(6000);
++  });
++
++  test("on the opponent's turn only its Luffy and Ace Characters gain +3000, so a 8000 attack fails", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: st30LuffyAce001,
++        character: [{ card: st30MonkeyDLuffy012, rested: true }, op16PortgasDAce118, eb03Ain002],
++      },
++      { character: [{ card: eb02Karoo001, playedOnTurn: 0, attachedDon: 1 }] },
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const luffyId = engine.findCardInZone("south", "character", st30MonkeyDLuffy012);
++    const aceId = engine.findCardInZone("south", "character", op16PortgasDAce118);
++    const ainId = engine.findCardInZone("south", "character", eb03Ain002);
++    const powerOf = (id: string) =>
++      engine.getView("south").players.south.characters.find((card) => card?.instanceId === id)
++        ?.power;
++
++    // Own turn: no boost.
++    expect([powerOf(luffyId), powerOf(aceId), powerOf(ainId)]).toEqual([6000, 6000, 6000]);
++
++    engine.endTurn("south");
++    expect([powerOf(luffyId), powerOf(aceId), powerOf(ainId)]).toEqual([9000, 9000, 6000]);
++    // The Leader is named "Luffy & Ace", not [Monkey.D.Luffy]: no +3000 (ST-30 FAQ).
++    expect(engine.getView("south").players.south.leader.power).toBe(6000);
++
++    // The boost is real battle power: Karoo (7000 + 1 DON!!) cannot K.O. a 9000 Luffy.
++    const karooId = engine.findCardInZone("north", "character", eb02Karoo001);
++    engine.attachDon(karooId, 1, "north");
++    // South has no hand, so there is no Counter Step choice to make.
++    engine.declareAttack(karooId, luffyId, "north");
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    expect(
++      engine.getView("south").players.south.characters.map((card) => card?.instanceId),
++    ).toContain(luffyId);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++
++    engine.endTurn("north");
++    expect([powerOf(luffyId), powerOf(aceId), powerOf(ainId)]).toEqual([6000, 6000, 6000]);
++  });
++
++  test("the same 8000 attack K.O.s that Luffy under a Leader without the boost", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op13MonkeyDLuffy001,
++        character: [{ card: st30MonkeyDLuffy012, rested: true }],
++      },
++      { character: [{ card: eb02Karoo001, playedOnTurn: 0, attachedDon: 1 }] },
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const luffyId = engine.findCardInZone("south", "character", st30MonkeyDLuffy012);
++    engine.endTurn("south");
++    const karooId = engine.findCardInZone("north", "character", eb02Karoo001);
++    engine.attachDon(karooId, 1, "north");
++    // South has no hand, so there is no Counter Step choice to make.
++    engine.declareAttack(karooId, luffyId, "north");
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    expect(engine.getView("south").players.south.trash.map((card) => card.instanceId)).toContain(
++      luffyId,
++    );
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/stages/st31-005-thousand-sunny.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/stages/st31-005-thousand-sunny.test.ts
+new file mode 100644
+index 0000000..c7cc187
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/stages/st31-005-thousand-sunny.test.ts
+@@ -0,0 +1,125 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb03Ain002,
++  op02RoronoaZoro043,
++  op12DemonAuraNineSwordStyleAsuraBladesDrawnDeadManSGame037,
++  op13MonkeyDLuffy001,
++  st21MonkeyDLuffy014,
++  st30LuffyAce001,
++  st30MonkeyDLuffy012,
++  st31ThousandSunny005,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// [On Play] Look at 5 cards from the top of your deck; reveal up to 1
++// {Straw Hat Crew} type card and add it to your hand. Then, place the rest at
++// the bottom of your deck in any order.
++// [Activate: Main] You may rest this Stage: Give up to 1 rested DON!! card to
++// 1 of your [Monkey.D.Luffy] cards.
++const asura = op12DemonAuraNineSwordStyleAsuraBladesDrawnDeadManSGame037;
++
++describe("ST31-005 Thousand Sunny", () => {
++  test("[On Play] reveals any Straw Hat Crew card (an Event too) and bottoms the rest", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: st30LuffyAce001,
++        hand: [st31ThousandSunny005],
++        deck: [eb03Ain002, asura, op02RoronoaZoro043, eb03Ain002, eb03Ain002, eb03Ain002],
++        activeDon: 1,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    const deck = engine.getState().players.south.deck;
++    const asuraId = engine.findCardInZone("south", "deck", asura);
++    const zoroId = engine.findCardInZone("south", "deck", op02RoronoaZoro043);
++    const sixthId = deck[5]!;
++
++    south.play(st31ThousandSunny005);
++    const search = south.pendingDecision("effectSearchSelection").steps[0];
++    if (search?.kind !== "selectEntity") throw new Error("Expected Thousand Sunny's search.");
++    expect(search.candidates).toHaveLength(5);
++    const legalIds = search.candidates
++      .filter((candidate) => candidate.legal !== false)
++      .map((candidate) => candidate.ref.id);
++    expect(legalIds.sort()).toEqual([asuraId, zoroId].sort());
++    south.chooseSearch(asuraId);
++    const order = south.pendingDecision("effectSearchRemainderOrder").steps[0];
++    if (order?.kind !== "orderItems") throw new Error("Expected the remainder order.");
++    south.orderCards(
++      "effectSearchRemainderOrder",
++      order.candidates.map((candidate) => candidate.ref.id),
++    );
++
++    const view = south.view().players.south;
++    expect(view.hand.map((card) => card.instanceId)).toEqual([asuraId]);
++    expect(view.stage?.cardId).toBe(st31ThousandSunny005.id);
++    expect(engine.getState().players.south.deck[0]).toBe(sixthId);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("[Activate: Main] rests the Stage to give a rested DON!! only to a [Monkey.D.Luffy] card", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: st30LuffyAce001,
++        stage: st31ThousandSunny005,
++        character: [st30MonkeyDLuffy012, eb03Ain002],
++        activeDon: 1,
++        restedDon: 2,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    const luffyId = south.findOnField(st30MonkeyDLuffy012);
++    const sunnyId = engine.findCardInZone("south", "stage", st31ThousandSunny005);
++
++    south.activateMain(sunnyId);
++    south.acceptOptional();
++    south.chooseAmount(1);
++    // The "Luffy & Ace" Leader and Ain are not [Monkey.D.Luffy]: Luffy is the
++    // only legal recipient, so no recipient choice is asked.
++    expect(south.view().prompts).toHaveLength(0);
++
++    const view = south.view().players.south;
++    expect(view.characters.find((card) => card?.instanceId === luffyId)?.attachedDon).toBe(1);
++    expect(view).toMatchObject({ activeDon: 1, restedDon: 1 });
++    expect(view.stage?.rested).toBe(true);
++    // Resting the Stage is the cost: it cannot be activated again while rested.
++    south.expectFailure({
++      type: "activateEffect",
++      sourceInstanceId: sunnyId,
++      trigger: "activateMain",
++    });
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("a [Monkey.D.Luffy] Leader is also a legal recipient", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op13MonkeyDLuffy001,
++        stage: st31ThousandSunny005,
++        character: [st21MonkeyDLuffy014],
++        restedDon: 1,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    const sunnyId = engine.findCardInZone("south", "stage", st31ThousandSunny005);
++    const luffyId = south.findOnField(st21MonkeyDLuffy014);
++
++    south.activateMain(sunnyId);
++    south.acceptOptional();
++    south.chooseAmount(1);
++    const recipient = south.pendingDecision("effectTargetSelection").steps[0];
++    if (recipient?.kind !== "selectEntity") throw new Error("Expected the Luffy recipient.");
++    expect(recipient.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
++      [south.leader(), luffyId].sort(),
++    );
++    south.chooseTargets(south.leader());
++    expect(south.view().players.south.leader.attachedDon).toBe(1);
++  });
++});
