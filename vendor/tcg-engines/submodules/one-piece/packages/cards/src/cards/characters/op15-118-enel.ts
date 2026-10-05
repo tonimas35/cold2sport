@@ -103,6 +103,19 @@ export const op15Enel118: CharacterCard = {
             duration: "permanent",
             bySource: "opponentEffect",
           },
+          {
+            action: "modifyPower",
+            target: {
+              player: "self",
+              zones: ["character"],
+              count: {
+                amount: 1,
+              },
+              self: true,
+            },
+            value: 2000,
+            duration: "permanent",
+          },
         ],
       },
     ],

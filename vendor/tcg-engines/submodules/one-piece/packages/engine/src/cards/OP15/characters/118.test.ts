@@ -110,4 +110,25 @@ describe("OP15-118", () => {
     expect(engine.getView("south").players.south.handCount).toBe(Math.max(before.handCount - 1, 0));
     expect(engine.getView("south").prompts).toHaveLength(0);
   });
+
+  test("gains +2000 power while its controller has 6 or less DON!! cards on the field", () => {
+    const powerOf = (engine: OnePieceTestEngine) =>
+      engine.getView("south").players.south.characters.find((c) => c?.cardId === "OP15-118")?.power;
+
+    const six = OnePieceTestEngine.create(
+      { character: ["OP15-118"], activeDon: 6 },
+      { character: ["OP13-013"], activeDon: 5 },
+    );
+    expect(powerOf(six)).toBe(10000);
+    // The static applies on the opponent's turn too.
+    six.endTurn("south");
+    expect(six.getState().activeSeat).toBe("north");
+    expect(powerOf(six)).toBe(10000);
+
+    const seven = OnePieceTestEngine.create(
+      { character: ["OP15-118"], activeDon: 7 },
+      { character: ["OP13-013"], activeDon: 5 },
+    );
+    expect(powerOf(seven)).toBe(8000);
+  });
 });

@@ -56,6 +56,32 @@ pnpm opbot arena --candidate "search:sims=64,h=1,cands=12" --baseline heuristic 
   --seed a2 --out out/arena-search64-vs-heuristic-144.jsonl
 ```
 
+## Enel (OP15-058) antes y después del parche `0003`
+
+Fidelidad del motor, no fuerza de un bot: `heuristic` en los dos lados, 20 partidas por rival
+(10 pares), simulación rápida. "Registros" = registros de capacidad (`capabilityHistory`), aquí
+siempre `unsupportedCost cost:main:0` de los eventos OP15-074…078.
+
+```bash
+bun packages/opbot/src/cli.ts matchup --a decks/meta-op17-postban/OP15-058-enel.txt \
+  --b decks/meta-op17-postban/<mazo>.txt --games 20 --agent heuristic
+```
+
+| Variante | Victorias de Enel | Registros |
+|---|---|---|
+| Antes (`41d29d6`) | 23/140 (16 %) | 434, en las 140 partidas |
+| Solo el motor (eventos sin DON!! suficientes ya no se juegan; filtro de OP15-077) | 20/140 (14 %) | 0 |
+| Solo el agente (`heuristic` elige el máximo en "hasta N DON!!") | 66/140 (47 %) | 216 |
+| Motor + agente | 70/140 (50 %) | 0 |
+| Final (además, +2000 de OP15-118) | **74/140 (53 %)** | **0** |
+
+Por rival (final, antes entre paréntesis): Pudding 15 (5), Robin 13 (1), Sabo 4 (0), Shanks 5 (0),
+Rocks 16 (0), Kaido 20 (17), Luffy OP17-079 1 (0), de 20. Casi toda la mejora viene del agente: el
+bot del motor contestaba 0 a "añade/da hasta N DON!!", así que el Líder Enel no hacía nada. El
+cambio del agente afecta a **todos** los mazos con esas preguntas: las cifras con `heuristic`
+anteriores a este commit (E8, calibración) usaban el comportamiento viejo. Las de Rocks y Luffy
+siguen afectadas por sus cartas aún sin corregir.
+
 ## Pendientes / en curso
 
 - Corrección de cartas del meta en el motor (parches `0003` y siguientes; ver `vendor/tcg-engines/UPSTREAM.md`).

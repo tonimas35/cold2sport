@@ -63,6 +63,11 @@ export const op15LightningDragon077: EventCard = {
                   filter: "state",
                   value: "rested",
                 },
+                {
+                  filter: "power",
+                  comparison: "lte",
+                  value: 6000,
+                },
               ],
             },
           },
