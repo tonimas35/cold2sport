@@ -54,9 +54,11 @@ export const op17WoRoRoRoRoIThinkIVeSoberedUp076: EventCard = {
       },
       {
         trigger: "trigger",
+        // "DON!! -1: Draw 2 cards." has no "you may": activating the [Trigger]
+        // pays the cost, and it cannot be activated without 1 DON!! on the
+        // field (8-3-1-3; the lifeTrigger prompt disables "activate").
         costs: [{ cost: "returnDon", amount: 1 }],
         actions: [{ action: "draw", player: "self", amount: 2 }],
-        optional: true,
       },
     ],
   },

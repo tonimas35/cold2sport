@@ -65,7 +65,7 @@ export const op16TheThreeAdmirals076: EventCard = {
             condition: "hasCard",
             player: "self",
             zone: "character",
-            filters: [{ filter: "trait", value: "Admiral", match: "includes" }],
+            filters: [{ filter: "trait", value: "Admiral", match: "exact" }],
           },
         ],
         actions: [

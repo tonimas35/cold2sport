@@ -577,7 +577,10 @@ describe("OP16-117 Black Hole [Trigger]", () => {
 });
 
 describe("OP17-076 Wo Ro Ro Ro Ro... I Think I've Sobered Up [Trigger]", () => {
-  test("DON!! -1: draws 2 cards", () => {
+  // "DON!! -1: Draw 2 cards." has no "you may": activating the [Trigger] pays
+  // the cost, and without a DON!! card on the field it cannot be activated
+  // (8-3-1-3).
+  test("DON!! -1: activating pays it and draws 2 cards", () => {
     const engine = revealFromLife(op17WoRoRoRoRoIThinkIVeSoberedUp076, {
       north: { activeDon: 1, deck: [op13Higuma013, eb01Fourtricks025] },
     });
@@ -585,7 +588,6 @@ describe("OP17-076 Wo Ro Ro Ro Ro... I Think I've Sobered Up [Trigger]", () => {
     const donDeckBefore = north.view().players.north.donDeckCount;
 
     north.activateLifeTrigger();
-    north.acceptOptional();
 
     const view = north.view().players.north;
     expect(view.activeDon).toBe(0);
@@ -596,18 +598,19 @@ describe("OP17-076 Wo Ro Ro Ro Ro... I Think I've Sobered Up [Trigger]", () => {
     expectClean(engine);
   });
 
-  test("declining the DON!! -1 draws nothing", () => {
+  test("without DON!! on the field the [Trigger] cannot be activated; the card goes to hand", () => {
     const engine = revealFromLife(op17WoRoRoRoRoIThinkIVeSoberedUp076, {
-      north: { activeDon: 1 },
+      north: { activeDon: 0 },
     });
-    const north = engine.asNorth();
+    const prompt = engine.getState().promptQueue.find((p) => p.status === "pending");
+    expect(prompt?.options.find((option) => option.id === "activate")?.enabled).toBe(false);
 
-    north.activateLifeTrigger();
-    north.declineOptional();
+    const north = engine.asNorth();
+    north.declineLifeTrigger();
 
     const view = north.view().players.north;
-    expect(view.activeDon).toBe(1);
-    expect(view.hand).toHaveLength(0);
+    expect(view.hand.map((card) => card.cardId)).toEqual([op17WoRoRoRoRoIThinkIVeSoberedUp076.id]);
+    expectClean(engine);
   });
 });
 

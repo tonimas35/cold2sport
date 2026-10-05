@@ -37,7 +37,7 @@ export const op17Izo003: CharacterCard = {
             operator: "or",
             conditions: [
               { condition: "leaderName", name: "Edward.Newgate" },
-              { condition: "leaderTrait", trait: "Land of Wano", match: "includes" },
+              { condition: "leaderTrait", trait: "Land of Wano", match: "exact" },
             ],
           },
         ],

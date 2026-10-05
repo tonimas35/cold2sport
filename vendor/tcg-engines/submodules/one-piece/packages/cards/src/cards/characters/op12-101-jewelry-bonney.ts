@@ -24,7 +24,6 @@ export const op12JewelryBonney101: CharacterCard = {
   trigger: "If your Leader has the {Supernovas} type, play this card.",
   power: 1000,
   counter: 1000,
-  trigger: "If your Leader has the {Supernovas} type, play this card.",
   traits: ["Supernovas", "Bonney Pirates"],
   attribute: "special",
   effect:

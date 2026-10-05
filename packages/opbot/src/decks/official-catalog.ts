@@ -643,6 +643,8 @@ export const CATEGORIES: Readonly<Record<string, CategoryInfo>> = {
   "structure:replacement": { group: "structure", label: "Sustitución impresa (\"would ... instead\") sin `replacementEffects`" },
   "structure:auto": { group: "structure", label: "Habilidad \"When ...\" sin etiqueta y sin ningún bloque que la cubra" },
   "structure:sign": { group: "structure", label: "Número impreso negativo (\u22123000) que el bloque guarda en positivo: la carta hace lo contrario" },
+  "trait-match": { group: "structure", label: "Filtro de tipo que no sigue al texto: {Tipo} es exacto, tipo que incluya \"X\" es subcadena (2-4-3)" },
+  "trait-unprinted": { group: "info", label: "Filtro de tipo cuyo valor no aparece como {Tipo} ni como tipo que incluya \"X\" en el texto" },
   "effect-text": { group: "text", label: "Texto de `.effect` materialmente distinto del oficial (errata o importación)" },
   "effect-text-missing": { group: "info", label: "Sin texto en `.effect` aunque la carta tiene efecto (los bloques pueden estar bien)" },
 };
@@ -813,6 +815,58 @@ export function flippedSigns(engineText: string, officialText: string, effects: 
   return [...out].sort((a, b) => a - b);
 }
 
+/** A type check inside a card's effects, with the matching the engine applies. */
+export interface TraitCheck {
+  readonly value: string;
+  readonly mode: "exact" | "includes";
+  readonly kind: "filter" | "leaderTrait";
+}
+
+/**
+ * Every type check in a card's effects. The engine's defaults differ: a
+ * `trait` filter matches exactly unless `match: "includes"`
+ * (effects/targeting.ts), a `leaderTrait` condition matches a substring
+ * unless `match: "exact"` (effects/conditions.ts).
+ */
+export function traitChecks(effects: unknown): TraitCheck[] {
+  const out: TraitCheck[] = [];
+  const walk = (node: unknown): void => {
+    if (Array.isArray(node)) {
+      for (const item of node) walk(item);
+      return;
+    }
+    if (!node || typeof node !== "object") return;
+    const o = node as Record<string, unknown>;
+    if (o.filter === "trait") {
+      const values = Array.isArray(o.value) ? o.value : [o.value];
+      for (const v of values) {
+        if (typeof v === "string") out.push({ value: v, mode: o.match === "includes" ? "includes" : "exact", kind: "filter" });
+      }
+    }
+    if (o.condition === "leaderTrait" && typeof o.trait === "string") {
+      out.push({ value: o.trait, mode: o.match === "exact" ? "exact" : "includes", kind: "leaderTrait" });
+    }
+    for (const v of Object.values(o)) walk(v);
+  };
+  walk(effects);
+  return out;
+}
+
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/**
+ * How the printed text refers to a type (2-4-3): "{Type}" is that exact type,
+ * 'a type including "X"' is any type containing X. `null` when the text uses
+ * neither form for this value, "both" when it uses both.
+ */
+export function printedTypeMode(text: string, value: string): "exact" | "includes" | "both" | null {
+  const t = canonicalText(text);
+  const v = canonicalText(value);
+  const exact = t.includes(`{${v}}`);
+  const includes = new RegExp(`includ\\w* "${escapeRegExp(v)}"`).test(t);
+  return exact && includes ? "both" : exact ? "exact" : includes ? "includes" : null;
+}
+
 /** Every disagreement between one engine card and its official data. */
 export function compareCard(engine: EngineCardData, official: OfficialCard): Mismatch[] {
   const out: Mismatch[] = [];
@@ -890,6 +944,22 @@ export function compareCard(engine: EngineCardData, official: OfficialCard): Mis
     engine.effects,
   );
   if (flipped.length > 0) add("structure:sign", flipped.map((n) => `${n}`), flipped.map((n) => `-${n}`));
+
+  // Type checks must follow the printed form: the importer wrote substring
+  // matches for every "{Type}", so {Straw Hat Crew} also took "Fake Straw Hat
+  // Crew" and {Big Mom Pirates} took "Former Big Mom Pirates".
+  const printed = `${officialText.main}\n${officialText.trigger ?? ""}`;
+  const seenChecks = new Set<string>();
+  for (const check of traitChecks(engine.effects)) {
+    const key = `${check.kind}:${check.value}:${check.mode}`;
+    if (seenChecks.has(key)) continue;
+    seenChecks.add(key);
+    const expected = printedTypeMode(printed, check.value);
+    if (expected === null) add("trait-unprinted", `${check.kind} ${check.mode} "${check.value}"`, null);
+    else if (expected !== "both" && expected !== check.mode) {
+      add("trait-match", `${check.kind} ${check.mode} "${check.value}"`, `${expected} "${check.value}"`);
+    }
+  }
 
   if (engineText.main === "" && officialText.main !== "") {
     add("effect-text-missing", engine.effect ?? null, officialText.main);

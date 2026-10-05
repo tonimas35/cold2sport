@@ -66,7 +66,7 @@ export const op16CatarinaDevon104: CharacterCard = {
             source: { player: "self", zone: "trash" },
             count: { amount: 1, upTo: true },
             filters: [
-              { filter: "trait", value: "Blackbeard Pirates", match: "includes" },
+              { filter: "trait", value: "Blackbeard Pirates", match: "exact" },
               { filter: "cardCategory", value: "character" },
               { filter: "cost", comparison: "eq", value: 1 },
             ],

@@ -77,7 +77,7 @@ export const op14eb04Kaido030: CharacterCard = {
             condition: {
               condition: "leaderTrait",
               trait: "Animal Kingdom Pirates",
-              match: "includes",
+              match: "exact",
             },
           },
         ],

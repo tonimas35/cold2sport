@@ -73,7 +73,7 @@ export const op16BlackHole117: EventCard = {
               player: "self",
               zones: ["trash"],
               count: { amount: 1, upTo: true },
-              filters: [{ filter: "trait", value: "Blackbeard Pirates", match: "includes" }],
+              filters: [{ filter: "trait", value: "Blackbeard Pirates", match: "exact" }],
             },
           },
         ],

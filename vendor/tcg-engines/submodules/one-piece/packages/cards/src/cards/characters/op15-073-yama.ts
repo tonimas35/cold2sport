@@ -58,7 +58,7 @@ export const op15Yama073: CharacterCard = {
                   [{ filter: "name", value: "Heavenly Warriors" }],
                   [
                     { filter: "cardCategory", value: "character" },
-                    { filter: "trait", value: "Vassals", match: "includes" },
+                    { filter: "trait", value: "Vassals", match: "exact" },
                   ],
                 ],
               },

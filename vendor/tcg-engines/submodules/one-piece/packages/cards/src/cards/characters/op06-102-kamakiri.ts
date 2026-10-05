@@ -24,7 +24,6 @@ export const op06Kamakiri102: CharacterCard = {
   trigger: "If you have 2 or less Life cards, play this card.",
   power: 4000,
   counter: 1000,
-  trigger: "If you have 2 or less Life cards, play this card.",
   traits: ["Sky Island", "Shandian Warrior"],
   attribute: "slash",
   effect:

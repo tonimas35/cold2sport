@@ -21,6 +21,8 @@ import {
   splitAbilities,
   stripReminders,
   textTokens,
+  printedTypeMode,
+  traitChecks,
   type EngineCardData,
   type Mismatch,
   type OfficialCard,
@@ -397,4 +399,53 @@ describe("official list client", () => {
       cleanup();
     }
   });
+});
+
+test("traitChecks reads type filters and Leader type conditions with the engine's defaults", () => {
+  const effects = {
+    effects: [
+      {
+        trigger: "onPlay",
+        conditions: [{ condition: "leaderTrait", trait: "Big Mom Pirates" }],
+        actions: [
+          { action: "play", filters: [{ filter: "trait", value: "Straw Hat Crew" }] },
+          { action: "ko", target: { filters: [{ filter: "trait", value: ["Navy", "SWORD"], match: "includes" }] } },
+        ],
+      },
+    ],
+  };
+  expect(traitChecks(effects)).toEqual([
+    { value: "Big Mom Pirates", mode: "includes", kind: "leaderTrait" },
+    { value: "Straw Hat Crew", mode: "exact", kind: "filter" },
+    { value: "Navy", mode: "includes", kind: "filter" },
+    { value: "SWORD", mode: "includes", kind: "filter" },
+  ]);
+});
+
+test("printedTypeMode: {Type} is exact, a type including \"X\" is a substring (2-4-3)", () => {
+  expect(printedTypeMode("If your Leader has the {Big Mom Pirates} type, draw 1 card.", "Big Mom Pirates")).toBe("exact");
+  expect(printedTypeMode("Up to 1 of your Characters with a type including “Whitebeard Pirates”", "Whitebeard Pirates")).toBe(
+    "includes",
+  );
+  expect(printedTypeMode('{Land of Wano} type Character card or Character card with a type including "Land of Wano"', "Land of Wano")).toBe(
+    "both",
+  );
+  expect(printedTypeMode("[Fish-Man Island]", "Fish-Man Island")).toBeNull();
+});
+
+test("compareCard flags a type filter that does not follow the printed form", () => {
+  const base = card([...official.keys()][0]!);
+  const printed: OfficialCard = {
+    ...base,
+    trigger: null,
+    effect: "[On Play] If your Leader has the {Animal Kingdom Pirates} type, add up to 1 DON!! card from your DON!! deck.",
+  };
+  const withCondition = (match?: string) =>
+    engineCopy(printed, {
+      effects: [{ trigger: "onPlay", conditions: [{ condition: "leaderTrait", trait: "Animal Kingdom Pirates", ...(match && { match }) }] } as { trigger: string }],
+    });
+  expect(compareCard(withCondition(), printed).filter((m) => m.category === "trait-match")).toEqual([
+    expect.objectContaining({ engine: 'leaderTrait includes "Animal Kingdom Pirates"', official: 'exact "Animal Kingdom Pirates"' }),
+  ]);
+  expect(compareCard(withCondition("exact"), printed).filter((m) => m.category === "trait-match")).toEqual([]);
 });

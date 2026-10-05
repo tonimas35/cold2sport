@@ -36,7 +36,7 @@ export const op16LetSGoToTheNavyHeadquarters038: EventCard = {
             zone: "character",
             comparison: "gte",
             value: 5,
-            filters: [{ filter: "trait", value: "Impel Down", match: "includes" }],
+            filters: [{ filter: "trait", value: "Impel Down", match: "exact" }],
             distinctNames: true,
           },
         ],

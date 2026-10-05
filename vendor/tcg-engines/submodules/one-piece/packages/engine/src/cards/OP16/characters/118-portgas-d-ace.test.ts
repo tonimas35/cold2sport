@@ -32,10 +32,13 @@ describe("OP16-118 Portgas.D.Ace", () => {
   });
 
   test("Ace in hand changes no counter, and two Aces on the field still give +2000 (OP16 FAQ)", () => {
+    // OP16-016 Ramba (8000 power) prints a +1000 Counter: Ace in hand leaves it
+    // at +1000, two Aces on the field raise it to +2000 (the highest value is
+    // used, 2-10-4).
     const inHand = OnePieceTestEngine.create({ hand: ["OP16-118", "OP16-016", "EB01-041"] }, {});
     expect(
       getCardCounter(inHand.getState(), inHand.findCardInZone("south", "hand", "OP16-016")),
-    ).toBe(0);
+    ).toBe(1000);
     expect(
       getCardCounter(inHand.getState(), inHand.findCardInZone("south", "hand", "EB01-041")),
     ).toBe(1000);

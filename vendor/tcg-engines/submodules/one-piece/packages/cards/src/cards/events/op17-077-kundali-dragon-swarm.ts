@@ -52,7 +52,7 @@ export const op17KundaliDragonSwarm077: EventCard = {
             condition: {
               condition: "leaderTrait",
               trait: "Animal Kingdom Pirates",
-              match: "includes",
+              match: "exact",
             },
           },
         ],
