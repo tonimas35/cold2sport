@@ -82,3 +82,15 @@ test("position files build a legal state from the visible facts", () => {
     expect(count).toBe(50);
   }
 });
+
+test("selfplay parseAgentMix reads weights after the last colon and keeps agent params", async () => {
+  const { parseAgentMix } = await import("../src/eval/selfplay.ts");
+  expect(parseAgentMix("policy:3,heuristic:1")).toEqual([
+    { spec: "policy", weight: 3 },
+    { spec: "heuristic", weight: 1 },
+  ]);
+  expect(parseAgentMix("search:sims=8:2,aggressive")).toEqual([
+    { spec: "search:sims=8", weight: 2 },
+    { spec: "aggressive", weight: 1 },
+  ]);
+});

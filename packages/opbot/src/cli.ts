@@ -88,7 +88,8 @@ async function main(): Promise<void> {
       const shards = num(args, "shards", 1);
       const { engineTestDecks } = await import("./decks/deck.ts");
       const { loadDeckPool } = await import("./decks/pool.ts");
-      const { generateSelfPlay } = await import("./eval/selfplay.ts");
+      const { generateSelfPlay, parseAgentMix } = await import("./eval/selfplay.ts");
+      const mix = typeof args.agents === "string" ? parseAgentMix(args.agents) : undefined;
       const decks = args.decks ? loadDeckPool(str(args, "decks")) : engineTestDecks();
       const target = isChild ? `${out}.part${shard}` : out;
       mkdirSync(dirname(target), { recursive: true });
@@ -102,7 +103,7 @@ async function main(): Promise<void> {
           appendFileSync(target, buffer);
           buffer = "";
         }
-      });
+      }, mix);
       appendFileSync(target, buffer);
       console.log(`selfplay shard ${shard}: ${res.finished}/${res.games} games in ${((performance.now() - started) / 1000).toFixed(1)}s`);
       return;

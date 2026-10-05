@@ -8,7 +8,9 @@ import type { MatchSeat } from "@tcg/op-engine";
 import { playGame, OTHER } from "../arena/game.ts";
 import type { DeckList } from "../decks/deck.ts";
 import { createHeuristicAgent, createAggressiveAgent } from "../agents/heuristic.ts";
+import { createAgent } from "../agents/factory.ts";
 import { withExploration } from "../agents/epsilon.ts";
+import type { Agent } from "../agents/types.ts";
 import { extractFeatures } from "./features.ts";
 import { createRng } from "../util/rng.ts";
 
@@ -20,12 +22,37 @@ export interface SampleRow {
   y: number;
 }
 
+/** Agent spec (see agents/factory.ts) and its relative weight in the mix. */
+export interface AgentMixEntry {
+  readonly spec: string;
+  readonly weight: number;
+}
+
+/** "policy:3,heuristic:1" -> [{spec: "policy", weight: 3}, ...]; the last ":" separates the weight. */
+export function parseAgentMix(text: string): AgentMixEntry[] {
+  return text.split(",").map((part) => {
+    const at = part.lastIndexOf(":");
+    const weight = at > 0 ? Number(part.slice(at + 1)) : Number.NaN;
+    return Number.isFinite(weight) && weight > 0
+      ? { spec: part.slice(0, at).trim(), weight }
+      : { spec: part.trim(), weight: 1 };
+  });
+}
+
+/**
+ * `mix` chooses the agents of each seat. Default (no mix): 75% engine
+ * heuristic, 25% aggressive, as the first models were trained. Positions from
+ * stronger play (the improved policy) are closer to what the search sees, but
+ * a share of weaker agents keeps the data varied.
+ */
 export function generateSelfPlay(
   decks: readonly DeckList[],
   games: number,
   seedBase: string,
   onRow: (row: SampleRow) => void,
+  mix?: readonly AgentMixEntry[],
 ): { games: number; finished: number } {
+  const total = mix?.reduce((a, m) => a + m.weight, 0) ?? 0;
   let finished = 0;
   for (let g = 0; g < games; g++) {
     const rng = createRng(`${seedBase}:${g}`);
@@ -33,7 +60,14 @@ export function generateSelfPlay(
     const south = decks[rng.int(decks.length)]!;
     const north = decks[rng.int(decks.length)]!;
     const make = () => {
-      const base = rng.next() < 0.75 ? createHeuristicAgent() : createAggressiveAgent();
+      let base: Agent;
+      if (mix && total > 0) {
+        let r = rng.next() * total;
+        const entry = mix.find((m) => (r -= m.weight) < 0) ?? mix[mix.length - 1]!;
+        base = createAgent(entry.spec);
+      } else {
+        base = rng.next() < 0.75 ? createHeuristicAgent() : createAggressiveAgent();
+      }
       return withExploration(base, [0, 0.03, 0.08][rng.int(3)]!);
     };
     const rows: Array<Omit<SampleRow, "y">> = [];
