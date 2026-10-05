@@ -243,7 +243,21 @@ export type EffectPlayReplacementContinuation =
       };
     };
 
+// One effect block whose activation timing was fulfilled at the same time as
+// other blocks of the same player (8-6-1-1); see "orderSimultaneousEffects".
+export interface SimultaneousEffectEntry {
+  sourceInstanceId: string;
+  trigger: EffectTrigger;
+  blockIndex: number;
+  triggerEvent?: Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"];
+}
+
 export type PromptResolutionContext =
+  | {
+      intent: "effectOrderChoice";
+      controller: MatchSeat;
+      entries: SimultaneousEffectEntry[];
+    }
   | {
       intent: "battleAttackHandTrashCost";
       attackerId: string;
@@ -983,6 +997,14 @@ export interface EngineCapabilityIssue {
 }
 
 export type ResolutionItem =
+  | {
+      id: string;
+      // Effects of one player whose timing was fulfilled together; the
+      // player chooses which activates first (8-6-1-1).
+      kind: "orderSimultaneousEffects";
+      controller: MatchSeat;
+      entries: SimultaneousEffectEntry[];
+    }
   | {
       id: string;
       kind: "beginTurn";

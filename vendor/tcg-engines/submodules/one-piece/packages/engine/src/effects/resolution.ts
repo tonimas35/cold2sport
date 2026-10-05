@@ -24,7 +24,14 @@ import {
   getOpenCharacterSlots,
   moveCard,
 } from "../state.ts";
-import type { GameCommand, MatchSeat, MatchState, PromptState, ResolutionItem } from "../types.ts";
+import type {
+  GameCommand,
+  MatchSeat,
+  MatchState,
+  PromptState,
+  ResolutionItem,
+  SimultaneousEffectEntry,
+} from "../types.ts";
 import { completeBattleResolution } from "../battle.ts";
 import {
   addTopDeckCardsToLife,
@@ -69,7 +76,7 @@ import {
   resolveTargetCount,
   selectionSatisfiesTotalConstraint,
 } from "./targeting.ts";
-import type { Cost, EffectTrigger } from "@tcg/op-types";
+import type { Cost, EffectBlock, EffectTrigger } from "@tcg/op-types";
 
 /**
  * Printed form of an effect trigger for player-facing log lines, matching the
@@ -150,6 +157,8 @@ function triggerLabel(trigger: EffectTrigger): string {
       return "[When a Character Is Rested by an Effect]";
     case "whenYouTakeDamage":
       return "[When You Take Damage]";
+    case "whenYouAttack":
+      return "[When You Attack]";
     default: {
       // Compile-time exhaustiveness guard: never reached at runtime.
       const unhandled: never = trigger;
@@ -203,7 +212,7 @@ export function processBattleEndEffects(
 
 function eventFilterMatches(
   state: MatchState,
-  item: Extract<ResolutionItem, { kind: "effectBlock" }>,
+  item: Pick<Extract<ResolutionItem, { kind: "effectBlock" }>, "controller" | "sourceInstanceId">,
   eventFilter: NonNullable<NonNullable<ReturnType<typeof effectBlocksFor>[number]>["eventFilter"]>,
   event: NonNullable<Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"]>,
 ): boolean {
@@ -299,42 +308,46 @@ function returnDonCostNeedsChoice(
   return options.length > minimumAmount && sourceKeys.size > 1;
 }
 
-export function processEffectBlock(
-  state: MatchState,
-  item: Extract<ResolutionItem, { kind: "effectBlock" }>,
-) {
+type EffectBlockItemInput = Omit<Extract<ResolutionItem, { kind: "effectBlock" }>, "id">;
+
+/**
+ * The block an effectBlock item refers to, or null when its source changed
+ * zones, the block was already used this turn, or the triggering event does
+ * not pass the block's event or source filter.
+ */
+function liveEffectBlock(state: MatchState, item: EffectBlockItemInput): EffectBlock | null {
   const source = getInstance(state, item.sourceInstanceId);
   if (
     item.sourceZoneChangeCounter !== undefined &&
     source.zoneChangeCounter !== item.sourceZoneChangeCounter
   ) {
-    return;
+    return null;
   }
   const card = getCard(source.cardId);
   const block = effectBlocksFor(card, item.trigger)[item.blockIndex];
 
   if (!block) {
-    return;
+    return null;
   }
 
   const effectKey = block.oncePerTurnKey ?? `${item.trigger}:${item.blockIndex}`;
   if (block.oncePerTurn && source.usedEffectKeys.includes(effectKey)) {
-    return;
+    return null;
   }
 
   if (block.eventFilter) {
     const event = item.triggerEvent;
     if (!event) {
-      return;
+      return null;
     }
     if (!eventFilterMatches(state, item, block.eventFilter, event)) {
-      return;
+      return null;
     }
   }
   if (block.source) {
     const event = item.triggerEvent;
     if (!event?.effectController) {
-      return;
+      return null;
     }
     const isOpponentEffect = event.effectController !== item.controller;
     const isSelfEffect = event.effectController === item.controller;
@@ -351,9 +364,120 @@ export function processEffectBlock(
       (block.source === "opponentEffect" && (!isOpponentEffect || !isEffectKOD)) ||
       (block.source === "opponentCharacterEffect" && !isOpponentCharacterEffect)
     ) {
-      return;
+      return null;
     }
   }
+  return block;
+}
+
+/**
+ * Whether processEffectBlock would activate this block now (same checks, in
+ * the same order): live, conditions met, and for an optional block its costs
+ * payable. A block with an unsupported condition only reaches the judge, so
+ * it does not count.
+ */
+function effectBlockWouldActivate(state: MatchState, item: EffectBlockItemInput): boolean {
+  const block = liveEffectBlock(state, item);
+  if (!block) {
+    return false;
+  }
+  const conditions = evaluateConditions(
+    state,
+    item.controller,
+    item.sourceInstanceId,
+    block.conditions,
+    [],
+    item.triggerEvent,
+  );
+  if (!conditions.supported || !conditions.matches) {
+    return false;
+  }
+  return (
+    !block.optional ||
+    canPayCosts(
+      state,
+      item.controller,
+      item.sourceInstanceId,
+      block.costs,
+      item.trashHandIds,
+      item.costPaymentIds,
+      item.costPaymentIdsByType,
+    )
+  );
+}
+
+function simultaneousEntryId(entry: SimultaneousEffectEntry): string {
+  return `${entry.sourceInstanceId}:${entry.trigger}:${entry.blockIndex}`;
+}
+
+function enqueueSimultaneousEntriesNext(
+  state: MatchState,
+  controller: MatchSeat,
+  entries: readonly SimultaneousEffectEntry[],
+) {
+  // `next` unshifts, so walk backwards to keep the given order at the front.
+  for (const entry of [...entries].reverse()) {
+    enqueueResolution(state, { kind: "effectBlock", controller, ...entry }, { next: true });
+  }
+}
+
+/**
+ * 8-6-1-1: the player whose effects (on two or more different cards) had
+ * their activation timing fulfilled together chooses which one activates
+ * first. Only effects that would actually activate are offered; if fewer
+ * than two cards remain, everything resolves in the default order with no
+ * prompt. The rest are ordered again after the chosen one has resolved.
+ */
+export function processSimultaneousEffectOrder(
+  state: MatchState,
+  item: Extract<ResolutionItem, { kind: "orderSimultaneousEffects" }>,
+) {
+  const ready = item.entries.filter((entry) =>
+    effectBlockWouldActivate(state, { kind: "effectBlock", controller: item.controller, ...entry }),
+  );
+  if (new Set(ready.map((entry) => entry.sourceInstanceId)).size < 2) {
+    enqueueSimultaneousEntriesNext(state, item.controller, item.entries);
+    return;
+  }
+  createChoicePrompt(state, {
+    choiceKind: "chooseOption",
+    seat: item.controller,
+    label: `${getPlayer(state, item.controller).playerName} chooses which effect activates first.`,
+    details: "These effects activate at the same time. Choose the one to resolve first.",
+    sourceCardId: null,
+    sourceInstanceId: null,
+    eventId: state.battle?.id ?? null,
+    options: ready.map((entry) => {
+      const id = simultaneousEntryId(entry);
+      return {
+        id,
+        label: `${cardName(getCardForInstance(state, entry.sourceInstanceId))} ${triggerLabel(entry.trigger)}`,
+        value: id,
+        targetId: entry.sourceInstanceId,
+      };
+    }),
+    minSelections: 1,
+    maxSelections: 1,
+    context: {},
+    resolutionContext: {
+      intent: "effectOrderChoice",
+      controller: item.controller,
+      entries: item.entries,
+    },
+  });
+}
+
+export function processEffectBlock(
+  state: MatchState,
+  item: Extract<ResolutionItem, { kind: "effectBlock" }>,
+) {
+  const source = getInstance(state, item.sourceInstanceId);
+  const card = getCard(source.cardId);
+  const block = liveEffectBlock(state, item);
+  if (!block) {
+    return;
+  }
+  const effectKey = block.oncePerTurnKey ?? `${item.trigger}:${item.blockIndex}`;
 
   const conditions = evaluateConditions(
     state,
@@ -1820,6 +1944,34 @@ export function resolveEffectChoicePrompt(
   command: Extract<GameCommand, { type: "resolvePrompt" }>,
 ): boolean {
   switch (prompt.resolutionContext?.intent) {
+    case "effectOrderChoice": {
+      const context = prompt.resolutionContext;
+      const chosen = context.entries.find(
+        (entry) => simultaneousEntryId(entry) === command.optionId,
+      );
+      if (
+        !chosen ||
+        !prompt.options.some((option) => option.id === command.optionId && option.enabled !== false)
+      ) {
+        return false;
+      }
+      const remaining = context.entries.filter(
+        (entry) => simultaneousEntryId(entry) !== command.optionId,
+      );
+      // The chosen effect resolves first (with any prompts of its own); the
+      // others are ordered again afterwards, still ahead of later items.
+      if (remaining.length > 1) {
+        enqueueResolution(
+          state,
+          { kind: "orderSimultaneousEffects", controller: context.controller, entries: remaining },
+          { next: true },
+        );
+      } else {
+        enqueueSimultaneousEntriesNext(state, context.controller, remaining);
+      }
+      enqueueSimultaneousEntriesNext(state, context.controller, [chosen]);
+      return true;
+    }
     case "effectKoReplacement": {
       const context = prompt.resolutionContext;
       if (command.optionId !== "yes" && command.optionId !== "no") {

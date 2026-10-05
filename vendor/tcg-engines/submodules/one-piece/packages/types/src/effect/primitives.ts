@@ -82,4 +82,7 @@ export type EffectTrigger =
   | "whenBecomesRested"
   | "whenCharacterRestedByEffect"
   | "whenCardsTrashedFromHandByEffect"
-  | "whenYouTakeDamage";
+  | "whenYouTakeDamage"
+  // "When your Leader/Character attacks" printed on any in-play card of the
+  // attacking player (7-1-1-3). eventFilter.filters narrow the attacker.
+  | "whenYouAttack";

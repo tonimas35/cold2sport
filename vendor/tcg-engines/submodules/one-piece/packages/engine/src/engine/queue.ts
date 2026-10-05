@@ -10,7 +10,7 @@ import {
   queueBattleLifeTriggerPrompt,
 } from "../battle.ts";
 import { processEffectBlock, processQueuedEffectAction } from "../effects.ts";
-import { processBattleEndEffects } from "../effects/resolution.ts";
+import { processBattleEndEffects, processSimultaneousEffectOrder } from "../effects/resolution.ts";
 import {
   cardName,
   enqueueResolution,
@@ -123,6 +123,9 @@ export function drainResolutionQueue(state: MatchState) {
         break;
       case "effectBlock":
         processEffectBlock(state, item);
+        break;
+      case "orderSimultaneousEffects":
+        processSimultaneousEffectOrder(state, item);
         break;
       case "effectAction":
         processQueuedEffectAction(state, item);
