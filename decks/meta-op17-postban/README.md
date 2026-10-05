@@ -1,6 +1,6 @@
 # Post-ban OP-17 meta deck pool
 
-Generated 2026-10-04 by `bun packages/opbot/src/cli.ts meta-decks` from the Limitless Tournament Platform API (https://play.limitlesstcg.com/api). Rerunning it rewrites this folder; the raw API responses are cached in `out/limitless-cache/`.
+Generated 2026-10-05 by `bun packages/opbot/src/cli.ts meta-decks` from the Limitless Tournament Platform API (https://play.limitlesstcg.com/api). Rerunning it rewrites this folder; the raw API responses are cached in `out/limitless-cache/`.
 
 - One deck per file, in the text format of `packages/opbot/src/decks/deck.ts`; load the folder with `loadDeckPool("decks/meta-op17-postban")` or `--decks decks/meta-op17-postban`.
 - Decks the engine cannot play are kept in `unsupported/` (not part of the pool).
@@ -356,20 +356,20 @@ For each pool Leader, every complete post-ban list (all event sizes): the share 
 
 ## Engine support
 
-200 heuristic-vs-heuristic games on the fast simulator, 20 per pair of pool decks (seats and first player alternate). Overall: 200 finished by the rules, 0 hit the 1500-command cap, 0 stalled, 0 stopped on an illegal command, 0 crashed; 225 capability records in total (`state.capabilityHistory`: effects the engine could not execute).
+200 heuristic-vs-heuristic games on the fast simulator, 20 per pair of pool decks (seats and first player alternate). Overall: 200 finished by the rules, 0 hit the 1500-command cap, 0 stalled, 0 stopped on an illegal command with no legal fallback, 0 crashed; 0 commands rejected by the engine (each replaced by a legal fallback, the game went on); 225 capability records in total (`state.capabilityHistory`: effects the engine could not execute).
 
-Per deck: games it played and how they ended; illegal-command stops and capability records are those caused by the deck's own seat, with the cards behind them. "Bot win %" is heuristic vs heuristic and only flags decks the engine cannot really play.
+Per deck: games it played and how they ended; rejected commands, illegal-command stops and capability records are those caused by the deck's own seat, with the cards behind them. "Bot win %" is heuristic vs heuristic and only flags decks the engine cannot really play.
 
-| Deck | Missing cards | checkDeck | Games | Rules end | Cmd cap / stall | Illegal stops caused | Crashes | Capability records | Games with records | Bot win % | Cards behind stops and records |
+| Deck | Missing cards | checkDeck | Games | Rules end | Cmd cap / stall | Rejected cmds / illegal stops | Crashes | Capability records | Games with records | Bot win % | Cards behind stops and records |
 |---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---|
-| OP17-039-rocks-d-xebec | none | pass | 80 | 80 | 0 / 0 | 0 | 0 | 0 | 0 | 34% | none |
-| OP17-079-monkey-d-luffy | none | pass | 80 | 80 | 0 / 0 | 0 | 0 | 0 | 0 | 84% | none |
+| OP17-039-rocks-d-xebec | none | pass | 80 | 80 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 34% | none |
+| OP17-079-monkey-d-luffy | none | pass | 80 | 80 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 84% | none |
 | OP17-058-kaido | ST34-004 | Unknown cards: ST34-004 | not played | | | | | | | | |
-| OP15-058-enel | none | pass | 80 | 80 | 0 / 0 | 0 | 0 | 225 | 74 | 1% | OP15-078 Mamaragan (cost:main:0) ×93; OP15-077 Lightning Dragon (cost:main:0) ×39; OP15-076 Lightning Beast Kiten (cost:main:0) ×38; OP15-075 El Thor (cost:main:0) ×35; OP15-074 Varie (cost:main:0) ×20 |
+| OP15-058-enel | none | pass | 80 | 80 | 0 / 0 | 0 / 0 | 0 | 225 | 74 | 1% | OP15-078 Mamaragan (cost:main:0) ×93; OP15-077 Lightning Dragon (cost:main:0) ×39; OP15-076 Lightning Beast Kiten (cost:main:0) ×38; OP15-075 El Thor (cost:main:0) ×35; OP15-074 Varie (cost:main:0) ×20 |
 | OP09-062-nico-robin | ST34-003 | Unknown cards: ST34-003 | not played | | | | | | | | |
-| OP13-004-sabo | none | pass | 80 | 80 | 0 / 0 | 0 | 0 | 0 | 0 | 66% | none |
+| OP13-004-sabo | none | pass | 80 | 80 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 66% | none |
 | OP08-058-charlotte-pudding | ST34-002, ST34-003 | Unknown cards: ST34-003, ST34-002 | not played | | | | | | | | |
-| OP17-020-shanks | none | pass | 80 | 80 | 0 / 0 | 0 | 0 | 0 | 0 | 65% | none |
+| OP17-020-shanks | none | pass | 80 | 80 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 65% | none |
 
 ## Methodology
 
@@ -381,4 +381,4 @@ Per deck: games it played and how they ended; illegal-command stops and capabili
 6. **Pool**: the 8 most played Leaders (ties: higher win rate). A Leader is skipped, and the next one takes its place, if it is not in the engine catalog (`hasCard`) or has no complete, Standard-legal 50-card list in a used event with >= 32 players. A chosen Leader whose representative list uses cards missing from the engine, or fails `checkDeck`, keeps its slot but its list goes to `unsupported/` exactly as published (no substitute cards), so the pool folder only holds decks the engine can load.
 7. **Representative list**: the decklist of the best-placed player with that Leader among used events with >= 32 players, counting only lists legal in Standard on 2026-10-12 (`checkStandardLegality` in `legality.ts`: block icons 2-5 plus the official exception lists, ban list and banned pairs); ties go to the larger event, then the later one, then the player id. Its header records the tournament URL, player, placing/players and date, and the Leader's share and win rate.
 8. **Consensus table**: all complete lists of the Leader in used events of any size.
-9. **Engine support**: every card id must exist in the engine catalog and the deck must pass `checkDeck` (engine construction rules; Standard legality is already required in step 7). Then 20 games per pair of pool decks with the engine's heuristic bot on both seats (`playGame`, engine `fast`, 1500-command cap). Capability records are charged to the deck of the seat that produced them (or to the deck holding the source card for system records). The fast engine stops a game at the first command it rejects; the stop is charged to the deck that sent it, keyed by the card whose prompt it answered (the bot picks among the options the engine offers, so such a rejection points at the engine's handling of that card).
+9. **Engine support**: every card id must exist in the engine catalog and the deck must pass `checkDeck` (engine construction rules; Standard legality is already required in step 7). Then 20 games per pair of pool decks with the engine's heuristic bot on both seats (`playGame`, engine `fast`, 1500-command cap). Capability records are charged to the deck of the seat that produced them (or to the deck holding the source card for system records). A command the engine rejects does not end the game: the driver (`arena/game.ts`) counts it and plays the first legal action instead; the game stops as "illegal" only when no legal action is accepted. Each rejection is charged to the deck that sent it, keyed by the card whose prompt it answered (every decision is also tried on a copy of the state to find it); the bot picks among the options the engine offers, so a rejection points at the handling of that card by the engine or our action layer.
