@@ -13,6 +13,7 @@
  *   play         play in the terminal against a bot (or watch bot vs bot), saved for review
  *   review       analyze every decision of one seat in a recorded game
  *   tune         base deck vs a variant with card swaps, against a field of decks
+ *   calibrate    simulated matchup matrix vs real Limitless head-to-head results
  */
 import { mkdirSync, readFileSync, writeFileSync, appendFileSync, existsSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -297,9 +298,49 @@ async function main(): Promise<void> {
       return;
     }
 
+    case "calibrate": {
+      const { loadDeckPool } = await import("./decks/pool.ts");
+      const { playMatchupPairs, summarizeMatchup } = await import("./analysis/matchup.ts");
+      const { realMatchups, formatCalibration, deckPairs } = await import("./analysis/calibrate.ts");
+      const decks = loadDeckPool(str(args, "decks", "decks/meta-op17-postban"));
+      const agent = str(args, "agent", "heuristic");
+      const pairsPerMatchup = Math.ceil(num(args, "games", 40) / 2);
+      const out = resolve(str(args, "out", `out/calibrate-${agent.replace(/[^a-z0-9]+/gi, "_")}.jsonl`));
+      const matchups = deckPairs(decks);
+      if (isChild) {
+        const shard = num(args, "shard", 0);
+        const shards = num(args, "shards", 1);
+        const target = `${out}.part${shard}`;
+        if (existsSync(target)) rmSync(target);
+        matchups.forEach(([i, j], m) => {
+          if (m % shards !== shard) return;
+          playMatchupPairs(decks[i]!, decks[j]!, agent, 0, pairsPerMatchup, str(args, "seed", "calibrate"), (g) =>
+            appendFileSync(target, `${JSON.stringify({ a: i, b: j, ...g })}\n`),
+          );
+        });
+        return;
+      }
+      mkdirSync(dirname(out), { recursive: true });
+      const shards = Math.min(workers, matchups.length);
+      await runShards("calibrate", { ...args, out }, shards);
+      const files = Array.from({ length: shards }, (_, k) => `${out}.part${k}`).filter(existsSync);
+      const text = files.map((f) => readFileSync(f, "utf8")).join("");
+      writeFileSync(out, text);
+      for (const f of files) rmSync(f);
+      const games = text.split("\n").filter(Boolean).map((l) => JSON.parse(l));
+      const real = realMatchups(resolve(str(args, "cache", "out/limitless-cache")), str(args, "since", "2026-08-13"), decks.map((d) => d.leader));
+      const rows = matchups.map(([i, j]) => {
+        const s = summarizeMatchup(games.filter((g) => g.a === i && g.b === j));
+        const r = real.get(`${decks[i]!.leader} vs ${decks[j]!.leader}`);
+        return { a: decks[i]!.name, b: decks[j]!.name, simulated: s.aWinRate, simulatedGames: s.games, real: r ? r.wins / r.games : null, realGames: r?.games ?? 0 };
+      });
+      console.log(formatCalibration(rows, agent));
+      return;
+    }
+
     default:
       console.log(
-        "usage: opbot <selfplay|train-value|arena|bench|meta-decks|analyze|matchup|play|review|tune> [--options]\n" +
+        "usage: opbot <selfplay|train-value|arena|bench|meta-decks|analyze|matchup|play|review|tune|calibrate> [--options]\n" +
           "  see packages/opbot/README.md for every option",
       );
   }
