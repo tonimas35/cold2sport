@@ -35,7 +35,7 @@ Events used:
 | 2 | OP17-079 | Monkey.D.Luffy | 31 | 11.3% | 57.1% | 154 | yes |
 | 3 | OP17-058 | Kaido | 21 | 7.7% | 49.5% | 101 | yes |
 | 4 | OP15-058 | Enel | 19 | 6.9% | 48.2% | 85 | yes |
-| 5 | ST30-001 | Luffy & Ace | 18 | 6.6% | 53.4% | 103 | skipped: Leader not in the engine catalog |
+| 5 | ST30-001 | Luffy & Ace | 18 | 6.6% | 53.4% | 103 | yes |
 | 6 | OP09-062 | Nico Robin | 15 | 5.5% | 46.5% | 71 | yes |
 | 7 | OP13-004 | Sabo | 15 | 5.5% | 46.3% | 67 | yes |
 | 8 | OP08-058 | Charlotte Pudding | 14 | 5.1% | 54.1% | 74 | yes |
@@ -76,7 +76,7 @@ Events used:
 
 ## Pool
 
-The 8 most played Leaders that have a representative list; 8 of them are playable by the engine and form the pool, the others are in `unsupported/`.
+The 9 most played Leaders that have a representative list; 9 of them are playable by the engine and form the pool, the others are in `unsupported/`.
 
 | File | Leader | Share | Win rate (games) | Representative list | Engine |
 |---|---|---:|---|---|---|
@@ -84,14 +84,11 @@ The 8 most played Leaders that have a representative list; 8 of them are playabl
 | `OP17-079-monkey-d-luffy.txt` | OP17-079 Monkey.D.Luffy | 11.3% | 57.1% (154) | snorlax1cynda (snorlax1cynda), 1/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
 | `OP17-058-kaido.txt` | OP17-058 Kaido | 7.7% | 49.5% (101) | HalfJimmy (halfjimmy), 7/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
 | `OP15-058-enel.txt` | OP15-058 Enel | 6.9% | 48.2% (85) | Martix (martix), 6/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
+| `ST30-001-luffy-ace.txt` | ST30-001 Luffy & Ace | 6.6% | 53.4% (103) | not_dev (not_dev), 5/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
 | `OP09-062-nico-robin.txt` | OP09-062 Nico Robin | 5.5% | 46.5% (71) | krabbys (krabbys), 13/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
 | `OP13-004-sabo.txt` | OP13-004 Sabo | 5.5% | 46.3% (67) | Willerd7 (willerd7), 4/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
 | `OP08-058-charlotte-pudding.txt` | OP08-058 Charlotte Pudding | 5.1% | 54.1% (74) | Simpiii (simpiii), 9/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
 | `OP17-020-shanks.txt` | OP17-020 Shanks | 4.4% | 40.0% (55) | zockerdima (zockerdima), 30/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
-
-Skipped Leaders (the next most played Leader takes the slot):
-
-- ST30-001 Luffy & Ace (6.6%): Leader not in the engine catalog.
 
 ## Consensus lists
 
@@ -222,6 +219,43 @@ For each pool Leader, every complete post-ban list (all event sizes): the share 
 | OP15-069 | Nola | 11% | 3.0 | 3 | 0 |
 | OP12-063 | Vinsmoke Reiju | 5% | 2.0 | 2 | 0 |
 | OP15-060 | Enel | 5% | 1.0 | 1 | 0 |
+
+### ST30-001 Luffy & Ace (18 lists)
+
+| Card | Name | Lists | Avg copies | Most common | Representative |
+|---|---|---:|---:|---:|---:|
+| EB02-017 | Nami | 100% | 4.0 | 4 | 4 |
+| OP01-016 | Nami | 100% | 4.0 | 4 | 4 |
+| OP12-015 | Monkey.D.Luffy | 100% | 4.0 | 4 | 4 |
+| ST21-014 | Monkey.D.Luffy | 100% | 4.0 | 4 | 4 |
+| ST31-001 | Sanji | 100% | 4.0 | 4 | 4 |
+| ST31-005 | Thousand Sunny | 100% | 4.0 | 4 | 4 |
+| EB04-002 | Jewelry Bonney | 100% | 3.9 | 4 | 4 |
+| OP04-016 | Bad Manners Kick Course | 100% | 3.9 | 4 | 3 |
+| ST30-012 | Monkey.D.Luffy | 100% | 3.8 | 4 | 3 |
+| OP13-040 | I Know You're Strong... So I'll Go All Out from the Very Start!!! | 100% | 2.3 | 2 | 2 |
+| OP12-037 | Demon Aura Nine Sword Style Asura Blades Drawn Dead Man's Game | 100% | 2.1 | 2 | 2 |
+| OP17-017 | Ga Ha Ha Ha!! | 83% | 3.6 | 4 | 4 |
+| OP14-019 | I Have a Plan to Take Down One of the Four Emperors!! | 67% | 2.9 | 3 | 3 |
+| ST21-017 | Gum-Gum Mole Pistol | 67% | 1.2 | 1 | 1 |
+| OP12-018 | Color of the Supreme King Haki | 33% | 1.5 | 2 | 0 |
+| OP06-018 | Gum-Gum King Kong Gatling | 33% | 1.2 | 1 | 0 |
+| OP06-017 | Meteor-Strike of Love | 28% | 1.6 | 2 | 1 |
+| OP15-032 | Brook | 28% | 1.2 | 1 | 0 |
+| OP01-055 | You Can Be My Samurai!! | 22% | 2.5 | 3 | 0 |
+| OP12-006 | Shakuyaku | 22% | 1.0 | 1 | 0 |
+| OP12-038 | Two-Sword Style Rashomon | 17% | 1.7 | 2 | 0 |
+| OP14-018 | Time for the Counterattack | 11% | 3.0 | 3 | 0 |
+| OP14-031 | Nami | 11% | 2.0 | 3 | 1 |
+| EB02-021 | Gum-Gum Giant Pistol | 11% | 1.5 | 2 | 0 |
+| ST21-003 | Sanji | 11% | 1.0 | 1 | 0 |
+| OP10-005 | Sanji | 6% | 3.0 | 3 | 0 |
+| OP08-023 | Carrot | 6% | 2.0 | 2 | 0 |
+| OP08-036 | Electrical Luna | 6% | 2.0 | 2 | 2 |
+| OP11-012 | Franky | 6% | 2.0 | 2 | 0 |
+| OP14-034 | Monkey.D.Luffy | 6% | 2.0 | 2 | 0 |
+| OP17-022 | Shanks | 6% | 1.0 | 1 | 0 |
+| ST31-004 | Monkey.D.Luffy | 6% | 1.0 | 1 | 0 |
 
 ### OP09-062 Nico Robin (15 lists)
 
@@ -356,20 +390,21 @@ For each pool Leader, every complete post-ban list (all event sizes): the share 
 
 ## Engine support
 
-560 heuristic-vs-heuristic games on the fast simulator, 20 per pair of pool decks (seats and first player alternate). Overall: 560 finished by the rules, 0 hit the 1500-command cap, 0 stalled, 0 stopped on an illegal command with no legal fallback, 0 crashed; 0 commands rejected by the engine (each replaced by a legal fallback, the game went on); 478 capability records in total (`state.capabilityHistory`: effects the engine could not execute).
+720 heuristic-vs-heuristic games on the fast simulator, 20 per pair of pool decks (seats and first player alternate). Overall: 720 finished by the rules, 0 hit the 1500-command cap, 0 stalled, 0 stopped on an illegal command with no legal fallback, 0 crashed; 0 commands rejected by the engine (each replaced by a legal fallback, the game went on); 0 capability records in total (`state.capabilityHistory`: effects the engine could not execute).
 
 Per deck: games it played and how they ended; rejected commands, illegal-command stops and capability records are those caused by the deck's own seat, with the cards behind them. "Bot win %" is heuristic vs heuristic and only flags decks the engine cannot really play.
 
 | Deck | Missing cards | checkDeck | Games | Rules end | Cmd cap / stall | Rejected cmds / illegal stops | Crashes | Capability records | Games with records | Bot win % | Cards behind stops and records |
 |---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---|
-| OP17-039-rocks-d-xebec | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 51% | none |
-| OP17-079-monkey-d-luffy | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 91% | none |
-| OP17-058-kaido | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 16 | 13 | 1% | OP15-078 Mamaragan (cost:main:0) ×16 |
-| OP15-058-enel | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 449 | 137 | 18% | OP15-078 Mamaragan (cost:main:0) ×157; OP15-075 El Thor (cost:main:0) ×92; OP15-077 Lightning Dragon (cost:main:0) ×90; OP15-076 Lightning Beast Kiten (cost:main:0) ×67; OP15-074 Varie (cost:main:0) ×43 |
-| OP09-062-nico-robin | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 44% | none |
-| OP13-004-sabo | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 78% | none |
-| OP08-058-charlotte-pudding | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 13 | 11 | 39% | OP15-078 Mamaragan (cost:main:0) ×13 |
-| OP17-020-shanks | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 79% | none |
+| OP17-039-rocks-d-xebec | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 45% | none |
+| OP17-079-monkey-d-luffy | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 88% | none |
+| OP17-058-kaido | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 1% | none |
+| OP15-058-enel | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 33% | none |
+| ST30-001-luffy-ace | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 78% | none |
+| OP09-062-nico-robin | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 31% | none |
+| OP13-004-sabo | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 78% | none |
+| OP08-058-charlotte-pudding | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 30% | none |
+| OP17-020-shanks | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 67% | none |
 
 ## Methodology
 
@@ -378,7 +413,7 @@ Per deck: games it played and how they ended; rejected commands, illegal-command
 3. **Leader of an entry**: the decklist Leader (`set-number`), else the standings' auto-assigned `deck.id` (the Leader id). Entries with neither are counted separately and left out.
 4. **Share** = entries with the Leader / entries with a known Leader, over all used events (each entry counts once, whatever the event size).
 5. **Win rate** from `/pairings`: matches between two entries with known, different Leaders (byes and mirrors skipped); wins + ties/2 over matches; a double loss (-1) is a loss for both. A best-of-three top-cut match counts as one game. "games" in the deck headers means these matches.
-6. **Pool**: the 8 most played Leaders (ties: higher win rate). A Leader is skipped, and the next one takes its place, if it is not in the engine catalog (`hasCard`) or has no complete, Standard-legal 50-card list in a used event with >= 32 players. A chosen Leader whose representative list uses cards missing from the engine, or fails `checkDeck`, keeps its slot but its list goes to `unsupported/` exactly as published (no substitute cards), so the pool folder only holds decks the engine can load.
+6. **Pool**: the 9 most played Leaders (ties: higher win rate). A Leader is skipped, and the next one takes its place, if it is not in the engine catalog (`hasCard`) or has no complete, Standard-legal 50-card list in a used event with >= 32 players. A chosen Leader whose representative list uses cards missing from the engine, or fails `checkDeck`, keeps its slot but its list goes to `unsupported/` exactly as published (no substitute cards), so the pool folder only holds decks the engine can load.
 7. **Representative list**: the decklist of the best-placed player with that Leader among used events with >= 32 players, counting only lists legal in Standard on 2026-10-12 (`checkStandardLegality` in `legality.ts`: block icons 2-5 plus the official exception lists, ban list and banned pairs); ties go to the larger event, then the later one, then the player id. Its header records the tournament URL, player, placing/players and date, and the Leader's share and win rate.
 8. **Consensus table**: all complete lists of the Leader in used events of any size.
 9. **Engine support**: every card id must exist in the engine catalog and the deck must pass `checkDeck` (engine construction rules; Standard legality is already required in step 7). Then 20 games per pair of pool decks with the engine's heuristic bot on both seats (`playGame`, engine `fast`, 1500-command cap). Capability records are charged to the deck of the seat that produced them (or to the deck holding the source card for system records). A command the engine rejects does not end the game: the driver (`arena/game.ts`) counts it and plays the first legal action instead; the game stops as "illegal" only when no legal action is accepted. Each rejection is charged to the deck that sent it, keyed by the card whose prompt it answered (every decision is also tried on a copy of the state to find it); the bot picks among the options the engine offers, so a rejection points at the handling of that card by the engine or our action layer.

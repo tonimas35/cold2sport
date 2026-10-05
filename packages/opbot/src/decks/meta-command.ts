@@ -1,7 +1,7 @@
 /**
  * `opbot meta-decks`: builds the current-meta deck pool from Limitless.
  *
- *   opbot meta-decks [--since 2026-08-28] [--top 8] [--games 20]
+ *   opbot meta-decks [--since 2026-08-28] [--top 9] [--games 20]
  *     [--out decks/meta-op17-postban] [--min-players 32] [--refresh] [--no-games]
  *
  * Pulls every One Piece tournament since `--since`, keeps the Standard events
@@ -87,7 +87,7 @@ function unsupportedReason(p: PoolDeck): string | null {
 
 export async function runMetaDecksCommand(args: Args): Promise<void> {
   const since = new Date(`${str(args, "since", "2026-08-28")}T00:00:00Z`);
-  const top = num(args, "top", 8);
+  const top = num(args, "top", 9);
   const gamesPerPairing = num(args, "games", 20);
   const minPlayers = num(args, "min-players", 32);
   const outDir = resolve(REPO, str(args, "out", "decks/meta-op17-postban"));

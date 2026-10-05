@@ -1,0 +1,21 @@
+# source: https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe not_dev placed 5/119 2026-09-29
+# leader share: 6.6%, win rate: 53.4% (103 games)
+# event: [OP17] ChinoizeCup #116 Tuesday; player: not_dev 6-1-0
+1xST30-001
+4xOP01-016
+4xEB02-017
+4xEB04-002
+4xOP12-015
+3xST30-012
+1xOP14-031
+4xST21-014
+4xST31-001
+3xOP04-016
+4xOP17-017
+3xOP14-019
+2xOP12-037
+2xOP13-040
+1xOP06-017
+2xOP08-036
+1xST21-017
+4xST31-005
