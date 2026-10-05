@@ -1580,7 +1580,7 @@ reconciles catalog entries.
 | OP15-112 | Raki | verified | onPlay |
 | OP15-113 | Roronoa Zoro | verified | onPlay |
 | OP15-114 | Wyper | verified | onPlay, activateMain |
-| OP15-118 | Enel | verified | onPlay, permanent |
+| OP15-118 | Enel | verified | onPlay DON!! −1 search; static +2000 power and removal protection with 6 or less DON!! on the field |
 | OP15-119 | Monkey.D.Luffy | verified | permanent |
 | OP16-002 | Izo | verified | On Play reveal 8000 Character from hand pays for the draw 1; decline and empty-pool boundaries |
 | OP16-003 | Edward.Newgate | verified | Your-turn Leader +2000 power; On Play reveal 2x8000 Characters pays for up-to-1 -6000 this turn with decline boundary |

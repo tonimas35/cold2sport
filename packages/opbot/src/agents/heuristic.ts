@@ -9,11 +9,37 @@ import {
   heuristicAgent,
   resolveBotPromptCommand,
   type EngineCommand,
+  type MatchSeat,
   type OnePieceBotAgent,
+  type PromptState,
 } from "@tcg/op-engine";
 import { pendingPrompt, repairPromptCommand } from "../engine/actions.ts";
 import { determinize } from "../engine/determinize.ts";
 import type { Agent, DecisionRequest } from "./types.ts";
+
+/**
+ * "Up to N DON!!" prompts where more is better for the chooser (for example
+ * OP15-058 Enel's "add up to 1 ... up to 4 additional DON!! ... give up to 4").
+ * The engine's heuristic does not handle `chooseOption` prompts and its
+ * fallback (`resolveBotPromptCommand`) picks the first option, "0", which
+ * wastes the effect, and sometimes a cost already paid. Used by the heuristic
+ * agents below and by the rollout policy (search/rollout.ts), instead of
+ * patching the vendored bot.
+ */
+const TAKE_MAX_INTENTS = new Set(["effectSetActiveDon", "effectAddDon", "effectGiveDonCount"]);
+
+export function takeMaxDonOption(prompt: PromptState): EngineCommand | null {
+  const intent = (prompt.resolutionContext as { intent?: string } | null)?.intent;
+  if (prompt.choiceKind !== "chooseOption" || !intent || !TAKE_MAX_INTENTS.has(intent)) return null;
+  let best: string | null = null;
+  for (const option of prompt.options) {
+    if (option.enabled === false || !/^\d+$/.test(option.id)) continue;
+    if (best === null || Number(option.id) > Number(best)) best = option.id;
+  }
+  return best === null
+    ? null
+    : { type: "resolvePrompt", seat: prompt.seat as MatchSeat, promptId: prompt.id, optionId: best };
+}
 
 function wrap(id: string, bot: OnePieceBotAgent): Agent {
   return {
@@ -28,6 +54,7 @@ function wrap(id: string, bot: OnePieceBotAgent): Agent {
         return repairPromptCommand(
           state,
           bot.resolvePrompt?.(state, prompt, context) ??
+            takeMaxDonOption(prompt) ??
             resolveBotPromptCommand(state, prompt) ?? { type: "endTurn", seat },
         );
       }

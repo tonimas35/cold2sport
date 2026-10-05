@@ -246,7 +246,12 @@ bots intercambiados, primer jugador controlado, modelo pentanomial y SPRT (como 
     pool (8 mazos, 560 partidas de comprobación sin comandos rechazados);
   - falta el Líder ST30-001 (Luffy & Ace) y sus cartas de ST21/ST31;
   - los eventos con coste DON!! −X de Enel (OP15-074 a OP15-078; Mamaragan también va en Kaido y
-    Pudding) generan registros "unsupportedCost" y el mazo apenas gana.
+    Pudding) se podían jugar sin DON!! suficientes en el campo: el evento iba a la papelera sin
+    efecto y dejaba un registro "unsupportedCost" (`cost:main:0`). Parche `0003`: un evento cuyo
+    coste obligatorio de [Main] no se puede pagar ya no se puede jugar (8-3-1-3); el mismo parche
+    añade el filtro "6000 o menos" de OP15-077 y el +2000 de OP15-118. Además, el bot
+    heurístico del motor contestaba "añade/da hasta N DON!!" con 0, así que el Líder Enel no hacía
+    nada; nuestro agente `heuristic` (y el `aggressive`) ya elige el máximo, como los rollouts.
 
 ### Que el mazo "funcione" no basta: auditoría carta a carta
 

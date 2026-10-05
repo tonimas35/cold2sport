@@ -319,11 +319,11 @@ reconciles catalog entries.
 | OP15-054 | And No One Else Can Have It! It's Our Memento of Him | verified | Lucy-gated choice: draw 2, trash 1, play Dressrosa cost-4-or-less; or return a Stage to hand |
 | OP15-055 | Go Ahead and Use 'Em, Mr. Luffy!!! | verified | Choice: draw 2 or grant a Dressrosa Character [Blocker] |
 | OP15-056 | Would You Let Me Eat the Flame-Flame Fruit? | verified | Main draws 2 and a [Lucy] Leader gains [Double Attack] +3000 (deals 2 damage) |
-| OP15-074 | Varie | verified | DON!! 1 Enel-gated draw with +2 cost grant; [Counter] saves the Leader with +2000 |
-| OP15-075 | El Thor | verified | DON!! 1 Enel-gated +1000 and K.O. of 3000-or-less power |
-| OP15-076 | Lightning Beast Kiten | verified | DON!! 1 Enel-gated draw with -1000 power give |
-| OP15-077 | Lightning Dragon | verified | DON!! 1 draw and freeze of a rested 6000-or-less Character through refresh |
-| OP15-078 | Mamaragan | verified | DON!! 2 draw and rest of a 5000-or-less Character with power filter |
+| OP15-074 | Varie | verified | DON!! −1 Enel-gated draw with +2 cost grant (unplayable without 1 DON!! on the field, paid from given DON!! too); [Counter] saves the Leader with +2000 |
+| OP15-075 | El Thor | verified | DON!! −1 Enel-gated +1000 and K.O. of 3000-or-less power; unplayable without 1 DON!! on the field |
+| OP15-076 | Lightning Beast Kiten | verified | DON!! −1 Enel-gated draw with -1000 power give; unplayable without 1 DON!! on the field |
+| OP15-077 | Lightning Dragon | verified | DON!! −1 draw and freeze of a rested 6000-or-less Character through refresh (power filter checked); unplayable without 1 DON!! on the field |
+| OP15-078 | Mamaragan | verified | DON!! −2 draw and rest of a 5000-or-less Character with power filter; unplayable with fewer than 2 DON!! on the field |
 | OP15-095 | Gum-Gum Storm | verified | rest-DON cost with 15-trash gate gives a Straw Hat card +3000; sub-threshold boundary |
 | OP15-096 | Swallow Bond en Avant | verified | rest-DON cost with Straw Hat Leader trashes 5 deck cards; non-SH decline boundary |
 | OP15-097 | I Find It Embarrassing as a Human Being | verified | Main 10-trash gate stops a base-cost-5-or-less Character attacking; cost filter boundary |

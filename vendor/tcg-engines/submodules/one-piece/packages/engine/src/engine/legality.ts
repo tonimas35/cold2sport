@@ -109,6 +109,54 @@ export function canEndTurn(state: MatchState, seat: MatchSeat): LegalityResult {
   return allow();
 }
 
+/**
+ * Playing an Event from hand is paying its cost and activating its [Main]
+ * effect (4-7-1, 6-5-3-1, 8-4-1), and an activation cost that cannot be paid
+ * in full cannot be paid at all, so that effect cannot be activated (8-3-1-3).
+ * An Event whose mandatory [Main] activation cost cannot be paid -- e.g.
+ * "DON!! −X" (8-3-1-6, 10-2-10) with fewer than X DON!! cards on the field --
+ * therefore cannot be played (4-7-2). A cost the text makes optional ("You
+ * may ...:", blocks marked `optional`) can be declined (8-3-1-4), so it does
+ * not block the play; the resolver then skips that block.
+ *
+ * The costs are checked against the state they are paid from: the playCard
+ * handler first rests the Event's own cost and moves the card from the hand
+ * to the trash, then resolves the [Main] blocks. Checking the current state
+ * instead would let the Event's cost DON!! or the Event itself pay for it.
+ */
+function eventMainCostsPayable(
+  state: MatchState,
+  seat: MatchSeat,
+  instanceId: string,
+  cardCost: number,
+): boolean {
+  const mandatoryCostBlocks = effectBlocksForInstance(state, instanceId, "main").filter(
+    (block) => !block.optional && block.costs?.length,
+  );
+  if (!mandatoryCostBlocks.length) {
+    return true;
+  }
+  const player = getPlayer(state, seat);
+  const instance = getInstance(state, instanceId);
+  const afterPlay: MatchState = {
+    ...state,
+    players: {
+      ...state.players,
+      [seat]: {
+        ...player,
+        activeDon: player.activeDon - cardCost,
+        restedDon: player.restedDon + cardCost,
+        hand: player.hand.filter((handId) => handId !== instanceId),
+        trash: [...player.trash, instanceId],
+      },
+    },
+    cards: { ...state.cards, [instanceId]: { ...instance, zone: "trash" } },
+  };
+  return mandatoryCostBlocks.every((block) =>
+    canPayCosts(afterPlay, seat, instanceId, block.costs, undefined),
+  );
+}
+
 export function canPlayCard(
   state: MatchState,
   seat: MatchSeat,
@@ -145,6 +193,9 @@ export function canPlayCard(
   }
   if (card.cardType === "event" && !effectBlocksFor(card, "main").length) {
     return deny("This event does not have a playable [Main] effect.");
+  }
+  if (card.cardType === "event" && !eventMainCostsPayable(state, seat, instanceId, cardCost)) {
+    return deny("The [Main] activation cost cannot be paid.");
   }
   if (card.cardType === "leader") {
     return deny("Leaders cannot be played from hand.");
