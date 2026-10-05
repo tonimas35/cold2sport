@@ -21,6 +21,8 @@ sintéticos), simulación rápida, modelo de valor `logreg-test-v1`.
 | E3 | 2026-10-04 | `3254f3d` | `ismcts:iters=150,h=1,c=0.3` | `search:sims=64` | 8 | 3/0/3/0/2 | 43,8 % [14,8–72,7] | −44 [−304, 170] | Detenido a mano: no concluyente y 2,6× más lento. ISMCTS no mejora aún a la búsqueda plana con este presupuesto |
 | E4 | 2026-10-04 | `3254f3d` | `heuristic-honest` | `heuristic` (oráculo) | 360 | 0/0/360/0/0 | 50,0 % | 0 | Las 720 partidas son idénticas por pares: la heurística **no usa** su acceso oráculo, así que la ventaja de E1 no se debe a que el rival haga trampa ni a que deje de hacerla |
 | E5 | 2026-10-05 | `3254f3d` | `search:sims=256` | `search:sims=64` | 26 | 4/0/13/0/9 | 59,6 % [46,3–73,0] | +68 [−26, 172] | Detenido a mano para liberar CPU. Tendencia a favor de más cálculo, no significativa. 1,25 s frente a 0,30 s por decisión |
+| E8 | 2026-10-05 | `09952de` | `search:sims=64,h=1,cands=12` | `heuristic` (oráculo) | 64 | 7/0/41/0/16 | 57,0 % [49,8–64,2] | +49 [−1, 102] | **Mazos del meta** (Rocks, Luffy OP17-079, Sabo, Shanks), motor **antes** de corregir las cartas de Rocks. 64 pares sin decidir (LLR 1,71). Con Rocks el candidato pierde casi siempre (0 % contra Luffy y Shanks): con cartas rotas el cálculo no compensa. 1,6 s por decisión |
+| E6 | 2026-10-05 | `09952de` | `search:sims=64` con `model=value-mlp16-test-v1` | `search:sims=64` (`logreg-test-v1`) | 28 | 0/0/21/0/7 | 62,5 % [54,3–70,7] | **+89 [30, 153]** | Mazos del meta, motor antes de las correcciones. Cortado a los 28 pares por el límite de 2 h de los procesos en segundo plano. La red pequeña (MLP de 16 neuronas, entrenada con los mazos sintéticos) ya mejora la búsqueda en mazos que nunca vio; se repetirá con el motor corregido |
 
 ## Calibración de enfrentamientos frente a resultados reales
 
@@ -56,9 +58,10 @@ pnpm opbot arena --candidate "search:sims=64,h=1,cands=12" --baseline heuristic 
 
 ## Pendientes / en curso
 
-- E5: 256 contra 64 simulaciones (¿escala con el cálculo?). En curso.
-- E2 con tamaño fijo (la parada temprana del SPRT deja un intervalo ancho).
-- Todo lo anterior con mazos del meta post-ban, cuando el motor soporte las cartas que faltan.
+- Corrección de cartas del meta en el motor (parches `0003` y siguientes; ver `vendor/tcg-engines/UPSTREAM.md`).
+  Tras ella: repetir E8 y E6 con el motor corregido y recalibrar con el bot de búsqueda.
+- E7: ISMCTS con determinización del rival (`opp=1`) contra la búsqueda plana.
+- E5 y E2 con tamaño fijo (la parada temprana del SPRT y el corte manual dejan intervalos anchos).
 
 ## Cómo leer estos números
 

@@ -8,3 +8,4 @@ coverage/
 .DS_Store
 # run artifacts (arena reports, benchmark dumps); commit curated results under docs/ instead
 out/
+.claude/worktrees/
