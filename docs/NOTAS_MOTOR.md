@@ -237,7 +237,40 @@ bots intercambiados, primer jugador controlado, modelo pentanomial y SPRT (como 
   objetivo no tiene ese filtro. Upstream también corrigió en septiembre signos perdidos al importar de
   optcgapi (−4000 convertido en +4000).
 - **Soporte del meta post-ban** (informe completo en `decks/meta-op17-postban/README.md`):
-  - faltan ST34-002, ST34-003 y ST34-004 (Kaido, Robin y Pudding) y el Líder ST30-001;
-  - los costes de OP15-074 a OP15-078 (paquete de Enel, y Mamaragan en Kaido) no están
-    implementados ("unsupportedCost"): el mazo de Enel no funciona;
-  - en curso: parche `vendor/patches/0002-*` con esas cartas y costes.
+  - parche `0002`: ST34-002, ST34-003 y ST34-004. Con ellas Kaido, Robin y Pudding entran en el
+    pool (8 mazos, 560 partidas de comprobación sin comandos rechazados);
+  - falta el Líder ST30-001 (Luffy & Ace) y sus cartas de ST21/ST31;
+  - los eventos con coste DON!! −X de Enel (OP15-074 a OP15-078; Mamaragan también va en Kaido y
+    Pudding) generan registros "unsupportedCost" y el mazo apenas gana.
+
+### Que el mazo "funcione" no basta: auditoría carta a carta
+
+Que un mazo termine sus partidas sin errores **no** significa que sus cartas hagan lo que dicen. La
+auditoría contra el texto oficial y las FAQ (reproduciendo cada fallo con comandos) encontró, solo
+en Rocks (el 22 % del meta):
+
+| Carta | Fallo | Efecto en las partidas |
+|---|---|---|
+| OP17-118 Rocks.D.Xebec | Falta su Counter +2000 desde la mano (texto estático en mano: el motor solo evalúa estáticos en juego) | 4 de los 16 counters del mazo no se pueden usar |
+| OP17-056 Rocks Pirates | Falta la mitad [Counter] | Otros 4 counters perdidos; la heurística la tira como evento [Main] sin DON |
+| OP17-040 Edward.Newgate | Falta el +3000 al Líder cuando ataca o es atacado (el motor no tiene disparador "cuando tu Líder ataca" para otras cartas) | Pierde su principal herramienta |
+| OP17-049 Charlotte Linlin | Falta el [On Play] en que el rival elige | Sin ventaja de cartas |
+| OP17-045 Kyo | Falta el efecto de sustitución contra eliminación | El tablero cae ante Luffy y Sabo |
+| OP17-050, 055, 046, 118 | Mirar 2 y reordenar; [Rocks.D.Xebec] no apunta al Líder; tipos guardados como una sola cadena; {Rocks Pirates} como subcadena | Menores |
+
+Y en Luffy OP17-079: OP15-088 Pirates Docking Six aplica su "+6 de coste" también en la mano, así
+que cuesta 11 y **nunca se puede jugar**; a OP17-095 Roronoa Zoro le falta el efecto de sustitución.
+
+Con esto se explica que la calibración saliera **negativa** (Rocks perdía 30 de 30 contra Luffy con
+el bot de búsqueda, frente al 30 % real): el problema no era solo el bot, sino el motor. Las
+correcciones van como parches `0003` y siguientes, cada una con tests dirigidos por comandos, la
+suite completa del motor y el test diferencial del simulador.
+
+Patrones de fallo que conviene buscar en cualquier carta nueva:
+
+1. texto en `.effect` que no aparece en `effects` (mitades [Counter], [On Play], sustituciones);
+2. efectos estáticos que deben funcionar desde la mano (counters condicionales);
+3. modificadores de coste propios con `zones: ["hand", ...]` cuando el texto es de personaje;
+4. tipos compuestos guardados como una sola cadena y filtros de tipo con `includes` donde el texto
+   dice `{Tipo}` exacto;
+5. `[Nombre]` que debería incluir al Líder.
