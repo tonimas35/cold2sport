@@ -233,11 +233,41 @@ reproducidas por las dos vías con estados y jugadas legales idénticos tras cad
   - juega Eventos y usa [Activate: Main] sin mirar si el coste se puede pagar ni si hay objetivo
     (OP17-056 con menos de 5 DON!!, Divine Departure sin DON!! dados) y acepta todo coste opcional
     propio aunque el efecto no haga nada;
-  - en "elige una" toma siempre la primera opción.
+  - en "elige una" toma siempre la primera opción;
+  - trata el DON!! como gratis: acepta todo DON!! −X opcional (el Líder Kaido OP17-058 lo pagaba
+    en cada ataque y nunca llegaba a 9–10 DON!! para sus cartas grandes), paga los DON!! −X con
+    DON!! activos primero (su resolutor no mira las opciones de DON!! y el respaldo las toma en el
+    orden del prompt: activos, girados, dados) y da "hasta N DON!!" a su carta más fuerte aunque
+    no pueda atacar (el Líder Enel OP15-058 daba sus 4 DON!! al Personaje recién jugado).
 
   `packages/opbot/src/agents/policy.ts` (agente `policy`) corrige estos casos de forma puntual
   y deja el resto a la heurística; es la política de los rollouts de la búsqueda. Resultado en
   `docs/RESULTADOS.md` (E9, E10).
+
+  **El DON!! como recurso** (reglas generales, no por mazo; `policy:tempo=0` las quita):
+
+  - A. Un DON!! −X se paga primero con DON!! girados, luego con los dados a cartas que ya no
+    atacarán este turno, luego con los de cartas que aún atacarán y por último con los activos.
+  - B. "Da hasta N DON!! a 1 de tus cartas" en tu turno va a una carta que aún vaya a atacar y
+    que con ellos alcance el poder de su objetivo: Doble Ataque primero, luego la que los
+    necesita para alcanzarlo, luego la más fuerte.
+  - C. Un DON!! −X que se puede rechazar (coste opcional, Evento con DON!! −X, [Activate: Main]
+    con DON!! −X) solo se paga si no deja menos DON!! en el campo al empezar tu próximo turno:
+    con f DON!! en el campo, `min(tope, f+2) − min(tope, f−X+2) ≤ 0`, tope = mín(10, f + mazo de
+    DON!!), contando lo que tus cartas en juego aún devuelven este turno (Kaido OP17-062, o la
+    recarga del [Activate: Main] del Líder Enel si no se ha usado). Excepciones: hace fallar un
+    ataque rival, añade Vida con 2 o menos, o puede haber letal este turno.
+  - D. Un Evento con DON!! −X que tendría que quitar DON!! a una carta que aún va a atacar espera
+    a después de los ataques; los Eventos con DON!! −X van antes de la recarga del Líder Enel
+    (la regla C la cuenta como DON!! que vuelven).
+  - Límites: la regla C solo mide el DON!! del turno siguiente (no lo que hace el efecto ni los
+    turnos posteriores) y el letal no cuenta counters.
+
+  Además, la búsqueda contesta las cantidades "añade/da/endereza hasta N DON!!", "añade hasta N
+  a la vida" y "roba hasta N" con la regla de la política, sin rollouts: con 32 simulaciones
+  repartidas entre las opciones, el ruido (±0,1) era mayor que la diferencia real y elegía, por
+  ejemplo, añadir 0 DON!! (`rollout=policy0` vuelve a la búsqueda anterior). Resultado en
+  `docs/RESULTADOS.md` (E13, E14 y calibración).
 
 ### `bot-lab` (herramienta del repo original)
 

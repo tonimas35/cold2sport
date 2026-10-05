@@ -28,6 +28,8 @@ sintéticos), simulación rápida, modelo de valor `logreg-test-v1`.
 | E11 | 2026-10-05 | `4451fe9` | `search:sims=32,h=1,cands=12` (rollouts `policy`) | `heuristic` (oráculo, el bot del motor sin cambios) | 162 | 5/0/83/0/74 | **71,3 % [67,0–75,6]** | **+158 [123, 196]** | **Mazos del meta, 9 mazos, motor con los parches 0001–0007** (Rocks, Luffy, Luffy & Ace y Enel ya corregidos). Ciclo completo con `--no-stop` (81 emparejamientos × quién empieza); el SPRT ya decidía H1 a los 18 pares. 1º: 71,6 %, 2º: 71,0 %. 181 ms por decisión. Gana con los 9 mazos (detalle abajo) |
 | E12 | 2026-10-05 | `4451fe9` + modelos de `3acc997` | `search:sims=32,h=1,cands=12,model=value-mlp16-meta-v1.json` | `search:sims=32,h=1,cands=12` (modelo `logreg-test-v1`, el anterior por defecto) | 162 | 5/0/89/0/68 | **69,4 % [65,2–73,7]** | **+143 [109, 179]** | **Modelo de valor entrenado con partidas del meta** (MLP de 16 neuronas, 6.000 partidas de self-play con los 9 mazos) contra el entrenado con mazos sintéticos. 9 mazos, ciclo completo con `--no-stop`; SPRT(0, 35) H1 (LLR 18,4). Mejor con 8 mazos e igual con Enel (detalle abajo). 205 ms por decisión frente a 198. **Pasa a ser el modelo por defecto** |
 | E7 | 2026-10-05 | `4451fe9` + modelo `mlp16-meta-v1` | `ismcts:iters=64,h=1,opp=1` | `search:sims=32,h=1,cands=12` | 156 | 14/1/118/0/23 | 52,7 % [48,9–56,5] | +19 [−8, 46] | 9 mazos del meta, mismo modelo de valor en los dos. **No concluyente** (LLR 0,28): cortado a los 156 de 162 pares por el límite de 2,5 h de los procesos en segundo plano. ISMCTS gasta el doble por decisión (387 ms frente a 195 ms) y aun así no se separa de la búsqueda plana: **seguimos con la búsqueda plana** |
+| E13 | 2026-10-05 | `793d118` | `policy` (con las reglas de DON!!) | `policy:tempo=0` (la `policy` anterior, decisión por decisión) | 162 | 2/0/126/0/34 | **59,9 % [56,6–63,2]** | **+70 [46, 94]** | **El DON!! como recurso** (reglas A–D, `docs/NOTAS_MOTOR.md` §6). 9 mazos del meta, motor con los parches 0001–0013, ciclo completo con `--no-stop`; SPRT(0, 35) H1 (LLR 13,1; ya a los 48 pares). **Mejora con los 9 mazos** (detalle abajo; Enel +61 puntos, Kaido +14). 0 comandos rechazados. 1º: 61,1 %, 2º: 58,6 %. 1,7 ms por decisión frente a 1,6 |
+| E14 | 2026-10-05 | `793d118` + modelo `mlp16-meta-v1` | `search:sims=32,h=1,cands=12` (rollouts con las reglas de DON!! y cantidades "hasta N" por regla) | `search:sims=32,h=1,cands=12,rollout=policy0` (la búsqueda anterior, decisión por decisión) | 162 | 5/0/122/0/35 | **59,3 % [55,7–62,8]** | **+65 [40, 91]** | Mismo modelo de valor en los dos (el de `models/value.json`). 9 mazos del meta, motor 0001–0013, ciclo completo con `--no-stop`; SPRT(0, 35) H1 (LLR 10,3; ya a los 32 pares). **Mejora con los 9 mazos** (detalle abajo). 0 comandos rechazados. 1º: 63,6 %, 2º: 54,9 %. 209 ms por decisión frente a 205; ~76 min con 2 procesos |
 
 ## Calibración de enfrentamientos frente a resultados reales
 
@@ -40,6 +42,45 @@ compara con los resultados reales entre esos Líderes en los torneos de Limitles
 | 2026-10-05 | `heuristic` (muestra real ampliada: 44 torneos, p. ej. 139 partidas Rocks–Sabo) | ídem | 60 | **−0,23** | 33 puntos | 2 de 6 |
 | 2026-10-05 | `policy` (heurística mejorada), motor con los parches 0001–0012 | los 9 del pool | 60 | **0,07** | 30,8 puntos | 18 de 36 |
 | 2026-10-05 | `search:sims=32` (modelo `mlp16-meta-v1`), motor 0001–0012 | ídem | 20 (680 de 720 partidas: cortada por el límite de 2,5 h; 34 enfrentamientos completos) | **−0,02** | 31,6 puntos | 15 de 34 |
+| 2026-10-05 | `policy:tempo=0` (la misma `policy`), motor con los parches 0001–0013 | los 9 del pool | 60 | 0,09 | 29,2 puntos | 17 de 36 |
+| 2026-10-05 | `policy` con las reglas de DON!! (`793d118`, E13), motor con los parches 0001–0013 | los 9 del pool | 60 | **0,19** | **20,4 puntos** | 18 de 36 |
+
+**Calibración con las reglas de DON!! (E13)**, mismos 36 enfrentamientos y mismos datos reales: en
+el mismo motor (0001–0013), el error medio baja de 29,2 a 20,4 puntos y la correlación sube de
+0,09 a 0,19 (la fila de `policy:tempo=0` separa el efecto de las reglas del efecto del parche
+0013, que apenas mueve el error). Residuo de cada mazo = media, en sus 8 enfrentamientos, de su % de
+victorias simulado menos el real (entre paréntesis, el simulado medio; medias calculadas sobre los
+porcentajes redondeados del informe):
+
+| Mazo | Antes (0001–0012, semilla `cal2`) | `policy:tempo=0` (0001–0013) | Reglas de DON!! (0001–0013) | Real (media) |
+|---|---|---|---|---|
+| Kaido | −40,0 (3 %) | −40,6 (2 %) | **−22,5** (20 %) | 43 % |
+| Enel | −32,5 (22 %) | −30,0 (25 %) | **+10,9** (66 %) | 55 % |
+| Luffy OP17-079 | +26,5 (79 %) | +25,8 (78 %) | **+17,6** (70 %) | 52 % |
+| Sabo | +15,5 (61 %) | +19,8 (66 %) | **+10,9** (57 %) | 46 % |
+| Robin | +25,3 (67 %) | +12,6 (54 %) | +0,5 (42 %) | 42 % |
+| Shanks | +11,0 (57 %) | +13,9 (60 %) | −0,6 (45 %) | 46 % |
+| Pudding | +1,1 (51 %) | −8,6 (41 %) | −3,5 (46 %) | 50 % |
+| Luffy & Ace | +8,8 (71 %) | +8,9 (71 %) | +4,0 (66 %) | 62 % |
+| Rocks | −15,6 (39 %) | −1,6 (53 %) | −17,3 (38 %) | 55 % |
+
+Kaido y Enel, los dos mazos de rampa de DON!!, eran los más lejos de la realidad y son los que más
+se acercan; Luffy y Sabo, sobrestimados porque sus rivales de rampa no sabían jugar, bajan 8 y
+9 puntos. Quedan desajustes grandes: Kaido sigue muy por debajo (3 % contra Luffy frente a 49 %
+real, 8 % contra Enel frente a 53 %), Enel pasa a estar por encima en algunos cruces (88 % contra
+Rocks frente a 43 %, 92 % contra Kaido frente a 47 %) y Rocks empeora sobre todo por dos cruces
+(12 % contra Enel frente a 57 % real y 15 % contra Luffy & Ace frente a 62 %). Con 20 puntos de
+error medio la matriz simulada aún no sirve para estudiar enfrentamientos concretos.
+
+```bash
+# Desde el worktree del commit 793d118; la caché de Limitless es la de la copia principal.
+bun packages/opbot/src/cli.ts calibrate --decks decks/meta-op17-postban --agent policy --games 60 \
+  --workers 2 --seed cal4 --cache /home/user/cold2sport/out/limitless-cache \
+  --out out/calibrate-policy-tempo.jsonl
+bun packages/opbot/src/cli.ts calibrate --decks decks/meta-op17-postban --agent "policy:tempo=0" \
+  --games 60 --workers 2 --seed cal4 --cache /home/user/cold2sport/out/limitless-cache \
+  --out out/calibrate-policy-tempo0.jsonl
+```
 
 **Calibración con el motor corregido (parches 0001–0012) y `policy`** (36 enfrentamientos con al
 menos 5 partidas reales): la correlación sube de −0,23 a 0,07, pero la simulación sigue sin
@@ -121,6 +162,95 @@ siguen afectadas por sus cartas aún sin corregir.
 > el bot del motor **sin cambios**, que es la referencia del "bot que ya existe". Las filas "Solo el
 > agente", "Motor + agente" y "Final" corresponden por tanto al comportamiento que ahora tiene
 > `policy` en esas preguntas, no a `heuristic`.
+
+## E13 y E14: el DON!! como recurso
+
+Diagnóstico (5-oct): en la simulación Kaido OP17-058 y Enel OP15-058 perdían casi todo (en la
+calibración con `policy`, Kaido ganaba de media el 3 % de sus enfrentamientos frente al 43 % real
+y Enel el 22 % frente al 55 %) porque la política rápida, que juega `policy` y también todos los
+rollouts de la búsqueda, gastaba el DON!! como si fuera gratis: Kaido pagaba el DON!! −1 de su
+Líder en cada ataque (160 de 160 veces contra Sabo) y nunca llegaba a 9–10 DON!! para sus cartas
+grandes; el Líder Enel daba sus 4 DON!! a una carta que no podía atacar (solo 53 de 173 veces a
+una que sí), jugaba sus Eventos con DON!! −X después de su recarga quitándole los DON!! al
+atacante, y todos los DON!! −X se pagaban con DON!! activos primero. Además la búsqueda decidía
+"añade hasta 1 DON!!" por el ruido de los rollouts (elegía añadir 0).
+
+Correcciones como reglas generales, no por mazo (`packages/opbot/src/agents/policy.ts`, sección
+"DON!! as a resource"; resumen en `docs/NOTAS_MOTOR.md` §6): A) orden de devolución de DON!!,
+B) a quién se dan los DON!!, C) un DON!! −X solo si no deja menos DON!! para el turno siguiente
+(con excepciones de defensa, Vida y letal), D) eventos con DON!! −X después de atacar si le
+quitarían los DON!! a un atacante, y antes de una recarga de DON!!; E) la búsqueda contesta las
+cantidades "hasta N" que son una regla (añadir/dar/enderezar DON!!, añadir a la vida, robar) con
+la respuesta de la política, sin rollouts. `policy:tempo=0` y `search:...,rollout=policy0` son
+exactamente las versiones anteriores (comprobado: 0 diferencias en 14.192 decisiones de la
+política en 60 partidas, sobre el estado real y sobre uno determinizado, y 0 en 754 decisiones de
+la búsqueda).
+
+**E13, por mazo**: % de victorias de cada bot con ese mazo, frente a los mismos rivales, asientos
+y cartas (36 partidas por bot y mazo; ±16 puntos):
+
+| Mazo | `policy` (reglas de DON!!) | `policy:tempo=0` | Diferencia |
+|---|---|---|---|
+| Enel | 80,6 % | 19,4 % | +61,1 |
+| Pudding | 61,1 % | 25,0 % | +36,1 |
+| Luffy & Ace | 66,7 % | 44,4 % | +22,2 |
+| Kaido | 19,4 % | 5,6 % | +13,9 |
+| Sabo | 72,2 % | 58,3 % | +13,9 |
+| Luffy OP17-079 | 80,6 % | 69,4 % | +11,1 |
+| Robin | 47,2 % | 38,9 % | +8,3 |
+| Rocks | 50,0 % | 41,7 % | +8,3 |
+| Shanks | 61,1 % | 58,3 % | +2,8 |
+
+Ningún mazo empeora. Enel es el que más cambia (las reglas B y D son las de su Líder); Pudding y
+Luffy & Ace también dan DON!! con efectos (Líder Pudding, OP12-015, ST21-014, Thousand Sunny) o
+pagan DON!! −2 (Mamaragan, Conquest of the Sea). Kaido mejora pero sigue muy por debajo: le
+ganan casi todos los mazos también con las reglas nuevas.
+
+Con la misma política en los dos lados (calibración de arriba, 60 partidas por cruce), Kaido gana
+de media el 20 % de sus 8 cruces y Enel el 66 %; el diagnóstico, con versiones experimentales y
+en parte específicas de mazo de estas reglas, había medido 20–23 % y 57–60 % (320 partidas por
+mazo). En una partida de Kaido contra Luffy OP17-079 trazada a mano, Kaido ya llega a 9–10 DON!! y
+juega sus cartas de coste 9–10, pero pierde la carrera de vidas: en el turno rival no le quedan
+DON!! activos para sus [Counter] de coste 2 y acumula 9–12 cartas en la mano. Eso ya no es del
+DON!! −X; queda pendiente.
+
+**E14, por mazo** (la búsqueda con las reglas nuevas en sus rollouts frente a la anterior; 36
+partidas por bot y mazo, ±16 puntos):
+
+| Mazo | `search` (reglas de DON!!) | `search:...,rollout=policy0` | Diferencia |
+|---|---|---|---|
+| Enel | 41,7 % | 11,1 % | +30,6 |
+| Pudding | 72,2 % | 41,7 % | +30,6 |
+| Luffy & Ace | 69,4 % | 38,9 % | +30,6 |
+| Kaido | 52,8 % | 30,6 % | +22,2 |
+| Robin | 55,6 % | 36,1 % | +19,4 |
+| Sabo | 80,6 % | 66,7 % | +13,9 |
+| Shanks | 41,7 % | 33,3 % | +8,3 |
+| Rocks | 50,0 % | 41,7 % | +8,3 |
+| Luffy OP17-079 | 69,4 % | 66,7 % | +2,8 |
+
+Tampoco aquí empeora ningún mazo. E14 mide juntas las dos partes (reglas de DON!! en los rollouts
+y en la jugada candidata, y cantidades "hasta N" por regla); no se han medido por separado. La
+ganancia es casi la misma que en E13 (+65 frente a +70 Elo). Hipótesis, no medida: la búsqueda
+elige la jugada raíz, pero sus rollouts juegan la política, y las cantidades "hasta N DON!!" las
+decidía el ruido (el diagnóstico la vio añadir 0 DON!! con el Líder Enel). Con Enel la búsqueda
+sigue ganando menos de la mitad de sus partidas.
+
+Comandos (desde este worktree en el commit `793d118`; E13 y las calibraciones compartieron la
+máquina con otra tarea larga, E14 en parte):
+
+```bash
+# E13
+bun packages/opbot/src/cli.ts arena --candidate policy --baseline "policy:tempo=0" \
+  --decks decks/meta-op17-postban --blocks 162 --workers 2 --sprt 0,35 --no-stop --engine fast \
+  --seed tempo1 --out out/arena-tempo-policy.jsonl
+
+# E14 (modelo por defecto, models/value.json = mlp16-meta-v1)
+bun packages/opbot/src/cli.ts arena --candidate "search:sims=32,h=1,cands=12" \
+  --baseline "search:sims=32,h=1,cands=12,rollout=policy0" --decks decks/meta-op17-postban \
+  --blocks 162 --workers 2 --sprt 0,35 --no-stop --engine fast --seed tempo2 \
+  --out out/arena-tempo-search.jsonl
+```
 
 ## E12: modelo de valor entrenado con el meta
 
@@ -276,6 +406,9 @@ bun packages/opbot/src/cli.ts arena --candidate "search:sims=32,h=1,cands=12" \
   Tras ella: repetir E8 y E6 con el motor corregido y recalibrar con el bot de búsqueda.
 - Repetir E9 y E10 con el motor corregido (cartas del meta) y con tamaño fijo más grande.
 - E5 y E2 con tamaño fijo (la parada temprana del SPRT y el corte manual dejan intervalos anchos).
+- Calibración con las reglas de DON!!: Kaido sigue 22 puntos por debajo (defensa en el turno
+  rival: DON!! activos para sus [Counter] y uso de la mano) y Enel pasa a estar sobrestimado contra
+  Rocks y Kaido. Repetir la calibración con el bot de búsqueda.
 
 ## Cómo leer estos números
 

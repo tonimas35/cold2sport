@@ -121,6 +121,9 @@ Decisiones clave:
 - [x] Política rápida mejorada (`policy`): la heurística del motor con correcciones puntuales donde
       desperdicia cartas (−X de poder, "hasta N", [Trigger], eventos sin efecto, "elige una").
       Gana a `heuristic` con mazos del meta (E9) y es la política de los rollouts (E10).
+- [x] El DON!! como recurso en `policy` (qué DON!! se devuelven, a quién se dan, cuándo compensa
+      un DON!! −X, orden de eventos y recargas) y cantidades "hasta N DON!!" de la búsqueda por
+      regla: +70 Elo sobre la `policy` anterior (E13) y error de calibración de 29 a 20 puntos.
 - [ ] ISMCTS (E3) no mejora aún a la búsqueda plana: probar un árbol solo con nuestras decisiones
       (respuestas del rival por política) y más iteraciones.
 
