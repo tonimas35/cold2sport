@@ -101,9 +101,17 @@ function candidates(
   }
   const cap = seat === rootSeat ? (config.maxOwnActions ?? 24) : (config.maxOpponentActions ?? 4);
   if (actions.length > cap) {
-    const keep = actions.filter((a) => a.key === policyKey);
-    const rest = actions.filter((a) => a.key !== policyKey);
-    actions = [...keep, ...rest.slice(0, cap - keep.length)];
+    // Keep the policy's choice, then every structurally different action
+    // (plays, attacks, effects, prompt answers, ending the turn), then DON!!
+    // attachments with the smallest amounts first: truncating in enumeration
+    // order could otherwise keep only DON!! variants and drop the attacks.
+    const rank = (a: Action) =>
+      a.key === policyKey ? 0 : !a.key.startsWith("don:") ? 1 : a.key.endsWith(":1") ? 2 : 3;
+    actions = actions
+      .map((a, i) => ({ a, i }))
+      .sort((x, y) => rank(x.a) - rank(y.a) || x.i - y.i)
+      .slice(0, cap)
+      .map((x) => x.a);
   }
   return { actions, policyKey };
 }
