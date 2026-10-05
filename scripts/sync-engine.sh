@@ -22,6 +22,17 @@ PATHS=(
   submodules/agnostic-simulator/packages/protocol
   submodules/agnostic-simulator/packages/card-model
   submodules/agnostic-simulator/packages/typescript-config
+  # Browser board UI used by packages/web (see UPSTREAM.md, "Web simulator UI").
+  submodules/agnostic-simulator/packages/simulator-ui
+  submodules/agnostic-simulator/packages/simulator-contract
+  submodules/agnostic-simulator/packages/simulator-runtime
+  # One Piece board components, projection and animation adapter only: the
+  # app's pages and shared modules talk to the hosted platform (auth, gateway,
+  # telemetry), and its board background (assets/) is left out on purpose.
+  submodules/agnostic-simulator/apps/multi-game-simulator/src/games/one-piece/components
+  submodules/agnostic-simulator/apps/multi-game-simulator/src/games/one-piece/data
+  submodules/agnostic-simulator/apps/multi-game-simulator/src/games/one-piece/animation
+  submodules/agnostic-simulator/apps/multi-game-simulator/src/games/one-piece/styles.css
 )
 # Files inside the vendor tree that are ours, not upstream's.
 LOCAL_FILES=(
@@ -56,7 +67,15 @@ cp -a "$TMP/keep/." "$VENDOR/"
 shopt -s nullglob
 for p in "$ROOT"/vendor/patches/*.patch; do
   echo "applying $(basename "$p")"
-  git -C "$ROOT" apply --3way "$p"
+  # A plain apply works on the freshly extracted tree whatever the index
+  # holds. --3way needs the index to match the working tree (it refuses with
+  # "does not match index" when the committed, already patched files are
+  # staged), so it is only the fallback for a patch that no longer applies
+  # cleanly after an upstream change: stage the pristine tree, then merge.
+  if ! git -C "$ROOT" apply "$p"; then
+    git -C "$ROOT" add -A vendor/tcg-engines
+    git -C "$ROOT" apply --3way "$p"
+  fi
 done
 
 python3 - "$VENDOR/UPSTREAM.md" "$SHA" "$DATE" "$REF" <<'PY'
