@@ -11,10 +11,15 @@
   },
   "scripts": {
     "setup": "bash scripts/setup.sh",
-    "test": "pnpm --filter @opbot/core test",
-    "typecheck": "pnpm --filter @opbot/core typecheck",
+    "test": "pnpm --filter @opbot/core --filter @opbot/web test",
+    "typecheck": "pnpm --filter @opbot/core --filter @opbot/web typecheck",
     "check": "pnpm run typecheck && pnpm run test",
     "engine:check": "pnpm --dir vendor/tcg-engines/submodules/one-piece run ci-check",
-    "opbot": "bun packages/opbot/src/cli.ts"
+    "opbot": "bun packages/opbot/src/cli.ts",
+    "web:dev": "pnpm --filter @opbot/web dev",
+    "web:build": "pnpm --filter @opbot/web build",
+    "web:preview": "pnpm --filter @opbot/web preview",
+    "web:e2e": "pnpm --filter @opbot/web build && pnpm --filter @opbot/web e2e",
+    "web:perf": "pnpm --filter @opbot/web build && WEB_PERF=1 pnpm --filter @opbot/web exec playwright test think-time --project=desktop"
   }
 }

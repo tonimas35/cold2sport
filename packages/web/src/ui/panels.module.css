@@ -1,0 +1,594 @@
+/* Overlays on top of the upstream board: prompts, choosers, bot status, game over. */
+
+.sheet {
+  position: absolute;
+  left: 50%;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  width: min(760px, calc(100% - 20px));
+  max-height: min(72svh, 640px);
+  overflow: hidden;
+  color: var(--op-ink);
+  background: rgb(255 252 244 / 97%);
+  border: 1px solid rgb(122 31 43 / 28%);
+  border-radius: 16px;
+  box-shadow:
+    0 22px 70px rgb(9 18 26 / 32%),
+    0 2px 0 rgb(255 255 255 / 70%) inset;
+  transform: translateX(-50%);
+}
+
+@media (width < 768px) {
+  .sheet {
+    bottom: 0;
+    width: 100%;
+    max-height: 78svh;
+    border-radius: 18px 18px 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+.sheetHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  align-items: start;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid rgb(122 31 43 / 14%);
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--op-red);
+}
+
+.title {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.details {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.35;
+  color: #5d697b;
+}
+
+.sheetBody {
+  min-height: 0;
+  overflow: auto;
+  padding: 12px 16px;
+  overscroll-behavior: contain;
+}
+
+.sheetFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 16px 14px;
+  border-top: 1px solid rgb(122 31 43 / 14%);
+}
+
+.footerNote {
+  margin-right: auto;
+  font-size: 13px;
+  color: #5d697b;
+}
+
+.button,
+.primary,
+.danger,
+.ghost,
+.exit {
+  min-height: 42px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 800;
+  border-radius: 10px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.button {
+  color: var(--op-ink);
+  background: #fff;
+  border: 1px solid #c9ced6;
+}
+
+.primary {
+  color: #fff;
+  background: var(--op-red);
+  border: 1px solid var(--op-red-strong);
+}
+
+.danger {
+  color: #fff;
+  background: #a32020;
+  border: 1px solid #7d1717;
+}
+
+.ghost {
+  color: var(--op-red);
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+/* "Salir" sits in the dark sidebar and the dark phone drawer. */
+.exit {
+  color: #ffd0d0;
+  background: transparent;
+  border: 1px solid rgba(255, 208, 208, 0.45);
+}
+
+.button:disabled,
+.primary:disabled,
+.danger:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.optionList {
+  display: grid;
+  gap: 8px;
+}
+
+.optionButton {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 46px;
+  padding: 8px 12px;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: left;
+  color: var(--op-ink);
+  background: #fff;
+  border: 1px solid #c9ced6;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.optionButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.optionButton:not(:disabled):hover {
+  border-color: var(--op-red);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 10px;
+}
+
+@media (width < 420px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
+.tile {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 4px;
+  padding: 6px;
+  font: inherit;
+  text-align: left;
+  color: var(--op-ink);
+  background: #fff;
+  border: 2px solid #d7dde6;
+  border-radius: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.tile[data-selected="true"] {
+  border-color: var(--op-red);
+  box-shadow: 0 0 0 3px rgb(122 31 43 / 22%);
+}
+
+.tile:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.tileImage {
+  position: relative;
+  aspect-ratio: 5 / 7;
+  overflow: hidden;
+  background: linear-gradient(160deg, #f3e3c3, #e5f3f1);
+  border-radius: 7px;
+}
+
+.tileImage img {
+  position: absolute;
+  inset: 0;
+}
+
+.tileFallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  color: var(--op-red);
+}
+
+.tileName {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tileStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #5d697b;
+}
+
+.badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  display: grid;
+  min-width: 26px;
+  height: 26px;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  background: var(--op-red);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+}
+
+.battle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  background: #f6efe1;
+  border-radius: 10px;
+}
+
+.battle strong {
+  color: var(--op-red);
+}
+
+.orderRow {
+  display: grid;
+  grid-template-columns: 28px 52px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #ece6d8;
+}
+
+.orderRow:last-child {
+  border-bottom: 0;
+}
+
+.orderIndex {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--op-red);
+  text-align: center;
+}
+
+.orderThumb {
+  position: relative;
+  width: 52px;
+  aspect-ratio: 5 / 7;
+  overflow: hidden;
+  background: #f3e3c3;
+  border-radius: 5px;
+}
+
+.orderButtons {
+  display: flex;
+  gap: 6px;
+}
+
+.iconButton {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--op-ink);
+  background: #fff;
+  border: 1px solid #c9ced6;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.iconButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.collapsed {
+  position: absolute;
+  left: 50%;
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  min-height: 46px;
+  padding: 0 20px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--op-red);
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 30%);
+  transform: translateX(-50%);
+  cursor: pointer;
+}
+
+.notice {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #7d1717;
+  background: #fde8e8;
+  border-radius: 8px;
+}
+
+.status {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  z-index: 35;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  width: max-content;
+  max-width: min(560px, calc(100% - 24px));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* Below the phone layout's top rail (phones and tablets), never over its buttons. */
+:global(main[data-layout="mobile"]) .status {
+  top: calc(58px + env(safe-area-inset-top, 0px));
+}
+
+@media (width < 768px) {
+  .ticker {
+    font-size: 11px;
+  }
+
+  .ticker span:nth-last-child(n + 3) {
+    display: none;
+  }
+}
+
+.railIdentity {
+  display: grid;
+  justify-items: end;
+  min-width: 0;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.railIdentity small {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.railIdentity strong {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerSource {
+  position: relative;
+  float: left;
+  width: 46px;
+  margin: 2px 10px 0 0;
+  aspect-ratio: 5 / 7;
+  overflow: hidden;
+  background: #f3e3c3;
+  border-radius: 5px;
+}
+
+.pill {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  background: rgb(29 36 51 / 88%);
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 25%);
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgb(255 255 255 / 35%);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ticker {
+  display: grid;
+  gap: 2px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--op-ink);
+  background: rgb(255 252 244 / 94%);
+  border: 1px solid rgb(122 31 43 / 20%);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 18%);
+}
+
+.ticker span::before {
+  content: "› ";
+  color: var(--op-red);
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(10 14 22 / 55%);
+}
+
+.result {
+  display: grid;
+  gap: 14px;
+  width: min(560px, 100%);
+  max-height: calc(100svh - 32px);
+  overflow: auto;
+  padding: 22px 20px;
+  color: var(--op-ink);
+  background: #fffcf4;
+  border-radius: 18px;
+  box-shadow: 0 30px 90px rgb(0 0 0 / 40%);
+}
+
+.result h2 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.result[data-outcome="win"] h2 {
+  color: #1d6b3a;
+}
+
+.result[data-outcome="loss"] h2 {
+  color: var(--op-red);
+}
+
+.resultStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.resultStats div {
+  padding: 8px 10px;
+  background: #f6efe1;
+  border-radius: 10px;
+}
+
+.resultStats dt {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #5d697b;
+}
+
+.resultStats dd {
+  margin: 2px 0 0;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.resultActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.progress {
+  height: 8px;
+  overflow: hidden;
+  background: #ece6d8;
+  border-radius: 999px;
+}
+
+.progress > div {
+  height: 100%;
+  background: var(--op-red);
+  transition: width 0.2s;
+}
+
+.reviewList {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reviewList li {
+  padding: 8px 10px;
+  font-size: 13px;
+  line-height: 1.35;
+  background: #fff;
+  border: 1px solid #ece6d8;
+  border-left: 4px solid #d9a441;
+  border-radius: 8px;
+}
+
+.reviewList li[data-category="mistake"] {
+  border-left-color: #d9731f;
+}
+
+.reviewList li[data-category="blunder"] {
+  border-left-color: #a32020;
+}
+
+.muted {
+  font-size: 13px;
+  color: #5d697b;
+}
+
+.railPrimary {
+  white-space: nowrap;
+}
+
+.railPrimary:disabled {
+  opacity: 0.45;
+}

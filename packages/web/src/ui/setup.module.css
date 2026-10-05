@@ -1,0 +1,91 @@
+.page {
+  min-height: 100svh;
+  background:
+    radial-gradient(ellipse at 10% 0%, rgb(122 31 43 / 12%), transparent 45%),
+    radial-gradient(ellipse at 100% 100%, rgb(47 111 115 / 14%), transparent 50%),
+    #f6f3ea;
+}
+
+.header {
+  display: grid;
+  gap: 6px;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--op-red);
+}
+
+.title {
+  font-size: clamp(28px, 7vw, 40px);
+  line-height: 1.05;
+  color: var(--op-ink);
+}
+
+.deck {
+  background: rgb(255 255 255 / 92%);
+}
+
+.deckRow {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.leader {
+  position: relative;
+  width: 64px;
+  aspect-ratio: 5 / 7;
+  overflow: hidden;
+  background: linear-gradient(160deg, #f3e3c3, #e5f3f1);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 18%);
+}
+
+.leader img {
+  position: absolute;
+  inset: 0;
+}
+
+.leaderPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--op-red);
+}
+
+.deckControls {
+  min-width: 0;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.level {
+  padding: 10px 12px;
+}
+
+.footer {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #5d697b;
+}
+
+.footer p {
+  margin: 0 0 6px;
+}

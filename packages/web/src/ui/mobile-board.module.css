@@ -1,0 +1,200 @@
+.board {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  gap: 4px;
+  height: 100%;
+  min-height: 0;
+  padding: 4px 6px 6px;
+  overflow: hidden;
+  color: #1d2433;
+  background:
+    linear-gradient(180deg, rgb(122 31 43 / 10%), transparent 30%, transparent 70%, rgb(47 111 115 / 12%)),
+    #e9efe9;
+}
+
+.side {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* The bot's side reads from the middle outwards, like across a table. */
+.side[data-seat="opponent"] {
+  grid-template-areas: "strip" "command" "characters";
+}
+
+.side[data-seat="player"] {
+  grid-template-areas: "characters" "command" "strip";
+}
+
+.strip {
+  grid-area: strip;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.strip > div {
+  flex: 0 0 auto;
+}
+
+.chip {
+  display: inline-flex;
+  gap: 4px;
+  align-items: baseline;
+  min-height: 24px;
+  padding: 3px 7px;
+  white-space: nowrap;
+  background: rgb(255 255 255 / 78%);
+  border: 1px solid rgb(29 36 51 / 14%);
+  border-radius: 999px;
+}
+
+.chip small {
+  font-size: 10px;
+  font-weight: 700;
+  color: #5d697b;
+}
+
+.chip strong {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.command {
+  grid-area: command;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+}
+
+.single {
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+}
+
+.single small {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #5d697b;
+}
+
+/* Upstream single-card zones are 76x106: tighter on a phone. */
+.single :global(.single-card-zone) {
+  width: 64px;
+  min-height: 88px;
+  padding: 2px;
+}
+
+.donBox {
+  display: grid;
+  gap: 2px;
+  align-content: center;
+  min-width: 0;
+  padding: 4px 8px;
+  font-size: 12px;
+  line-height: 1.2;
+  background: rgb(255 255 255 / 60%);
+  border-radius: 10px;
+}
+
+.donBox strong {
+  font-size: 15px;
+  color: #7a1f2b;
+}
+
+.trashTop {
+  overflow: hidden;
+  font-size: 11px;
+  color: #5d697b;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.characters {
+  grid-area: characters;
+  min-width: 0;
+  min-height: 92px;
+  padding: 2px 4px;
+  background: rgb(255 255 255 / 35%);
+  border: 1px dashed rgb(29 36 51 / 18%);
+  border-radius: 10px;
+}
+
+.characters :global(.card-row),
+.hand :global(.card-row) {
+  margin-top: 0;
+  padding: 2px 2px 4px;
+  gap: 6px;
+}
+
+.characters :global([data-card-states~="rested"] .sim-card-face) {
+  filter: brightness(0.82) saturate(0.7);
+  transform: rotate(12deg) scale(0.92);
+}
+
+.ribbon {
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  color: #fff;
+  background: rgb(29 36 51 / 82%);
+  border-radius: 999px;
+}
+
+.hand {
+  display: grid;
+  align-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 2px 4px;
+  overflow: hidden;
+  background: rgb(122 31 43 / 10%);
+  border-radius: 10px;
+}
+
+/*
+ * Card sizes: simulator-ui's "mini" cards are 60 px wide (inline style).
+ * Five Characters fit a 375 px phone at 16.5vw; the hand uses the room left.
+ */
+.characters :global(.sim-card-face[data-card-density="mini"]) {
+  width: clamp(54px, 16.5vw, 76px) !important;
+}
+
+.hand :global(.sim-card-face[data-card-density="mini"]) {
+  width: clamp(64px, 22vw, 104px) !important;
+}
+
+.donBox > div {
+  min-width: 0;
+}
+
+/*
+ * Tablets in portrait also get this board (GameShell, DESKTOP_MIN_WIDTH) and
+ * have room to spare below the hand: bigger cards.
+ */
+@media (width >= 700px) and (height >= 900px) {
+  .characters {
+    min-height: 150px;
+  }
+
+  .single :global(.single-card-zone) {
+    width: 84px;
+    min-height: 116px;
+  }
+
+  .characters :global(.sim-card-face[data-card-density="mini"]) {
+    width: clamp(76px, 11vw, 108px) !important;
+  }
+
+  .hand :global(.sim-card-face[data-card-density="mini"]) {
+    width: clamp(104px, 15vw, 150px) !important;
+  }
+}

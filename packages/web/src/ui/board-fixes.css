@@ -1,0 +1,171 @@
+/*
+ * Layout fixes for the vendored One Piece desktop board
+ * (vendor/tcg-engines/.../games/one-piece/components/OnePieceTabletopBoard.*),
+ * applied from outside so the upstream files stay unchanged. They target the
+ * board's stable DOM hooks (data-testid, aria-label, shared class names).
+ */
+
+/*
+ * 1. The Leader. The board's CSS sizes the leader zone with `height: 100%` as
+ * if it were the grid item of the command panel, but simulator-ui's
+ * SingleCardZone wraps it in an (unsized) animation anchor, so the card
+ * collapsed to a ~20 px sliver. Let the zone be the grid item again.
+ */
+[data-testid$="-leader-command"] > div:has(> .single-card-zone) {
+  display: contents;
+}
+
+/*
+ * The card inside sits in a <button>, whose auto width shrinks to fit; the
+ * card face's `max-width: 100%` then resolves against ~0 px. Give the button
+ * the zone's width and let the Leader fill its panel.
+ */
+[data-testid="one-piece-tabletop-board"] .single-card-zone button {
+  width: 100%;
+}
+
+[data-testid$="-leader-command"] .single-card-zone .sim-card-face {
+  width: 100% !important;
+}
+
+/*
+ * Same cause for the deck, trash and stage piles: the board sizes them with
+ * percentages of their slot, but the animation anchor in between is centred
+ * and unsized, so a trash with cards shrank to a 16 px sliver. Make the anchor
+ * fill the slot (it keeps a real box: animations measure it).
+ */
+[data-testid="one-piece-tabletop-board"] section[data-seat] > div > div:has(> .discard-pile-zone, > .deck-stack-zone, > .single-card-zone) {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/*
+ * The top card of the deck and trash: the board places a card face that is a
+ * direct child of the pile, but simulator-ui nests it in an entity slot, a
+ * button and a frame, so the face kept its tiny default size (a 2 px trash
+ * card). Make that chain fill the pile, inside the stack's edge.
+ */
+[data-testid="one-piece-tabletop-board"] :is(.discard-pile-zone-entity, .deck-stack-zone-entity) {
+  position: absolute;
+  inset: 6px 6px 16px;
+  z-index: 1;
+}
+
+/* Keep the pile's card count readable on top of that card. */
+[data-testid="one-piece-tabletop-board"] .tabletop-pile-count {
+  z-index: 2;
+}
+
+[data-testid="one-piece-tabletop-board"] :is(.discard-pile-zone-entity, .deck-stack-zone-entity) button,
+[data-testid="one-piece-tabletop-board"] :is(.discard-pile-zone-entity, .deck-stack-zone-entity) button > :not(.sim-card-face),
+[data-testid="one-piece-tabletop-board"] :is(.discard-pile-zone-entity, .deck-stack-zone-entity) button > :not(.sim-card-face) > :not(.sim-card-face) {
+  width: 100%;
+  height: 100%;
+}
+
+/*
+ * 2. Move buttons. TabletopActionButton's "primary" variant is a big round
+ * square; the board's tray styles them as slim rows (min-height 36 px) but
+ * the utility `aspect-square` still wins. Restore the intended rows.
+ */
+[data-testid="one-piece-tabletop-board"] [aria-label="Table controls"] .tabletop-action-button {
+  aspect-ratio: auto;
+  width: 100%;
+  height: auto;
+  min-height: 36px;
+  padding: 7px 12px;
+  font-size: 12px;
+  line-height: 1.15;
+  white-space: normal;
+  border-radius: 8px;
+}
+
+[data-testid="one-piece-tabletop-board"] [aria-label="Table controls"] > div {
+  max-width: min(220px, 18vw);
+  max-height: min(60vh, 520px);
+}
+
+/*
+ * 3. Width. The board's seven-column mats have minimum column widths (860 px
+ * for the player's mat, 1006 px for the opponent's) and both mats share one
+ * column, so below ~1500 px of window (with the sidebar open) the right edge
+ * of the board, the move tray included, ended up outside the clipped playmat.
+ * Lower the minimums (same fr weights) so that both mats fit from the width
+ * where GameShell switches from the phone layout (DESKTOP_MIN_WIDTH).
+ */
+[data-testid="one-piece-tabletop-board"] section[data-seat="player"] {
+  grid-template-columns:
+    minmax(101px, 0.57fr) minmax(112px, 0.62fr) minmax(222px, 1.19fr)
+    minmax(150px, 0.96fr) minmax(0, 2.62fr) minmax(113px, 0.65fr)
+    minmax(120px, 0.78fr);
+}
+
+[data-testid="one-piece-tabletop-board"] section[data-seat="opponent"] {
+  grid-template-columns:
+    minmax(101px, 0.57fr) minmax(104px, 0.62fr) minmax(100px, 0.82fr)
+    minmax(100px, 0.96fr) minmax(200px, 2.72fr) minmax(100px, 0.65fr)
+    minmax(110px, 0.78fr);
+}
+
+/*
+ * Desktop sidebar: simulator-ui gives it clamp(12.5rem, 20vw, 16rem), a bit
+ * narrow for the One Piece participant rows (names were cut); wider than
+ * 18rem would take the board's room again.
+ */
+main[data-testid="one-piece-shell"][data-layout="desktop"][data-sidebar-open="true"] {
+  grid-template-columns: clamp(15rem, 20vw, 18rem) minmax(0, 1fr);
+}
+
+/*
+ * 4. Dark panels under a light shell. The shell is data-theme="light" (as
+ * upstream), so everything inside gets simulator-ui's light tokens, but the
+ * One Piece match sidebar (desktop) and activity panel (phone drawer) paint a
+ * dark background: the event log came out as light text on a light grey card
+ * and its headings as dark text on navy. Give both panels simulator-ui's dark
+ * tokens (theme.css, :root), with the sidebar's own text colours
+ * (.matchSidebar in OnePieceTabletopBoard.module.css).
+ */
+main [data-testid="one-piece-sidebar"],
+main[data-layout="mobile"] aside[role="dialog"] {
+  --board-text: oklch(0.96 0.014 84);
+  --board-muted: oklch(0.76 0.03 84 / 82%);
+  --board-border: oklch(0.52 0.045 250 / 52%);
+  --board-border-strong: rgba(216, 229, 247, 0.28);
+  --pill-bg: rgba(216, 229, 247, 0.12);
+  --pill-text: #f8fbff;
+  --pill-border: rgba(216, 229, 247, 0.28);
+  --log-bg: rgba(13, 27, 46, 0.64);
+  --log-bg-gradient: rgba(111, 154, 211, 0.05);
+  --log-border: rgba(111, 154, 211, 0.22);
+  --log-scrollbar: rgba(111, 154, 211, 0.28);
+  --log-turn-line: rgba(111, 154, 211, 0.22);
+  --log-turn-text: rgba(111, 154, 211, 0.55);
+  --log-turn-text-hover: rgba(111, 154, 211, 0.8);
+  --log-entry-hover-bg: rgba(111, 154, 211, 0.06);
+  --log-entry-highlight-bg: rgba(109, 76, 194, 0.1);
+  --log-focus: rgba(111, 154, 211, 0.4);
+  --log-speaker-player: rgba(74, 217, 255, 0.9);
+  --log-speaker-opponent: rgba(255, 61, 138, 0.9);
+  --log-speaker-system: rgba(245, 230, 66, 0.9);
+  --log-tag-border: rgba(216, 229, 247, 0.22);
+  --log-tag-hover-bg: rgba(216, 229, 247, 0.06);
+  --log-tag-system: rgba(216, 229, 247, 0.65);
+  --log-tag-move: rgba(111, 154, 211, 0.8);
+  --log-tag-combat: rgba(245, 100, 100, 0.8);
+  --log-tag-ability: rgba(180, 130, 240, 0.8);
+  --surface: #0f172a;
+  --surface-soft: #1e293b;
+  --text: #f8fbff;
+  --muted: #94a3b8;
+  --quiet: #64748b;
+  --border: rgba(111, 154, 211, 0.28);
+}
+
+/* The drawer around that panel is white (upstream "Close" row): match it. */
+main[data-layout="mobile"] aside[role="dialog"] {
+  background: oklch(0.18 0.035 255);
+}
