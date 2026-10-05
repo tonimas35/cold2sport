@@ -1,21 +1,52 @@
 import { describe, expect, test } from "vite-plus/test";
 
 import { OnePieceTestEngine } from "../../../index.ts";
+import { getCardCounter } from "../../../shared.ts";
 
+// "The counter of all of your Character cards with 8000 power in your hand
+// becomes +2000." Like any Character text it only works while Ace is in the
+// Character area (2-8-2). The counter "becomes" +2000: it does not add to a
+// printed Counter, and two Aces still give +2000 (OP16 FAQ; 2-10-4: a card
+// with several Counters uses only the highest).
 describe("OP16-118 Portgas.D.Ace", () => {
-  test("the counter of 8000-power Characters in hand becomes +2000", () => {
+  test("the counter of 8000-power Characters in hand becomes +2000 while Ace is on the field", () => {
     const engine = OnePieceTestEngine.create(
-      { hand: ["OP16-118", "OP16-004"], activeDon: 5 },
-      { character: ["OP16-065"], activeDon: 5 },
+      { character: ["OP16-118"], hand: ["OP16-016", "EB01-041", "OP16-004"], activeDon: 5 },
+      { activeDon: 5 },
+      { firstPlayer: "south", activeSeat: "north" },
     );
+    const rambaId = engine.findCardInZone("south", "hand", "OP16-016");
+    const state = engine.getState();
+    // Ramba (8000, no Counter), Crocus (8000, +1000) and Curiel (8000, +2000).
+    expect(getCardCounter(state, rambaId)).toBe(2000);
+    expect(getCardCounter(state, engine.findCardInZone("south", "hand", "EB01-041"))).toBe(2000);
+    expect(getCardCounter(state, engine.findCardInZone("south", "hand", "OP16-004"))).toBe(2000);
     const lifeBefore = engine.getView("south").players.south.lifeCount;
 
-    // Sakazuki (8000) attacks the Leader (5000). With the boosted counter
-    // 5000 + 2000 (Curiel) + 2000 (Ace's boost) = 9000 >= 8000: saved.
-    engine.endTurn("south");
-    engine.asNorth().attack("OP16-065", engine.asSouth().leader());
-    engine.asSouth().chooseCounter("OP16-004");
+    // North's Leader attacks with 1 DON!! (6000). Ramba's +2000 Counter makes
+    // the Leader 7000 > 6000: saved.
+    engine.attachDon(engine.leader("north"), 1, "north");
+    engine.asNorth().attack(engine.leader("north"), engine.asSouth().leader());
+    engine.asSouth().chooseCounter(rambaId);
     expect(engine.getView("south").players.south.lifeCount).toBe(lifeBefore);
+  });
+
+  test("Ace in hand changes no counter, and two Aces on the field still give +2000 (OP16 FAQ)", () => {
+    const inHand = OnePieceTestEngine.create({ hand: ["OP16-118", "OP16-016", "EB01-041"] }, {});
+    expect(
+      getCardCounter(inHand.getState(), inHand.findCardInZone("south", "hand", "OP16-016")),
+    ).toBe(0);
+    expect(
+      getCardCounter(inHand.getState(), inHand.findCardInZone("south", "hand", "EB01-041")),
+    ).toBe(1000);
+
+    const twoAces = OnePieceTestEngine.create(
+      { character: ["OP16-118", "OP16-118"], hand: ["OP16-016"] },
+      {},
+    );
+    expect(
+      getCardCounter(twoAces.getState(), twoAces.findCardInZone("south", "hand", "OP16-016")),
+    ).toBe(2000);
   });
 
   test("without Ace in hand the same counter no longer saves the Leader", () => {

@@ -172,7 +172,7 @@ reconciles catalog entries.
 | EB04-025     | Nefeltari Vivi                                  | verified | Filtered non-Vivi hand play and opponent-chosen cross-player deck transfer                                                                                                                               |
 | EB04-026     | Bluegrass                                       | verified | Opposing cost-1 bottom-deck boundary and attack draw-before-trash ordering                                                                                                                               |
 | EB04-027     | Boa Hancock - EB04-027                          | verified | On Play draw 2 then trash and filtered Life Trigger hand play                                                                                                                                            |
-| EB04-030     | Kaido                                           | verified | DON!! -2, conditional Rush, unconditional rest target, and battle K.O. replacement                                                                                                                       |
+| EB04-030     | Kaido                                           | verified | DON!! -2; Rush and the Then rest of a cost-7-or-less Character both need an Animal Kingdom Pirates Leader (4-10-2, 8-3-3), the cost is paid either way; battle K.O. replacement |
 | EB04-031     | King                                            | verified | No-other-King gate, active/rested DON!! adds, once per turn, and battle K.O. replacement                                                                                                                 |
 | EB04-032     | Queen                                           | verified | Included-type hand cost and draw; post-cost Leader gate and rested DON!! add                                                                                                                             |
 | EB04-033     | Groggy Monsters                                 | verified | DON!! return cost, included Foxy Pirates count, and base-power K.O. boundary                                                                                                                             |
@@ -1547,7 +1547,7 @@ reconciles catalog entries.
 | OP15-070 | Fuza | verified |Name-based Shura Unblockable grant proven through unblocked 6000-power attack vs a Blocker; opponent-turn base-power 6000 swap|
 | OP15-071 | Holly | verified |Name-based Ohm Double Attack grant proven through two-Life leader damage; opponent-turn base-power 6000 swap|
 | OP15-072 | Hotori | verified | Printed behavior is unstructured |
-| OP15-073 | Yama | verified |Blocker keyword; on-play cost-1 Heavenly Warriors hand play|
+| OP15-073 | Yama | verified | Blocker keyword; on-play cost-1 hand play of [Heavenly Warriors] or a {Vassals} type Character |
 | OP15-079 | Absalom | verified |On-K.O. Thriller Bark Pirates trash-to-hand return incl. self candidate|
 | OP15-080 | Oars | verified |Gecko-Moria-10000 and no-other-Oars gated +7000; on-K.O. three-trash-cards cost replays itself from trash (printed base power 0 flagged as upstream-unverified)|
 | OP15-081 | Sanji | verified |Straw-Hat-Leader gated 5-card deck trash|
@@ -1675,8 +1675,8 @@ reconciles catalog entries.
 | OP16-112 | Boa Hancock | vanilla | Parameterized vanilla invariant batch |
 | OP16-113 | Boa Marigold | verified | Conditional [Blocker] at 2-or-less Life intercepts and is K.O.'d; no-blocker boundary above the threshold |
 | OP16-114 | Laffitte | verified | On K.O. K.O.s up to 1 opposing Character of cost 4 or less; Life Trigger activates the On K.O. |
-| OP16-118 | Portgas.D.Ace | verified | Hand counters of 8000-power Characters become +2000 (counter battle save); On Play/K.O. look-5 search |
-| OP16-119 | Marshall.D.Teach | verified | On Play look-3 adds a card face-down to the top of Life and bottom-orders the rest; decline boundary |
+| OP16-118 | Portgas.D.Ace | verified | While on the field, hand counters of 8000-power Characters become +2000: replaces a printed +1000, two Aces still +2000 (OP16 FAQ, 2-10-4), nothing from hand (2-8-2); On Play/K.O. look-5 search |
+| OP16-119 | Marshall.D.Teach | verified | On Play look-3 adds a card face-down to the top of Life and bottom-orders the rest; decline boundary; [Trigger] negates up to 1 opposing Character, then K.O.s an independent cost-5-or-less target |
 | OP17-002 | Atmos | verified | permanent |
 | OP17-003 | Izo | verified | RushCharacter; On Play Newgate or Land of Wano Leader gate gives a rested opposing Character -6000 this turn |
 | OP17-004 | Inuarashi & Nekomamushi | verified | Printed behavior is unstructured |
@@ -1708,7 +1708,7 @@ reconciles catalog entries.
 | OP17-034 | Rockstar | verified | Opponent-leader 6000+ gate (mutation killed), DON!! set, Red-Haired Leader 6000 base with cross-turn expiry |
 | OP17-035 | Roronoa Zoro | vanilla | Parameterized vanilla invariant batch |
 | OP17-040 | Edward.Newgate | verified | On Play draw; once-per-turn trash-1 Leader +3000 this battle when the Rocks Leader attacks (whenYouAttack, ordered against the Leader [When Attacking]) or is attacked (before Blocker/Counter); Character attack, Character target and non-Rocks Leader do not activate |
-| OP17-041 | Wang Zhi | verified | Blocker |
+| OP17-041 | Wang Zhi | verified | Blocker; On Play optional trash 1 bottom-decks every opposing base-cost-1 Character in the owner's chosen order; decline and empty-hand boundaries |
 | OP17-042 | Kaido | verified | Optional 3-card Rocks Pirates reveal cost gives an opposing Character -3000 this turn (was +3000); unpayable-cost and decline boundaries |
 | OP17-043 | Ganzui | verified | On Play Leader base power 6000 until the opponent's next End Phase; leave-the-field replacement (battle K.O. and opposing removal) trashes 2 hand cards, not offered with 1 card |
 | OP17-044 | Captain John | verified | activateMain, permanent |
@@ -1725,8 +1725,8 @@ reconciles catalog entries.
 | OP17-059 | Aramaki | verified | onPlay |
 | OP17-060 | Ulti & Page One | verified | onPlay |
 | OP17-061 | Lead Performers | verified | onPlay, activateMain |
-| OP17-062 | Kaido | verified | whenDonReturned |
-| OP17-063 | Kaido | verified | activateMain |
+| OP17-062 | Kaido | verified | Your-turn once-per-turn DON!! return adds up to 1 active DON!!, then sets up to 1 DON!! active; not on the opponent's turn |
+| OP17-063 | Kaido | verified | On the field, no-Counter Character cards in hand have Counter +1000 (highest Counter applies: +2000 with OP16-118, no stacking, nothing from hand); played-this-turn DON!! -1 negates a cost-6-or-less Character and K.O.s that same Character |
 | OP17-064 | King | verified | onOpponentAttack |
 | OP17-065 | Queen | verified | onPlay |
 | OP17-066 | Kurozumi Orochi | verified | onPlay |
@@ -1737,7 +1737,7 @@ reconciles catalog entries.
 | OP17-071 | Who's.Who | verified | onPlay, Life Trigger |
 | OP17-072 | Black Maria | verified | onOpponentAttack |
 | OP17-073 | Basil Hawkins | verified | Printed behavior is unstructured |
-| OP17-074 | Yamato | verified | Blocker |
+| OP17-074 | Yamato | verified | Blocker; On Play adds up to 1 rested DON!! (0 allowed, no prompt with an empty DON!! deck) |
 | OP17-075 | X.Drake | verified | onPlay |
 | OP17-080 | Usopp | verified | onPlay, permanent |
 | OP17-081 | Gerd | verified | onPlay, permanent |
@@ -1758,8 +1758,8 @@ reconciles catalog entries.
 | OP17-100 | Capone"Gang"Bege | vanilla | Parameterized vanilla invariant batch |
 | OP17-101 | Caribou | verified | activateMain, Life Trigger |
 | OP17-102 | Charlotte Oven | verified | onKo, Life Trigger |
-| OP17-103 | Charlotte Katakuri | verified | onPlay, Life Trigger |
-| OP17-104 | Charlotte Cracker | verified | onPlay; Life Trigger plays it |
+| OP17-103 | Charlotte Katakuri | verified | onPlay Big Mom Pirates Leader gate covers the Life add and the Then -3000; Life Trigger |
+| OP17-104 | Charlotte Cracker | verified | onPlay; [Trigger] plays it (no On Play on the opponent's turn); counts as a [Trigger] card for OP17-109 and OP17-112 |
 | OP17-105 | Charlotte Chiffon | verified | onPlay |
 | OP17-106 | Charlotte Smoothie | verified | onPlay, Life Trigger |
 | OP17-107 | Charlotte Daifuku | verified | Life Trigger |
@@ -1767,7 +1767,7 @@ reconciles catalog entries.
 | OP17-109 | Charlotte Pudding | verified | onPlay, Life Trigger |
 | OP17-110 | Charlotte Perospero | verified | onPlay, Life Trigger |
 | OP17-111 | Charlotte Mont-d'or | verified | onPlay, Life Trigger |
-| OP17-112 | Charlotte Linlin | verified | onPlay |
+| OP17-112 | Charlotte Linlin | verified | Your-turn static: own [Trigger] Characters with 4000 base power have 8000 base power (no longer 4000 for other effects, OP17 FAQ); onPlay draw and choose-one |
 | OP17-113 | Streusen | verified | onPlay |
 | OP17-114 | Sweet 3 Generals | verified | onPlay, Life Trigger |
 | OP17-118 | Rocks.D.Xebec | verified | On Play draw + exact {Rocks Pirates} replay (Former Rocks Pirates excluded) with different names under total cost 9; over-budget picks rejected, cards over 9 alone not offered; +2000 Counter in hand only with 1+ Characters and none with a Counter (0 Characters: none, per FAQ) |
@@ -1874,8 +1874,8 @@ reconciles catalog entries.
 | ST30-012 | Monkey.D.Luffy | verified | Optional rest-1-DON!! On Play cost grants Rush this turn (unpayable with 0 active DON!!, ST-30 FAQ); When Attacking rests only an opposing [Blocker] Character |
 | ST31-001 | Sanji | verified | DON!! x2 Rush on the turn played; On Play draw then play a Straw Hat Crew Character of cost 5 or less other than [Sanji] (drawn card eligible) |
 | ST31-004 | Monkey.D.Luffy | verified | On Play per-Straw-Hat debuff via amountFromMatchingCards (trait mutation killed); Rush threshold; self-count always >=1 |
-| ST32-002 | Kouzuki Oden | verified | onPlay |
-| ST34-002 | Charlotte Cracker | verified | On Play action-level Big Mom Pirates Leader gate on the rested DON!! add only; Then K.O. cost 2 or less resolves with any Leader |
+| ST32-002 | Kouzuki Oden | verified | onPlay draw and cannot-be-rested lock on an opposing Character with base cost 6 or less |
+| ST34-002 | Charlotte Cracker | verified | On Play Big Mom Pirates Leader gate on both the rested DON!! add and the Then K.O. of cost 2 or less (4-10-2, 8-3-3); empty DON!! deck still K.O.s (ST34 FAQ) |
 | ST34-003 | Charlotte Brulee | verified | On Play top-3 search reveals only Big Mom Pirates cards (Character or Event); remainder to bottom in chosen order |
 | ST34-004 | Charlotte Linlin | verified | Optional DON!! -4 then trash-from-hand cost (trash prompt kept when DON!! sit in one pool); Life from deck top; opposing base power 0 this turn |
 

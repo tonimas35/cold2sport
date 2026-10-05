@@ -46,6 +46,36 @@ export const op17CharlotteLinlin112: CharacterCard = {
   effect:
     "[Your Turn] The base power of all of your Characters with a [Trigger] and 4000 base power becomes 8000.\n[On Play] Draw 1 card, then choose one:\n•Add up to 1 card from the top of your deck to the top of your Life cards.\n• Add up to 1 card from the top of your opponent's Life cards to the owner's hand.",
   effects: {
+    // "[Your Turn] The base power of all of your Characters with a [Trigger]
+    // and 4000 base power becomes 8000." The "base power" filter is read
+    // without this effect (getPermanentSetBasePower guards re-entry), and
+    // other effects then see 8000, not 4000 (OP17 FAQ).
+    permanentEffects: [
+      {
+        conditions: [
+          {
+            condition: "turn",
+            value: "your",
+          },
+        ],
+        actions: [
+          {
+            action: "setBasePower",
+            target: {
+              player: "self",
+              zones: ["character"],
+              count: { amount: "all" },
+              filters: [
+                { filter: "hasTrigger", value: true },
+                { filter: "basePower", comparison: "eq", value: 4000 },
+              ],
+            },
+            value: 8000,
+            duration: "permanent",
+          },
+        ],
+      },
+    ],
     effects: [
       {
         trigger: "onPlay",

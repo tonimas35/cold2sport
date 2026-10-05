@@ -256,7 +256,7 @@ reconciles catalog entries.
 | OP11-116 | Merman Combat Ultramarine | verified | Owner-neutral Main and opponent-only Trigger route chosen Characters to top/bottom owner Life face-up |
 | OP12-016 | To Never Doubt--That Is Power! | verified | Main give-2-DON blocker denial; [Counter] +2000 Character save |
 | OP12-017 | Color of Observation Haki | verified | Main give-DON look-4 red Event reveal with bottom-order |
-| OP12-018 | Color of the Supreme King Haki | verified | [Counter] +2000 Character boost, then a separate optional rest-1-DON!! (not offered with 0 active DON!!) for the -1000 opponent board drop |
+| OP12-018 | Color of the Supreme King Haki | verified | [Counter] +2000 to a Character or a [Silvers Rayleigh] (OP12-001 Leader included), then a separate optional rest-1-DON!! (not offered with 0 active DON!!) for the -1000 opponent board drop |
 | OP12-019 | Color of Arms Haki | verified | Main give-DON boosts [Silvers Rayleigh]; [Counter] +2000 save |
 | OP12-037 | Demon Aura Nine Sword Style Asura Blades Drawn Dead Man's Game | verified | Optional three-DON!! cost and aggregate Character/DON!! rest choice; mandatory Leader Counter power |
 | OP12-038 | Two-Sword Style Rashomon | verified | Optional two-DON!! cost before two rested base-cost-4 K.O.s; mandatory Leader Counter power |
@@ -319,9 +319,9 @@ reconciles catalog entries.
 | OP15-054 | And No One Else Can Have It! It's Our Memento of Him | verified | Lucy-gated choice: draw 2, trash 1, play Dressrosa cost-4-or-less; or return a Stage to hand |
 | OP15-055 | Go Ahead and Use 'Em, Mr. Luffy!!! | verified | Choice: draw 2 or grant a Dressrosa Character [Blocker] |
 | OP15-056 | Would You Let Me Eat the Flame-Flame Fruit? | verified | Main draws 2 and a [Lucy] Leader gains [Double Attack] +3000 (deals 2 damage) |
-| OP15-074 | Varie | verified | DON!! −1 Enel-gated draw with +2 cost grant (unplayable without 1 DON!! on the field, paid from given DON!! too); [Counter] saves the Leader with +2000 |
-| OP15-075 | El Thor | verified | DON!! −1 Enel-gated +1000 and K.O. of 3000-or-less power; unplayable without 1 DON!! on the field |
-| OP15-076 | Lightning Beast Kiten | verified | DON!! −1 Enel-gated draw with -1000 power give; unplayable without 1 DON!! on the field |
+| OP15-074 | Varie | verified | DON!! −1; the draw and the Then +2 cost both need an [Enel] Leader (4-10-2, 8-3-3), the cost is paid either way (unplayable without 1 DON!! on the field, paid from given DON!! too); [Counter] saves the Leader with +2000 |
+| OP15-075 | El Thor | verified | DON!! −1; the +1000 and the Then K.O. of 3000-or-less power both need an [Enel] Leader, the cost is paid either way; unplayable without 1 DON!! on the field |
+| OP15-076 | Lightning Beast Kiten | verified | DON!! −1; the draw and the Then -1000 power both need an [Enel] Leader, the cost is paid either way; unplayable without 1 DON!! on the field |
 | OP15-077 | Lightning Dragon | verified | DON!! −1 draw and freeze of a rested 6000-or-less Character through refresh (power filter checked); unplayable without 1 DON!! on the field |
 | OP15-078 | Mamaragan | verified | DON!! −2 draw and rest of a 5000-or-less Character with power filter; unplayable with fewer than 2 DON!! on the field |
 | OP15-095 | Gum-Gum Storm | verified | rest-DON cost with 15-trash gate gives a Straw Hat card +3000; sub-threshold boundary |
@@ -349,13 +349,13 @@ reconciles catalog entries.
 | OP17-017 | Ga Ha Ha Ha!! | verified | [Counter] boosts a Whitebeard card +2000 and drops an opposing card -2000 (text sign fixed) |
 | OP17-018 | The Power to Destroy the World | verified | Main rest-2-DON K.O.s an opposing Stage; [Counter] 2x8000-base gate +4000 save |
 | OP17-019 | I Don't Have Time to Chat with Snot-Nosed Brats | verified | Main look-5 Whitebeard Pirates reveal with bottom-order |
-| OP17-036 | Withdraw Now and Allow Me to Save Face | verified | Main rest-6-DON rests a Character then K.O.s rested cost-6-or-less targets |
+| OP17-036 | Withdraw Now and Allow Me to Save Face | verified | Main rest-6-DON rests a Character then K.O.s rested cost-6-or-less targets; [Counter] +4000 to a [Shanks] Leader or Character |
 | OP17-037 | Are You That Afraid of the New Era?! | verified | Main look-5 Red-Haired Pirates reveal with bottom-order |
 | OP17-038 | I Think He's Seen an Ugly Future... | verified | Main rest-4-cards cost rests an opposing Character; [Counter] optional trash +3000 save |
 | OP17-055 | There's No Authority in the World That Lasts Forever!!! | verified | Main rest-DON gives a [Rocks.D.Xebec] Leader or Character [Unblockable] (opposing Blocker not offered); [Counter] Rocks Pirates +2000 save |
 | OP17-056 | Rocks Pirates | verified | Main rest-5-DON returns a cost-6-or-less Character to its owner's hand; [Counter] cost-0 +2000 for the battle to a Leader or Character whose type includes Rocks Pirates |
 | OP17-076 | Wo Ro Ro Ro Ro... I Think I've Sobered Up | verified | [Counter] optional hand trash saves the Leader with +3000; Life Trigger optional DON!!-1 draws 2, with decline |
-| OP17-077 | Kundali Dragon Swarm | verified | Main Animal-Kingdom-gated rest-3-DON + trash 2 hand adds 3 rested DON with DON accounting |
+| OP17-077 | Kundali Dragon Swarm | verified | Main rest-3-DON + trash 2 hand adds 3 rested DON only with an Animal Kingdom Pirates Leader (costs paid either way) with DON accounting |
 | OP17-078 | Drunken Dragon Bagua | verified | Main rest-2-DON + trash 2 hand adds 3 rested DON for an Animal Kingdom Leader |
 | OP17-096 | I'm Luffy!! The Man Who Will Be King of the Pirates!! | verified | [Counter] gated on a cost-12-or-more Character; no such card exists so it auto-declines |
 | OP17-097 | I'll Feed on This Rage and Use It to Bring the World to Ruin!!! | verified | Main gives all opposing Characters +1 cost; damage lands after the uncountered attack |

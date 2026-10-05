@@ -37,6 +37,29 @@ export const op17Kaido063: CharacterCard = {
   effect:
     "All Character cards in your hand without a Counter have a +1000 Counter.\n[Activate: Main] [Once Per Turn] DON!! -1: If this Character was played on this turn, negate the effect of up to 1 of your opponent's Characters with a cost of 6 or less during this turn, and K.O. it.",
   effects: {
+    // "All Character cards in your hand without a Counter have a +1000
+    // Counter." Only the highest Counter applies (2-10-4), so with OP16-118
+    // Ace an 8000-power card is Counter +2000, not +3000 (OP17 FAQ).
+    permanentEffects: [
+      {
+        actions: [
+          {
+            action: "modifyCounter",
+            target: {
+              player: "self",
+              zones: ["hand"],
+              count: { amount: "all" },
+              filters: [
+                { filter: "cardCategory", value: "character" },
+                { filter: "counter", comparison: "eq", value: 0 },
+              ],
+            },
+            value: 1000,
+            duration: "permanent",
+          },
+        ],
+      },
+    ],
     effects: [
       {
         trigger: "activateMain",
@@ -72,6 +95,8 @@ export const op17Kaido063: CharacterCard = {
                 },
                 duration: "thisTurn",
               },
+              // "and K.O. it": the Character chosen for the negate, so
+              // choosing none K.O.s nothing.
               {
                 action: "ko",
                 target: {
@@ -81,6 +106,7 @@ export const op17Kaido063: CharacterCard = {
                     amount: 1,
                   },
                 },
+                previousActionTargets: true,
               },
             ],
           },

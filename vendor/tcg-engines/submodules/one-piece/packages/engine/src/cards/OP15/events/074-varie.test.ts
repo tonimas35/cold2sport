@@ -32,6 +32,27 @@ describe("OP15-074 Varie", () => {
     expect(engine.getView("south").prompts).toHaveLength(0);
   });
 
+  test("[Main] with a non-[Enel] Leader pays DON!! −1 but neither draws nor gives +2 cost", () => {
+    // "If your Leader is [Enel], draw 1 card. Then, ...": the "Then" clause
+    // depends on the "if" too (4-10-2, 8-3-3; OP14/EB04 FAQ for OP14-078 and
+    // OP14-112). The DON!! −1 before the colon is still paid.
+    const engine = OnePieceTestEngine.create(
+      { hand: ["OP15-074", "EB01-005"], character: ["OP15-060"], activeDon: 5 },
+      {},
+    );
+    const enelId = engine.findCardInZone("south", "character", "OP15-060");
+    const donBefore = engine.getView("south").players.south;
+
+    engine.playCard("OP15-074");
+
+    const south = engine.getView("south").players.south;
+    expect(engine.getView("south").prompts).toHaveLength(0);
+    expect(south.hand.map((card) => card.cardId)).toEqual(["EB01-005"]);
+    expect(south.characters.find((card) => card?.instanceId === enelId)?.cost).toBe(6);
+    expect(south.activeDon).toBe(donBefore.activeDon - 1);
+    expect(south.donDeckCount).toBe(donBefore.donDeckCount + 1);
+  });
+
   test("[Main] cannot be played with no DON!! on the field to pay DON!! −1 (8-3-1-3)", () => {
     const engine = OnePieceTestEngine.create(
       {

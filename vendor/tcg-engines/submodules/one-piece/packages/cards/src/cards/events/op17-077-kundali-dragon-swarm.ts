@@ -40,6 +40,8 @@ export const op17KundaliDragonSwarm077: EventCard = {
         ],
         optional: true,
         actions: [
+          // The costs before the colon are paid with any Leader; the DON!!
+          // are added only with an {Animal Kingdom Pirates} Leader (8-3-3).
           {
             action: "addDon",
             count: {
@@ -47,6 +49,11 @@ export const op17KundaliDragonSwarm077: EventCard = {
               upTo: true,
             },
             state: "rested",
+            condition: {
+              condition: "leaderTrait",
+              trait: "Animal Kingdom Pirates",
+              match: "includes",
+            },
           },
         ],
       },

@@ -55,6 +55,8 @@ export const op14eb04Kaido030: CharacterCard = {
               match: "exact",
             },
           },
+          // "Then, rest ...": after an unresolved "if" this cannot resolve
+          // either (4-10-2, 8-3-3); the DON!! -2 cost is still paid.
           {
             action: "rest",
             target: {
@@ -71,6 +73,11 @@ export const op14eb04Kaido030: CharacterCard = {
                   value: 7,
                 },
               ],
+            },
+            condition: {
+              condition: "leaderTrait",
+              trait: "Animal Kingdom Pirates",
+              match: "includes",
             },
           },
         ],

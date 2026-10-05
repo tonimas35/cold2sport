@@ -34,8 +34,10 @@ export const st34CharlotteCracker002: CharacterCard = {
       {
         trigger: "onPlay",
         actions: [
-          // The "If" gates only the DON!! add; "Then, K.O." resolves whatever
-          // the Leader is (4-10-2, 8-3-3; same convention as OP07-109).
+          // "If A, B. Then, C.": a "Then" clause after an "if" clause that is
+          // not resolved cannot be resolved either (4-10-2, 8-3-3; OP14/EB04
+          // FAQ for OP14-078 and OP14-112), so both actions carry the Leader
+          // check. An empty DON!! deck does not stop the K.O. (ST34 FAQ).
           {
             action: "addDon",
             count: {
@@ -65,6 +67,11 @@ export const st34CharlotteCracker002: CharacterCard = {
                   value: 2,
                 },
               ],
+            },
+            condition: {
+              condition: "leaderTrait",
+              trait: "Big Mom Pirates",
+              match: "includes",
             },
           },
         ],

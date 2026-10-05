@@ -43,7 +43,11 @@ describe("EB04-030 Kaido", () => {
     ).toBe(true);
   });
 
-  test("still pays DON!! -2 and rests a target without the Leader gate, but does not gain Rush", () => {
+  test("without an Animal Kingdom Pirates Leader it pays DON!! -2 but neither gains Rush nor rests a target", () => {
+    // "If your Leader has ..., A. Then, B.": when the "if" fails, the "Then"
+    // clause cannot be resolved either (4-10-2, 8-3-3; same ruling as the
+    // OP14/EB04 FAQ for OP14-078 and OP14-112). The cost before the colon is
+    // still paid (8-3-1).
     const engine = OnePieceTestEngine.create(
       { hand: [op14eb04Kaido030], activeDon: 9 },
       { character: [eb01MountainGod018] },
@@ -60,7 +64,6 @@ describe("EB04-030 Kaido", () => {
       { selectedIds: ["active-don:0", "active-don:1"] },
       "south",
     );
-    engine.resolveDecision("effectTargetSelection", { selectedIds: [targetId] }, "south");
 
     const attack = engine.expectFailure({
       type: "declareAttack",
@@ -70,6 +73,7 @@ describe("EB04-030 Kaido", () => {
     });
 
     const view = engine.getView("south");
+    expect(view.prompts).toHaveLength(0);
     expect(attack.accepted).toBe(false);
     expect(view.players.south).toMatchObject({
       activeDon: 0,
@@ -77,7 +81,7 @@ describe("EB04-030 Kaido", () => {
     });
     expect(
       view.players.north.characters.find((card) => card?.instanceId === targetId)?.rested,
-    ).toBe(true);
+    ).toBe(false);
   });
 
   test("may decline the DON!! -2 cost without resting a target or gaining Rush", () => {

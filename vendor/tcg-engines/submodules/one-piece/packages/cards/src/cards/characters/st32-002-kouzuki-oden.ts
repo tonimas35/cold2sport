@@ -47,6 +47,13 @@ export const st32KouzukiOden002: CharacterCard = {
                 amount: 1,
                 upTo: true,
               },
+              filters: [
+                {
+                  filter: "baseCost",
+                  comparison: "lte",
+                  value: 6,
+                },
+              ],
             },
             duration: "untilEndOfOpponentNextEndPhase",
           },

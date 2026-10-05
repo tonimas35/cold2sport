@@ -33,6 +33,48 @@ describe("OP17-036 Withdraw Now and Allow Me to Save Face", () => {
     expect(engine.getView("south").prompts).toHaveLength(0);
   });
 
+  test("[Counter] up to 1 of your [Shanks], the Leader included, gains +4000 during the battle", () => {
+    // OP17-020 Shanks Leader with OP17-022 Shanks and OP17-029 Hongo on the
+    // field. North's Leader attacks with 2 DON!! (7000) against 5000.
+    const engine = OnePieceTestEngine.create(
+      {
+        leaderCardId: "OP17-020",
+        hand: ["OP17-036"],
+        character: ["OP17-022", "OP17-029"],
+        activeDon: 1,
+      },
+      { activeDon: 5 },
+      { firstPlayer: "south", activeSeat: "north" },
+    );
+    const leaderId = engine.leader("south");
+    const shanksId = engine.findCardInZone("south", "character", "OP17-022");
+    const lifeBefore = engine.getView("south").players.south.lifeCount;
+
+    engine.attachDon(engine.leader("north"), 2, "north");
+    engine.asNorth().attack(engine.leader("north"), leaderId);
+    // Hongo is a [Blocker]; South does not block.
+    engine.asSouth().chooseBlocker();
+    const counter = engine.pendingDecision("battleCounter", "south").steps[0];
+    if (counter?.kind !== "selectEntity") throw new Error("Expected the Counter Step.");
+    const eventId = engine.findCardInZone("south", "hand", "OP17-036");
+    expect(counter.candidates.find((candidate) => candidate.ref.id === eventId)?.legal).toBe(true);
+    engine.asSouth().chooseCounter("OP17-036");
+
+    const target = engine.pendingDecision("effectTargetSelection", "south").steps[0];
+    if (target?.kind !== "selectEntity") throw new Error("Expected the [Shanks] target.");
+    expect(target.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
+      [leaderId, shanksId].sort(),
+    );
+    engine.asSouth().chooseTargets(leaderId);
+
+    // 5000 + 4000 > 7000: no damage; the event cost 1 DON!!.
+    const south = engine.getView("south").players.south;
+    expect(south.lifeCount).toBe(lifeBefore);
+    expect(south).toMatchObject({ activeDon: 0, restedDon: 1 });
+    expect(south.trash.map((card) => card.cardId)).toEqual(["OP17-036"]);
+    expect(engine.getView("south").prompts).toHaveLength(0);
+  });
+
   test("[Optional] declined leaves the board unchanged", () => {
     const engine = OnePieceTestEngine.create({ hand: ["OP17-036"], activeDon: 3 }, {});
 

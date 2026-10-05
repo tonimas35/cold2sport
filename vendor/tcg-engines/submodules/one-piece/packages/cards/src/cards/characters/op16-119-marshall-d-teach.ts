@@ -59,6 +59,43 @@ export const op16MarshallDTeach119: CharacterCard = {
           },
         ],
       },
+      {
+        // The K.O. target is chosen on its own: it need not be the Character
+        // whose effect was negated.
+        trigger: "trigger",
+        actions: [
+          {
+            action: "negateEffects",
+            target: {
+              player: "opponent",
+              zones: ["character"],
+              count: {
+                amount: 1,
+                upTo: true,
+              },
+            },
+            duration: "thisTurn",
+          },
+          {
+            action: "ko",
+            target: {
+              player: "opponent",
+              zones: ["character"],
+              count: {
+                amount: 1,
+                upTo: true,
+              },
+              filters: [
+                {
+                  filter: "cost",
+                  comparison: "lte",
+                  value: 5,
+                },
+              ],
+            },
+          },
+        ],
+      },
     ],
   },
   i18n: op16MarshallDTeach119I18n,

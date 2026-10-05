@@ -53,6 +53,8 @@ export const op15LightningBeastKiten076: EventCard = {
               name: "Enel",
             },
           },
+          // "Then, ..." also needs the [Enel] Leader (4-10-2, 8-3-3); the
+          // DON!! -1 before the colon is paid either way.
           {
             action: "modifyPower",
             target: {
@@ -65,6 +67,10 @@ export const op15LightningBeastKiten076: EventCard = {
             },
             value: -1000,
             duration: "thisTurn",
+            condition: {
+              condition: "leaderName",
+              name: "Enel",
+            },
           },
         ],
       },

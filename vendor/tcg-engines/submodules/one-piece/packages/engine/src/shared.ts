@@ -17,6 +17,7 @@ import type {
 } from "./types.ts";
 import {
   arePlayerEffectsNegatedByPermanentEffect,
+  getPermanentCounter,
   getPermanentKeywords,
   getPermanentModifierTotal,
   getPermanentSetBasePower,
@@ -87,7 +88,9 @@ export function getCardCounter(state: MatchState, instanceId: string): number {
   if (card.cardType !== "character") {
     return 0;
   }
-  return (card.counter ?? 0) + getPermanentModifierTotal(state, instanceId, "counter");
+  // 2-10-4: of the printed Counter and those given by effects, only the
+  // highest applies.
+  return Math.max(card.counter ?? 0, getPermanentCounter(state, instanceId));
 }
 
 export function leaderLife(card: OPCard): number {

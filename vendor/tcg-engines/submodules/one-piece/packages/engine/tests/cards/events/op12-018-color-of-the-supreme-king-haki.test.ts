@@ -4,6 +4,8 @@ import {
   eb02Karoo001,
   eb03Ain002,
   op12ColorOfTheSupremeKingHaki018,
+  op12SilversRayleigh001,
+  op13MonkeyDLuffy001,
 } from "@tcg/op-cards";
 
 import { OnePieceTestEngine } from "../../../src/index.ts";
@@ -70,6 +72,36 @@ describe("OP12-018 Color of the Supreme King Haki", () => {
     );
     expect(northPowers(engine, [karooId, domaId])).toEqual([5000, 7000, 3000]);
     expect(engine.getView("south").players.south).toMatchObject({ activeDon: 2, restedDon: 0 });
+  });
+
+  test("the +2000 can go to a [Silvers Rayleigh] Leader (OP12-001), but not to another Leader", () => {
+    // North's 5000 Leader attacks South's 5000 Leader: the +2000 repels it.
+    const counterOnLeader = (leaderCardId: typeof op12SilversRayleigh001) => {
+      const engine = OnePieceTestEngine.create(
+        { leaderCardId, hand: [op12ColorOfTheSupremeKingHaki018], character: [eb03Ain002] },
+        { activeDon: 5 },
+        { firstPlayer: "south", activeSeat: "north" },
+      );
+      engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
+      engine.asSouth().chooseCounter(op12ColorOfTheSupremeKingHaki018);
+      const target = engine.asSouth().pendingDecision("effectTargetSelection").steps[0];
+      if (target?.kind !== "selectEntity") throw new Error("Expected the +2000 target.");
+      return { engine, candidateIds: target.candidates.map((candidate) => candidate.ref.id) };
+    };
+
+    const rayleigh = counterOnLeader(op12SilversRayleigh001);
+    const rayleighId = rayleigh.engine.leader("south");
+    const ainId = rayleigh.engine.findCardInZone("south", "character", eb03Ain002);
+    expect(rayleigh.candidateIds.sort()).toEqual([rayleighId, ainId].sort());
+    const lifeBefore = rayleigh.engine.getView("south").players.south.lifeCount;
+    rayleigh.engine.asSouth().chooseTargets(rayleighId);
+    expect(rayleigh.engine.getView("south").players.south.lifeCount).toBe(lifeBefore);
+    expect(rayleigh.engine.getView("south").prompts).toHaveLength(0);
+
+    const luffy = counterOnLeader(op13MonkeyDLuffy001);
+    expect(luffy.candidateIds).toEqual([
+      luffy.engine.findCardInZone("south", "character", eb03Ain002),
+    ]);
   });
 
   test("resting 1 DON!! gives the opponent's Leader and Characters −1000 this turn", () => {

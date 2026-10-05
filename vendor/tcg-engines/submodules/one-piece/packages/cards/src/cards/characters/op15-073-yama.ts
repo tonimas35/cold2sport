@@ -43,6 +43,9 @@ export const op15Yama073: CharacterCard = {
               amount: 1,
               upTo: true,
             },
+            // "[Heavenly Warriors] with a cost of 1 or ... {Vassals} type
+            // Character card with a cost of 1". "includes" because the catalog
+            // stores some type lists as one joined string ("Sky Island Vassals").
             filters: [
               {
                 filter: "cost",
@@ -50,8 +53,14 @@ export const op15Yama073: CharacterCard = {
                 value: 1,
               },
               {
-                filter: "name",
-                value: "Heavenly Warriors",
+                filter: "anyOf",
+                groups: [
+                  [{ filter: "name", value: "Heavenly Warriors" }],
+                  [
+                    { filter: "cardCategory", value: "character" },
+                    { filter: "trait", value: "Vassals", match: "includes" },
+                  ],
+                ],
               },
             ],
           },

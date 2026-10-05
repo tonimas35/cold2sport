@@ -2,7 +2,11 @@ import { getCard } from "../../../cards/src/runtime-catalog.ts";
 import type { Action, EffectTrigger, Keyword } from "@tcg/op-types";
 import type { CardInstance, MatchState } from "../types.ts";
 import { evaluateConditions } from "./conditions.ts";
-import { candidatePoolForTarget, matchesTargetFilter } from "./targeting.ts";
+import {
+  candidatePoolForTarget,
+  matchesTargetFilter,
+  targetIncludesCandidate,
+} from "./targeting.ts";
 
 const activeEvaluations = new WeakMap<MatchState, Set<string>>();
 
@@ -639,6 +643,96 @@ export function getPermanentModifierTotal(
   }
 }
 
+/**
+ * The highest Counter that permanent effects give a card ("has a +1000
+ * Counter", "the counter ... becomes +2000"), or 0. `modifyCounter.value` is
+ * that Counter, not an amount to add: a card with several Counters uses only
+ * the highest one (2-10-3, 2-10-4), so these never add up with each other or
+ * with the printed Counter (OP16 FAQ for OP16-118, OP17 FAQ for OP17-063).
+ * Like any other Character text the effect works only while its card is on the
+ * field (2-8-2); the exception is text about "this card in your hand", a
+ * `target.self` modifier read while the card itself is in hand (OP17-118).
+ */
+const COUNTER_ACTION_KINDS = ["modifyCounter"] as const;
+
+export function getPermanentCounter(state: MatchState, targetInstanceId: string): number {
+  const evaluationKey = `counter:${targetInstanceId}`;
+  const active = activeEvaluations.get(state) ?? new Set<string>();
+  if (active.has(evaluationKey)) {
+    return 0;
+  }
+  activeEvaluations.set(state, active);
+  active.add(evaluationKey);
+
+  try {
+    let highest = 0;
+    for (const source of Object.values(state.cards)) {
+      if (!cardHasPermanentAction(source.cardId, COUNTER_ACTION_KINDS)) continue;
+      const selfInHand = source.instanceId === targetInstanceId && source.zone === "hand";
+      if (
+        (!selfInHand && !sourceIsInPlay(state, source.instanceId)) ||
+        sourceEffectsAreNegated(state, source.instanceId)
+      ) {
+        continue;
+      }
+      for (const effect of getCard(source.cardId).effects?.permanentEffects ?? []) {
+        const counterActions = effect.actions.filter(
+          (action): action is Extract<Action, { action: "modifyCounter" }> =>
+            action.action === "modifyCounter" &&
+            action.value > highest &&
+            (action.target.count.amount === "all" || action.target.self === true) &&
+            (!selfInHand || action.target.self === true),
+        );
+        if (counterActions.length === 0) {
+          continue;
+        }
+        const conditions = evaluateConditions(
+          state,
+          source.controller,
+          source.instanceId,
+          effect.conditions,
+        );
+        if (!conditions.supported || !conditions.matches) {
+          continue;
+        }
+        for (const action of counterActions) {
+          if (action.value <= highest) {
+            continue;
+          }
+          if (action.condition) {
+            const actionCondition = evaluateConditions(
+              state,
+              source.controller,
+              source.instanceId,
+              [action.condition],
+            );
+            if (!actionCondition.supported || !actionCondition.matches) {
+              continue;
+            }
+          }
+          if (
+            targetIncludesCandidate(
+              state,
+              source.controller,
+              source.instanceId,
+              action.target,
+              targetInstanceId,
+            )
+          ) {
+            highest = action.value;
+          }
+        }
+      }
+    }
+    return highest;
+  } finally {
+    active.delete(evaluationKey);
+    if (active.size === 0) {
+      activeEvaluations.delete(state);
+    }
+  }
+}
+
 // 4-9-2-1: permanent effects that set a base power compete by absolute value;
 // the highest set value wins instead of stacking as additive deltas.
 export function getPermanentSetBasePower(
@@ -682,13 +776,15 @@ export function getPermanentSetBasePower(
           continue;
         }
         for (const action of setBaseActions) {
-          const targetPool = candidatePoolForTarget(
-            state,
-            source.controller,
-            source.instanceId,
-            action.target,
-          );
-          if (!targetPool.supported || !targetPool.candidateIds.includes(targetInstanceId)) {
+          if (
+            !targetIncludesCandidate(
+              state,
+              source.controller,
+              source.instanceId,
+              action.target,
+              targetInstanceId,
+            )
+          ) {
             continue;
           }
           if (action.action === "setBasePower") {

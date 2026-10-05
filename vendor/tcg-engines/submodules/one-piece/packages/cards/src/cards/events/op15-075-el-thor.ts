@@ -52,6 +52,8 @@ export const op15ElThor075: EventCard = {
               name: "Enel",
             },
           },
+          // "Then, K.O. ..." also needs the [Enel] Leader (4-10-2, 8-3-3);
+          // the DON!! -1 before the colon is paid either way.
           {
             action: "ko",
             target: {
@@ -68,6 +70,10 @@ export const op15ElThor075: EventCard = {
                   value: 3000,
                 },
               ],
+            },
+            condition: {
+              condition: "leaderName",
+              name: "Enel",
             },
           },
         ],

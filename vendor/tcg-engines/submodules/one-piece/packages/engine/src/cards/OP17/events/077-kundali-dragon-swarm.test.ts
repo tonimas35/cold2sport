@@ -39,6 +39,36 @@ describe("OP17-077 Kundali Dragon Swarm", () => {
     expect(engine.getView("south").prompts).toHaveLength(0);
   });
 
+  test("[Main] without an Animal Kingdom Pirates Leader the costs are paid but no DON!! is added", () => {
+    // The "If your Leader has the {Animal Kingdom Pirates} type" clause gates
+    // the DON!! add (8-3-3); the costs before the colon are still paid.
+    const engine = OnePieceTestEngine.create(
+      {
+        hand: ["OP17-077", "EB01-005", "OP16-004", "OP13-013"],
+        activeDon: 5,
+        donDeckCount: 8,
+      },
+      {},
+    );
+
+    engine.playCard("OP17-077");
+    engine.acceptLeadingOptional("south");
+    const handIds = engine
+      .getView("south")
+      .players.south.hand.flatMap((card) => (card.instanceId ? [card.instanceId] : []));
+    engine.resolveDecision(
+      "effectCostTrashFromHand",
+      { selectedIds: handIds.slice(0, 2) },
+      "south",
+    );
+
+    const south = engine.getView("south").players.south;
+    expect(engine.getView("south").prompts).toHaveLength(0);
+    // Play cost + rest-3-DON cost, and nothing from the DON!! deck.
+    expect(south).toMatchObject({ activeDon: 1, restedDon: 4, donDeckCount: 8 });
+    expect(south.hand).toHaveLength(1);
+  });
+
   test("[Optional] declined leaves the board unchanged", () => {
     const engine = OnePieceTestEngine.create({ hand: ["OP17-077"], activeDon: 3 }, {});
 

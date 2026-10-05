@@ -13,13 +13,17 @@ import { OnePieceTestEngine } from "../../../src/index.ts";
 // [On Play] If your Leader has the {Big Mom Pirates} type, add up to 1 DON!!
 // card from your DON!! deck and rest it. Then, K.O. up to 1 of your opponent's
 // Characters with a cost of 2 or less.
-function setup(leaderCardId: LeaderCard) {
+//
+// The "Then" clause depends on the "if" (4-10-2, 8-3-3; OP14/EB04 FAQ for
+// OP14-078 and OP14-112), but not on the DON!! add itself: with an empty DON!!
+// deck the K.O. still happens (ST34 FAQ).
+function setup(leaderCardId: LeaderCard, donDeckCount = 3) {
   return OnePieceTestEngine.create(
     {
       leaderCardId,
       hand: [st34CharlotteCracker002],
       activeDon: 4,
-      donDeckCount: 3,
+      donDeckCount,
     },
     { character: [op13Higuma013, eb01Fourtricks025] },
     { firstPlayer: "north", activeSeat: "south" },
@@ -67,24 +71,33 @@ describe("ST34-002 Charlotte Cracker", () => {
     expect(engine.getState().capabilityHistory).toHaveLength(0);
   });
 
-  test("with a non-Big Mom Pirates Leader adds no DON!!, but the Then K.O. still resolves", () => {
+  test("with a non-Big Mom Pirates Leader neither adds DON!! nor K.O.s", () => {
     const engine = setup(op09NicoRobin062);
     const south = engine.asSouth();
     const cheapId = engine.asNorth().findOnField(op13Higuma013);
 
     south.play(st34CharlotteCracker002);
 
+    const view = south.view();
+    expect(view.prompts).toHaveLength(0);
+    expect(view.players.south).toMatchObject({ activeDon: 0, restedDon: 4, donDeckCount: 3 });
+    expect(view.players.north.characters.map((card) => card?.instanceId)).toContain(cheapId);
+    expect(view.players.north.trash).toHaveLength(0);
+  });
+
+  test("with a Big Mom Pirates Leader and an empty DON!! deck the K.O. still resolves (ST34 FAQ)", () => {
+    const engine = setup(op08CharlottePudding058, 0);
+    const south = engine.asSouth();
+    const cheapId = engine.asNorth().findOnField(op13Higuma013);
+
+    south.play(st34CharlotteCracker002);
+
     expect(() => south.pendingDecision("effectAddDon")).toThrow();
-    expect(south.view().players.south).toMatchObject({
-      activeDon: 0,
-      restedDon: 4,
-      donDeckCount: 3,
-    });
     south.chooseTargets(cheapId);
 
     const view = south.view();
-    expect(view.players.north.trash.map((card) => card.instanceId)).toContain(cheapId);
-    expect(view.players.south).toMatchObject({ restedDon: 4, donDeckCount: 3 });
+    expect(view.players.north.trash.map((card) => card.instanceId)).toEqual([cheapId]);
+    expect(view.players.south).toMatchObject({ activeDon: 0, restedDon: 4, donDeckCount: 0 });
     expect(view.prompts).toHaveLength(0);
   });
 

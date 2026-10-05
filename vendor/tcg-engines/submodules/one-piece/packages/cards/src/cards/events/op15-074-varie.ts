@@ -44,6 +44,8 @@ export const op15Varie074: EventCard = {
               name: "Enel",
             },
           },
+          // "Then, ..." also needs the [Enel] Leader (4-10-2, 8-3-3); the
+          // DON!! -1 before the colon is paid either way.
           {
             action: "modifyCost",
             target: {
@@ -56,6 +58,10 @@ export const op15Varie074: EventCard = {
             },
             value: 2,
             duration: "untilEndOfOpponentNextEndPhase",
+            condition: {
+              condition: "leaderName",
+              name: "Enel",
+            },
           },
         ],
       },

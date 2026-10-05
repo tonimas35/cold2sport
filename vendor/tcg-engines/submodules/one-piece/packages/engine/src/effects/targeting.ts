@@ -15,7 +15,7 @@ import {
   getSetBasePower,
   otherSeat,
 } from "../shared.ts";
-import type { MatchSeat, MatchState } from "../types.ts";
+import type { MatchSeat, MatchState, PlayerState } from "../types.ts";
 
 function hasPrintedText(text: string | undefined): boolean {
   const normalized = text?.trim();
@@ -419,4 +419,72 @@ export function candidatePoolForTarget(
   }
 
   return { supported: true, candidateIds: filtered };
+}
+
+function zoneHoldsCandidate(
+  player: PlayerState,
+  zone: Target["zones"][number],
+  candidateId: string,
+): boolean {
+  switch (zone) {
+    case "leader":
+      return player.leaderInstanceId === candidateId;
+    case "character":
+      return player.characterArea.includes(candidateId);
+    case "stage":
+      return player.stageArea === candidateId;
+    case "hand":
+    case "deck":
+    case "trash":
+    case "life":
+      return player[zone].includes(candidateId);
+    case "field":
+      return (
+        player.leaderInstanceId === candidateId ||
+        player.characterArea.includes(candidateId) ||
+        player.stageArea === candidateId
+      );
+    case "don":
+    case "donDeck":
+    case "costArea":
+      return false;
+  }
+}
+
+/**
+ * Same answer as `candidatePoolForTarget(...).candidateIds.includes(candidateId)`
+ * (with an unsupported filter counting as "not included"), but only that one
+ * card is checked. Permanent effects ask this on every power or counter query:
+ * building the whole pool there also ran every other candidate's filters, and a
+ * "base power" filter (OP17-112 Linlin) re-entered the permanent effects of each
+ * of them in turn.
+ */
+export function targetIncludesCandidate(
+  state: MatchState,
+  controller: MatchSeat,
+  sourceInstanceId: string | null,
+  target: Target,
+  candidateId: string,
+): boolean {
+  if (target.self && sourceInstanceId && candidateId !== sourceInstanceId) {
+    return false;
+  }
+  const seats =
+    target.player === "both" || target.player === "any"
+      ? ([controller, otherSeat(controller)] as const)
+      : ([target.player === "self" ? controller : otherSeat(controller)] as const);
+  const inTargetZones = seats.some((seat) => {
+    const player = getPlayer(state, seat);
+    return target.zones.some((zone) => zoneHoldsCandidate(player, zone, candidateId));
+  });
+  if (!inTargetZones) {
+    return false;
+  }
+  for (const filter of target.filters ?? []) {
+    const result = matchesTargetFilter(state, sourceInstanceId, candidateId, filter);
+    if (!result.supported || !result.matches) {
+      return false;
+    }
+  }
+  return true;
 }

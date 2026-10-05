@@ -29,15 +29,27 @@ export const op12ColorOfTheSupremeKingHaki018: EventCard = {
       {
         trigger: "counter",
         actions: [
+          // "Up to 1 of your Characters or [Silvers Rayleigh]": any of your
+          // Characters, or a card named [Silvers Rayleigh] such as the OP12-001
+          // Leader.
           {
             action: "modifyPower",
             target: {
               player: "self",
-              zones: ["character"],
+              zones: ["leader", "character"],
               count: {
                 amount: 1,
                 upTo: true,
               },
+              filters: [
+                {
+                  filter: "anyOf",
+                  filters: [
+                    { filter: "cardCategory", value: "character" },
+                    { filter: "name", value: "Silvers Rayleigh" },
+                  ],
+                },
+              ],
             },
             value: 2000,
             duration: "thisBattle",

@@ -10,6 +10,7 @@ import {
   op04Sasaki048,
   op07Ain002,
   op07MonkeyDLuffy109,
+  op08CharlottePudding058,
   op09Bepo074,
   op09NicoRobin062,
   op13Higuma013,
@@ -20,6 +21,7 @@ import {
   op14eb04ShachiPenguin006,
   op14eb04TrafalgarLawOp14001001,
   op14eb04Vista053,
+  st34CharlotteCracker002,
 } from "@tcg/op-cards";
 
 import { OnePieceTestEngine } from "../../src/index.ts";
@@ -459,6 +461,38 @@ describe("Comprehensive Rules 4: Basic Game Terminology", () => {
       engine.asSouth().findInZone("hand", op13Otama043),
     ]);
     expect(view.deckCount).toBe(2);
+  });
+
+  test('4-10-2: a "Then" clause after an "if" clause that is not resolved cannot be resolved either', () => {
+    // ST34-002 Charlotte Cracker: "If your Leader has the {Big Mom Pirates}
+    // type, add up to 1 DON!! card from your DON!! deck and rest it. Then, K.O.
+    // up to 1 of your opponent's Characters with a cost of 2 or less."
+    // 8-3-3 and the OP14/EB04 FAQ (OP14-078 Bullet String, OP14-112 Boa
+    // Hancock: "can I use the 'Then, ...' part? No") read the same way.
+    const play = (leaderCardId: typeof op09NicoRobin062) => {
+      const engine = OnePieceTestEngine.create(
+        { leaderCardId, hand: [st34CharlotteCracker002], activeDon: 4, donDeckCount: 3 },
+        { character: [op13Higuma013] },
+        SOUTH_ATTACKS,
+      );
+      engine.asSouth().play(st34CharlotteCracker002);
+      return engine;
+    };
+
+    const ifFails = play(op09NicoRobin062);
+    expect(ifFails.asSouth().view().prompts).toHaveLength(0);
+    expect(ifFails.asSouth().view().players.north.trash).toHaveLength(0);
+
+    const ifHolds = play(op08CharlottePudding058);
+    ifHolds.asSouth().chooseAddDon(0);
+    const higumaId = ifHolds.asNorth().findOnField(op13Higuma013);
+    ifHolds.asSouth().chooseTargets(higumaId);
+    expect(
+      ifHolds
+        .asSouth()
+        .view()
+        .players.north.trash.map((card) => card.instanceId),
+    ).toEqual([higumaId]);
   });
 
   test("4-12-1: «Set Power to 0» reduces power by its current value at activation for the duration", () => {

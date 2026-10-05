@@ -138,6 +138,11 @@ export interface ModifyPowerAction {
 export interface ModifyCounterAction {
   action: "modifyCounter";
   target: Target;
+  /**
+   * The Counter the targets have ("has a +1000 Counter", "the counter ...
+   * becomes +2000"). A card with several Counters uses only the highest one
+   * (2-10-4), so values from different effects do not add up.
+   */
   value: number;
   /** Optional for dynamic permanent modifiers evaluated live at query time. */
   duration?: Duration;

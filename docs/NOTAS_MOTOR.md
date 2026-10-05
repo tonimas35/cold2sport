@@ -252,9 +252,9 @@ bots intercambiados, primer jugador controlado, modelo pentanomial y SPRT (como 
   legalidad (`packages/opbot/src/decks/legality.ts`).
 - Issue abierto upstream #223: unos 469 tests generados por carta no pueden fallar. Antes de fiarse
   de un mazo hay que comprobar su comportamiento (partidas de prueba, `capabilityHistory`).
-- **Errores de datos detectados**: ST32-002 Kouzuki Oden dice "con coste base 6 o menos", pero su
-  objetivo no tiene ese filtro. Upstream también corrigió en septiembre signos perdidos al importar de
-  optcgapi (−4000 convertido en +4000).
+- **Errores de datos detectados**: ST32-002 Kouzuki Oden decía "con coste base 6 o menos", pero su
+  objetivo no tenía ese filtro (corregido con la segunda auditoría de los mazos del meta). Upstream
+  también corrigió en septiembre signos perdidos al importar de optcgapi (−4000 convertido en +4000).
 - **Soporte del meta post-ban** (informe completo en `decks/meta-op17-postban/README.md`):
   - parche `0002`: ST34-002, ST34-003 y ST34-004. Con ellas Kaido, Robin y Pudding entran en el
     pool (8 mazos, 560 partidas de comprobación sin comandos rechazados);
@@ -303,7 +303,15 @@ Patrones de fallo que conviene buscar en cualquier carta nueva:
    dice `{Tipo}` exacto (corregido en todo el catálogo: cada tipo es una entrada de `traits` y cada
    filtro sigue al texto impreso, ver "Arreglos aplicados al motor" en `docs/CATALOGO.md`; el
    importador de upstream sigue generando `includes`);
-5. `[Nombre]` que debería incluir al Líder.
+5. `[Nombre]` que debería incluir al Líder;
+6. "Si A, B. Después, C." con la condición solo en B: si A no se cumple, **C tampoco se resuelve**
+   (reglas 4-10-2 y 8-3-3; FAQ de OP14/EB04 sobre OP14-078 y OP14-112, y de OP14-020 Mihawk). Lo
+   que no bloquea a C es que B no pueda hacerse (FAQ de ST34-002 con el mazo de DON!! vacío). El
+   coste antes de los dos puntos se paga igualmente, así que la condición va en cada acción y no en
+   el bloque;
+7. Counters que dan los efectos ("tienen un +1000 Counter", "su counter pasa a ser +2000"): no se
+   suman entre sí ni con el impreso, se usa el más alto (2-10-4; FAQ de OP16-118 y OP17-063), y el
+   texto de un Personaje solo vale en el área de Personajes (2-8-2), no desde la mano.
 
 Los patrones 1, 2 y 4, y los errores de datos (counter, atributo, nombre, coste, [Trigger]), los
 busca ahora `pnpm opbot catalog-check` en todo el catálogo contra la lista oficial EN

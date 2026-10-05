@@ -30,6 +30,28 @@ describe("OP15-076 Lightning Beast Kiten", () => {
     expect(engine.getView("south").prompts).toHaveLength(0);
   });
 
+  test("[Main] with a non-[Enel] Leader pays DON!! −1 but neither draws nor gives -1000", () => {
+    // The "Then" clause depends on the "If your Leader is [Enel]" clause too
+    // (4-10-2, 8-3-3; OP14/EB04 FAQ for OP14-078 and OP14-112).
+    const engine = OnePieceTestEngine.create(
+      { hand: ["OP15-076", "EB01-005"], activeDon: 5 },
+      { character: ["OP13-013"] },
+    );
+    const higumaId = engine.findCardInZone("north", "character", "OP13-013");
+    const donBefore = engine.getView("south").players.south;
+
+    engine.playCard("OP15-076");
+
+    const view = engine.getView("south");
+    expect(view.prompts).toHaveLength(0);
+    expect(view.players.south.hand.map((card) => card.cardId)).toEqual(["EB01-005"]);
+    expect(view.players.north.characters.find((card) => card?.instanceId === higumaId)?.power).toBe(
+      3000,
+    );
+    expect(view.players.south.activeDon).toBe(donBefore.activeDon - 1);
+    expect(view.players.south.donDeckCount).toBe(donBefore.donDeckCount + 1);
+  });
+
   test("[Main] cannot be played with no DON!! on the field to pay DON!! −1 (8-3-1-3)", () => {
     const engine = OnePieceTestEngine.create(
       { leaderCardId: "OP15-058", hand: ["OP15-076", "EB01-005"], activeDon: 0, donDeckCount: 6 },
