@@ -98,6 +98,12 @@ decisión, mediana 4, p90 19, p99 64. Unas 90 decisiones por partida (45 en fase
 - Los manejadores aceptan algunas jugadas que `getLegalCommands` oculta (por ejemplo `playCard` con
   un prompt pendiente). Generar jugadas siempre desde `getLegalCommands`.
 - Ids inexistentes lanzan una excepción en vez de rechazarse.
+- **Restricciones ocultas en las selecciones**: algunos efectos limitan la suma de los objetivos
+  (por ejemplo OP17-119 Loki: "Personajes con un coste total de 4 o menos"). El límite está en
+  `resolutionContext.action.target.totalConstraint`, no en el mínimo/máximo del prompt, así que el
+  motor ofrece combinaciones que luego rechaza. Los bots del motor caen en ello (en las pruebas
+  con mazos del meta, el 30 % de las partidas con Loki se cortaban). `enumerateActions` filtra esas
+  combinaciones y `repairPromptCommand` corrige las respuestas de la heurística.
 
 ---
 
@@ -111,8 +117,10 @@ tu mazo.
 
 - **El motor olvida las revelaciones**: una carta buscada y revelada al añadirse a la mano, un
   Personaje devuelto a la mano o un [Trigger] no usado vuelven a quedar ocultos. Un jugador humano sí
-  los recordaría. Hoy el bot también los olvida (mejora pendiente: un registro de conocimiento a
-  partir del log).
+  los recordaría. `packages/opbot/src/engine/knowledge.ts` lo reconstruye con información pública:
+  cartas que pasan de una zona visible a una oculta y cartas nombradas en líneas de log *públicas*
+  que dicen "reveals". **No se pueden usar los eventos** para esto: `cardMoved` lleva el id de la
+  carta con visibilidad "public" incluso en robos privados.
 - Los bots del motor reciben el estado completo, con la mano rival y el orden de los mazos. Sus
   estrategias se declaran *oracle*, aunque en la práctica la heurística no usa esa información
   (comprobado: 0 cambios de decisión en 1.638 comprobaciones al re-barajar lo oculto).
@@ -225,3 +233,11 @@ bots intercambiados, primer jugador controlado, modelo pentanomial y SPRT (como 
   legalidad (`packages/opbot/src/decks/legality.ts`).
 - Issue abierto upstream #223: unos 469 tests generados por carta no pueden fallar. Antes de fiarse
   de un mazo hay que comprobar su comportamiento (partidas de prueba, `capabilityHistory`).
+- **Errores de datos detectados**: ST32-002 Kouzuki Oden dice "con coste base 6 o menos", pero su
+  objetivo no tiene ese filtro. Upstream también corrigió en septiembre signos perdidos al importar de
+  optcgapi (−4000 convertido en +4000).
+- **Soporte del meta post-ban** (informe completo en `decks/meta-op17-postban/README.md`):
+  - faltan ST34-002, ST34-003 y ST34-004 (Kaido, Robin y Pudding) y el Líder ST30-001;
+  - los costes de OP15-074 a OP15-078 (paquete de Enel, y Mamaragan en Kaido) no están
+    implementados ("unsupportedCost"): el mazo de Enel no funciona;
+  - en curso: parche `vendor/patches/0002-*` con esas cartas y costes.

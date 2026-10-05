@@ -96,30 +96,40 @@ Decisiones clave:
 
 ### Fase 2. Banco de pruebas (en curso)
 - [x] Arena emparejada en paralelo con SPRT, resumen por enfrentamiento y por 1º/2º.
-- [ ] Pool del meta **post-ban** (Mihawk OP14-020 prohibido desde el 12-oct-2026) desde la API
-      pública de Limitless (la vía documentada; 50 peticiones cada 5 min).
-- [ ] Legalidad Standard (bloques 2–5 + listas de excepciones + ban list y parejas prohibidas).
-- [ ] Informe de soporte del motor por mazo (cartas que faltan, efectos que no se ejecutan).
+- [x] Pool del meta **post-ban** (Mihawk OP14-020 prohibido desde el 12-oct-2026) desde la API
+      pública de Limitless (`pnpm opbot meta-decks`, con caché y límite de peticiones). Muestra aún
+      pequeña (3 torneos, 274 listas): repetir después del 12-oct.
+- [x] Legalidad Standard (bloques 2–5 + listas de excepciones + ban list y parejas prohibidas, con
+      fechas), verificada contra la lista oficial de cartas.
+- [x] Informe de soporte del motor por mazo: hoy solo 5 de los 9 Líderes principales funcionan.
+- [ ] Parche del motor con las cartas y costes que faltan (ST34, ST30-001, costes OP15-074…078). En curso.
 - [ ] Matriz de enfrentamientos del meta según el bot.
 
 ### Fase 3. Bot de búsqueda (en curso)
 - [x] v1: 91 % contra `heuristic` con mazos de prueba.
 - [ ] Medir contra `aggressive`, `heuristic-honest` y con mazos del meta.
 - [ ] ISMCTS (v2) contra v1; curva fuerza/tiempo (¿más simulaciones = más fuerza?).
-- [ ] Mejorar la política de rollout (la heurística resuelve mal los "hasta N").
-- [ ] Registro de conocimiento: recordar cartas reveladas (el motor las olvida).
+- [x] Mejorar la política de rollout: los "hasta N DON!!" ya no se desperdician y las selecciones
+      que violan restricciones ocultas se reparan.
+- [x] Registro de conocimiento: recordar cartas reveladas públicamente (el motor las olvida).
+- [ ] ISMCTS (E3) no mejora aún a la búsqueda plana: probar un árbol solo con nuestras decisiones
+      (respuestas del rival por política) y más iteraciones.
 
 ### Fase 4. Herramientas para entrenar
 - [x] Analizador de posiciones desde un JSON (`examples/positions/`), con % por jugada, intervalos,
       diferencia con la mejor y probabilidad de ganar este turno.
 - [x] Simulador de enfrentamientos (mazo A contra B con IC y 1º/2º).
-- [ ] Modo partida en terminal contra el bot con pista y **revisión post-partida** (marcar las
-      decisiones que perdieron más % de victoria, como la "precisión" del ajedrez).
-- [ ] Ajuste de mazo: cambiar X cartas y medir el efecto contra el meta.
+- [x] Modo partida en terminal contra el bot con pista y análisis (`pnpm opbot play`).
+- [x] **Revisión post-partida** (`pnpm opbot review`): marca imprecisiones, errores y errores graves
+      por % de victoria perdido, solo cuando la diferencia es estadísticamente significativa.
+- [x] Ajuste de mazo (`pnpm opbot tune`): base contra variante con las mismas partidas.
+- [x] Batería de puzzles con respuesta conocida como test de regresión (`examples/puzzles`).
 - [ ] Importar partidas de OPTCGSim / OPBounty (formato de log por investigar).
 
 ### Fase 5. Aprendizaje (adelantada en parte)
 - [x] Modelo de valor logístico entrenado por autojuego.
+- [x] Red pequeña (MLP, 16 neuronas) sobre los mismos rasgos: log-loss 0,566 frente a 0,594. Falta
+      medir en la arena si mejora al bot.
 - [ ] Rasgos por carta (DeepSets o similar) y entrenamiento con partidas de la propia búsqueda.
 - [ ] Modelo de oponente: listas por Líder y actualización bayesiana con lo que se ve.
 
