@@ -14,6 +14,7 @@
  *   review       analyze every decision of one seat in a recorded game
  *   tune         base deck vs a variant with card swaps, against a field of decks
  *   calibrate    simulated matchup matrix vs real Limitless head-to-head results
+ *   import       OPTCGSim / OPBounty combat log -> position file (list moments with --list)
  */
 import { mkdirSync, readFileSync, writeFileSync, appendFileSync, existsSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -338,9 +339,36 @@ async function main(): Promise<void> {
       return;
     }
 
+    case "import": {
+      const { parseOptcgsimLog, positionFromLog, observedDeckText } = await import("./analysis/import-optcgsim.ts");
+      const game = parseOptcgsimLog(readFileSync(resolve(str(args, "log")), "utf8"));
+      const perspective = typeof args.player === "string" ? (/^[12]$/.test(args.player) ? (Number(args.player) as 1 | 2) : args.player) : 1;
+      if (args.list === true || typeof args.turn !== "string") {
+        console.log(`OPTCGSim ${game.version ?? "?"}: ${game.players[1].name ?? "player 1"} (${game.players[1].leader}) vs ${game.players[2].name ?? "player 2"} (${game.players[2].leader}), ${game.turns} turns`);
+        for (const c of game.checkpoints) console.log(`  --turn ${c.turn} --action ${c.action}  player ${c.player} | next: ${c.next}`);
+        for (const w of game.warnings) console.log(`  warning: ${w}`);
+        if (args.decks === true) for (const p of [1, 2] as const) console.log(`\nobserved cards, player ${p}:\n${observedDeckText(game, p)}`);
+        return;
+      }
+      const out = resolve(str(args, "out", "out/positions/imported.json"));
+      const imported = positionFromLog(game, { turn: num(args, "turn", 1), action: num(args, "action", 0) }, {
+        perspective,
+        decks: {
+          ...(typeof args.deck === "string" && { south: args.deck }),
+          ...(typeof args.vs === "string" && { north: args.vs }),
+        },
+        revealOpponentHand: args["reveal-opponent-hand"] === true,
+      });
+      mkdirSync(dirname(out), { recursive: true });
+      writeFileSync(out, `${JSON.stringify(imported.position, null, 2)}\n`);
+      for (const w of imported.warnings) console.log(`warning: ${w}`);
+      console.log(`wrote ${out} (turn ${imported.checkpoint.turn}, before: ${imported.checkpoint.next})`);
+      return;
+    }
+
     default:
       console.log(
-        "usage: opbot <selfplay|train-value|arena|bench|meta-decks|analyze|matchup|play|review|tune|calibrate> [--options]\n" +
+        "usage: opbot <selfplay|train-value|arena|bench|meta-decks|analyze|matchup|play|review|tune|calibrate|import> [--options]\n" +
           "  see packages/opbot/README.md for every option",
       );
   }

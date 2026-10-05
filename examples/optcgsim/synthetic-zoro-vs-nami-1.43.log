@@ -1,0 +1,234 @@
+# Synthetic OPTCGSim 1.43 combat log written for opbot tests (not a real game): red-aggro vs blue-control from decks/engine-test.
+Waiting for a Connection with Room ID:WSYNTH1
+Your Client Has Connected
+Version is 1.43a.1
+[You] Leader is Roronoa Zoro ["OP01-001">OP01-001]
+Opponent Has Connected
+Version is 1.43a.1
+[Opponent] Leader is Nami ["OP03-040">OP03-040]
+[You] Will select turn order
+[You] Chose to go First
+RZ1|7|1|OP01-016|0|3|0|0|1|0|0|0|0
+RZ1|CHK|7|1|50|0|0|0|10|0|0|0|1|0
+RZ1|8|1|OP01-004|0|12|0|5|1|0|0|0|0
+RZ1|CHK|8|1|50|0|0|0|10|0|0|0|1|0
+RZ1|9|1|OP03-007|0|20|0|9|1|0|0|0|0
+RZ1|CHK|9|1|50|0|0|0|10|0|0|0|1|0
+RZ1|10|2|OP01-077|0|3|0|0|0|1|0|0|0
+RZ1|CHK|10|2|50|0|0|0|10|0|0|0|1|0
+RZ1|11|2|OP03-048|0|12|0|5|0|1|0|0|0
+RZ1|CHK|11|2|50|0|0|0|10|0|0|0|1|0
+RZ1|12|2|OP01-073|0|20|0|9|0|1|0|0|0
+RZ1|CHK|12|2|50|0|0|0|10|0|0|0|1|0
+[Tester​#0001] Drew card from deck: Sanji ["OP04-007">OP04-007]
+RZ1|13|1|OP04-007|0|49|1|0|1|1|0|0|0
+RZ1|CHK|13|1|49|1|0|0|10|0|0|0|1|0
+[Tester​#0001] Drew card from deck: Usopp ["OP01-004">OP01-004]
+RZ1|14|1|OP01-004|0|48|1|1|1|1|0|0|0
+RZ1|CHK|14|1|48|2|0|0|10|0|0|0|1|0
+[Tester​#0001] Drew card from deck: Marco ["OP01-023">OP01-023]
+RZ1|15|1|OP01-023|0|47|1|2|1|1|0|0|0
+RZ1|CHK|15|1|47|3|0|0|10|0|0|0|1|0
+[Tester​#0001] Drew card from deck: Radical Beam!! ["OP01-029">OP01-029]
+RZ1|16|1|OP01-029|0|46|1|3|1|1|0|0|0
+RZ1|CHK|16|1|46|4|0|0|10|0|0|0|1|0
+[Tester​#0001] Drew card from deck: Monkey D. Luffy ["ST01-012">ST01-012]
+RZ1|17|1|ST01-012|0|45|1|4|1|1|0|0|0
+RZ1|CHK|17|1|45|5|0|0|10|0|0|0|1|0
+[Tester​#0001] Hand before Mulligan: [OP04-007,OP01-004,OP01-023,OP01-029,ST01-012]
+[Rival​#0002] Drew card from deck: Bellamy ["OP01-076">OP01-076]
+RZ1|18|2|OP01-076|0|49|1|0|0|1|0|0|0
+RZ1|CHK|18|2|49|1|0|0|10|0|0|0|1|0
+[Rival​#0002] Drew card from deck: Kaya ["OP03-044">OP03-044]
+RZ1|19|2|OP03-044|0|48|1|1|0|1|0|0|0
+RZ1|CHK|19|2|48|2|0|0|10|0|0|0|1|0
+[Rival​#0002] Drew card from deck: Donquixote Doflamingo ["OP01-073">OP01-073]
+RZ1|20|2|OP01-073|0|47|1|2|0|1|0|0|0
+RZ1|CHK|20|2|47|3|0|0|10|0|0|0|1|0
+[Rival​#0002] Drew card from deck: Desert Spada ["OP01-088">OP01-088]
+RZ1|21|2|OP01-088|0|46|1|3|0|1|0|0|0
+RZ1|CHK|21|2|46|4|0|0|10|0|0|0|1|0
+[Rival​#0002] Drew card from deck: Mr.3 (Galdino) ["OP02-065">OP02-065]
+RZ1|22|2|OP02-065|0|45|1|4|0|1|0|0|0
+RZ1|CHK|22|2|45|5|0|0|10|0|0|0|1|0
+RZ1|23|1|EB01-005|0|44|3|0|1|0|0|0|0
+RZ1|CHK|23|1|44|5|0|1|10|0|0|0|1|0
+RZ1|24|1|OP01-016|0|43|3|1|1|0|0|0|0
+RZ1|CHK|24|1|43|5|0|2|10|0|0|0|1|0
+RZ1|25|1|OP03-007|0|42|3|2|1|0|0|0|0
+RZ1|CHK|25|1|42|5|0|3|10|0|0|0|1|0
+RZ1|26|1|OP01-012|0|41|3|3|1|0|0|0|0
+RZ1|CHK|26|1|41|5|0|4|10|0|0|0|1|0
+RZ1|27|1|OP01-025|0|40|3|4|1|0|0|0|0
+RZ1|CHK|27|1|40|5|0|5|10|0|0|0|1|0
+RZ1|28|2|OP01-077|0|44|3|0|0|1|0|0|0
+RZ1|CHK|28|2|44|5|0|1|10|0|0|0|1|0
+RZ1|29|2|OP01-064|0|43|3|1|0|1|0|0|0
+RZ1|CHK|29|2|43|5|0|2|10|0|0|0|1|0
+RZ1|30|2|OP01-084|0|42|3|2|0|1|0|0|0
+RZ1|CHK|30|2|42|5|0|3|10|0|0|0|1|0
+RZ1|31|2|OP01-079|0|41|3|3|0|1|0|0|0
+RZ1|CHK|31|2|41|5|0|4|10|0|0|0|1|0
+RZ1|32|2|OP03-045|0|40|3|4|0|1|0|0|0
+RZ1|CHK|32|2|40|5|0|5|10|0|0|0|1|0
+RZ1|33|1|Don|4|9|5|0|1|1|0|0|0
+RZ1|CHK|33|1|40|5|0|5|9|1|0|0|1|0
+[You] Draw 1 Don
+RZ1|34|1|Don|5|0|5|0|1|1|1|0|0
+RZ1|CHK|34|1|40|5|0|5|9|1|0|0|1|0
+[You] Deploy Sanji ["OP04-007">OP04-007]
+RZ1|35|1|OP04-007|1|0|2|0|1|1|0|0|0
+RZ1|CHK|35|1|40|4|1|5|9|1|0|0|1|0
+[You] End Turn
+[Tester​#0001] Hand: [OP01-004,OP01-023,OP01-029,ST01-012]
+[Tester​#0001] Board: [OP04-007]
+[Tester​#0001] Trash: []
+[Tester​#0001] Life: 5
+[Rival​#0002] Hand: [OP01-076,OP03-044,OP01-073,OP01-088,OP02-065]
+[Rival​#0002] Trash: []
+[Rival​#0002] Board: []
+[Rival​#0002] Life: 5
+[Opponent] Draw 1 Card
+[Rival​#0002] Drew card from deck: Bartholomew Kuma ["OP01-074">OP01-074]
+RZ1|36|2|OP01-074|0|39|1|5|0|1|0|0|0
+RZ1|CHK|36|2|39|6|0|5|10|0|0|0|1|0
+RZ1|37|2|Don|4|9|5|0|1|1|0|0|0
+RZ1|CHK|37|2|39|6|0|5|9|1|0|0|1|0
+RZ1|38|2|Don|4|8|5|1|1|1|0|0|0
+RZ1|CHK|38|2|39|6|0|5|8|2|0|0|1|0
+[Opponent] Draw 2 Don
+RZ1|39|2|Don|5|0|5|0|1|1|1|0|0
+RZ1|CHK|39|2|39|6|0|5|8|2|0|0|1|0
+RZ1|40|2|Don|5|1|5|1|1|1|1|0|0
+RZ1|CHK|40|2|39|6|0|5|8|2|0|0|1|0
+[Opponent] Deploy Bellamy ["OP01-076">OP01-076]
+RZ1|41|2|OP01-076|1|0|2|0|1|1|0|0|0
+RZ1|CHK|41|2|39|5|1|5|8|2|0|0|1|0
+[Opponent] End Turn
+[Tester​#0001] Hand: [OP01-004,OP01-023,OP01-029,ST01-012]
+[Tester​#0001] Board: [OP04-007]
+[Tester​#0001] Trash: []
+[Tester​#0001] Life: 5
+[Rival​#0002] Hand: [OP03-044,OP01-073,OP01-088,OP02-065,OP01-074]
+[Rival​#0002] Trash: []
+[Rival​#0002] Board: [OP01-076]
+[Rival​#0002] Life: 5
+[You] Draw 1 Card
+[Tester​#0001] Drew card from deck: Gum-Gum Fire-Fist Pistol Red Hawk ["OP01-026">OP01-026]
+RZ1|42|1|OP01-026|0|39|1|4|1|1|0|0|0
+RZ1|CHK|42|1|39|5|1|5|9|1|0|0|1|0
+RZ1|43|1|Don|4|8|5|1|1|1|0|0|0
+RZ1|CHK|43|1|39|5|1|5|8|2|0|0|1|0
+RZ1|44|1|Don|4|7|5|2|1|1|0|0|0
+RZ1|CHK|44|1|39|5|1|5|7|3|0|0|1|0
+[You] Draw 2 Don
+[You] Attach 1 Don to Roronoa Zoro ["OP01-001">OP01-001] (1 Total)
+RZ1|45|1|Don|5|0|9|9900|1|1|0|0|0
+RZ1|CHK|45|1|39|5|1|5|7|2|0|0|1|1
+[You] Roronoa Zoro ["OP01-001">OP01-001] attacking Nami ["OP03-040">OP03-040]
+Roronoa Zoro ["OP01-001">OP01-001][6000] vs Nami ["OP03-040">OP03-040][5000]
+Nami ["OP03-040">OP03-040] hit for 1 damage
+RZ1|46|2|OP03-045|3|4|1|5|0|1|0|0|0
+RZ1|CHK|46|2|39|6|1|4|8|2|0|0|1|0
+RZ1|47|1|Don|5|0|5|0|1|1|1|0|0
+RZ1|CHK|47|1|39|5|1|5|7|2|0|0|1|1
+RZ1|48|1|Don|5|1|5|1|1|1|1|0|0
+RZ1|CHK|48|1|39|5|1|5|7|2|0|0|1|1
+[You] Deploy Usopp ["OP01-004">OP01-004]
+RZ1|49|1|OP01-004|1|0|2|1|1|1|0|0|0
+RZ1|CHK|49|1|39|4|2|5|7|2|0|0|1|1
+[You] End Turn
+[Tester​#0001] Hand: [OP01-023,OP01-029,ST01-012,OP01-026]
+[Tester​#0001] Board: [OP04-007,OP01-004]
+[Tester​#0001] Trash: []
+[Tester​#0001] Life: 5
+[Rival​#0002] Hand: [OP03-044,OP01-073,OP01-088,OP02-065,OP01-074,OP03-045]
+[Rival​#0002] Trash: []
+[Rival​#0002] Board: [OP01-076]
+[Rival​#0002] Life: 4
+[Opponent] Draw 1 Card
+[Rival​#0002] Drew card from deck: Overheat ["OP01-086">OP01-086]
+RZ1|50|2|OP01-086|0|38|1|6|0|1|0|0|0
+RZ1|CHK|50|2|38|7|1|4|8|2|0|0|1|0
+RZ1|51|2|Don|4|7|5|2|1|1|0|0|0
+RZ1|CHK|51|2|38|7|1|4|7|3|0|0|1|0
+RZ1|52|2|Don|4|6|5|3|1|1|0|0|0
+RZ1|CHK|52|2|38|7|1|4|6|4|0|0|1|0
+[Opponent] Draw 2 Don
+RZ1|53|2|Don|5|0|5|0|1|1|1|0|0
+RZ1|CHK|53|2|38|7|1|4|6|4|0|0|1|0
+RZ1|54|2|Don|5|1|5|1|1|1|1|0|0
+RZ1|CHK|54|2|38|7|1|4|6|4|0|0|1|0
+RZ1|55|2|Don|5|2|5|2|1|1|1|0|0
+RZ1|CHK|55|2|38|7|1|4|6|4|0|0|1|0
+[Opponent] Deploy Donquixote Doflamingo ["OP01-073">OP01-073]
+RZ1|56|2|OP01-073|1|1|2|1|1|1|0|0|0
+RZ1|CHK|56|2|38|6|2|4|6|4|0|0|1|0
+[Opponent] Attach 1 Don to Bellamy ["OP01-076">OP01-076] (1 Total)
+RZ1|57|2|Don|5|3|9|0|1|1|0|0|0
+RZ1|CHK|57|2|38|6|2|4|6|3|0|0|1|1
+[Opponent] Bellamy ["OP01-076">OP01-076] attacking Roronoa Zoro ["OP01-001">OP01-001]
+Bellamy ["OP01-076">OP01-076][5000] vs Roronoa Zoro ["OP01-001">OP01-001][5000]
+Roronoa Zoro ["OP01-001">OP01-001] hit for 1 damage
+RZ1|58|1|OP01-025|3|4|1|4|1|0|0|0|0
+RZ1|CHK|58|1|39|5|2|4|7|2|0|0|1|1
+[Opponent] End Turn
+[Tester​#0001] Hand: [OP01-023,OP01-029,ST01-012,OP01-026,OP01-025]
+[Tester​#0001] Board: [OP04-007,OP01-004]
+[Tester​#0001] Trash: []
+[Tester​#0001] Life: 4
+[Rival​#0002] Hand: [OP03-044,OP01-088,OP02-065,OP01-074,OP03-045,OP01-086]
+[Rival​#0002] Trash: []
+[Rival​#0002] Board: [OP01-076,OP01-073]
+[Rival​#0002] Life: 4
+RZ1|59|1|Don|9|9900|5|0|1|1|1|0|0
+RZ1|CHK|59|1|39|5|2|4|7|3|0|0|1|0
+[You] Draw 1 Card
+[Tester​#0001] Drew card from deck: Monkey D. Garp ["OP03-014">OP03-014]
+RZ1|60|1|OP03-014|0|38|1|5|1|1|0|0|0
+RZ1|CHK|60|1|38|6|2|4|7|3|0|0|1|0
+RZ1|61|1|Don|4|6|5|3|1|1|0|0|0
+RZ1|CHK|61|1|38|6|2|4|6|4|0|0|1|0
+RZ1|62|1|Don|4|5|5|4|1|1|0|0|0
+RZ1|CHK|62|1|38|6|2|4|5|5|0|0|1|0
+[You] Draw 2 Don
+[You] Attach 1 Don to Sanji ["OP04-007">OP04-007] (1 Total)
+RZ1|63|1|Don|5|0|9|0|1|1|0|0|0
+RZ1|CHK|63|1|38|6|2|4|5|4|0|0|1|1
+[You] Sanji ["OP04-007">OP04-007] attacking Nami ["OP03-040">OP03-040]
+[Opponent] Donquixote Doflamingo ["OP01-073">OP01-073] Blocks
+Sanji ["OP04-007">OP04-007][4000] vs Donquixote Doflamingo ["OP01-073">OP01-073][4000]
+[Opponent] Donquixote Doflamingo ["OP01-073">OP01-073] Destroyed
+RZ1|64|2|OP01-073|2|1|6|0|1|1|0|0|0
+RZ1|CHK|64|2|38|6|1|4|6|3|1|0|1|1
+RZ1|65|1|Don|5|0|5|0|1|1|1|0|0
+RZ1|CHK|65|1|38|6|2|4|5|4|0|0|1|1
+RZ1|66|1|Don|5|1|5|1|1|1|1|0|0
+RZ1|CHK|66|1|38|6|2|4|5|4|0|0|1|1
+RZ1|67|1|Don|5|2|5|2|1|1|1|0|0
+RZ1|CHK|67|1|38|6|2|4|5|4|0|0|1|1
+[You] Deploy Marco ["OP01-023">OP01-023]
+RZ1|68|1|OP01-023|1|0|2|2|1|1|0|0|0
+RZ1|CHK|68|1|38|5|3|4|5|4|0|0|1|1
+[You] End Turn
+[Tester​#0001] Hand: [OP01-029,ST01-012,OP01-026,OP01-025,OP03-014]
+[Tester​#0001] Board: [OP04-007,OP01-004,OP01-023]
+[Tester​#0001] Trash: []
+[Tester​#0001] Life: 4
+[Rival​#0002] Hand: [OP03-044,OP01-088,OP02-065,OP01-074,OP03-045,OP01-086]
+[Rival​#0002] Trash: [OP01-073]
+[Rival​#0002] Board: [OP01-076]
+[Rival​#0002] Life: 4
+RZ1|69|2|Don|9|0|5|0|1|1|1|0|0
+RZ1|CHK|69|2|38|6|1|4|6|4|1|0|1|0
+[Opponent] Draw 1 Card
+[Rival​#0002] Drew card from deck: DEATH WINK ["OP02-069">OP02-069]
+RZ1|70|2|OP02-069|0|37|1|6|0|1|0|0|0
+RZ1|CHK|70|2|37|7|1|4|6|4|1|0|1|0
+RZ1|71|2|Don|4|5|5|4|1|1|0|0|0
+RZ1|CHK|71|2|37|7|1|4|5|5|1|0|1|0
+RZ1|72|2|Don|4|4|5|5|1|1|0|0|0
+RZ1|CHK|72|2|37|7|1|4|4|6|1|0|1|0
+[Opponent] Draw 2 Don
+[Opponent] Concedes!
+GameOver

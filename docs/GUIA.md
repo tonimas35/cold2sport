@@ -64,6 +64,26 @@ Consejos:
   juega un bot. Para planes largos (repartir DON!! entre varios atacantes), analiza también la
   posición siguiente.
 
+### Desde una partida de OPTCGSim
+
+OPTCGSim guarda un log de combate de cada partida (carpeta del juego, `CombatLogs/AutoSaved/`, o
+el botón "Download Combat Log"; los replays de OPBounty usan el mismo formato). Para analizar un
+momento de esa partida:
+
+```bash
+pnpm opbot import --log "ruta/al/log.log" --list               # lista turnos y acciones
+pnpm opbot import --log "ruta/al/log.log" --turn 7 --action 2 \
+    --deck ../../decks/mi-mazo.txt --vs ../../decks/meta-op17-postban/OP17-039-rocks-d-xebec.txt \
+    --out out/positions/mi-turno7.json
+pnpm opbot analyze --position out/positions/mi-turno7.json --worlds 64
+```
+
+`--action 0` es el inicio de tu fase principal; `--action k`, justo antes de tu k-ésima acción. El
+log contiene también la mano del rival, pero por defecto **no se usa** (se analiza con lo que tú
+sabías); `--reveal-opponent-hand` la incluye si quieres ver "a toro pasado". Las rutas de los
+mazos son relativas al fichero de posición que se escribe. Con `--list --decks` ves las cartas que
+aparecieron de cada jugador, útil para reconstruir la lista del rival.
+
 ## 2. Jugar contra el bot y revisar la partida
 
 ```bash

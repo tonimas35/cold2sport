@@ -1,0 +1,63 @@
+{
+  "_comment": "Imported from an OPTCGSim log (version 1.43a.1): turn 5, before \"Attach 1 Don to Sanji [OP04-007] (1 Total)\" (log line 195). Tester#0001 (OP01-001) is south, Rival#0002 (OP03-040) is north.",
+  "toMove": "south",
+  "turn": 5,
+  "firstPlayer": "south",
+  "south": {
+    "deck": "../../decks/engine-test/red-aggro.txt",
+    "life": 4,
+    "hand": [
+      "OP01-023",
+      "OP01-029",
+      "ST01-012",
+      "OP01-026",
+      "OP01-025",
+      "OP03-014"
+    ],
+    "characters": [
+      {
+        "card": "OP04-007",
+        "rested": false,
+        "don": 0,
+        "justPlayed": false
+      },
+      {
+        "card": "OP01-004",
+        "rested": false,
+        "don": 0,
+        "justPlayed": false
+      }
+    ],
+    "stage": null,
+    "trash": [],
+    "leaderDon": 0,
+    "leaderRested": false,
+    "activeDon": 5,
+    "restedDon": 0
+  },
+  "north": {
+    "deck": "../../decks/engine-test/blue-control.txt",
+    "life": 4,
+    "handCount": 6,
+    "characters": [
+      {
+        "card": "OP01-076",
+        "rested": true,
+        "don": 1,
+        "justPlayed": false
+      },
+      {
+        "card": "OP01-073",
+        "rested": false,
+        "don": 0,
+        "justPlayed": false
+      }
+    ],
+    "stage": null,
+    "trash": [],
+    "leaderDon": 0,
+    "leaderRested": false,
+    "activeDon": 0,
+    "restedDon": 3
+  }
+}
