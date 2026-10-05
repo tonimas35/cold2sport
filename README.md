@@ -4,6 +4,7 @@ Herramienta personal para **entrenar y analizar en casa** partidas del One Piece
 posiciones, simula enfrentamientos entre mazos y juega con un bot de búsqueda que solo usa la
 información que tendría un jugador. **No es para usar durante torneos.**
 
+- **Guía para entrenar con la herramienta: [`docs/GUIA.md`](docs/GUIA.md)**
 - Plan, estado y decisiones: [`PLAN.md`](PLAN.md)
 - Cómo funciona el motor de reglas y qué hemos cambiado: [`docs/NOTAS_MOTOR.md`](docs/NOTAS_MOTOR.md)
 - Resultados medidos: [`docs/RESULTADOS.md`](docs/RESULTADOS.md)
@@ -30,7 +31,7 @@ Todos los comandos se lanzan desde la raíz con `pnpm opbot <comando>` (equivale
 
 ### Analizar una posición
 
-Describe la situación en un JSON (ver `examples/positions/ejemplo-letal.json`): vidas, mano,
+Describe la situación en un JSON (ver `examples/positions/ejemplo-luffy-vs-rocks.json` y la guía): vidas, mano,
 personajes, DON!!, papelera y la lista de cada mazo. Lo que no conoces (mano rival, mazos, vidas) se
 reparte al azar en cada simulación.
 

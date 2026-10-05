@@ -1,0 +1,26 @@
+{
+  "_comment": "Luffy (OP17-079) a mover en el turno 7 contra Rocks (OP17-039) con 2 vidas y 4 cartas en mano. ¿Dónde pongo el DON!! y a quién ataco?",
+  "toMove": "south",
+  "turn": 7,
+  "south": {
+    "deck": "../../decks/meta-op17-postban/OP17-079-monkey-d-luffy.txt",
+    "life": 3,
+    "hand": ["OP17-086", "OP17-119"],
+    "characters": [
+      { "card": "OP17-080", "rested": false, "don": 1 },
+      { "card": "OP17-094", "rested": true, "justPlayed": true }
+    ],
+    "stage": null,
+    "trash": ["OP17-081"],
+    "activeDon": 5,
+    "restedDon": 0
+  },
+  "north": {
+    "deck": "../../decks/meta-op17-postban/OP17-039-rocks-d-xebec.txt",
+    "life": 2,
+    "handCount": 4,
+    "characters": [{ "card": "OP17-050", "rested": true }],
+    "activeDon": 0,
+    "restedDon": 8
+  }
+}
