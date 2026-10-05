@@ -66,6 +66,8 @@ impresión base es la referencia. Reglas de lectura comprobadas con la imagen de
 | `structure:sign` | número impreso negativo (−3000 power, −3 cost) que el texto del motor perdió **y** que el bloque guarda en positivo | la carta hace lo contrario de lo que dice |
 | `effect-text` | texto de `.effect` materialmente distinto (erratas, otra carta, signos) | cambian números, etiquetas, palabras con efecto (turn/battle, Character, up to, less/more...) o la redacción es < 85 % parecida; se ignoran puntuación, `"Tipo"` frente a `{Tipo}`, texto recordatorio y notas del importador |
 | `effect-text-missing` | la carta tiene efecto y `.effect` está vacío (informativo: los bloques pueden estar bien) | |
+| `trait-match` | filtro de tipo o condición "tu Líder tiene el tipo" que no sigue la forma impresa: `{Tipo}` es exacto y `tipo que incluya "X"` es subcadena (2-4-3) | recorre los bloques de la carta; ojo, el motor compara los filtros `trait` de forma exacta por defecto y las condiciones `leaderTrait` por subcadena |
+| `trait-unprinted` | filtro de tipo cuyo valor no aparece en ninguna de las dos formas en el texto (informativo: puede ser un efecto copiado de otra carta) | |
 
 Además lista los números oficiales que faltan en el motor y las impresiones que la propia web
 muestra distintas entre sí (por ejemplo EB01-023_p1 con poder 8000 frente a 6000 de las demás).
@@ -265,7 +267,15 @@ OP10-071) usan ahora la lista partida; el de OP14-009 comprueba los tres tipos, 
 OP17-118 usa a OP04-008 Chaka porque OP16-016 Ramba tiene counter +1000.
 
 Queda: el importador de upstream (`tools/op-card-parser`) sigue generando `match: "includes"` para
-`{Tipo}`; las cartas nuevas que traiga habrá que revisarlas con este mismo inventario.
+`{Tipo}`. Para que no se cuele de nuevo, desde el parche `0012`:
+
+- el motor tiene un test de guardia (`tests/cards/type-filter-printed-form.test.ts`) que recorre
+  **todo** el catálogo y falla si un filtro de tipo no sigue la forma que imprime su carta;
+- `catalog-check` tiene la misma comprobación contra el texto oficial (`trait-match`).
+
+Al integrar la segunda ronda, ese test encontró 9 filtros escritos con la forma antigua por las
+correcciones de cartas hechas en paralelo (EB04-030, OP17-077, ST34-002, OP17-003, OP15-073,
+OP16-038, OP16-076, OP16-104 y OP16-117); ya son exactos.
 
 Después del parche (`pnpm opbot catalog-check --offline`):
 
@@ -281,6 +291,17 @@ Después del parche (`pnpm opbot catalog-check --offline`):
 | `structure:trigger` | 32 | 19 |
 | `effect-text` | 19 | 17 |
 | resto (`alias`, `structure:*`, `effect-text-missing`) | 25 | 25 |
+
+Con toda la segunda ronda integrada (parches `0008`–`0012`: además, signos invertidos, efectos
+copiados de otra carta, 27 [Trigger] y los efectos que faltaban):
+
+| Categoría | Al empezar (5-oct) | Ahora |
+|---|--:|--:|
+| Todas las de datos (`name`, `cost`, `counter`, `attribute`, `types-joined`, `types`, `trigger`) | 1.182 | 0 |
+| `structure:*` (bloques que faltan, signos) | 59 | 0 |
+| `alias` | 1 | 0 |
+| `trait-match` (nueva) | — | 0 |
+| `effect-text` | 20 | 5 (ninguna legal en Standard: OP01-008, OP01-013, OP01-049, OP02-002, OP03-074) |
 
 ## Para un set nuevo (EB-05, OP-18)
 

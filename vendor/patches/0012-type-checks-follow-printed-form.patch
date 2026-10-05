@@ -1,0 +1,378 @@
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/eb04-030-kaido.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/eb04-030-kaido.ts
+index c45bfa0..357e14e 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/eb04-030-kaido.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/eb04-030-kaido.ts
+@@ -77,7 +77,7 @@ export const op14eb04Kaido030: CharacterCard = {
+             condition: {
+               condition: "leaderTrait",
+               trait: "Animal Kingdom Pirates",
+-              match: "includes",
++              match: "exact",
+             },
+           },
+         ],
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/eb04-038-rosinante-law.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/eb04-038-rosinante-law.ts
+index 38d07e7..4d9c9db 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/eb04-038-rosinante-law.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/eb04-038-rosinante-law.ts
+@@ -33,6 +33,7 @@ export const eb04RosinanteLaw038: CharacterCard = {
+   power: 8000,
+   traits: ["Navy", "Donquixote Pirates"],
+   attribute: ["special", "wisdom"],
++  alternateNames: ["Trafalgar Law", "Donquixote Rosinante"],
+   effect:
+     "Under the rules of this game, also treat this card's name as [Trafalgar Law] and [Donquixote Rosinante]. [Blocker] [On Play] If the number of DON!! cards on your field is equal to or less than the number on your opponent's field, draw 1 card. Then, add up to 1 DON!! card from your DON!! deck and set it as active.",
+   effects: {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op06-102-kamakiri.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op06-102-kamakiri.ts
+index 04f1047..3a8b388 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op06-102-kamakiri.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op06-102-kamakiri.ts
+@@ -24,7 +24,6 @@ export const op06Kamakiri102: CharacterCard = {
+   trigger: "If you have 2 or less Life cards, play this card.",
+   power: 4000,
+   counter: 1000,
+-  trigger: "If you have 2 or less Life cards, play this card.",
+   traits: ["Sky Island", "Shandian Warrior"],
+   attribute: "slash",
+   effect:
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op06-103-kawamatsu.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op06-103-kawamatsu.ts
+index 238fc96..ad9f1f6 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op06-103-kawamatsu.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op06-103-kawamatsu.ts
+@@ -23,7 +23,6 @@ export const op06Kawamatsu103: CharacterCard = {
+   cost: 3,
+   trigger: "If your opponent has 3 or less Life cards, play this card.",
+   power: 5000,
+-  trigger: "If your opponent has 3 or less Life cards, play this card.",
+   traits: ["Fish-Man", "Land of Wano", "The Akazaya Nine"],
+   attribute: "slash",
+   effect:
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op12-101-jewelry-bonney.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op12-101-jewelry-bonney.ts
+index 03c978d..7ff55ae 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op12-101-jewelry-bonney.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op12-101-jewelry-bonney.ts
+@@ -24,7 +24,6 @@ export const op12JewelryBonney101: CharacterCard = {
+   trigger: "If your Leader has the {Supernovas} type, play this card.",
+   power: 1000,
+   counter: 1000,
+-  trigger: "If your Leader has the {Supernovas} type, play this card.",
+   traits: ["Supernovas", "Bonney Pirates"],
+   attribute: "special",
+   effect:
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-073-yama.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-073-yama.ts
+index 972f600..0dc86be 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-073-yama.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-073-yama.ts
+@@ -58,7 +58,7 @@ export const op15Yama073: CharacterCard = {
+                   [{ filter: "name", value: "Heavenly Warriors" }],
+                   [
+                     { filter: "cardCategory", value: "character" },
+-                    { filter: "trait", value: "Vassals", match: "includes" },
++                    { filter: "trait", value: "Vassals", match: "exact" },
+                   ],
+                 ],
+               },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-104-catarina-devon.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-104-catarina-devon.ts
+index a8e2737..4e254ad 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-104-catarina-devon.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-104-catarina-devon.ts
+@@ -66,7 +66,7 @@ export const op16CatarinaDevon104: CharacterCard = {
+             source: { player: "self", zone: "trash" },
+             count: { amount: 1, upTo: true },
+             filters: [
+-              { filter: "trait", value: "Blackbeard Pirates", match: "includes" },
++              { filter: "trait", value: "Blackbeard Pirates", match: "exact" },
+               { filter: "cardCategory", value: "character" },
+               { filter: "cost", comparison: "eq", value: 1 },
+             ],
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-003-izo.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-003-izo.ts
+index cc82fe0..c8ad8f2 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-003-izo.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-003-izo.ts
+@@ -37,7 +37,7 @@ export const op17Izo003: CharacterCard = {
+             operator: "or",
+             conditions: [
+               { condition: "leaderName", name: "Edward.Newgate" },
+-              { condition: "leaderTrait", trait: "Land of Wano", match: "includes" },
++              { condition: "leaderTrait", trait: "Land of Wano", match: "exact" },
+             ],
+           },
+         ],
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.ts
+index bd1ee0c..2945a27 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.ts
+@@ -71,7 +71,7 @@ export const st34CharlotteCracker002: CharacterCard = {
+             condition: {
+               condition: "leaderTrait",
+               trait: "Big Mom Pirates",
+-              match: "includes",
++              match: "exact",
+             },
+           },
+         ],
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op16-038-let-s-go-to-the-navy-headquarters.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op16-038-let-s-go-to-the-navy-headquarters.ts
+index 05a3296..a494d3e 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op16-038-let-s-go-to-the-navy-headquarters.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op16-038-let-s-go-to-the-navy-headquarters.ts
+@@ -36,7 +36,7 @@ export const op16LetSGoToTheNavyHeadquarters038: EventCard = {
+             zone: "character",
+             comparison: "gte",
+             value: 5,
+-            filters: [{ filter: "trait", value: "Impel Down", match: "includes" }],
++            filters: [{ filter: "trait", value: "Impel Down", match: "exact" }],
+             distinctNames: true,
+           },
+         ],
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op16-076-the-three-admirals.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op16-076-the-three-admirals.ts
+index a8c67fc..d8d3894 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op16-076-the-three-admirals.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op16-076-the-three-admirals.ts
+@@ -65,7 +65,7 @@ export const op16TheThreeAdmirals076: EventCard = {
+             condition: "hasCard",
+             player: "self",
+             zone: "character",
+-            filters: [{ filter: "trait", value: "Admiral", match: "includes" }],
++            filters: [{ filter: "trait", value: "Admiral", match: "exact" }],
+           },
+         ],
+         actions: [
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op16-117-black-hole.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op16-117-black-hole.ts
+index d0fc44a..e2e29cc 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op16-117-black-hole.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op16-117-black-hole.ts
+@@ -73,7 +73,7 @@ export const op16BlackHole117: EventCard = {
+               player: "self",
+               zones: ["trash"],
+               count: { amount: 1, upTo: true },
+-              filters: [{ filter: "trait", value: "Blackbeard Pirates", match: "includes" }],
++              filters: [{ filter: "trait", value: "Blackbeard Pirates", match: "exact" }],
+             },
+           },
+         ],
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-076-wo-ro-ro-ro-ro-i-think-i-ve-sobered-up.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-076-wo-ro-ro-ro-ro-i-think-i-ve-sobered-up.ts
+index 9991f24..e675bf2 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-076-wo-ro-ro-ro-ro-i-think-i-ve-sobered-up.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-076-wo-ro-ro-ro-ro-i-think-i-ve-sobered-up.ts
+@@ -54,9 +54,11 @@ export const op17WoRoRoRoRoIThinkIVeSoberedUp076: EventCard = {
+       },
+       {
+         trigger: "trigger",
++        // "DON!! -1: Draw 2 cards." has no "you may": activating the [Trigger]
++        // pays the cost, and it cannot be activated without 1 DON!! on the
++        // field (8-3-1-3; the lifeTrigger prompt disables "activate").
+         costs: [{ cost: "returnDon", amount: 1 }],
+         actions: [{ action: "draw", player: "self", amount: 2 }],
+-        optional: true,
+       },
+     ],
+   },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-077-kundali-dragon-swarm.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-077-kundali-dragon-swarm.ts
+index 4834eea..f720cc0 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-077-kundali-dragon-swarm.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-077-kundali-dragon-swarm.ts
+@@ -52,7 +52,7 @@ export const op17KundaliDragonSwarm077: EventCard = {
+             condition: {
+               condition: "leaderTrait",
+               trait: "Animal Kingdom Pirates",
+-              match: "includes",
++              match: "exact",
+             },
+           },
+         ],
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/118-portgas-d-ace.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/118-portgas-d-ace.test.ts
+index 2c90cf2..e94aab5 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/118-portgas-d-ace.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/118-portgas-d-ace.test.ts
+@@ -32,10 +32,13 @@ describe("OP16-118 Portgas.D.Ace", () => {
+   });
+ 
+   test("Ace in hand changes no counter, and two Aces on the field still give +2000 (OP16 FAQ)", () => {
++    // OP16-016 Ramba (8000 power) prints a +1000 Counter: Ace in hand leaves it
++    // at +1000, two Aces on the field raise it to +2000 (the highest value is
++    // used, 2-10-4).
+     const inHand = OnePieceTestEngine.create({ hand: ["OP16-118", "OP16-016", "EB01-041"] }, {});
+     expect(
+       getCardCounter(inHand.getState(), inHand.findCardInZone("south", "hand", "OP16-016")),
+-    ).toBe(0);
++    ).toBe(1000);
+     expect(
+       getCardCounter(inHand.getState(), inHand.findCardInZone("south", "hand", "EB01-041")),
+     ).toBe(1000);
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/eb04-038-rosinante-law-names.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/eb04-038-rosinante-law-names.test.ts
+new file mode 100644
+index 0000000..d9d17e1
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/eb04-038-rosinante-law-names.test.ts
+@@ -0,0 +1,18 @@
++import { describe, expect, test } from "vite-plus/test";
++import { eb04RosinanteLaw038 } from "@tcg/op-cards";
++
++import { cardNames } from "../../src/shared.ts";
++
++/**
++ * EB04-038 prints "Under the rules of this game, also treat this card's name
++ * as [Trafalgar Law] and [Donquixote Rosinante]." The import had no alternate
++ * names, so every [Trafalgar Law] or [Donquixote Rosinante] name check (search,
++ * play and Leader-name effects) ignored the card.
++ */
++describe("EB04-038 Rosinante & Law", () => {
++  test("is also named Trafalgar Law and Donquixote Rosinante", () => {
++    expect(cardNames(eb04RosinanteLaw038)).toEqual(
++      expect.arrayContaining(["Rosinante & Law", "Trafalgar Law", "Donquixote Rosinante"]),
++    );
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/printed-life-triggers.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/printed-life-triggers.test.ts
+index c495bc8..347d11a 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/printed-life-triggers.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/printed-life-triggers.test.ts
+@@ -577,7 +577,10 @@ describe("OP16-117 Black Hole [Trigger]", () => {
+ });
+ 
+ describe("OP17-076 Wo Ro Ro Ro Ro... I Think I've Sobered Up [Trigger]", () => {
+-  test("DON!! -1: draws 2 cards", () => {
++  // "DON!! -1: Draw 2 cards." has no "you may": activating the [Trigger] pays
++  // the cost, and without a DON!! card on the field it cannot be activated
++  // (8-3-1-3).
++  test("DON!! -1: activating pays it and draws 2 cards", () => {
+     const engine = revealFromLife(op17WoRoRoRoRoIThinkIVeSoberedUp076, {
+       north: { activeDon: 1, deck: [op13Higuma013, eb01Fourtricks025] },
+     });
+@@ -585,7 +588,6 @@ describe("OP17-076 Wo Ro Ro Ro Ro... I Think I've Sobered Up [Trigger]", () => {
+     const donDeckBefore = north.view().players.north.donDeckCount;
+ 
+     north.activateLifeTrigger();
+-    north.acceptOptional();
+ 
+     const view = north.view().players.north;
+     expect(view.activeDon).toBe(0);
+@@ -596,18 +598,19 @@ describe("OP17-076 Wo Ro Ro Ro Ro... I Think I've Sobered Up [Trigger]", () => {
+     expectClean(engine);
+   });
+ 
+-  test("declining the DON!! -1 draws nothing", () => {
++  test("without DON!! on the field the [Trigger] cannot be activated; the card goes to hand", () => {
+     const engine = revealFromLife(op17WoRoRoRoRoIThinkIVeSoberedUp076, {
+-      north: { activeDon: 1 },
++      north: { activeDon: 0 },
+     });
+-    const north = engine.asNorth();
++    const prompt = engine.getState().promptQueue.find((p) => p.status === "pending");
++    expect(prompt?.options.find((option) => option.id === "activate")?.enabled).toBe(false);
+ 
+-    north.activateLifeTrigger();
+-    north.declineOptional();
++    const north = engine.asNorth();
++    north.declineLifeTrigger();
+ 
+     const view = north.view().players.north;
+-    expect(view.activeDon).toBe(1);
+-    expect(view.hand).toHaveLength(0);
++    expect(view.hand.map((card) => card.cardId)).toEqual([op17WoRoRoRoRoIThinkIVeSoberedUp076.id]);
++    expectClean(engine);
+   });
+ });
+ 
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/type-filter-printed-form.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/type-filter-printed-form.test.ts
+new file mode 100644
+index 0000000..b7a09f2
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/type-filter-printed-form.test.ts
+@@ -0,0 +1,96 @@
++import { describe, expect, test } from "vite-plus/test";
++import { getAllCards } from "@tcg/op-cards";
++import type { OPCard } from "@tcg/op-types";
++
++/**
++ * 2-4-3: a type written in { } brackets means cards with exactly that type; a
++ * type in " " quotation marks ('a type including "X"') matches any type that
++ * contains X (2-4-3-1). The card importer wrote substring matches for every
++ * {Type}, so {Straw Hat Crew} also accepted {Fake Straw Hat Crew}. This guard
++ * walks the whole catalog: every type filter and Leader type condition whose
++ * value the card's own text writes in only one of the two forms must use that
++ * form. New cards synced from upstream are checked too.
++ *
++ * Engine defaults differ: a `trait` filter is exact unless `match:
++ * "includes"`; a `leaderTrait` condition is a substring match unless `match:
++ * "exact"`.
++ */
++
++interface TypeCheck {
++  readonly where: string;
++  readonly value: string;
++  readonly mode: "exact" | "includes";
++}
++
++function typeChecks(effects: unknown): TypeCheck[] {
++  const out: TypeCheck[] = [];
++  const walk = (node: unknown): void => {
++    if (Array.isArray(node)) {
++      for (const item of node) walk(item);
++      return;
++    }
++    if (!node || typeof node !== "object") return;
++    const o = node as Record<string, unknown>;
++    if (o.filter === "trait") {
++      for (const value of Array.isArray(o.value) ? o.value : [o.value]) {
++        if (typeof value === "string") {
++          out.push({
++            where: "trait filter",
++            value,
++            mode: o.match === "includes" ? "includes" : "exact",
++          });
++        }
++      }
++    }
++    if (o.condition === "leaderTrait" && typeof o.trait === "string") {
++      out.push({
++        where: "leaderTrait",
++        value: o.trait,
++        mode: o.match === "exact" ? "exact" : "includes",
++      });
++    }
++    for (const value of Object.values(o)) walk(value);
++  };
++  walk(effects);
++  return out;
++}
++
++const normalize = (text: string) => text.replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
++const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
++
++/** How the printed text writes `value`, or null when it uses neither or both forms. */
++function printedMode(text: string, value: string): "exact" | "includes" | null {
++  const exact = text.includes(`{${value}}`);
++  const includes = new RegExp(`includ\\w* "${escapeRegExp(value)}"`).test(text);
++  return exact === includes ? null : exact ? "exact" : "includes";
++}
++
++describe('type filters follow the printed {Type} / type including "X" form (2-4-3)', () => {
++  const cards = getAllCards() as readonly OPCard[];
++
++  test("the catalog has type checks to verify", () => {
++    expect(cards.filter((card) => typeChecks(card.effects).length > 0).length).toBeGreaterThan(400);
++  });
++
++  test("every type check uses the form its card prints", () => {
++    const wrong: string[] = [];
++    for (const card of cards) {
++      // Leaders and Stages have no [Trigger] field in the card types.
++      const trigger = "trigger" in card ? (card as { trigger?: string }).trigger : undefined;
++      const text = normalize(`${card.effect ?? ""}\n${trigger ?? ""}`);
++      const seen = new Set<string>();
++      for (const check of typeChecks(card.effects)) {
++        const key = `${check.where}:${check.value}:${check.mode}`;
++        if (seen.has(key)) continue;
++        seen.add(key);
++        const expected = printedMode(text, check.value);
++        if (expected !== null && expected !== check.mode) {
++          wrong.push(
++            `${card.id} ${check.where} "${check.value}": ${check.mode}, printed ${expected}`,
++          );
++        }
++      }
++    }
++    expect(wrong).toEqual([]);
++  });
++});

@@ -27,6 +27,7 @@ sintéticos), simulación rápida, modelo de valor `logreg-test-v1`.
 | E10 | 2026-10-05 | `3c13662` | `search:sims=32,h=1,cands=12` (rollouts con `policy`) | `search:sims=32,h=1,cands=12,rollout=engine` (rollouts anteriores) | 88 | 5/0/67/0/16 | **56,3 % [51,3–61,2]** | **+44 [9, 79]** | Mazos del meta, el mismo motor en los dos lados (las correcciones de cartas en curso moverán las cifras absolutas, no la comparación). Cortado a los ~95 min en una máquina compartida: 88 bloques (los 64 emparejamientos con sur empezando y 24 con norte). SPRT(0, 35): LLR 2,96, decide H1 (ya había cruzado a los 48 pares, 3,07, y bajó). 0 comandos rechazados. 1º: 54,5 %, 2º: 58,0 %. 478 ms por decisión frente a 455 ms |
 | E11 | 2026-10-05 | `4451fe9` | `search:sims=32,h=1,cands=12` (rollouts `policy`) | `heuristic` (oráculo, el bot del motor sin cambios) | 162 | 5/0/83/0/74 | **71,3 % [67,0–75,6]** | **+158 [123, 196]** | **Mazos del meta, 9 mazos, motor con los parches 0001–0007** (Rocks, Luffy, Luffy & Ace y Enel ya corregidos). Ciclo completo con `--no-stop` (81 emparejamientos × quién empieza); el SPRT ya decidía H1 a los 18 pares. 1º: 71,6 %, 2º: 71,0 %. 181 ms por decisión. Gana con los 9 mazos (detalle abajo) |
 | E12 | 2026-10-05 | `4451fe9` + modelos de `3acc997` | `search:sims=32,h=1,cands=12,model=value-mlp16-meta-v1.json` | `search:sims=32,h=1,cands=12` (modelo `logreg-test-v1`, el anterior por defecto) | 162 | 5/0/89/0/68 | **69,4 % [65,2–73,7]** | **+143 [109, 179]** | **Modelo de valor entrenado con partidas del meta** (MLP de 16 neuronas, 6.000 partidas de self-play con los 9 mazos) contra el entrenado con mazos sintéticos. 9 mazos, ciclo completo con `--no-stop`; SPRT(0, 35) H1 (LLR 18,4). Mejor con 8 mazos e igual con Enel (detalle abajo). 205 ms por decisión frente a 198. **Pasa a ser el modelo por defecto** |
+| E7 | 2026-10-05 | `4451fe9` + modelo `mlp16-meta-v1` | `ismcts:iters=64,h=1,opp=1` | `search:sims=32,h=1,cands=12` | 156 | 14/1/118/0/23 | 52,7 % [48,9–56,5] | +19 [−8, 46] | 9 mazos del meta, mismo modelo de valor en los dos. **No concluyente** (LLR 0,28): cortado a los 156 de 162 pares por el límite de 2,5 h de los procesos en segundo plano. ISMCTS gasta el doble por decisión (387 ms frente a 195 ms) y aun así no se separa de la búsqueda plana: **seguimos con la búsqueda plana** |
 
 ## Calibración de enfrentamientos frente a resultados reales
 
@@ -245,7 +246,6 @@ bun packages/opbot/src/cli.ts arena --candidate "search:sims=32,h=1,cands=12" \
 - Corrección de cartas del meta en el motor (parches `0003` y siguientes; ver `vendor/tcg-engines/UPSTREAM.md`).
   Tras ella: repetir E8 y E6 con el motor corregido y recalibrar con el bot de búsqueda.
 - Repetir E9 y E10 con el motor corregido (cartas del meta) y con tamaño fijo más grande.
-- E7: ISMCTS con determinización del rival (`opp=1`) contra la búsqueda plana.
 - E5 y E2 con tamaño fijo (la parada temprana del SPRT y el corte manual dejan intervalos anchos).
 
 ## Cómo leer estos números

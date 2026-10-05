@@ -1,0 +1,3238 @@
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+index 84c827a..e1cb0f2 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+@@ -345,7 +345,7 @@ reconciles catalog entries.
+ | OP02-065     | Mr.3 (Galdino)                                  | verified | Public Blocker; end-turn hand-trash accept/decline and ready result                                                                                                                                      |
+ | OP02-073     | Little Sadi                                     | verified | Included Jailer Beast hand filter, excluded card, and physical play                                                                                                                                      |
+ | OP02-074     | Saldeath                                        | verified | Named Blugori-only permanent Blocker grant and source-presence boundary                                                                                                                                  |
+-| OP02-075     | Shiki                                           | verified | Life Trigger activation, optional DON!! return, play, and decline                                                                                                                                        |
++| OP02-075     | Shiki                                           | verified | Life Trigger activation (disabled without a DON!! card to return, 8-3-1-3), DON!! return, play, and decline                                                                                              |
+ | OP02-076     | Shiryu                                          | verified | Optional DON!! return, cost-1 K.O. filter, physical result, and decline                                                                                                                                  |
+ | OP02-077     | Solitaire                                       | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
+ | OP02-078     | Daifugo                                         | verified | Optional DON!! -2, included SMILE filter, same-name exclusion, physical play, and decline                                                                                                                |
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
+index ae46510..e733b8e 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
+@@ -350,8 +350,8 @@ reconciles catalog entries.
+ | OP17-018 | The Power to Destroy the World | verified | Main rest-2-DON K.O.s an opposing Stage; [Counter] 2x8000-base gate +4000 save |
+ | OP17-019 | I Don't Have Time to Chat with Snot-Nosed Brats | verified | Main look-5 Whitebeard Pirates reveal with bottom-order |
+ | OP17-036 | Withdraw Now and Allow Me to Save Face | verified | Main rest-6-DON rests a Character then K.O.s rested cost-6-or-less targets; [Counter] +4000 to a [Shanks] Leader or Character |
+-| OP17-037 | Are You That Afraid of the New Era?! | verified | Main look-5 Red-Haired Pirates reveal with bottom-order |
+-| OP17-038 | I Think He's Seen an Ugly Future... | verified | Main rest-4-cards cost rests an opposing Character; [Counter] optional trash +3000 save |
++| OP17-037 | Are You That Afraid of the New Era?! | verified | Main look-5 Red-Haired Pirates reveal with bottom-order; [Counter] rest-1-of-your-cards cost payable with an active DON!! (OP14/EB04 FAQ), +3000 this battle |
++| OP17-038 | I Think He's Seen an Ugly Future... | verified | Main rest-4-cards cost (Leader, Characters, Stage or active DON!!, chosen) rests an opposing Character; [Counter] optional trash +3000 save |
+ | OP17-055 | There's No Authority in the World That Lasts Forever!!! | verified | Main rest-DON gives a [Rocks.D.Xebec] Leader or Character [Unblockable] (opposing Blocker not offered); [Counter] Rocks Pirates +2000 save |
+ | OP17-056 | Rocks Pirates | verified | Main rest-5-DON returns a cost-6-or-less Character to its owner's hand; [Counter] cost-0 +2000 for the battle to a Leader or Character whose type includes Rocks Pirates |
+ | OP17-076 | Wo Ro Ro Ro Ro... I Think I've Sobered Up | verified | [Counter] optional hand trash saves the Leader with +3000; Life Trigger optional DON!!-1 draws 2, with decline |
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-leader-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-leader-inventory.md
+index 2020323..1249a3e 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-leader-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-leader-inventory.md
+@@ -98,7 +98,7 @@ reconciles catalog entries.
+ | OP13-079 | Imu | verified | activateMain; deck rule excludes Events of cost 2 or more (deck validation); start-of-game Mary Geoise Stage play not implemented |
+ | OP13-100     | Jewelry Bonney                   | verified | Optional Trigger-Character play reaction; 0–2 rested-DON!! count; Leader-or-Character recipient                                         |
+ | OP14-001     | Trafalgar Law                    | verified | Alternative included-type candidate mapping; two-Character base-power swap; external DON!! modifier preservation and expiry             |
+-| OP14-020     | Dracule Mihawk                   | verified | Opposing Slash permanent power; selectable card-rest cost; post-cost cost-5 gate; 0–3 reactivation; Character play restriction          |
++| OP14-020     | Dracule Mihawk                   | verified | Opposing Slash permanent power; selectable card-rest cost (active DON!! included); post-cost cost-5 gate; 0–3 reactivation; Character play restriction |
+ | OP14-040     | Jinbe - OP14-040                 | verified | Filtered hand-trash cost; alternative Fish-Man/Merfolk recipient mapping; 0–2 rested DON!! transfer                                     |
+ | OP14-041     | Boa Hancock - OP14-041           | verified | Opponent-turn effect-play draw; DON!! x1; qualifying Kuja base-power-5000 battle K.O.; opposing Life removal                            |
+ | OP14-060     | Donquixote Doflamingo - OP14-060 | verified | Opponent-attack optional payment; DON!! return; Leader-or-Donquixote target mapping; live battle retarget                               |
+@@ -117,7 +117,7 @@ reconciles catalog entries.
+ | OP16-079 | Yamato | verified | Printed behavior is unstructured |
+ | OP16-080 | Marshall.D.Teach | verified | permanent |
+ | OP17-001 | Edward.Newgate | verified | onOpponentAttack |
+-| OP17-020 | Shanks | verified | activateMain |
++| OP17-020 | Shanks | verified | activateMain alternative cost: trash 1 from hand or rest 1 DON!! (chosen when both payable; FAQ empty hand); freeze 1 opposing rested Character; once per turn |
+ | OP17-039 | Rocks.D.Xebec | verified | whenAttacking |
+ | OP17-058 | Kaido | verified | whenAttacking, onOpponentAttack |
+ | OP17-079 | Monkey.D.Luffy | verified | permanent |
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/op17-020-shanks.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/op17-020-shanks.ts
+index a7e95e0..4e65cbe 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/op17-020-shanks.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/leaders/op17-020-shanks.ts
+@@ -40,14 +40,13 @@ export const op17Shanks020: LeaderCard = {
+     effects: [
+       {
+         trigger: "activateMain",
++        // "trash 1 card from your hand OR rest 1 of your DON!! cards": one of
++        // the two is paid (OP17 FAQ: with no cards in hand, resting 1 DON!!
++        // still activates it).
+         costs: [
+           {
+-            cost: "trashFromHand",
+-            amount: 1,
+-          },
+-          {
+-            cost: "restDon",
+-            amount: 1,
++            cost: "choice",
++            options: [[{ cost: "trashFromHand", amount: 1 }], [{ cost: "restDon", amount: 1 }]],
+           },
+         ],
+         actions: [
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/bot-harness.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/bot-harness.ts
+index b140eea..65a9ffd 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/bot-harness.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/bot-harness.ts
+@@ -52,9 +52,11 @@ export function resolveBotPromptCommand(
+   let optionId: string | undefined;
+   let selectedIds: string[] | undefined;
+ 
++  // Disabled options (e.g. a [Trigger] whose cost cannot be paid) are never sent.
++  const enabledOptions = prompt.options.filter((o) => o.enabled !== false);
+   if (prompt.choiceKind === "confirm") {
+-    const yesOption = prompt.options.find((o) => o.id === "yes" || o.id === "activate");
+-    optionId = yesOption?.id ?? prompt.options[0]?.id;
++    const yesOption = enabledOptions.find((o) => o.id === "yes" || o.id === "activate");
++    optionId = yesOption?.id ?? enabledOptions[0]?.id ?? prompt.options[0]?.id;
+   } else if (prompt.choiceKind === "selectCards" || prompt.choiceKind === "selectTargets") {
+     const count = Math.min(prompt.maxSelections, prompt.minSelections);
+     selectedIds = prompt.options.slice(0, count).map((o) => o.id);
+@@ -66,7 +68,7 @@ export function resolveBotPromptCommand(
+   }
+ 
+   if (optionId === undefined && selectedIds === undefined) {
+-    optionId = prompt.options[0]?.id;
++    optionId = enabledOptions[0]?.id ?? prompt.options[0]?.id;
+   }
+ 
+   return {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-cost-prompts.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-cost-prompts.test.ts
+new file mode 100644
+index 0000000..3a7bd76
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-cost-prompts.test.ts
+@@ -0,0 +1,84 @@
++/**
++ * The heuristic prompt resolver on the cost prompts added for alternative
++ * costs ("You may A or B:") and for "rest N of your cards" paid with DON!!
++ * cards, and on prompts with a disabled answer. Every command it returns must
++ * be accepted by the engine.
++ */
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01OhComeMyWay038,
++  op14eb04Tashigi029,
++  op16BennBeckman012,
++  op17Shanks020,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../testing/test-engine.ts";
++import { resolveBotPromptCommand } from "./bot-harness.ts";
++import { heuristicPromptResolver } from "./heuristic-strategy.ts";
++
++function pendingPrompt(engine: OnePieceTestEngine, intent: string) {
++  const prompt = engine
++    .getState()
++    .promptQueue.find((p) => p.status === "pending" && p.resolutionContext?.intent === intent);
++  if (!prompt) throw new Error(`Expected a pending ${intent} prompt.`);
++  return prompt;
++}
++
++describe("heuristic resolver: alternative and DON!! costs", () => {
++  test("OP17-020 Shanks: pays with a DON!! rather than a card from hand", () => {
++    const engine = OnePieceTestEngine.create(
++      { leaderCardId: op17Shanks020, hand: ["EB01-005"], activeDon: 3 },
++      { character: [{ cardId: "OP13-013", rested: true }] },
++    );
++    engine.activateEffect(engine.leader("south"), "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++
++    const command = heuristicPromptResolver(
++      engine.getState(),
++      pendingPrompt(engine, "effectCostChoice"),
++    );
++
++    expect(command).toMatchObject({ type: "resolvePrompt", optionId: "1" });
++    expect(engine.exec(command!).accepted).toBe(true);
++    expect(engine.getView("south").players.south).toMatchObject({ handCount: 1, activeDon: 2 });
++  });
++
++  test("rest 2 of your cards with one active field card and 2 DON!!: a DON!! completes it", () => {
++    // OP14-029: "[Activate: Main] [Once Per Turn] You may rest 2 of your cards".
++    const engine = OnePieceTestEngine.create(
++      { character: [{ card: op14eb04Tashigi029, playedOnTurn: 0 }], activeDon: 2 },
++      {},
++    );
++    const leaderId = engine.leader("south");
++    const state = structuredClone(engine.getState());
++    state.cards[leaderId]!.rested = true;
++    const rested = OnePieceTestEngine.fromState(state);
++    const sourceId = rested.findCardInZone("south", "character", op14eb04Tashigi029);
++    rested.activateEffect(sourceId, "activateMain", "south");
++    rested.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++
++    const prompt = pendingPrompt(rested, "effectCostRestCards");
++    const command = heuristicPromptResolver(rested.getState(), prompt);
++
++    expect(command).toMatchObject({ selectedIds: [sourceId, "active-don:0"] });
++    expect(rested.exec(command!).accepted).toBe(true);
++  });
++
++  test("a disabled answer is never sent: a [Trigger] that cannot pay its cost is skipped", () => {
++    // EB01-038 Oh Come My Way: "[Trigger] DON!! −1: Draw 2 cards." with no DON!!.
++    const engine = OnePieceTestEngine.create(
++      { life: [eb01OhComeMyWay038, "EB01-005"] },
++      { character: [op16BennBeckman012], activeDon: 5 },
++    );
++    engine.endTurn("south");
++    engine.asNorth().attack(op16BennBeckman012, engine.asSouth().leader());
++    const prompt = pendingPrompt(engine, "lifeTrigger");
++
++    for (const command of [
++      heuristicPromptResolver(engine.getState(), prompt),
++      resolveBotPromptCommand(engine.getState(), prompt),
++    ]) {
++      expect(command).toMatchObject({ optionId: "skip" });
++    }
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-strategy.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-strategy.ts
+index 0cb4773..dffd898 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-strategy.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/automation/heuristic-strategy.ts
+@@ -1,4 +1,4 @@
+-import type { Action, OPCard } from "@tcg/op-types";
++import type { Action, Cost, OPCard } from "@tcg/op-types";
+ import type {
+   EngineCommand,
+   LegalCommandDescriptor,
+@@ -18,6 +18,7 @@ import {
+   getPlayer,
+   otherSeat,
+ } from "../shared.ts";
++import { counterSelectionIsPayable } from "../battle.ts";
+ import { selectionSatisfiesTotalConstraint } from "../effects/targeting.ts";
+ import {
+   commandFromDescriptor,
+@@ -685,11 +686,13 @@ export function createHeuristicStrategy(policy: HeuristicPolicy): OnePieceBotStr
+ 
+ function confirmCommand(prompt: PromptState, accept: boolean): EngineCommand {
+   const seat = prompt.seat as MatchSeat;
+-  const acceptOption = prompt.options.find((o) => o.id === "yes" || o.id === "activate");
+-  const declineOption = prompt.options.find((o) => o.id === "no" || o.id === "skip");
++  // A disabled answer (e.g. a [Trigger] whose cost cannot be paid) is never sent.
++  const options = prompt.options.filter((o) => o.enabled !== false);
++  const acceptOption = options.find((o) => o.id === "yes" || o.id === "activate");
++  const declineOption = options.find((o) => o.id === "no" || o.id === "skip");
+   const optionId = accept
+-    ? (acceptOption?.id ?? prompt.options[0]?.id)
+-    : (declineOption?.id ?? prompt.options[0]?.id);
++    ? (acceptOption?.id ?? declineOption?.id ?? options[0]?.id)
++    : (declineOption?.id ?? options[0]?.id);
+   return { type: "resolvePrompt", seat, promptId: prompt.id, optionId };
+ }
+ 
+@@ -844,14 +847,14 @@ function resolveBattleCounter(
+   const descending = [...usable].sort((a, b) => b.value - a.value || a.cost - b.cost);
+   const chosen: string[] = [];
+   let total = 0;
+-  let donBudget = me.activeDon; // [Counter] Events each need their cost paid
+   for (const counter of descending) {
+     if (total >= needed) break;
+     const isEvent = getCardForInstance(state, counter.id).cardType === "event";
+-    if (isEvent && counter.cost > donBudget) continue;
++    // [Counter] Events each need their cost paid, and their DON!! −X costs
++    // must fit the DON!! cards on the field together (the engine's own check).
++    if (isEvent && !counterSelectionIsPayable(state, seat, [...chosen, counter.id])) continue;
+     chosen.push(counter.id);
+     total += counter.value;
+-    if (isEvent) donBudget -= counter.cost;
+   }
+   if (total >= needed || lethal) {
+     // Lethal with an unsurvivable wall: go down fighting (spec).
+@@ -1002,11 +1005,53 @@ function resolveCostSelection(state: MatchState, prompt: PromptState): EngineCom
+   } else {
+     ordered = byCheapest(state, candidateIds);
+   }
++  // Options that are not cards -- an active DON!! card for "rest N of your
++  // cards" ("active-don:0") -- complete the count after the cards.
++  ordered = [
++    ...ordered,
++    ...prompt.options
++      .filter((o) => o.targetId === undefined && state.cards[o.id] === undefined)
++      .map((o) => o.id),
++  ];
+ 
+   const count = Math.min(Math.max(prompt.minSelections, 1), ordered.length);
+   return selectCommand(prompt, ordered.slice(0, count));
+ }
+ 
++/** Activation costs that spend DON!! cards rather than cards from hand, field or Life. */
++const DON_ONLY_COSTS = new Set<Cost["cost"]>(["restDon", "returnDon", "giveDon"]);
++
++/**
++ * "You may A or B:" (effectCostChoice): pay with DON!! rather than with cards
++ * when both are possible -- e.g. OP17-020 Shanks rests 1 DON!! instead of
++ * trashing a card from hand. Among options of the same kind, the first.
++ */
++function resolveCostChoice(state: MatchState, prompt: PromptState): EngineCommand | null {
++  const context = prompt.resolutionContext;
++  if (context?.intent !== "effectCostChoice" || !state.cards[context.sourceInstanceId]) {
++    return null;
++  }
++  const choice = effectBlocksFor(
++    getCardForInstance(state, context.sourceInstanceId),
++    context.trigger,
++  )[context.blockIndex]?.costs?.find((cost) => cost.cost === "choice");
++  if (choice?.cost !== "choice") {
++    return null;
++  }
++  const spendsCards = (index: number) =>
++    (choice.options[index] ?? []).some((cost) => !DON_ONLY_COSTS.has(cost.cost));
++  const best =
++    context.optionIndexes.find((index) => !spendsCards(index)) ?? context.optionIndexes[0];
++  return best === undefined
++    ? null
++    : {
++        type: "resolvePrompt",
++        seat: prompt.seat as MatchSeat,
++        promptId: prompt.id,
++        optionId: String(best),
++      };
++}
++
+ export function createHeuristicPromptResolver(policy: HeuristicPolicy): OnePieceBotPromptResolver {
+   return (state, prompt) => {
+     if (prompt.kind === "judge" || prompt.seat === "judge") {
+@@ -1025,6 +1070,10 @@ export function createHeuristicPromptResolver(policy: HeuristicPolicy): OnePiece
+       return resolveCostSelection(state, prompt);
+     }
+ 
++    if (intent === "effectCostChoice") {
++      return resolveCostChoice(state, prompt);
++    }
++
+     if (prompt.choiceKind === "orderCards") {
+       // Deck ordering (search remainders, returned-to-deck cards): put the most
+       // valuable cards first so the best of them is drawn soonest.
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/battle.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/battle.ts
+index ec22035..5639621 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/battle.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/battle.ts
+@@ -30,6 +30,7 @@ import {
+   isAttackTargetAllowedByPermanentEffects,
+   isKoPreventedByModifier,
+ } from "./effects/permanent.ts";
++import { canPayCosts, eventActivationCostsPayable } from "./effects/actions.ts";
+ import { findKoReplacement } from "./effects/replacements.ts";
+ import { matchesTargetFilter } from "./effects/targeting.ts";
+ import { cleanupBattleModifiers, createChoicePrompt, formatCardList, moveCard } from "./state.ts";
+@@ -176,6 +177,48 @@ export function endBattleIfParticipantLeftArea(state: MatchState): boolean {
+   return true;
+ }
+ 
++/**
++ * Whether the defender can use these hand cards together in the Counter Step
++ * (7-1-3-1): Characters with a Counter, and Events with [Counter] whose costs
++ * are paid from active DON!! (7-1-3-1-2) and whose mandatory [Counter]
++ * activation costs can then be paid in full (8-4-1-3, 8-3-1-3) -- e.g. not
++ * OP01-118 Ulti-Mortar's "DON!! −2" with fewer than 2 DON!! cards on the
++ * field, nor two such Events that need more DON!! cards than there are.
++ */
++export function counterSelectionIsPayable(
++  state: MatchState,
++  seat: MatchSeat,
++  selectedIds: readonly string[],
++): boolean {
++  const player = getPlayer(state, seat);
++  if (
++    new Set(selectedIds).size !== selectedIds.length ||
++    selectedIds.some((instanceId) => !player.hand.includes(instanceId))
++  ) {
++    return false;
++  }
++  let eventCost = 0;
++  const eventIds: string[] = [];
++  for (const instanceId of selectedIds) {
++    const card = getCardForInstance(state, instanceId);
++    if (card.cardType === "event" && effectBlocksFor(card, "counter").length > 0) {
++      eventCost += baseCost(card);
++      eventIds.push(instanceId);
++    } else if (!(card.cardType === "character" && getCardCounter(state, instanceId) > 0)) {
++      return false;
++    }
++  }
++  return (
++    eventCost <= player.activeDon &&
++    (eventIds.length === 0 ||
++      eventActivationCostsPayable(state, seat, "counter", eventIds, {
++        cardCost: eventCost,
++        destination: "trash",
++        usedIds: selectedIds,
++      }))
++  );
++}
++
+ export function beginBattleCounterStep(state: MatchState) {
+   if (!state.battle) {
+     return;
+@@ -198,7 +241,9 @@ export function beginBattleCounterStep(state: MatchState) {
+       label,
+       value: instanceId,
+       targetId: instanceId,
+-      enabled: isCharacterCounter || (isEventCounter && player.activeDon >= baseCost(card)),
++      enabled:
++        isCharacterCounter ||
++        (isEventCounter && counterSelectionIsPayable(state, defendingSeat, [instanceId])),
+     };
+   });
+ 
+@@ -227,6 +272,35 @@ export function beginBattleCounterStep(state: MatchState) {
+   });
+ }
+ 
++/**
++ * The answers to a Life card's [Trigger] prompt. "activate" is disabled when
++ * every [Trigger] effect of the card has a mandatory activation cost that
++ * cannot be paid in full (8-4-1-3, 8-3-1-3: then it cannot be activated, e.g.
++ * OP02-075 Shiki's "DON!! −1" with no DON!! card on the field); the player
++ * adds the card to their hand instead (10-1-5-2).
++ */
++function lifeTriggerOptions(
++  state: MatchState,
++  seat: MatchSeat,
++  lifeCardId: string,
++): PromptOption[] {
++  const blocks = effectBlocksFor(getCardForInstance(state, lifeCardId), "trigger");
++  const canActivate =
++    blocks.length === 0 ||
++    blocks.some(
++      (block) => block.optional || canPayCosts(state, seat, lifeCardId, block.costs, undefined),
++    );
++  return [
++    {
++      id: "activate",
++      label: "Activate trigger",
++      value: "activate",
++      ...(canActivate ? {} : { enabled: false }),
++    },
++    { id: "skip", label: "Skip trigger", value: "skip" },
++  ];
++}
++
+ function createBattleLifeTriggerPrompt(
+   state: MatchState,
+   battle: NonNullable<MatchState["battle"]>,
+@@ -244,10 +318,7 @@ function createBattleLifeTriggerPrompt(
+     sourceCardId: lifeCard.id,
+     sourceInstanceId: lifeCardId,
+     eventId: battle.id,
+-    options: [
+-      { id: "activate", label: "Activate trigger", value: "activate" },
+-      { id: "skip", label: "Skip trigger", value: "skip" },
+-    ],
++    options: lifeTriggerOptions(state, defendingSeat, lifeCardId),
+     minSelections: 0,
+     maxSelections: 1,
+     context: { battleId: battle.id },
+@@ -688,10 +759,7 @@ export function continueEffectDamage(
+       sourceCardId: lifeCard.id,
+       sourceInstanceId: lifeCardId,
+       eventId: null,
+-      options: [
+-        { id: "activate", label: "Activate trigger", value: "activate" },
+-        { id: "skip", label: "Skip trigger", value: "skip" },
+-      ],
++      options: lifeTriggerOptions(state, targetSeat, lifeCardId),
+       minSelections: 0,
+       maxSelections: 1,
+       context: { damageKind: "effect" },
+@@ -1007,32 +1075,13 @@ export function resolvePrompt(
+       }
+       const selectedIds = command.selectedIds ?? [];
+       const player = getPlayer(state, command.seat);
+-      if (
+-        new Set(selectedIds).size !== selectedIds.length ||
+-        selectedIds.some((instanceId) => !player.hand.includes(instanceId))
+-      ) {
+-        return false;
+-      }
+-      const selectedCards = selectedIds.map((instanceId) => ({
+-        card: getCardForInstance(state, instanceId),
+-        counter: getCardCounter(state, instanceId),
+-      }));
+-      if (
+-        selectedCards.some(
+-          ({ card, counter }) =>
+-            !(card.cardType === "character" && counter > 0) &&
+-            !(card.cardType === "event" && effectBlocksFor(card, "counter").length > 0),
+-        )
+-      ) {
+-        return false;
+-      }
+-      const eventCost = selectedCards.reduce(
+-        (total, { card }) => total + (card.cardType === "event" ? baseCost(card) : 0),
+-        0,
+-      );
+-      if (eventCost > player.activeDon) {
++      if (!counterSelectionIsPayable(state, command.seat, selectedIds)) {
+         return false;
+       }
++      const eventCost = selectedIds.reduce((total, instanceId) => {
++        const card = getCardForInstance(state, instanceId);
++        return total + (card.cardType === "event" ? baseCost(card) : 0);
++      }, 0);
+       player.activeDon -= eventCost;
+       player.restedDon += eventCost;
+       let counterTotal = 0;
+@@ -1178,6 +1227,15 @@ export function resolvePrompt(
+       return true;
+     }
+     case "lifeTrigger": {
++      // Only the prompt's own enabled answers: an unknown id ("yes", a typo)
++      // is rejected instead of being read as "skip", which would silently add
++      // the card to hand and drop its [Trigger] (10-1-5-2 makes skipping a
++      // choice, not a default).
++      if (
++        !prompt.options.some((option) => option.id === command.optionId && option.enabled !== false)
++      ) {
++        return false;
++      }
+       const lifeCardId = prompt.sourceInstanceId;
+       if (command.optionId === "activate" && prompt.sourceInstanceId) {
+         enqueueEffectsForTrigger(
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/119-marshall-d-teach.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/119-marshall-d-teach.test.ts
+index 83cc293..32c4afa 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/119-marshall-d-teach.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/119-marshall-d-teach.test.ts
+@@ -38,6 +38,49 @@ describe("OP16-119 Marshall.D.Teach", () => {
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
++  test("the opponent's view of the face-down Life card's logs carries no card ids", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        hand: ["OP16-119"],
++        deck: ["OP13-013", "OP16-004", "OP13-013", "OP13-013", "OP13-013"],
++        activeDon: 8,
++      },
++      {},
++    );
++    const curielId = engine.findCardInZone("south", "deck", "OP16-004");
++
++    engine.playCard("OP16-119");
++    engine.resolveDecision("effectSearchSelection", { selectedIds: [curielId] }, "south");
++    const order = engine.pendingDecision("effectSearchRemainderOrder", "south").steps[0];
++    if (order?.kind !== "orderItems") throw new Error("Expected the remainder order.");
++    engine.resolveDecision(
++      "effectSearchRemainderOrder",
++      { selectedIds: order.candidates.map((candidate) => candidate.ref.id) },
++      "south",
++    );
++
++    // North cannot see the card placed face-down in south's Life: no log line
++    // of its view names it, by card id or instance id.
++    const northLogs = engine.getView("north").logs;
++    const mentionsCuriel = (log: (typeof northLogs)[number]) =>
++      log.sourceCardId === "OP16-004" ||
++      log.sourceInstanceId === curielId ||
++      log.targetIds.includes(curielId);
++    expect(northLogs.filter(mentionsCuriel)).toEqual([]);
++    const northLifeLogs = northLogs.filter(
++      (log) => log.visibility === "private" && log.message.includes("Life"),
++    );
++    expect(northLifeLogs.length).toBeGreaterThan(0);
++    for (const log of northLifeLogs) {
++      expect(log).toMatchObject({ sourceCardId: null, sourceInstanceId: null, targetIds: [] });
++    }
++    // South, who placed it, keeps the ids; public lines keep theirs for both.
++    expect(engine.getView("south").logs.some(mentionsCuriel)).toBe(true);
++    expect(
++      northLogs.find((log) => log.visibility === "public" && log.message.includes("plays")),
++    ).toMatchObject({ sourceCardId: "OP16-119" });
++  });
++
+   test("declining the Life add keeps the Life area untouched", () => {
+     const engine = OnePieceTestEngine.create(
+       {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/021.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/021.test.ts
+index 2f1087d..154bbab 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/021.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/021.test.ts
+@@ -1,6 +1,26 @@
+ import { describe, expect, test } from "vite-plus/test";
+ import { OnePieceTestEngine } from "../../../index.ts";
+ 
++// OP17-021 Crone Oli: If your Character with a type including "Red-Haired
++// Pirates" would be removed from the field by your opponent's effect, you may
++// rest 1 of your cards instead.
++// OP17 FAQ: "If 2 of my Characters with a type including 'Red-Haired Pirates'
++// would leave the field at the same time, do I have to rest 2 cards?" -- "No.
++// In this case, rest 1 of your cards, and neither Character leaves the field."
++
++/** South has Crone, Hongo (OP17-029) and Yasopp (OP17-031) and 3 active DON!!. */
++function croneEngine() {
++  return OnePieceTestEngine.create(
++    {
++      leaderCardId: "OP17-020",
++      character: ["OP17-021", "OP17-029", "OP17-031"],
++      activeDon: 3,
++    },
++    { leaderCardId: "OP13-001", hand: ["OP06-058"], activeDon: 10 },
++    { firstPlayer: "south", activeSeat: "north" },
++  );
++}
++
+ describe("OP17-021", () => {
+   test("[Blocker/ability] on-field state", () => {
+     const engine = OnePieceTestEngine.create({ character: ["OP17-021"], activeDon: 3 }, {});
+@@ -25,4 +45,39 @@ describe("OP17-021", () => {
+     );
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
++
++  test("one rest saves two Characters placed at the bottom of the deck at once (OP17 FAQ)", () => {
++    const engine = croneEngine();
++    const hongoId = engine.findCardInZone("south", "character", "OP17-029");
++    const yasoppId = engine.findCardInZone("south", "character", "OP17-031");
++    const deckBefore = engine.getState().players.south.deck.length;
++
++    // North's OP06-058 places up to 2 Characters with a cost of 6 or less at
++    // the bottom of the owner's deck: a removal that is not a K.O.
++    engine.playCard("OP06-058", "north");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [hongoId, yasoppId] }, "north");
++    // Both go to south's deck, so south (their owner) orders them first.
++    const order = engine.pendingDecision("effectReturnToDeckOwnerOrder", "south").steps[0];
++    if (order?.kind !== "orderItems") throw new Error("Expected the deck order.");
++    engine.resolveDecision(
++      "effectReturnToDeckOwnerOrder",
++      { selectedIds: order.candidates.map((candidate) => candidate.ref.id) },
++      "south",
++    );
++    // A single replacement covers both Characters.
++    engine.resolveDecision("effectRemovalReplacement", { optionId: "yes" }, "south");
++    engine.resolveDecision(
++      "effectMixedRestSelection",
++      { selectedIds: ["active-don:south:0"] },
++      "south",
++    );
++
++    expect(engine.getState().promptQueue.filter((p) => p.status === "pending")).toHaveLength(0);
++    const south = engine.getView("south").players.south;
++    expect(south.characters.map((card) => card?.instanceId)).toEqual(
++      expect.arrayContaining([hongoId, yasoppId]),
++    );
++    expect(south).toMatchObject({ activeDon: 2, restedDon: 1 });
++    expect(engine.getState().players.south.deck).toHaveLength(deckBefore);
++  });
+ });
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/events/038-i-think-he-s-seen-an-ugly-future.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/events/038-i-think-he-s-seen-an-ugly-future.test.ts
+index 5e7d67d..00c94e6 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/events/038-i-think-he-s-seen-an-ugly-future.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/events/038-i-think-he-s-seen-an-ugly-future.test.ts
+@@ -17,6 +17,17 @@ describe("OP17-038 I Think He's Seen an Ugly Future", () => {
+ 
+     engine.playCard("OP17-038");
+     engine.acceptLeadingOptional("south");
++    // "Rest 4 of your cards" also takes active DON!! cards (OP14/EB04 FAQ on
++    // OP14-020: "your active Leader, Character, Stage, or DON!! cards"), so the
++    // player chooses which 4 of the Leader, 3 Characters and 5 DON!!: here 4 DON!!.
++    const cost = engine.pendingDecision("effectCostRestCards", "south").steps[0];
++    if (cost?.kind !== "payCost") throw new Error("Expected the rest-4 cost.");
++    expect(cost.candidates).toHaveLength(9);
++    engine.resolveDecision(
++      "effectCostRestCards",
++      { selectedIds: ["active-don:0", "active-don:1", "active-don:2", "active-don:3"] },
++      "south",
++    );
+     const rest = engine.pendingDecision("effectTargetSelection", "south").steps[0];
+     if (rest?.kind !== "selectEntity") throw new Error("Expected the rest target.");
+     engine.resolveDecision("effectTargetSelection", { selectedIds: [bennId] }, "south");
+@@ -25,6 +36,10 @@ describe("OP17-038 I Think He's Seen an Ugly Future", () => {
+       engine.getView("south").players.north.characters.find((c) => c?.instanceId === bennId)
+         ?.rested,
+     ).toBe(true);
++    const south = engine.getView("south").players.south;
++    expect(south).toMatchObject({ activeDon: 1, restedDon: 6 });
++    expect(south.leader.rested).toBe(false);
++    expect(south.characters.filter((c) => c?.rested)).toHaveLength(0);
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/leaders/020-shanks.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/leaders/020-shanks.test.ts
+index 443389f..a99cd9d 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/leaders/020-shanks.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/leaders/020-shanks.test.ts
+@@ -1,5 +1,31 @@
+ import { describe, expect, test } from "vite-plus/test";
+-import { OnePieceTestEngine } from "../../../index.ts";
++import { getLegalCommands, OnePieceTestEngine } from "../../../index.ts";
++
++// [Activate: Main] [Once Per Turn] You may trash 1 card from your hand or rest
++// 1 of your DON!! cards: Up to 1 of your opponent's rested Characters will not
++// become active in your opponent's next Refresh Phase.
++// OP17 FAQ: "If I have no cards in my hand, can I rest 1 of my DON!! cards
++// with this [Activate: Main] effect?" -- "Yes, you can." The cost is one of
++// the two, never both (Cost "choice").
++
++function shanksEngine(south: { hand?: string[]; activeDon?: number }) {
++  return OnePieceTestEngine.create(
++    { leaderCardId: "OP17-020", character: ["OP17-020"], ...south },
++    { character: [{ cardId: "OP13-013", rested: true }], activeDon: 5 },
++  );
++}
++
++function canActivateShanks(engine: OnePieceTestEngine): boolean {
++  return getLegalCommands(engine.getState(), "south").some(
++    (command) => command.type === "activateEffect" && command.sourceId === engine.leader("south"),
++  );
++}
++
++function freezeHiguma(engine: OnePieceTestEngine) {
++  const higumaId = engine.findCardInZone("north", "character", "OP13-013");
++  engine.resolveDecision("effectTargetSelection", { selectedIds: [higumaId] }, "south");
++  expect(engine.getView("south").prompts).toHaveLength(0);
++}
+ 
+ describe("OP17-020 Shanks", () => {
+   test("[Activate:Main] rest DON or trash hand to freeze opposing rested Characters", () => {
+@@ -10,6 +36,8 @@ describe("OP17-020 Shanks", () => {
+     const shanksId = engine.leader("south");
+     engine.activateEffect(shanksId, "activateMain", "south");
+     engine.acceptLeadingOptional("south");
++    // Both alternatives can be paid, so the player picks one (here: rest DON!!).
++    engine.resolveDecision("effectCostChoice", { optionId: "1" }, "south");
+     const target = engine.pendingDecision("effectTargetSelection", "south").steps[0];
+     if (target?.kind !== "selectEntity") throw new Error("Expected the freeze target.");
+     engine.resolveDecision(
+@@ -38,4 +66,102 @@ describe("OP17-020 Shanks", () => {
+     expect(engine.getView("south").players.south.activeDon).toBe(5);
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
++
++  test("with no cards in hand, resting 1 DON!! pays the cost (OP17 FAQ)", () => {
++    const engine = shanksEngine({ hand: [], activeDon: 5 });
++
++    expect(canActivateShanks(engine)).toBe(true);
++    engine.activateEffect(engine.leader("south"), "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    // Only the DON!! alternative can be paid: no choice is asked.
++    expect(() => engine.pendingDecision("effectCostChoice", "south")).toThrow();
++    freezeHiguma(engine);
++
++    const south = engine.getView("south").players.south;
++    expect(south).toMatchObject({ activeDon: 4, restedDon: 1, handCount: 0 });
++    expect(south.trash).toHaveLength(0);
++  });
++
++  test("with no active DON!!, trashing 1 card pays the cost and no DON!! is rested", () => {
++    const engine = shanksEngine({ hand: ["EB01-005"], activeDon: 0 });
++
++    expect(canActivateShanks(engine)).toBe(true);
++    engine.activateEffect(engine.leader("south"), "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    expect(() => engine.pendingDecision("effectCostChoice", "south")).toThrow();
++    freezeHiguma(engine);
++
++    const south = engine.getView("south").players.south;
++    expect(south).toMatchObject({ activeDon: 0, restedDon: 0, handCount: 0 });
++    expect(south.trash.map((card) => card.cardId)).toEqual(["EB01-005"]);
++  });
++
++  test("when both can be paid, choosing the DON!! keeps the hand", () => {
++    const engine = shanksEngine({ hand: ["EB01-005"], activeDon: 5 });
++
++    engine.activateEffect(engine.leader("south"), "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    const choice = engine.pendingDecision("effectCostChoice", "south").steps[0];
++    if (choice?.kind !== "chooseOption") throw new Error("Expected the cost choice.");
++    expect(choice.options.map((option) => [option.id, option.label])).toEqual([
++      ["0", "Trash 1 card from your hand"],
++      ["1", "Rest 1 of your DON!! cards"],
++    ]);
++    engine.resolveDecision("effectCostChoice", { optionId: "1" }, "south");
++    freezeHiguma(engine);
++
++    const south = engine.getView("south").players.south;
++    expect(south).toMatchObject({ activeDon: 4, restedDon: 1, handCount: 1 });
++    expect(south.trash).toHaveLength(0);
++  });
++
++  test("choosing the trash asks which card, and leaves every DON!! active", () => {
++    const engine = shanksEngine({ hand: ["EB01-005", "OP17-032"], activeDon: 5 });
++    const limejuiceId = engine.findCardInZone("south", "hand", "OP17-032");
++
++    engine.activateEffect(engine.leader("south"), "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    engine.resolveDecision("effectCostChoice", { optionId: "0" }, "south");
++    // The chosen alternative carries over to its own cost prompt.
++    engine.resolveDecision("effectCostTrashFromHand", { selectedIds: [limejuiceId] }, "south");
++    freezeHiguma(engine);
++
++    const south = engine.getView("south").players.south;
++    expect(south).toMatchObject({ activeDon: 5, restedDon: 0, handCount: 1 });
++    expect(south.trash.map((card) => card.instanceId)).toEqual([limejuiceId]);
++  });
++
++  test("an option that is not offered is rejected", () => {
++    const engine = shanksEngine({ hand: ["EB01-005"], activeDon: 5 });
++
++    engine.activateEffect(engine.leader("south"), "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    const promptId = engine.pendingDecision("effectCostChoice", "south").id;
++    for (const optionId of ["2", "-1", "trash", undefined]) {
++      engine.expectFailure({ type: "resolvePrompt", seat: "south", promptId, optionId });
++    }
++  });
++
++  test("cannot be activated with neither a card in hand nor an active DON!!", () => {
++    const engine = shanksEngine({ hand: [], activeDon: 0 });
++
++    expect(canActivateShanks(engine)).toBe(false);
++    const result = engine.expectFailure({
++      type: "activateEffect",
++      seat: "south",
++      sourceInstanceId: engine.leader("south"),
++      trigger: "activateMain",
++    });
++    expect(result.reason).toMatch(/activation costs cannot be paid/);
++  });
++
++  test("[Once Per Turn] still applies after paying with a DON!!", () => {
++    const engine = shanksEngine({ hand: [], activeDon: 5 });
++
++    engine.activateEffect(engine.leader("south"), "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    freezeHiguma(engine);
++
++    expect(canActivateShanks(engine)).toBe(false);
++  });
+ });
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts
+index 484ad67..e69f0d0 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts
+@@ -1149,6 +1149,21 @@ export function validActiveIdsForGroupedPlayAction(
+   });
+ }
+ 
++/** Option id of the index-th active DON!! card in a cost owner's cost area. */
++export const ACTIVE_DON_COST_PREFIX = "active-don:";
++
++export function isActiveDonCostId(id: string): boolean {
++  return id.startsWith(ACTIVE_DON_COST_PREFIX);
++}
++
++/**
++ * Cards that can be rested for a "rest N of your cards" cost. An unfiltered
++ * cost ("rest 1 of your cards") also takes active DON!! cards in the cost
++ * area (OP14/EB04 FAQ for OP14-020: "resting 1 of your active Leader,
++ * Character, Stage, or DON!! cards"), listed after the field cards as
++ * interchangeable "active-don:<index>" ids. A filtered cost ("rest 1 of your
++ * Characters", "your Leader") names card kinds a DON!! card never matches.
++ */
+ export function candidatesForRestCardsCost(
+   state: MatchState,
+   controller: MatchSeat,
+@@ -1156,7 +1171,7 @@ export function candidatesForRestCardsCost(
+   cost: RestCardsCost,
+ ): string[] {
+   const player = getPlayer(state, controller);
+-  return [
++  const fieldCandidates = [
+     player.leaderInstanceId,
+     ...player.characterArea.filter((entry): entry is string => Boolean(entry)),
+     ...(player.stageArea ? [player.stageArea] : []),
+@@ -1169,6 +1184,23 @@ export function candidatesForRestCardsCost(
+         return result.supported && result.matches;
+       }),
+   );
++  if (cost.filters?.length || player.activeDon === 0) {
++    return fieldCandidates;
++  }
++  return [
++    ...fieldCandidates,
++    ...Array.from({ length: player.activeDon }, (_, index) => `${ACTIVE_DON_COST_PREFIX}${index}`),
++  ];
++}
++
++/**
++ * Whether paying a "rest N of your cards" cost involves a real choice. Active
++ * DON!! cards are interchangeable, so N of them alone are not a choice; any
++ * field card among more candidates than N is (resting the Leader or a Blocker
++ * versus a DON!! card matters).
++ */
++export function restCardsCostNeedsChoice(candidateIds: readonly string[], amount: number): boolean {
++  return candidateIds.length > amount && !candidateIds.every(isActiveDonCostId);
+ }
+ 
+ function candidatesForCardCostOption(
+@@ -2079,6 +2111,23 @@ export function actionTargetIsEligible(
+   ) {
+     return false;
+   }
++  if (
++    action.action === "activateEvent" &&
++    getCardForInstance(state, instanceId).cardType === "event" &&
++    !eventActivationCostsPayable(
++      state,
++      getInstance(state, instanceId).controller,
++      action.effectTrigger,
++      [instanceId],
++      // Activated by an effect: the Event's own cost is not paid, and it
++      // waits in the resolution area while its [Main] resolves.
++      { cardCost: 0, destination: "resolution" },
++    )
++  ) {
++    // 8-3-1-3: an Event whose mandatory [Main] activation cost cannot be paid
++    // cannot be activated, so it is not a legal choice.
++    return false;
++  }
+   return true;
+ }
+ 
+@@ -6175,6 +6224,142 @@ export function giveDonCostParts(
+   return { donorSeat, recipientSeat, poolAmount };
+ }
+ 
++/** Key of one activated block in MatchState.declinedActivations. */
++export function declinedActivationKey(
++  sourceInstanceId: string,
++  trigger: string,
++  blockIndex: number,
++): string {
++  return `${sourceInstanceId}:${trigger}:${blockIndex}`;
++}
++
++/**
++ * Whether Events can activate their `trigger` effect ([Main] or [Counter]):
++ * every mandatory activation cost of those blocks must be payable (8-4-1-3),
++ * and one that cannot be paid in full cannot be paid at all (8-3-1-3), so the
++ * Event cannot be activated. A cost the text makes optional ("You may ...:",
++ * 8-3-1-4) can be declined and never blocks it.
++ *
++ * The costs are checked against the state they are paid from: `cardCost`
++ * already rested from active DON!! and every card in `usedIds` (default: the
++ * Events themselves) gone from the hand, the Events to `destination` (trash
++ * after a play or a Counter, the resolution area when another effect
++ * activates them), so neither the Event nor the DON!! that paid for it can
++ * pay again. Several Events used together (Counter Step) also share the
++ * DON!! cards their DON!! −X costs return (8-3-1-6).
++ */
++export function eventActivationCostsPayable(
++  state: MatchState,
++  seat: MatchSeat,
++  trigger: "main" | "counter",
++  eventIds: readonly string[],
++  options: { cardCost: number; destination: "trash" | "resolution"; usedIds?: readonly string[] },
++): boolean {
++  const mandatory = eventIds.flatMap((instanceId) =>
++    effectBlocksForInstance(state, instanceId, trigger)
++      .filter((block) => !block.optional && block.costs?.length)
++      .map((block) => ({ instanceId, costs: block.costs! })),
++  );
++  if (mandatory.length === 0) {
++    return true;
++  }
++  const usedIds = options.usedIds ?? eventIds;
++  const player = getPlayer(state, seat);
++  const cards = { ...state.cards };
++  for (const instanceId of usedIds) {
++    cards[instanceId] = {
++      ...cards[instanceId]!,
++      zone: eventIds.includes(instanceId) ? options.destination : "trash",
++    };
++  }
++  const projected: MatchState = {
++    ...state,
++    players: {
++      ...state.players,
++      [seat]: {
++        ...player,
++        activeDon: player.activeDon - options.cardCost,
++        restedDon: player.restedDon + options.cardCost,
++        hand: player.hand.filter((handId) => !usedIds.includes(handId)),
++        trash: [
++          ...player.trash,
++          ...usedIds.filter((id) => cards[id]!.zone === "trash" && !player.trash.includes(id)),
++        ],
++      },
++    },
++    cards,
++  };
++  if (
++    !mandatory.every(({ instanceId, costs }) =>
++      canPayCosts(projected, seat, instanceId, costs, undefined),
++    )
++  ) {
++    return false;
++  }
++  const returnedDon = mandatory.reduce(
++    (total, { costs }) =>
++      total +
++      costs.reduce(
++        (sum, cost) =>
++          cost.cost === "returnDon" ? sum + (cost.amount ?? cost.minimumAmount ?? 0) : sum,
++        0,
++      ),
++    0,
++  );
++  return returnedDon <= returnDonCostOptions(projected, seat).length;
++}
++
++/**
++ * A block's activation costs once its "choice" cost ("You may A or B:") is
++ * settled: the chosen option's costs take the choice's place, in printed order
++ * (8-3-1-1). Without a choice cost, or before the option is chosen, the
++ * block's own array comes back unchanged.
++ */
++export function effectBlockCosts(
++  costs: Cost[] | undefined,
++  costOption: number | undefined,
++): Cost[] | undefined {
++  if (costOption === undefined || !costs?.some((cost) => cost.cost === "choice")) {
++    return costs;
++  }
++  return costs.flatMap((cost) =>
++    cost.cost === "choice" ? (cost.options[costOption] ?? []) : [cost],
++  );
++}
++
++/**
++ * Indexes of the options of a block's "choice" cost that can be paid now,
++ * together with the block's other costs (8-3-1-3: the whole activation cost
++ * of the chosen alternative must be payable). Empty without a choice cost.
++ */
++export function payableCostOptions(
++  state: MatchState,
++  controller: MatchSeat,
++  sourceInstanceId: string,
++  costs: Cost[] | undefined,
++  trashHandIds: string[] | undefined,
++  costPaymentIds?: string[],
++  costPaymentIdsByType?: EffectBlockContinuation["costPaymentIdsByType"],
++): number[] {
++  const choice = costs?.find((cost) => cost.cost === "choice");
++  if (!choice || choice.cost !== "choice") {
++    return [];
++  }
++  return choice.options.flatMap((_, index) =>
++    canPayCosts(
++      state,
++      controller,
++      sourceInstanceId,
++      effectBlockCosts(costs, index),
++      trashHandIds,
++      costPaymentIds,
++      costPaymentIdsByType,
++    )
++      ? [index]
++      : [],
++  );
++}
++
+ export function canPayCosts(
+   state: MatchState,
+   controller: MatchSeat,
+@@ -6194,6 +6379,24 @@ export function canPayCosts(
+ 
+   for (const cost of costs) {
+     switch (cost.cost) {
++      case "choice":
++        // Alternative costs: payable when one option is payable in full.
++        if (
++          !cost.options.some((option) =>
++            canPayCosts(
++              state,
++              controller,
++              sourceInstanceId,
++              option,
++              trashHandIds,
++              costPaymentIds,
++              costPaymentIdsByType,
++            ),
++          )
++        ) {
++          return false;
++        }
++        break;
+       case "trashThisCard": {
+         const trashThisCost = cost as Extract<
+           Cost,
+@@ -6436,10 +6639,19 @@ export function canPayCosts(
+         const candidates = candidatesForRestCardsCost(state, controller, sourceInstanceId, cost);
+         const selected =
+           costPaymentIdsByType?.restCards ?? costPaymentIds ?? candidates.slice(0, cost.amount);
++        // An active DON!! card rested here cannot also pay a "rest N DON!!"
++        // (①) cost of the same activation.
++        const restDonInSameCost = costs.reduce(
++          (total, other) => total + (other.cost === "restDon" ? other.amount : 0),
++          0,
++        );
+         if (
+           selected.length !== cost.amount ||
+           new Set(selected).size !== selected.length ||
+-          selected.some((instanceId) => !candidates.includes(instanceId))
++          selected.some((instanceId) => !candidates.includes(instanceId)) ||
++          (restDonInSameCost > 0 &&
++            selected.filter(isActiveDonCostId).length + restDonInSameCost >
++              getPlayer(state, controller).activeDon)
+         ) {
+           return false;
+         }
+@@ -6550,6 +6762,36 @@ export function payCosts(
+ 
+   for (const cost of costs) {
+     switch (cost.cost) {
++      case "choice": {
++        // processEffectBlock settles the choice first (effectBlockCosts); a
++        // choice still unsettled here pays its first payable option.
++        const option = cost.options.find((candidate) =>
++          canPayCosts(
++            state,
++            controller,
++            sourceInstanceId,
++            candidate,
++            trashHandIds,
++            costPaymentIds,
++            costPaymentIdsByType,
++          ),
++        );
++        if (
++          !option ||
++          !payCosts(
++            state,
++            controller,
++            sourceInstanceId,
++            option,
++            trashHandIds,
++            costPaymentIds,
++            costPaymentIdsByType,
++          )
++        ) {
++          return false;
++        }
++        break;
++      }
+       case "restDon":
+         getPlayer(state, controller).activeDon -= cost.amount;
+         getPlayer(state, controller).restedDon += cost.amount;
+@@ -6827,8 +7069,15 @@ export function payCosts(
+             0,
+             cost.amount,
+           );
+-        for (const instanceId of selected) {
+-          restCard(state, instanceId, controller);
++        for (const id of selected) {
++          if (isActiveDonCostId(id)) {
++            // A DON!! card is a card too: resting it moves it from the active
++            // to the rested pool of the cost area.
++            getPlayer(state, controller).activeDon -= 1;
++            getPlayer(state, controller).restedDon += 1;
++          } else {
++            restCard(state, id, controller);
++          }
+         }
+         break;
+       }
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
+index 0c23d8b..ed46f7a 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
+@@ -34,9 +34,15 @@ import type {
+ } from "../types.ts";
+ import { completeBattleResolution } from "../battle.ts";
+ import {
++  ACTIVE_DON_COST_PREFIX,
+   addTopDeckCardsToLife,
+   actionTargetIsEligible,
+   canPayCosts,
++  declinedActivationKey,
++  effectBlockCosts,
++  isActiveDonCostId,
++  payableCostOptions,
++  restCardsCostNeedsChoice,
+   candidatesForGroupedPlayAction,
+   candidatesForPlayAction,
+   candidatesForKoCharacterCost,
+@@ -376,9 +382,9 @@ function liveEffectBlock(state: MatchState, item: EffectBlockItemInput): EffectB
+ 
+ /**
+  * Whether processEffectBlock would activate this block now (same checks, in
+- * the same order): live, conditions met, and for an optional block its costs
+- * payable. A block with an unsupported condition only reaches the judge, so
+- * it does not count.
++ * the same order): live, conditions met, and its activation costs payable
++ * (8-3-1-3, optional or not). A block with an unsupported condition only
++ * reaches the judge, so it does not count.
+  */
+ function effectBlockWouldActivate(state: MatchState, item: EffectBlockItemInput): boolean {
+   const block = liveEffectBlock(state, item);
+@@ -396,20 +402,59 @@ function effectBlockWouldActivate(state: MatchState, item: EffectBlockItemInput)
+   if (!conditions.supported || !conditions.matches) {
+     return false;
+   }
+-  return (
+-    !block.optional ||
+-    canPayCosts(
+-      state,
+-      item.controller,
+-      item.sourceInstanceId,
+-      block.costs,
+-      item.trashHandIds,
+-      item.costPaymentIds,
+-      item.costPaymentIdsByType,
+-    )
++  return canPayCosts(
++    state,
++    item.controller,
++    item.sourceInstanceId,
++    effectBlockCosts(block.costs, item.costOption),
++    item.trashHandIds,
++    item.costPaymentIds,
++    item.costPaymentIdsByType,
+   );
+ }
+ 
++/**
++ * Spread into a re-queued effect block, a continuation or a cost prompt's
++ * context: the option chosen for the block's "choice" cost, when there is one,
++ * so every later cost step pays that option's costs.
++ */
++function costOptionField(costOption: number | undefined): { costOption?: number } {
++  return costOption === undefined ? {} : { costOption };
++}
++
++/** Short printed form of one activation cost, for the alternative-cost prompt. */
++function costLabel(cost: Cost): string {
++  const cards = (amount: number) => `${amount} card${amount === 1 ? "" : "s"}`;
++  switch (cost.cost) {
++    case "restDon":
++      // Printed as "rest N of your DON!! cards", 1 included.
++      return `rest ${cost.amount} of your DON!! cards`;
++    case "returnDon":
++      return `DON!! −${cost.amount ?? cost.minimumAmount}`;
++    case "trashFromHand":
++      return `trash ${cards(cost.amount)} from your hand`;
++    case "restCards":
++      return `rest ${cost.amount} of your cards`;
++    case "restThisCard":
++      return "rest this card";
++    case "trashThisCard":
++      return "trash this card";
++    case "trashLife":
++      return `trash ${cards(cost.amount)} from your Life`;
++    case "addLifeToHand":
++      return `add ${cards(cost.amount)} from your Life to your hand`;
++    case "giveDon":
++      return `give ${cost.amount} DON!! card${cost.amount === 1 ? "" : "s"}`;
++    default:
++      return `pay the ${cost.cost} cost`;
++  }
++}
++
++function costOptionLabel(option: readonly Cost[]): string {
++  const text = option.map(costLabel).join(" and ");
++  return text.charAt(0).toUpperCase() + text.slice(1);
++}
++
+ function simultaneousEntryId(entry: SimultaneousEffectEntry): string {
+   return `${entry.sourceInstanceId}:${entry.trigger}:${entry.blockIndex}`;
+ }
+@@ -528,6 +573,17 @@ export function processEffectBlock(
+     ) {
+       return;
+     }
++    // The player activated this [Activate: Main] again right after declining
++    // it, with nothing else done in between: declining once more would repeat
++    // the same no-op (and bots could loop on it forever), so this time the
++    // activation commits to paying. See MatchState.declinedActivations.
++    const declinedBefore =
++      item.trigger === "activateMain" &&
++      Boolean(
++        state.declinedActivations?.includes(
++          declinedActivationKey(item.sourceInstanceId, item.trigger, item.blockIndex),
++        ),
++      );
+     createChoicePrompt(state, {
+       choiceKind: "confirm",
+       seat: item.controller,
+@@ -538,7 +594,7 @@ export function processEffectBlock(
+       eventId: null,
+       options: [
+         { id: "yes", label: "Activate", value: "yes" },
+-        { id: "no", label: "Skip", value: "no" },
++        { id: "no", label: "Skip", value: "no", ...(declinedBefore ? { enabled: false } : {}) },
+       ],
+       minSelections: 0,
+       maxSelections: 1,
+@@ -559,7 +615,92 @@ export function processEffectBlock(
+     return;
+   }
+ 
+-  const giveDonCost = block.costs?.find((cost) => cost.cost === "giveDon");
++  // 8-3-1-3: an activation cost that cannot be paid in full cannot be paid at
++  // all, so the effect is not activated -- e.g. "[Trigger] Activate this
++  // card's [Main]" when that [Main] has a DON!! −X the field cannot cover
++  // (rules FAQ on OP03-074 Top Knot). Checked once, when the effect is about
++  // to be activated (8-4-1-3); optional blocks were checked above.
++  if (
++    !block.optional &&
++    !item.confirmed &&
++    !item.costsPaid &&
++    !canPayCosts(
++      state,
++      item.controller,
++      item.sourceInstanceId,
++      effectBlockCosts(block.costs, item.costOption),
++      item.trashHandIds,
++      item.costPaymentIds,
++      item.costPaymentIdsByType,
++    )
++  ) {
++    emitLog(
++      state,
++      item.controller,
++      `${cardName(card)}'s ${triggerLabel(item.trigger)} effect is not activated: its activation cost cannot be paid.`,
++      {
++        sourceCardId: source.cardId,
++        sourceInstanceId: item.sourceInstanceId,
++        visibility: "public",
++      },
++    );
++    return;
++  }
++
++  // "You may A or B:" (Cost "choice", 8-3-1): exactly one alternative is paid.
++  // When more than one can be paid the controller chooses (OP17 FAQ on
++  // OP17-020 Shanks); a single payable one is paid without asking. From here
++  // on the block's costs are the chosen option's, and every cost prompt
++  // carries costOption back.
++  let costOption = item.costOption;
++  if (costOption === undefined && !item.costsPaid) {
++    const optionIndexes = payableCostOptions(
++      state,
++      item.controller,
++      item.sourceInstanceId,
++      block.costs,
++      item.trashHandIds,
++      item.costPaymentIds,
++      item.costPaymentIdsByType,
++    );
++    const choiceCost = block.costs?.find((cost) => cost.cost === "choice");
++    if (optionIndexes.length > 1 && choiceCost?.cost === "choice") {
++      createChoicePrompt(state, {
++        choiceKind: "chooseOption",
++        seat: item.controller,
++        label: `${cardName(card)} cost: choose which cost to pay.`,
++        details: "Choose one of the alternative activation costs to pay.",
++        sourceCardId: source.cardId,
++        sourceInstanceId: item.sourceInstanceId,
++        eventId: null,
++        options: optionIndexes.map((index) => ({
++          id: String(index),
++          label: costOptionLabel(choiceCost.options[index] ?? []),
++          value: String(index),
++        })),
++        minSelections: 1,
++        maxSelections: 1,
++        context: { cost: "choice" },
++        resolutionContext: {
++          intent: "effectCostChoice",
++          sourceInstanceId: item.sourceInstanceId,
++          controller: item.controller,
++          trigger: item.trigger,
++          blockIndex: item.blockIndex,
++          optionIndexes,
++          trashHandIds: item.trashHandIds,
++          costPaymentIds: item.costPaymentIds,
++          costPaymentIdsByType: item.costPaymentIdsByType,
++          triggerEvent: item.triggerEvent,
++        },
++      });
++      return;
++    }
++    costOption = optionIndexes[0];
++  }
++  const costs = effectBlockCosts(block.costs, costOption);
++
++  const giveDonCost = costs?.find((cost) => cost.cost === "giveDon");
+   if (giveDonCost && !item.costPaymentIdsByType?.giveDon) {
+     const { recipientSeat, poolAmount } = giveDonCostParts(state, item.controller, giveDonCost);
+     const recipient = getPlayer(state, recipientSeat);
+@@ -587,6 +728,7 @@ export function processEffectBlock(
+         context: { cost: "giveDon" },
+         resolutionContext: {
+           intent: "effectCostGiveDon",
++          ...costOptionField(costOption),
+           sourceInstanceId: item.sourceInstanceId,
+           controller: item.controller,
+           trigger: item.trigger,
+@@ -604,14 +746,14 @@ export function processEffectBlock(
+ 
+   // Ordered costs (8-3-1-1): a DON!! −X with no real choice is paid by default,
+   // so it must not hold back the trash-from-hand prompt that follows it.
+-  const pendingOrderedCost = block.costs?.find((cost) =>
++  const pendingOrderedCost = costs?.find((cost) =>
+     cost.cost === "trashFromHand"
+       ? !item.trashHandIds
+       : cost.cost === "returnDon"
+         ? !item.costPaymentIds && returnDonCostNeedsChoice(state, item.controller, cost)
+         : false,
+   );
+-  const trashFromHandCost = block.costs?.find((cost) => cost.cost === "trashFromHand");
++  const trashFromHandCost = costs?.find((cost) => cost.cost === "trashFromHand");
+   if (trashFromHandCost && pendingOrderedCost === trashFromHandCost) {
+     const candidateIds = candidatesForTrashFromHandCost(
+       state,
+@@ -641,6 +783,7 @@ export function processEffectBlock(
+         },
+         resolutionContext: {
+           intent: "effectCostTrashFromHand",
++          ...costOptionField(costOption),
+           sourceInstanceId: item.sourceInstanceId,
+           controller: item.controller,
+           trigger: item.trigger,
+@@ -657,7 +800,7 @@ export function processEffectBlock(
+     }
+   }
+ 
+-  const playCardCost = block.costs?.find((cost) => cost.cost === "playCard");
++  const playCardCost = costs?.find((cost) => cost.cost === "playCard");
+   if (playCardCost && !item.costPaymentIds) {
+     const candidateIds = candidatesForPlayCardCost(
+       state,
+@@ -685,6 +828,7 @@ export function processEffectBlock(
+         context: { cost: "playCard" },
+         resolutionContext: {
+           intent: "effectCostPlayCard",
++          ...costOptionField(costOption),
+           sourceInstanceId: item.sourceInstanceId,
+           controller: item.controller,
+           trigger: item.trigger,
+@@ -698,7 +842,7 @@ export function processEffectBlock(
+     }
+   }
+ 
+-  const trashCardCost = block.costs?.find((cost) => cost.cost === "trashCard");
++  const trashCardCost = costs?.find((cost) => cost.cost === "trashCard");
+   if (trashCardCost && !item.costPaymentIds) {
+     const candidateIds = candidatesForTrashCardCost(
+       state,
+@@ -726,6 +870,7 @@ export function processEffectBlock(
+         context: { cost: "trashCard" },
+         resolutionContext: {
+           intent: "effectCostTrashCard",
++          ...costOptionField(costOption),
+           sourceInstanceId: item.sourceInstanceId,
+           controller: item.controller,
+           trigger: item.trigger,
+@@ -739,7 +884,7 @@ export function processEffectBlock(
+     }
+   }
+ 
+-  const returnDonCost = block.costs?.find((cost) => cost.cost === "returnDon");
++  const returnDonCost = costs?.find((cost) => cost.cost === "returnDon");
+   if (returnDonCost && pendingOrderedCost === returnDonCost) {
+     const options = returnDonCostOptions(state, item.controller);
+     const minimumAmount = returnDonCost.minimumAmount ?? returnDonCost.amount;
+@@ -769,6 +914,7 @@ export function processEffectBlock(
+         },
+         resolutionContext: {
+           intent: "effectCostReturnDon",
++          ...costOptionField(costOption),
+           sourceInstanceId: item.sourceInstanceId,
+           controller: item.controller,
+           trigger: item.trigger,
+@@ -784,9 +930,7 @@ export function processEffectBlock(
+     }
+   }
+ 
+-  const returnCharacterToDeckCost = block.costs?.find(
+-    (cost) => cost.cost === "returnCharacterToDeck",
+-  );
++  const returnCharacterToDeckCost = costs?.find((cost) => cost.cost === "returnCharacterToDeck");
+   if (returnCharacterToDeckCost && !item.costPaymentIds) {
+     const candidateIds = candidatesForReturnCharacterToDeckCost(
+       state,
+@@ -817,6 +961,7 @@ export function processEffectBlock(
+         },
+         resolutionContext: {
+           intent: "effectCostReturnCharacterToDeck",
++          ...costOptionField(costOption),
+           sourceInstanceId: item.sourceInstanceId,
+           controller: item.controller,
+           trigger: item.trigger,
+@@ -831,13 +976,15 @@ export function processEffectBlock(
+     }
+   }
+ 
+-  const returnCharacterCost = block.costs?.find((cost) => cost.cost === "returnCharacter");
+-  const pendingCompoundCardCost = block.costs?.find((cost) => {
++  const returnCharacterCost = costs?.find((cost) => cost.cost === "returnCharacter");
++  const pendingCompoundCardCost = costs?.find((cost) => {
+     if (cost.cost === "restCards") {
+       return (
+         !item.costPaymentIdsByType?.restCards &&
+-        candidatesForRestCardsCost(state, item.controller, item.sourceInstanceId, cost).length >
+-          cost.amount
++        restCardsCostNeedsChoice(
++          candidatesForRestCardsCost(state, item.controller, item.sourceInstanceId, cost),
++          cost.amount,
++        )
+       );
+     }
+     if (cost.cost === "returnCharacter") {
+@@ -880,6 +1027,7 @@ export function processEffectBlock(
+         context: { cost: "returnCharacter" },
+         resolutionContext: {
+           intent: "effectCostReturnCharacter",
++          ...costOptionField(costOption),
+           sourceInstanceId: item.sourceInstanceId,
+           controller: item.controller,
+           trigger: item.trigger,
+@@ -894,7 +1042,7 @@ export function processEffectBlock(
+     }
+   }
+ 
+-  const restCardsCost = block.costs?.find((cost) => cost.cost === "restCards");
++  const restCardsCost = costs?.find((cost) => cost.cost === "restCards");
+   if (
+     restCardsCost &&
+     !item.costPaymentIdsByType?.restCards &&
+@@ -906,7 +1054,9 @@ export function processEffectBlock(
+       item.sourceInstanceId,
+       restCardsCost,
+     );
+-    if (candidateIds.length > restCardsCost.amount) {
++    // Asked whenever there is a real choice: a field card among more
++    // candidates than needed, active DON!! cards included (OP14/EB04 FAQ).
++    if (restCardsCostNeedsChoice(candidateIds, restCardsCost.amount)) {
+       createChoicePrompt(state, {
+         choiceKind: "costPayment",
+         seat: item.controller,
+@@ -915,12 +1065,20 @@ export function processEffectBlock(
+         sourceCardId: source.cardId,
+         sourceInstanceId: item.sourceInstanceId,
+         eventId: null,
+-        options: candidateIds.map((instanceId) => ({
+-          id: instanceId,
+-          label: cardName(getCardForInstance(state, instanceId)),
+-          value: instanceId,
+-          targetId: instanceId,
+-        })),
++        options: candidateIds.map((id) =>
++          isActiveDonCostId(id)
++            ? {
++                id,
++                label: `Active DON!! in cost area ${Number(id.slice(ACTIVE_DON_COST_PREFIX.length)) + 1}`,
++                value: id,
++              }
++            : {
++                id,
++                label: cardName(getCardForInstance(state, id)),
++                value: id,
++                targetId: id,
++              },
++        ),
+         minSelections: restCardsCost.amount,
+         maxSelections: restCardsCost.amount,
+         context: {
+@@ -928,6 +1086,7 @@ export function processEffectBlock(
+         },
+         resolutionContext: {
+           intent: "effectCostRestCards",
++          ...costOptionField(costOption),
+           sourceInstanceId: item.sourceInstanceId,
+           controller: item.controller,
+           trigger: item.trigger,
+@@ -942,7 +1101,7 @@ export function processEffectBlock(
+     }
+   }
+ 
+-  const koCharacterCost = block.costs?.find((cost) => cost.cost === "koCharacter");
++  const koCharacterCost = costs?.find((cost) => cost.cost === "koCharacter");
+   if (koCharacterCost && !item.costPaymentIds) {
+     const candidateIds = candidatesForKoCharacterCost(
+       state,
+@@ -970,6 +1129,7 @@ export function processEffectBlock(
+         context: { cost: "koCharacter" },
+         resolutionContext: {
+           intent: "effectCostKoCharacter",
++          ...costOptionField(costOption),
+           sourceInstanceId: item.sourceInstanceId,
+           controller: item.controller,
+           trigger: item.trigger,
+@@ -983,7 +1143,7 @@ export function processEffectBlock(
+     }
+   }
+ 
+-  const trashCharacterCost = block.costs?.find((cost) => cost.cost === "trashCharacter");
++  const trashCharacterCost = costs?.find((cost) => cost.cost === "trashCharacter");
+   if (trashCharacterCost && !item.costPaymentIds) {
+     const candidateIds = candidatesForTrashCharacterCost(
+       state,
+@@ -1011,6 +1171,7 @@ export function processEffectBlock(
+         context: { cost: "trashCharacter" },
+         resolutionContext: {
+           intent: "effectCostTrashCharacter",
++          ...costOptionField(costOption),
+           sourceInstanceId: item.sourceInstanceId,
+           controller: item.controller,
+           trigger: item.trigger,
+@@ -1045,6 +1206,7 @@ export function processEffectBlock(
+           controller: item.controller,
+           trigger: item.trigger,
+           blockIndex: item.blockIndex,
++          ...costOptionField(costOption),
+           costPaymentIds: candidateIds,
+           costsPaid: true,
+           confirmed: true,
+@@ -1056,7 +1218,7 @@ export function processEffectBlock(
+     }
+   }
+ 
+-  const revealFromHandCost = block.costs?.find((cost) => cost.cost === "revealFromHand");
++  const revealFromHandCost = costs?.find((cost) => cost.cost === "revealFromHand");
+   if (revealFromHandCost && !item.costPaymentIds) {
+     const candidateIds = candidatesForRevealFromHandCost(
+       state,
+@@ -1084,6 +1246,7 @@ export function processEffectBlock(
+         context: { cost: "revealFromHand" },
+         resolutionContext: {
+           intent: "effectCostRevealFromHand",
++          ...costOptionField(costOption),
+           sourceInstanceId: item.sourceInstanceId,
+           controller: item.controller,
+           trigger: item.trigger,
+@@ -1097,7 +1260,7 @@ export function processEffectBlock(
+     }
+   }
+ 
+-  const returnHandToDeckCost = block.costs?.find((cost) => cost.cost === "returnHandToDeck");
++  const returnHandToDeckCost = costs?.find((cost) => cost.cost === "returnHandToDeck");
+   if (returnHandToDeckCost && !item.costPaymentIds) {
+     const candidateIds = [...getPlayer(state, item.controller).hand];
+     createChoicePrompt(state, {
+@@ -1122,6 +1285,7 @@ export function processEffectBlock(
+       },
+       resolutionContext: {
+         intent: "effectCostReturnHandToDeck",
++        ...costOptionField(costOption),
+         sourceInstanceId: item.sourceInstanceId,
+         controller: item.controller,
+         trigger: item.trigger,
+@@ -1134,7 +1298,7 @@ export function processEffectBlock(
+     return;
+   }
+ 
+-  const returnTrashToDeckCost = block.costs?.find((cost) => cost.cost === "returnTrashToDeck");
++  const returnTrashToDeckCost = costs?.find((cost) => cost.cost === "returnTrashToDeck");
+   if (returnTrashToDeckCost && !item.costPaymentIds) {
+     const candidateIds = candidatesForReturnTrashToDeckCost(
+       state,
+@@ -1162,6 +1326,7 @@ export function processEffectBlock(
+         context: { cost: "returnTrashToDeck", ordered: true },
+         resolutionContext: {
+           intent: "effectCostReturnTrashToDeck",
++          ...costOptionField(costOption),
+           sourceInstanceId: item.sourceInstanceId,
+           controller: item.controller,
+           trigger: item.trigger,
+@@ -1175,7 +1340,7 @@ export function processEffectBlock(
+     }
+   }
+ 
+-  const returnThisAndHandToDeckCost = block.costs?.find(
++  const returnThisAndHandToDeckCost = costs?.find(
+     (cost) => cost.cost === "returnThisAndHandToDeck",
+   );
+   if (returnThisAndHandToDeckCost && !item.costPaymentIds) {
+@@ -1203,6 +1368,7 @@ export function processEffectBlock(
+       },
+       resolutionContext: {
+         intent: "effectCostReturnThisAndHandToDeck",
++        ...costOptionField(costOption),
+         sourceInstanceId: item.sourceInstanceId,
+         controller: item.controller,
+         trigger: item.trigger,
+@@ -1215,8 +1381,8 @@ export function processEffectBlock(
+     return;
+   }
+ 
+-  const addLifeToHandCost = block.costs?.find((cost) => cost.cost === "addLifeToHand");
+-  const trashLifeCost = block.costs?.find((cost) => cost.cost === "trashLife");
++  const addLifeToHandCost = costs?.find((cost) => cost.cost === "addLifeToHand");
++  const trashLifeCost = costs?.find((cost) => cost.cost === "trashLife");
+   if (
+     trashLifeCost?.position === "choice" &&
+     getPlayer(state, item.controller).life.length > 1 &&
+@@ -1239,6 +1405,7 @@ export function processEffectBlock(
+       context: { cost: "trashLife" },
+       resolutionContext: {
+         intent: "effectCostTrashLife",
++        ...costOptionField(costOption),
+         sourceInstanceId: item.sourceInstanceId,
+         controller: item.controller,
+         trigger: item.trigger,
+@@ -1270,6 +1437,7 @@ export function processEffectBlock(
+       context: { cost: "addLifeToHand" },
+       resolutionContext: {
+         intent: "effectCostAddLifeToHand",
++        ...costOptionField(costOption),
+         sourceInstanceId: item.sourceInstanceId,
+         controller: item.controller,
+         trigger: item.trigger,
+@@ -1311,6 +1479,7 @@ export function processEffectBlock(
+           kind: "playCardCost",
+           trigger: item.trigger,
+           blockIndex: item.blockIndex,
++          ...costOptionField(costOption),
+           selectedIds: costPlayIds,
+           trashHandIds: item.trashHandIds,
+           costPaymentIdsByType: item.costPaymentIdsByType,
+@@ -1326,7 +1495,7 @@ export function processEffectBlock(
+       state,
+       item.controller,
+       item.sourceInstanceId,
+-      block.costs,
++      costs,
+       item.trashHandIds,
+       item.costPaymentIds,
+       item.costPaymentIdsByType,
+@@ -1353,6 +1522,11 @@ export function processEffectBlock(
+   if (!item.costsPaid) {
+     enqueueCharacterRemovalEffects(state, charactersBeforeCosts, item.controller);
+   }
++  // An [Activate: Main] effect resolves, so the game changes: activations
++  // declined earlier (MatchState.declinedActivations) may be declined again.
++  if (item.trigger === "activateMain" && state.declinedActivations) {
++    delete state.declinedActivations;
++  }
+ 
+   const battle = state.battle;
+   if (
+@@ -2390,6 +2564,11 @@ export function resolveEffectChoicePrompt(
+     }
+     case "effectActionOptional": {
+       const context = prompt.resolutionContext;
++      // Only the prompt's own answers: an unknown id is rejected, not read as
++      // "skip" (a mistyped answer must not silently drop the effect).
++      if (command.optionId !== "yes" && command.optionId !== "no") {
++        return false;
++      }
+       if (command.optionId === "yes") {
+         for (const action of [...context.actions].reverse()) {
+           enqueueResolution(
+@@ -2419,6 +2598,14 @@ export function resolveEffectChoicePrompt(
+       return true;
+     }
+     case "effectOptional":
++      // Only the prompt's own enabled answers: an unknown id is rejected, not
++      // read as "no" (a mistyped answer must not silently drop the effect),
++      // and so is a "no" disabled for a repeated activation.
++      if (
++        !prompt.options.some((option) => option.id === command.optionId && option.enabled !== false)
++      ) {
++        return false;
++      }
+       if (command.optionId === "yes") {
+         enqueueResolution(
+           state,
+@@ -2438,6 +2625,21 @@ export function resolveEffectChoicePrompt(
+       } else {
+         // Rules 8-1-2 / 10-2-13: Once Per Turn is consumed only when activated
+         // and resolved — declining leaves later opportunities available.
++        if (prompt.resolutionContext.trigger === "activateMain") {
++          // The player activated this [Activate: Main] and then declined its
++          // optional cost, so it was not activated at all (8-3-1-4) and
++          // nothing changed. It may be activated again, but until something
++          // else happens that activation cannot be declined once more: it
++          // would be the same no-op, and bots could loop on it forever.
++          state.declinedActivations = [
++            ...(state.declinedActivations ?? []),
++            declinedActivationKey(
++              prompt.resolutionContext.sourceInstanceId,
++              prompt.resolutionContext.trigger,
++              prompt.resolutionContext.blockIndex,
++            ),
++          ];
++        }
+         emitLog(
+           state,
+           command.seat,
+@@ -2450,6 +2652,52 @@ export function resolveEffectChoicePrompt(
+         );
+       }
+       return true;
++    case "effectCostChoice": {
++      const context = prompt.resolutionContext;
++      const costOption = Number(command.optionId);
++      const block = effectBlocksFor(
++        getCardForInstance(state, context.sourceInstanceId),
++        context.trigger,
++      )[context.blockIndex];
++      const chosenCosts = effectBlockCosts(block?.costs, costOption);
++      if (
++        command.optionId === undefined ||
++        !Number.isInteger(costOption) ||
++        !context.optionIndexes.includes(costOption) ||
++        !canPayCosts(
++          state,
++          context.controller,
++          context.sourceInstanceId,
++          chosenCosts,
++          context.trashHandIds,
++          context.costPaymentIds,
++          context.costPaymentIdsByType,
++        )
++      ) {
++        return false;
++      }
++      // Hand cards picked in advance (activateEffect.trashHandIds) only pay
++      // an option that trashes from hand.
++      const trashesFromHand = chosenCosts?.some((cost) => cost.cost === "trashFromHand");
++      enqueueResolution(
++        state,
++        {
++          kind: "effectBlock",
++          sourceInstanceId: context.sourceInstanceId,
++          controller: context.controller,
++          trigger: context.trigger,
++          blockIndex: context.blockIndex,
++          costOption,
++          trashHandIds: trashesFromHand ? context.trashHandIds : undefined,
++          costPaymentIds: context.costPaymentIds,
++          costPaymentIdsByType: context.costPaymentIdsByType,
++          confirmed: true,
++          triggerEvent: context.triggerEvent,
++        },
++        { next: true },
++      );
++      return true;
++    }
+     case "effectCostGiveDon": {
+       const context = prompt.resolutionContext;
+       const selectedIds = command.selectedIds ?? [];
+@@ -2478,6 +2726,7 @@ export function resolveEffectChoicePrompt(
+           controller: context.controller,
+           trigger: context.trigger,
+           blockIndex: context.blockIndex,
++          ...costOptionField(context.costOption),
+           costPaymentIdsByType: {
+             ...context.costPaymentIdsByType,
+             giveDon: selectedIds,
+@@ -2516,6 +2765,7 @@ export function resolveEffectChoicePrompt(
+           controller: context.controller,
+           trigger: context.trigger,
+           blockIndex: context.blockIndex,
++          ...costOptionField(context.costOption),
+           trashHandIds: selectedIds,
+           costPaymentIds: context.costPaymentIds,
+           costPaymentIdsByType: context.costPaymentIdsByType,
+@@ -2545,6 +2795,7 @@ export function resolveEffectChoicePrompt(
+           controller: context.controller,
+           trigger: context.trigger,
+           blockIndex: context.blockIndex,
++          ...costOptionField(context.costOption),
+           costPaymentIds: selectedIds,
+           confirmed: true,
+           triggerEvent: context.triggerEvent,
+@@ -2560,9 +2811,10 @@ export function resolveEffectChoicePrompt(
+         (option) => option.id,
+       );
+       const card = getCard(getInstance(state, context.sourceInstanceId).cardId);
+-      const returnDonCost = effectBlocksFor(card, context.trigger)[context.blockIndex]?.costs?.find(
+-        (cost) => cost.cost === "returnDon",
+-      );
++      const returnDonCost = effectBlockCosts(
++        effectBlocksFor(card, context.trigger)[context.blockIndex]?.costs,
++        context.costOption,
++      )?.find((cost) => cost.cost === "returnDon");
+       const minimumAmount = returnDonCost?.minimumAmount ?? context.amount;
+       const maximumAmount =
+         returnDonCost?.minimumAmount === undefined ? context.amount : liveCandidateIds.length;
+@@ -2584,6 +2836,7 @@ export function resolveEffectChoicePrompt(
+           controller: context.controller,
+           trigger: context.trigger,
+           blockIndex: context.blockIndex,
++          ...costOptionField(context.costOption),
+           trashHandIds: context.trashHandIds,
+           costPaymentIds: selectedIds,
+           costPaymentIdsByType: context.costPaymentIdsByType,
+@@ -2603,6 +2856,7 @@ export function resolveEffectChoicePrompt(
+           controller: prompt.resolutionContext.controller,
+           trigger: prompt.resolutionContext.trigger,
+           blockIndex: prompt.resolutionContext.blockIndex,
++          ...costOptionField(prompt.resolutionContext.costOption),
+           trashHandIds: prompt.resolutionContext.trashHandIds,
+           costPaymentIds: command.selectedIds ?? [],
+           confirmed: true,
+@@ -2649,6 +2903,7 @@ export function resolveEffectChoicePrompt(
+             controller: context.controller,
+             trigger: context.trigger,
+             blockIndex: context.blockIndex,
++            ...costOptionField(context.costOption),
+             costPaymentIdsByType: {
+               ...context.costPaymentIdsByType,
+               returnCharacter: selectedIds,
+@@ -2668,6 +2923,7 @@ export function resolveEffectChoicePrompt(
+           controller: context.controller,
+           trigger: context.trigger,
+           blockIndex: context.blockIndex,
++          ...costOptionField(context.costOption),
+           costPaymentIdsByType: {
+             ...context.costPaymentIdsByType,
+             returnCharacter: selectedIds,
+@@ -2693,6 +2949,7 @@ export function resolveEffectChoicePrompt(
+           controller: context.controller,
+           trigger: context.trigger,
+           blockIndex: context.blockIndex,
++          ...costOptionField(context.costOption),
+           costPaymentIds: [command.optionId],
+           confirmed: true,
+           triggerEvent: context.triggerEvent,
+@@ -2723,6 +2980,7 @@ export function resolveEffectChoicePrompt(
+           controller: context.controller,
+           trigger: context.trigger,
+           blockIndex: context.blockIndex,
++          ...costOptionField(context.costOption),
+           costPaymentIds: selectedIds,
+           confirmed: true,
+           triggerEvent: context.triggerEvent,
+@@ -2753,6 +3011,7 @@ export function resolveEffectChoicePrompt(
+           controller: context.controller,
+           trigger: context.trigger,
+           blockIndex: context.blockIndex,
++          ...costOptionField(context.costOption),
+           costPaymentIds: selectedIds,
+           confirmed: true,
+           triggerEvent: context.triggerEvent,
+@@ -2770,6 +3029,7 @@ export function resolveEffectChoicePrompt(
+           controller: prompt.resolutionContext.controller,
+           trigger: prompt.resolutionContext.trigger,
+           blockIndex: prompt.resolutionContext.blockIndex,
++          ...costOptionField(prompt.resolutionContext.costOption),
+           costPaymentIds: command.selectedIds ?? [],
+           confirmed: true,
+           triggerEvent: prompt.resolutionContext.triggerEvent,
+@@ -2795,6 +3055,7 @@ export function resolveEffectChoicePrompt(
+           controller: context.controller,
+           trigger: context.trigger,
+           blockIndex: context.blockIndex,
++          ...costOptionField(context.costOption),
+           costPaymentIdsByType: {
+             ...context.costPaymentIdsByType,
+             restCards: selectedIds,
+@@ -2811,7 +3072,9 @@ export function resolveEffectChoicePrompt(
+       const selectedIds = command.selectedIds ?? [];
+       const card = getCard(getInstance(state, context.sourceInstanceId).cardId);
+       const block = effectBlocksFor(card, context.trigger)[context.blockIndex];
+-      const cost = block?.costs?.find((candidate) => candidate.cost === "koCharacter");
++      const cost = effectBlockCosts(block?.costs, context.costOption)?.find(
++        (candidate) => candidate.cost === "koCharacter",
++      );
+       if (!cost) return false;
+       const liveCandidateIds = candidatesForKoCharacterCost(
+         state,
+@@ -2837,6 +3100,7 @@ export function resolveEffectChoicePrompt(
+           controller: context.controller,
+           trigger: context.trigger,
+           blockIndex: context.blockIndex,
++          ...costOptionField(context.costOption),
+           costPaymentIds: selectedIds,
+           confirmed: true,
+           triggerEvent: context.triggerEvent,
+@@ -2850,7 +3114,9 @@ export function resolveEffectChoicePrompt(
+       const selectedIds = command.selectedIds ?? [];
+       const card = getCard(getInstance(state, context.sourceInstanceId).cardId);
+       const block = effectBlocksFor(card, context.trigger)[context.blockIndex];
+-      const cost = block?.costs?.find((candidate) => candidate.cost === "trashCharacter");
++      const cost = effectBlockCosts(block?.costs, context.costOption)?.find(
++        (candidate) => candidate.cost === "trashCharacter",
++      );
+       if (!cost) return false;
+       const liveCandidateIds = candidatesForTrashCharacterCost(
+         state,
+@@ -2890,6 +3156,7 @@ export function resolveEffectChoicePrompt(
+             controller: context.controller,
+             trigger: context.trigger,
+             blockIndex: context.blockIndex,
++            ...costOptionField(context.costOption),
+             costPaymentIds: selectedIds,
+             costsPaid: true,
+             confirmed: true,
+@@ -2907,6 +3174,7 @@ export function resolveEffectChoicePrompt(
+           controller: context.controller,
+           trigger: context.trigger,
+           blockIndex: context.blockIndex,
++          ...costOptionField(context.costOption),
+           costPaymentIds: selectedIds,
+           confirmed: true,
+           triggerEvent: context.triggerEvent,
+@@ -2920,7 +3188,9 @@ export function resolveEffectChoicePrompt(
+       const selectedIds = command.selectedIds ?? [];
+       const card = getCard(getInstance(state, context.sourceInstanceId).cardId);
+       const block = effectBlocksFor(card, context.trigger)[context.blockIndex];
+-      const cost = block?.costs?.find((candidate) => candidate.cost === "revealFromHand");
++      const cost = effectBlockCosts(block?.costs, context.costOption)?.find(
++        (candidate) => candidate.cost === "revealFromHand",
++      );
+       if (!cost) {
+         return false;
+       }
+@@ -2948,6 +3218,7 @@ export function resolveEffectChoicePrompt(
+           controller: context.controller,
+           trigger: context.trigger,
+           blockIndex: context.blockIndex,
++          ...costOptionField(context.costOption),
+           costPaymentIds: selectedIds,
+           confirmed: true,
+           triggerEvent: context.triggerEvent,
+@@ -3401,7 +3672,10 @@ export function resolveEffectChoicePrompt(
+         case "playCardCost": {
+           const sourceCard = getCardForInstance(state, context.sourceInstanceId);
+           const otherCosts = (
+-            effectBlocksFor(sourceCard, continuation.trigger)[continuation.blockIndex]?.costs ?? []
++            effectBlockCosts(
++              effectBlocksFor(sourceCard, continuation.trigger)[continuation.blockIndex]?.costs,
++              continuation.costOption,
++            ) ?? []
+           ).filter((cost) => cost.cost !== "playCard");
+           if (
+             otherCosts.length > 0 &&
+@@ -3441,6 +3715,7 @@ export function resolveEffectChoicePrompt(
+               controller: context.controller,
+               trigger: continuation.trigger,
+               blockIndex: continuation.blockIndex,
++              ...costOptionField(continuation.costOption),
+               trashHandIds: continuation.trashHandIds,
+               costPaymentIds: continuation.selectedIds,
+               costPaymentIdsByType: continuation.costPaymentIdsByType,
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/commands.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/commands.ts
+index c37d0a6..0b03503 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/commands.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/commands.ts
+@@ -162,10 +162,44 @@ function resolveJoKenPoRound(
+   );
+ }
+ 
++/**
++ * Whether this command leaves MatchState.declinedActivations in place:
++ * activating an effect (it either stops at its optional cost, or resolves and
++ * clears them in processEffectBlock) and declining such an optional cost
++ * (which adds one). Any other command changes the game, after which those
++ * activations may be declined again.
++ */
++function keepsDeclinedActivations(state: MatchState, command: EngineCommand): boolean {
++  if (command.type === "activateEffect") {
++    return true;
++  }
++  if (command.type !== "resolvePrompt" || command.optionId !== "no") {
++    return false;
++  }
++  const context = state.promptQueue.find(
++    (prompt) => prompt.id === command.promptId && prompt.status === "pending",
++  )?.resolutionContext;
++  return context?.intent === "effectOptional" && context.trigger === "activateMain";
++}
++
+ export function applyQueuedCommandMutation(
+   state: MatchState,
+   command: EngineCommand,
+   context: CommandMutationContext = privateChoicesForJoKenPo(state),
++): { accepted: boolean; reason: string | null } {
++  // Decided before the command runs: resolving a prompt marks it resolved.
++  const keepDeclined = !state.declinedActivations || keepsDeclinedActivations(state, command);
++  const result = applyCommandMutation(state, command, context);
++  if (result.accepted && !keepDeclined) {
++    delete state.declinedActivations;
++  }
++  return result;
++}
++
++function applyCommandMutation(
++  state: MatchState,
++  command: EngineCommand,
++  context: CommandMutationContext,
+ ): { accepted: boolean; reason: string | null } {
+   let accepted = false;
+   let reason: string | null = null;
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/legality.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/legality.ts
+index 85a7b9b..a2dc33b 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/legality.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/legality.ts
+@@ -1,5 +1,5 @@
+ import { attackHandTrashCost, canAttackWith, legalAttackTargets } from "../battle.ts";
+-import { canPayCosts } from "../effects/actions.ts";
++import { canPayCosts, eventActivationCostsPayable } from "../effects/actions.ts";
+ import { evaluateConditions } from "../effects/conditions.ts";
+ import { isCardPlayRestricted } from "../effects/permanent.ts";
+ import {
+@@ -130,31 +130,10 @@ function eventMainCostsPayable(
+   instanceId: string,
+   cardCost: number,
+ ): boolean {
+-  const mandatoryCostBlocks = effectBlocksForInstance(state, instanceId, "main").filter(
+-    (block) => !block.optional && block.costs?.length,
+-  );
+-  if (!mandatoryCostBlocks.length) {
+-    return true;
+-  }
+-  const player = getPlayer(state, seat);
+-  const instance = getInstance(state, instanceId);
+-  const afterPlay: MatchState = {
+-    ...state,
+-    players: {
+-      ...state.players,
+-      [seat]: {
+-        ...player,
+-        activeDon: player.activeDon - cardCost,
+-        restedDon: player.restedDon + cardCost,
+-        hand: player.hand.filter((handId) => handId !== instanceId),
+-        trash: [...player.trash, instanceId],
+-      },
+-    },
+-    cards: { ...state.cards, [instanceId]: { ...instance, zone: "trash" } },
+-  };
+-  return mandatoryCostBlocks.every((block) =>
+-    canPayCosts(afterPlay, seat, instanceId, block.costs, undefined),
+-  );
++  return eventActivationCostsPayable(state, seat, "main", [instanceId], {
++    cardCost,
++    destination: "trash",
++  });
+ }
+ 
+ export function canPlayCard(
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/projection.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/projection.ts
+index d5bc6b9..b7fcdfe 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/projection.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/projection.ts
+@@ -754,15 +754,24 @@ function projectLogs(state: MatchState, viewer: Viewer): ProjectedLogEntry[] {
+       continue;
+     }
+ 
++    // A private log records hidden information (a card placed face-down in
++    // Life, a card trashed from hand): its card ids belong only to the player
++    // it concerns -- its actor, or a seat it has a private message for. The
++    // other player still sees that it happened, without the ids (they would
++    // reveal the card, e.g. OP16-119's [On Play] Life card).
++    const privy =
++      log.visibility !== "private" ||
++      viewer === log.actor ||
++      (viewer !== "spectator" && log.privateMessages[viewer] !== undefined);
+     projected.push({
+       id: log.id,
+       turn: log.turn,
+       phase: log.phase,
+       sequence: log.sequence,
+       actor: log.actor,
+-      sourceCardId: log.sourceCardId,
+-      sourceInstanceId: log.sourceInstanceId,
+-      targetIds: log.targetIds,
++      sourceCardId: privy ? log.sourceCardId : null,
++      sourceInstanceId: privy ? log.sourceInstanceId : null,
++      targetIds: privy ? log.targetIds : [],
+       eventId: log.eventId,
+       visibility: log.visibility,
+       message: viewer === "spectator" ? log.message : (log.privateMessages[viewer] ?? log.message),
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/types.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/types.ts
+index 4e42a87..4a02e51 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/types.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/types.ts
+@@ -86,6 +86,11 @@ export interface EffectBlockContinuation {
+   controller: MatchSeat;
+   trigger: EffectTrigger;
+   blockIndex: number;
++  /**
++   * Index of the option chosen for the block's "choice" cost ("You may A or
++   * B:"); absent while not chosen or when the block has no choice cost.
++   */
++  costOption?: number;
+   trashHandIds?: string[];
+   costPaymentIds?: string[];
+   costPaymentIdsByType?: {
+@@ -225,6 +230,7 @@ export type EffectPlayReplacementContinuation =
+       kind: "playCardCost";
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       selectedIds: string[];
+       trashHandIds?: string[];
+       costPaymentIdsByType?: {
+@@ -429,12 +435,27 @@ export type PromptResolutionContext =
+       action: Extract<Action, { action: "restDonForPower" }>;
+       maximum: number;
+     }
++  | {
++      // "You may A or B:" -- which alternative activation cost to pay.
++      intent: "effectCostChoice";
++      sourceInstanceId: string;
++      controller: MatchSeat;
++      trigger: EffectTrigger;
++      blockIndex: number;
++      /** Indexes of the payable options, the only ones offered. */
++      optionIndexes: number[];
++      trashHandIds?: string[];
++      costPaymentIds?: string[];
++      costPaymentIdsByType?: EffectBlockContinuation["costPaymentIdsByType"];
++      triggerEvent?: EffectBlockContinuation["triggerEvent"];
++    }
+   | {
+       intent: "effectCostGiveDon";
+       sourceInstanceId: string;
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       amount: number;
+       cost: Extract<import("@tcg/op-types").Cost, { cost: "giveDon" }>;
+       candidateIds: string[];
+@@ -450,6 +471,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       amount: number;
+       cost: Extract<import("@tcg/op-types").Cost, { cost: "trashFromHand" }>;
+       candidateIds: string[];
+@@ -471,6 +493,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       amount: number;
+       candidateIds: string[];
+       triggerEvent?: {
+@@ -489,6 +512,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       amount: number;
+       candidateIds: string[];
+       trashHandIds?: string[];
+@@ -504,6 +528,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       amount: number;
+       candidateIds: string[];
+       trashHandIds?: string[];
+@@ -518,6 +543,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       amount: number;
+       candidateIds: string[];
+       costPaymentIdsByType?: EffectBlockContinuation["costPaymentIdsByType"];
+@@ -532,6 +558,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       triggerEvent?: {
+         instanceId: string;
+         effectController: MatchSeat;
+@@ -543,6 +570,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       triggerEvent?: {
+         instanceId: string;
+         effectController: MatchSeat;
+@@ -554,6 +582,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       amount: number;
+       candidateIds: string[];
+       triggerEvent?: {
+@@ -567,6 +596,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       amount: number;
+       candidateIds: string[];
+       triggerEvent?: {
+@@ -580,6 +610,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       handAmount: number;
+       candidateIds: string[];
+       triggerEvent?: {
+@@ -593,6 +624,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       amount: number;
+       candidateIds: string[];
+       costPaymentIdsByType?: EffectBlockContinuation["costPaymentIdsByType"];
+@@ -607,6 +639,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       amount: number;
+       candidateIds: string[];
+       triggerEvent?: {
+@@ -620,6 +653,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       amount: number;
+       candidateIds: string[];
+       triggerEvent?: {
+@@ -633,6 +667,7 @@ export type PromptResolutionContext =
+       controller: MatchSeat;
+       trigger: EffectTrigger;
+       blockIndex: number;
++      costOption?: number;
+       amount: number;
+       candidateIds: string[];
+       triggerEvent?: {
+@@ -1046,6 +1081,11 @@ export type ResolutionItem =
+       trigger: EffectTrigger;
+       blockIndex: number;
+       sourceZoneChangeCounter?: number;
++      /**
++       * Index of the option chosen for the block's "choice" cost ("You may A
++       * or B:"); absent until chosen. See effectBlockCosts in effects/actions.ts.
++       */
++      costOption?: number;
+       trashHandIds?: string[];
+       costPaymentIds?: string[];
+       costPaymentIdsByType?: EffectBlockContinuation["costPaymentIdsByType"];
+@@ -1310,6 +1350,16 @@ export interface MatchState {
+   resolutionQueue: ResolutionItem[];
+   resolutionStatus: ResolutionStatus;
+   commandHistory: Array<GameCommand | JudgeCommand>;
++  /**
++   * [Activate: Main] blocks ("instanceId:trigger:blockIndex") whose optional
++   * activation cost the player declined after activating them, while nothing
++   * else has happened since. Declining means the effect was not activated
++   * (8-3-1-4), so it does not use up [Once Per Turn] (10-2-13-1) and may be
++   * activated again; but declining that repeated activation would only repeat
++   * the no-op (a loop for bots), so its optional prompt then offers no "no".
++   * Absent when empty; cleared by any other command.
++   */
++  declinedActivations?: string[];
+ }
+ 
+ export interface PromptResolution {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op02-075-shiki.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op02-075-shiki.test.ts
+index a714f62..0eb05ad 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op02-075-shiki.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op02-075-shiki.test.ts
+@@ -63,11 +63,26 @@ describe("OP02-075 Shiki", () => {
+     const donDeckBefore = engine.getView("north").players.north.donDeckCount;
+ 
+     engine.declareAttack(attacker, engine.leader("north"), "south");
+-    engine.resolveDecision("lifeTrigger", { optionId: "activate" }, "north");
++    // 8-4-1-3 / 8-3-1-3: the [Trigger]'s DON!! −1 cannot be paid in full, so
++    // the [Trigger] cannot be activated at all; the only answer left is to add
++    // Shiki to hand (10-1-5-2) instead of losing it to the trash.
++    const trigger = engine
++      .getState()
++      .promptQueue.find(
++        (p) => p.status === "pending" && p.resolutionContext?.intent === "lifeTrigger",
++      );
++    expect(trigger?.options.find((option) => option.id === "activate")?.enabled).toBe(false);
++    engine.expectFailure({
++      type: "resolvePrompt",
++      seat: "north",
++      promptId: trigger!.id,
++      optionId: "activate",
++    });
++    engine.resolveDecision("lifeTrigger", { optionId: "skip" }, "north");
+ 
+     const view = engine.getView("north");
+     expect(view.players.north.characters.some((card) => card?.instanceId === shiki)).toBe(false);
+-    expect(view.players.north.trash.map((card) => card.instanceId)).toContain(shiki);
++    expect(view.players.north.hand.map((card) => card.instanceId)).toContain(shiki);
+     expect(view.players.north.donDeckCount).toBe(donDeckBefore);
+     expect(view.prompts).toHaveLength(0);
+   });
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op03-116-shirahoshi.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op03-116-shirahoshi.test.ts
+index 659df4c..736714a 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op03-116-shirahoshi.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op03-116-shirahoshi.test.ts
+@@ -97,7 +97,7 @@ describe("OP03-116 Shirahoshi", () => {
+     const deckBefore = engine.getView("north").players.north.deckCount;
+ 
+     engine.declareAttack(attackerId, engine.leader("north"), "south");
+-    engine.resolveDecision("lifeTrigger", { optionId: "decline" }, "north");
++    engine.resolveDecision("lifeTrigger", { optionId: "skip" }, "north");
+ 
+     const view = engine.getView("north");
+     expect(view.players.north.hand.map((card) => card.instanceId)).toContain(shirahoshiId);
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op03-117-napoleon.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op03-117-napoleon.test.ts
+index 447ddab..b06bb73 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op03-117-napoleon.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op03-117-napoleon.test.ts
+@@ -122,7 +122,7 @@ describe("OP03-117 Napoleon", () => {
+     const napoleonId = engine.findCardInZone("north", "life", op03Napoleon117);
+ 
+     engine.declareAttack(attackerId, engine.leader("north"), "south");
+-    engine.resolveDecision("lifeTrigger", { optionId: "decline" }, "north");
++    engine.resolveDecision("lifeTrigger", { optionId: "skip" }, "north");
+ 
+     const view = engine.getView("north");
+     expect(view.players.north.hand.map((card) => card.instanceId)).toContain(napoleonId);
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op04-052-black-maria.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op04-052-black-maria.test.ts
+index 507c358..bc9d981 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op04-052-black-maria.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op04-052-black-maria.test.ts
+@@ -107,7 +107,7 @@ describe("OP04-052 Black Maria", () => {
+     const blackMariaId = engine.findCardInZone("north", "life", op04BlackMaria052);
+ 
+     engine.declareAttack(attackerId, engine.leader("north"), "south");
+-    engine.resolveDecision("lifeTrigger", { optionId: "decline" }, "north");
++    engine.resolveDecision("lifeTrigger", { optionId: "skip" }, "north");
+ 
+     const view = engine.getView("north");
+     expect(view.players.north.hand.map((card) => card.instanceId)).toContain(blackMariaId);
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op04-067-miss-merrychristmas-drophy.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op04-067-miss-merrychristmas-drophy.test.ts
+index 20c0c74..d1a69e9 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op04-067-miss-merrychristmas-drophy.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op04-067-miss-merrychristmas-drophy.test.ts
+@@ -93,7 +93,7 @@ describe("OP04-067 Miss.MerryChristmas(Drophy)", () => {
+     );
+ 
+     engine.declareAttack(attackerId, engine.leader("north"), "south");
+-    engine.resolveDecision("lifeTrigger", { optionId: "decline" }, "north");
++    engine.resolveDecision("lifeTrigger", { optionId: "skip" }, "north");
+ 
+     const view = engine.getView("north");
+     expect(view.players.north.activeDon).toBe(1);
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/activation-costs-other-paths.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/activation-costs-other-paths.test.ts
+new file mode 100644
+index 0000000..f4b77d2
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/activation-costs-other-paths.test.ts
+@@ -0,0 +1,247 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  op01UltiMortar118,
++  op04Rebecca039,
++  op15Mamaragan078,
++  op15Sabo046,
++} from "@tcg/op-cards";
++import type { EventCard } from "@tcg/op-types";
++
++import { registerCards } from "../../../../cards/src/runtime-catalog.ts";
++import { getLegalCommands, OnePieceTestEngine } from "../../../src/index.ts";
++
++// 8-4-1-3: activating an effect means paying all its activation costs, and
++// 8-3-1-3: an activation cost that cannot be paid in full cannot be paid at
++// all, so the effect cannot be activated. Patch 0007 applies this to playing
++// an Event for its [Main]; the same holds when an Event is used in the
++// Counter Step (7-1-3-1-2), activated by another effect ("activate 1 Event
++// from your hand"), or has its [Main] activated by its own [Trigger] (rules
++// FAQ on OP03-074 Top Knot: its [Main] cannot be activated without paying
++// its DON!! −X).
++
++function testEvent(id: string, overrides: Partial<EventCard>): EventCard {
++  return {
++    ...op15Mamaragan078,
++    id,
++    canonicalId: id,
++    slug: id.toLowerCase(),
++    name: id,
++    printings: [{ ...op15Mamaragan078.printings[0]!, id, artId: id }],
++    ...overrides,
++  };
++}
++
++// {Dressrosa} Events whose [Main] costs DON!! −8 / DON!! −1 (mandatory).
++const dressrosaMinusEight = testEvent("TEST-DRESSROSA-MAIN-DON-MINUS-8", {
++  cost: 1,
++  traits: ["Dressrosa"],
++  effects: {
++    effects: [
++      {
++        trigger: "main",
++        costs: [{ cost: "returnDon", amount: 8 }],
++        actions: [{ action: "draw", player: "self", amount: 1 }],
++      },
++    ],
++  },
++});
++const dressrosaMinusOne = testEvent("TEST-DRESSROSA-MAIN-DON-MINUS-1", {
++  cost: 1,
++  traits: ["Dressrosa"],
++  effects: {
++    effects: [
++      {
++        trigger: "main",
++        costs: [{ cost: "returnDon", amount: 1 }],
++        actions: [{ action: "draw", player: "self", amount: 1 }],
++      },
++    ],
++  },
++});
++// [Main] DON!! −2: Draw 1 card. [Trigger] Activate this card's [Main] effect.
++const triggerActivatesMain = testEvent("TEST-TRIGGER-ACTIVATES-MAIN-DON-MINUS-2", {
++  cost: 1,
++  trigger: "Activate this card's [Main] effect.",
++  effects: {
++    effects: [
++      {
++        trigger: "main",
++        costs: [{ cost: "returnDon", amount: 2 }],
++        actions: [{ action: "draw", player: "self", amount: 1 }],
++      },
++      { trigger: "trigger", actions: [{ action: "activateEffect", effectTrigger: "main" }] },
++    ],
++  },
++});
++
++registerCards([dressrosaMinusEight, dressrosaMinusOne, triggerActivatesMain]);
++
++describe("Counter Step: an Event's mandatory [Counter] cost must be payable", () => {
++  /** North's Doma (6000) attacks south's Leader; south holds the given hand. */
++  function counterStep(south: { hand: EventCard[]; activeDon: number }) {
++    const engine = OnePieceTestEngine.create(
++      { hand: south.hand, activeDon: south.activeDon, deck: [eb01Doma005, eb01Doma005] },
++      { character: [eb01Doma005], activeDon: 5 },
++    );
++    engine.endTurn("south");
++    engine.asNorth().attack(eb01Doma005, engine.asSouth().leader());
++    return engine;
++  }
++
++  function counterOption(engine: OnePieceTestEngine, instanceId: string) {
++    const prompt = engine
++      .getState()
++      .promptQueue.find(
++        (candidate) =>
++          candidate.status === "pending" && candidate.resolutionContext?.intent === "battleCounter",
++      );
++    return prompt?.options.find((option) => option.id === instanceId);
++  }
++
++  test("OP01-118 Ulti-Mortar (DON!! −2) with 1 DON!! on the field is disabled and rejected", () => {
++    const engine = counterStep({ hand: [op01UltiMortar118], activeDon: 1 });
++    const mortarId = engine.findCardInZone("south", "hand", op01UltiMortar118);
++
++    expect(counterOption(engine, mortarId)?.enabled).toBe(false);
++    const promptId = engine.pendingDecision("battleCounter", "south").id;
++    engine.expectFailure({
++      type: "resolvePrompt",
++      seat: "south",
++      promptId,
++      selectedIds: [mortarId],
++    });
++  });
++
++  test("OP01-118 with 2 DON!! on the field can be used, and pays DON!! −2", () => {
++    const engine = counterStep({ hand: [op01UltiMortar118], activeDon: 2 });
++    const mortarId = engine.findCardInZone("south", "hand", op01UltiMortar118);
++
++    expect(counterOption(engine, mortarId)?.enabled).toBe(true);
++    engine.asSouth().chooseCounter(op01UltiMortar118);
++
++    expect(engine.getView("south").players.south).toMatchObject({ activeDon: 0, restedDon: 0 });
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("two Events cannot share DON!! cards their DON!! −X costs both need", () => {
++    // 3 DON!!: either Ulti-Mortar alone works (cost 1, then DON!! −2 from the
++    // 3 DON!! still on the field), but both need 2 + 4 > 3.
++    const engine = counterStep({ hand: [op01UltiMortar118, op01UltiMortar118], activeDon: 3 });
++    const [firstId, secondId] = engine.getState().players.south.hand;
++
++    expect(counterOption(engine, firstId!)?.enabled).toBe(true);
++    expect(counterOption(engine, secondId!)?.enabled).toBe(true);
++    const promptId = engine.pendingDecision("battleCounter", "south").id;
++    engine.expectFailure({
++      type: "resolvePrompt",
++      seat: "south",
++      promptId,
++      selectedIds: [firstId!, secondId!],
++    });
++    engine.resolveDecision("battleCounter", { selectedIds: [firstId!] }, "south");
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++});
++
++describe("activateEvent: an Event whose mandatory [Main] cost cannot be paid is not a choice", () => {
++  test("OP15-046 Sabo offers only the Dressrosa Event whose DON!! −X fits the field", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op04Rebecca039,
++        hand: [op15Sabo046, dressrosaMinusEight, dressrosaMinusOne],
++        deck: [eb01Doma005, eb01Doma005],
++        activeDon: 7,
++        donDeckCount: 3,
++      },
++      {},
++    );
++    const minusEightId = engine.findCardInZone("south", "hand", dressrosaMinusEight);
++    const minusOneId = engine.findCardInZone("south", "hand", dressrosaMinusOne);
++
++    // Sabo costs 7: 7 DON!! stay on the field, too few for DON!! −8.
++    engine.playCard(op15Sabo046, "south");
++    const target = engine.pendingDecision("effectTargetSelection", "south").steps[0];
++    if (target?.kind !== "selectEntity") throw new Error("Expected the Event choice.");
++    expect(target.candidates.map((candidate) => candidate.ref.id)).toEqual([minusOneId]);
++    const promptId = engine.pendingDecision("effectTargetSelection", "south").id;
++    engine.expectFailure({
++      type: "resolvePrompt",
++      seat: "south",
++      promptId,
++      selectedIds: [minusEightId],
++    });
++
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [minusOneId] }, "south");
++    const south = engine.getView("south").players.south;
++    expect(south.donDeckCount).toBe(4);
++    expect(south.hand.map((card) => card.instanceId)).toContain(minusEightId);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++});
++
++describe("[Trigger] Activate this card's [Main]: an unpayable [Main] cost is not activated", () => {
++  function triggerFromLife(activeDon: number) {
++    const engine = OnePieceTestEngine.create(
++      {
++        life: [triggerActivatesMain, eb01Doma005],
++        deck: [eb01Doma005, eb01Doma005],
++        activeDon,
++        donDeckCount: 10 - activeDon,
++      },
++      { character: ["OP16-012"], activeDon: 5 },
++    );
++    engine.endTurn("south");
++    // An empty hand means no Counter Step prompt: straight to the damage.
++    engine.asNorth().attack("OP16-012", engine.asSouth().leader());
++    engine.resolveDecision("lifeTrigger", { optionId: "activate" }, "south");
++    return engine;
++  }
++
++  test("with 1 DON!! on the field the [Main] (DON!! −2) does nothing, with no judge record", () => {
++    const engine = triggerFromLife(1);
++
++    const south = engine.getView("south").players.south;
++    expect(south).toMatchObject({ activeDon: 1, donDeckCount: 9, handCount: 0 });
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++    expect(engine.getState().promptQueue.filter((p) => p.status === "pending")).toHaveLength(0);
++  });
++
++  test("with 2 DON!! on the field the [Main] pays DON!! −2 and draws", () => {
++    const engine = triggerFromLife(2);
++
++    const south = engine.getView("south").players.south;
++    expect(south).toMatchObject({ activeDon: 0, donDeckCount: 10, handCount: 1 });
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++});
++
++describe("a [Trigger] with a mandatory cost that cannot be paid cannot be activated", () => {
++  test("its activate answer is disabled and rejected; skipping adds the card to hand", () => {
++    // EB01-038 Oh Come My Way: "[Trigger] DON!! −1: Draw 2 cards."
++    const engine = OnePieceTestEngine.create(
++      { life: ["EB01-038", eb01Doma005], deck: [eb01Doma005, eb01Doma005] },
++      { character: ["OP16-012"], activeDon: 5 },
++    );
++    engine.endTurn("south");
++    engine.asNorth().attack("OP16-012", engine.asSouth().leader());
++    const prompt = engine
++      .getState()
++      .promptQueue.find(
++        (p) => p.status === "pending" && p.resolutionContext?.intent === "lifeTrigger",
++      );
++    expect(prompt?.options.find((option) => option.id === "activate")?.enabled).toBe(false);
++    engine.expectFailure({
++      type: "resolvePrompt",
++      seat: "south",
++      promptId: prompt!.id,
++      optionId: "activate",
++    });
++
++    engine.resolveDecision("lifeTrigger", { optionId: "skip" }, "south");
++    expect(engine.getView("south").players.south.hand.map((card) => card.cardId)).toEqual([
++      "EB01-038",
++    ]);
++    expect(getLegalCommands(engine.getState(), "north").length).toBeGreaterThan(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/declined-activation.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/declined-activation.test.ts
+new file mode 100644
+index 0000000..213fa99
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/declined-activation.test.ts
+@@ -0,0 +1,158 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb02ThousandSunny009,
++  st30LuffyAce001,
++  st30MonkeyDLuffy012,
++  st31ThousandSunny005,
++} from "@tcg/op-cards";
++
++import { getLegalCommands, OnePieceTestEngine } from "../../../src/index.ts";
++
++// "[Activate: Main] You may <cost>: ...". Declining the cost after activating
++// means the effect was not activated (8-3-1-4), so it does not use up [Once
++// Per Turn] (10-2-13-1; OP09 FAQ on OP09-001 Shanks: an [Once Per Turn] effect
++// not activated the first time can still be activated later) and it may be
++// activated again. But activate-then-decline changes nothing, so repeating it
++// is an endless no-op for bots: activated again before anything else happens,
++// the effect can no longer be declined (it commits to paying the cost).
++
++function canActivate(engine: OnePieceTestEngine, sourceId: string): boolean {
++  return getLegalCommands(engine.getState(), "south").some(
++    (command) => command.type === "activateEffect" && command.sourceId === sourceId,
++  );
++}
++
++function optionalAnswers(engine: OnePieceTestEngine): Array<[string, boolean]> {
++  const prompt = engine
++    .getState()
++    .promptQueue.find(
++      (candidate) =>
++        candidate.status === "pending" && candidate.resolutionContext?.intent === "effectOptional",
++    );
++  if (!prompt) throw new Error("Expected a pending effectOptional prompt.");
++  return prompt.options.map((option) => [option.id, option.enabled !== false]);
++}
++
++function sunnyEngine() {
++  return OnePieceTestEngine.create(
++    {
++      leaderCardId: st30LuffyAce001,
++      stage: st31ThousandSunny005,
++      character: [st30MonkeyDLuffy012],
++      activeDon: 2,
++      restedDon: 2,
++    },
++    {},
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++}
++
++describe("a declined [Activate: Main] cannot be declined again until something else happens", () => {
++  test("ST31-005 Thousand Sunny: activated again at once, it must be paid", () => {
++    const engine = sunnyEngine();
++    const sunnyId = engine.findCardInZone("south", "stage", st31ThousandSunny005);
++    const luffyId = engine.findCardInZone("south", "character", st30MonkeyDLuffy012);
++
++    engine.activateEffect(sunnyId, "activateMain", "south");
++    expect(optionalAnswers(engine)).toEqual([
++      ["yes", true],
++      ["no", true],
++    ]);
++    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
++    expect(engine.getView("south").players.south.stage?.rested).toBe(false);
++
++    // Still legal: declining did not activate it.
++    expect(canActivate(engine, sunnyId)).toBe(true);
++    engine.activateEffect(sunnyId, "activateMain", "south");
++    expect(optionalAnswers(engine)).toEqual([
++      ["yes", true],
++      ["no", false],
++    ]);
++    const promptId = engine.pendingDecision("effectOptional", "south").id;
++    engine.expectFailure({ type: "resolvePrompt", seat: "south", promptId, optionId: "no" });
++
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    engine.resolveDecision("effectGiveDonCount", { optionId: "1" }, "south");
++    const view = engine.getView("south").players.south;
++    expect(view.stage?.rested).toBe(true);
++    expect(view.characters.find((card) => card?.instanceId === luffyId)?.attachedDon).toBe(1);
++  });
++
++  test("after another action the activation can be declined again", () => {
++    const engine = sunnyEngine();
++    const sunnyId = engine.findCardInZone("south", "stage", st31ThousandSunny005);
++    const luffyId = engine.findCardInZone("south", "character", st30MonkeyDLuffy012);
++
++    engine.activateEffect(sunnyId, "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
++    engine.attachDon(luffyId, 1, "south");
++
++    engine.activateEffect(sunnyId, "activateMain", "south");
++    expect(optionalAnswers(engine)).toEqual([
++      ["yes", true],
++      ["no", true],
++    ]);
++    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
++    expect(engine.getView("south").players.south.stage?.rested).toBe(false);
++  });
++
++  test("two declined activations cannot alternate: each must be paid next time", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: "OP17-020",
++        stage: eb02ThousandSunny009,
++        character: [{ card: st30MonkeyDLuffy012, attachedDon: 1 }],
++        hand: ["EB01-005"],
++        activeDon: 3,
++      },
++      { character: [{ cardId: "OP13-013", rested: true }] },
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const shanksId = engine.leader("south");
++    const sunnyId = engine.findCardInZone("south", "stage", eb02ThousandSunny009);
++
++    engine.activateEffect(shanksId, "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
++    engine.activateEffect(sunnyId, "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
++
++    engine.activateEffect(shanksId, "activateMain", "south");
++    expect(optionalAnswers(engine)).toEqual([
++      ["yes", true],
++      ["no", false],
++    ]);
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    // Paying Shanks's cost changed the game: Sunny may be declined again.
++    engine.resolveDecision("effectCostChoice", { optionId: "1" }, "south");
++    engine.resolveDecision(
++      "effectTargetSelection",
++      { selectedIds: [engine.findCardInZone("north", "character", "OP13-013")] },
++      "south",
++    );
++    engine.activateEffect(sunnyId, "activateMain", "south");
++    expect(optionalAnswers(engine)).toEqual([
++      ["yes", true],
++      ["no", true],
++    ]);
++  });
++
++  test("declining does not use up [Once Per Turn] (OP17-020 Shanks)", () => {
++    const engine = OnePieceTestEngine.create(
++      { leaderCardId: "OP17-020", hand: [], activeDon: 3 },
++      { character: [{ cardId: "OP13-013", rested: true }] },
++    );
++    const shanksId = engine.leader("south");
++    const higumaId = engine.findCardInZone("north", "character", "OP13-013");
++
++    engine.activateEffect(shanksId, "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
++
++    expect(canActivate(engine, shanksId)).toBe(true);
++    engine.activateEffect(shanksId, "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [higumaId] }, "south");
++    expect(engine.getView("south").players.south).toMatchObject({ activeDon: 2, restedDon: 1 });
++    // Now it has been activated and resolved: [Once Per Turn] is used up.
++    expect(canActivate(engine, shanksId)).toBe(false);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/prompt-answer-validation.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/prompt-answer-validation.test.ts
+new file mode 100644
+index 0000000..c90db72
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/prompt-answer-validation.test.ts
+@@ -0,0 +1,110 @@
++import { describe, expect, test } from "vite-plus/test";
++import { eb01Doma005, eb01Fourtricks025, op03Zeff047 } from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// A yes/no style prompt only accepts its own answers. An unknown option id
++// used to be read as the negative answer, so a client or bot sending a wrong
++// id silently skipped a [Trigger] (10-1-5-2 makes skipping a choice, not a
++// default) or an optional effect.
++
++function pendingPromptId(engine: OnePieceTestEngine, intent: string): string {
++  const prompt = engine
++    .getState()
++    .promptQueue.find((p) => p.status === "pending" && p.resolutionContext?.intent === intent);
++  if (!prompt) throw new Error(`Expected a pending ${intent} prompt.`);
++  return prompt.id;
++}
++
++describe("lifeTrigger prompts reject unknown answers", () => {
++  function lifeTriggerEngine() {
++    // OP06-058 Gravity Blade Raging Tiger has a free [Trigger].
++    const engine = OnePieceTestEngine.create(
++      { life: ["OP06-058", eb01Doma005], deck: [eb01Doma005, eb01Doma005] },
++      { character: ["OP16-012"], activeDon: 5 },
++    );
++    engine.endTurn("south");
++    engine.asNorth().attack("OP16-012", engine.asSouth().leader());
++    return engine;
++  }
++
++  test("an id that is not activate/skip is rejected and the prompt stays", () => {
++    const engine = lifeTriggerEngine();
++    const promptId = pendingPromptId(engine, "lifeTrigger");
++
++    for (const optionId of ["bogus", "yes", "no", "decline", undefined]) {
++      const result = engine.expectFailure({
++        type: "resolvePrompt",
++        seat: "south",
++        promptId,
++        optionId,
++      });
++      expect(result.reason).toBe("Prompt resolution could not be applied.");
++    }
++    expect(pendingPromptId(engine, "lifeTrigger")).toBe(promptId);
++    expect(engine.getView("south").players.south.handCount).toBe(0);
++  });
++
++  test("skip still adds the card to hand, and activate still activates the [Trigger]", () => {
++    const skipped = lifeTriggerEngine();
++    skipped.resolveDecision("lifeTrigger", { optionId: "skip" }, "south");
++    expect(skipped.getView("south").players.south.hand.map((card) => card.cardId)).toEqual([
++      "OP06-058",
++    ]);
++
++    const activated = lifeTriggerEngine();
++    activated.resolveDecision("lifeTrigger", { optionId: "activate" }, "south");
++    expect(activated.getView("south").players.south.handCount).toBe(0);
++    expect(
++      activated
++        .getState()
++        .promptQueue.some(
++          (p) => p.status === "pending" && p.resolutionContext?.intent === "effectTargetSelection",
++        ),
++    ).toBe(true);
++  });
++});
++
++describe("optional effect prompts reject unknown answers", () => {
++  test("effectOptional accepts only yes and no", () => {
++    const engine = OnePieceTestEngine.create(
++      { leaderCardId: "OP17-020", hand: [], activeDon: 5 },
++      { character: [{ cardId: "OP13-013", rested: true }] },
++    );
++    engine.activateEffect(engine.leader("south"), "activateMain", "south");
++    const promptId = pendingPromptId(engine, "effectOptional");
++
++    for (const optionId of ["skip", "activate", "maybe", undefined]) {
++      engine.expectFailure({ type: "resolvePrompt", seat: "south", promptId, optionId });
++    }
++    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
++    expect(engine.getView("south").players.south.activeDon).toBe(5);
++  });
++
++  test("effectActionOptional accepts only yes and no", () => {
++    // OP03-047 Zeff: "...Then, you may trash 2 cards from the top of your deck."
++    const engine = OnePieceTestEngine.create(
++      {
++        hand: [op03Zeff047],
++        deck: [eb01Doma005, eb01Doma005, eb01Doma005],
++        activeDon: op03Zeff047.cost,
++      },
++      { character: [eb01Fourtricks025] },
++    );
++    engine.playCard(op03Zeff047, "south");
++    engine.resolveDecision(
++      "effectTargetSelection",
++      { selectedIds: [engine.findCardInZone("north", "character", eb01Fourtricks025)] },
++      "south",
++    );
++    const promptId = pendingPromptId(engine, "effectActionOptional");
++
++    for (const optionId of ["skip", "activate", "maybe", undefined]) {
++      engine.expectFailure({ type: "resolvePrompt", seat: "south", promptId, optionId });
++    }
++    expect(pendingPromptId(engine, "effectActionOptional")).toBe(promptId);
++    engine.resolveDecision("effectActionOptional", { optionId: "no" }, "south");
++    expect(engine.getView("south").players.south.trash).toHaveLength(0);
++    expect(engine.getView("south").players.south.deckCount).toBe(3);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/rest-cards-cost-don.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/rest-cards-cost-don.test.ts
+new file mode 100644
+index 0000000..8f9ce38
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/rest-cards-cost-don.test.ts
+@@ -0,0 +1,219 @@
++import { describe, expect, test } from "vite-plus/test";
++import { eb01Doma005 } from "@tcg/op-cards";
++import type { CharacterCard } from "@tcg/op-types";
++
++import { registerCards } from "../../../../cards/src/runtime-catalog.ts";
++import type { MatchSeat } from "../../../src/index.ts";
++import { getLegalCommands, OnePieceTestEngine } from "../../../src/index.ts";
++
++// "You may rest N of your cards:" (Cost restCards with no filter). OP14/EB04
++// FAQ on OP14-020 Dracule Mihawk: "You can activate this effect by resting 1
++// of your active Leader, Character, Stage, or DON!! cards." DON!! cards in the
++// cost area are cards too, and the player chooses which card to rest whenever
++// there is a real choice. A filtered cost ("rest 1 of your Characters") still
++// names only those cards.
++
++// "[Activate: Main] ① You may rest 1 of your cards: Draw 1 card." -- a DON!!
++// card cannot pay both the ① (restDon) and the "rest 1 of your cards".
++const restDonAndRestCard: CharacterCard = {
++  ...eb01Doma005,
++  id: "TEST-REST-DON-AND-REST-CARD",
++  canonicalId: "TEST-REST-DON-AND-REST-CARD",
++  slug: "test-rest-don-and-rest-card",
++  name: "TEST-REST-DON-AND-REST-CARD",
++  printings: [
++    {
++      ...eb01Doma005.printings[0]!,
++      id: "TEST-REST-DON-AND-REST-CARD",
++      artId: "TEST-REST-DON-AND-REST-CARD",
++    },
++  ],
++  effects: {
++    effects: [
++      {
++        trigger: "activateMain",
++        optional: true,
++        costs: [
++          { cost: "restDon", amount: 1 },
++          { cost: "restCards", amount: 1 },
++        ],
++        actions: [{ action: "draw", player: "self", amount: 1 }],
++      },
++    ],
++  },
++};
++registerCards([restDonAndRestCard]);
++
++function withRestedLeader(engine: OnePieceTestEngine, seat: MatchSeat): OnePieceTestEngine {
++  const state = structuredClone(engine.getState());
++  state.cards[state.players[seat].leaderInstanceId]!.rested = true;
++  return OnePieceTestEngine.fromState(state);
++}
++
++/** North's 6000-power Benn.Beckman attacks south's 5000-power Shanks Leader. */
++function northAttacksShanks(engine: OnePieceTestEngine) {
++  engine.endTurn("south");
++  engine.asNorth().attack("OP16-012", engine.asSouth().leader());
++}
++
++describe("rest N of your cards (restCards) can rest active DON!! cards", () => {
++  test("OP17-037 [Counter]: with the Leader rested, an active DON!! pays the cost", () => {
++    const engine = withRestedLeader(
++      OnePieceTestEngine.create(
++        { leaderCardId: "OP17-020", hand: ["OP17-037"], activeDon: 2 },
++        { character: ["OP16-012"], activeDon: 5 },
++      ),
++      "south",
++    );
++    const lifeBefore = engine.getView("south").players.south.lifeCount;
++
++    northAttacksShanks(engine);
++    engine.asSouth().chooseCounter("OP17-037");
++    // The event cost rests 1 DON!!; the remaining active DON!! is the only
++    // card to rest, so it is rested without a prompt.
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    expect(() => engine.pendingDecision("effectCostRestCards", "south")).toThrow();
++    engine.resolveDecision(
++      "effectTargetSelection",
++      { selectedIds: [engine.leader("south")] },
++      "south",
++    );
++
++    const south = engine.getView("south").players.south;
++    expect(south).toMatchObject({ activeDon: 0, restedDon: 2, lifeCount: lifeBefore });
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("OP17-037 [Counter]: an active Leader and a DON!! are both offered", () => {
++    const engine = OnePieceTestEngine.create(
++      { leaderCardId: "OP17-020", hand: ["OP17-037"], activeDon: 2 },
++      { character: ["OP16-012"], activeDon: 5 },
++    );
++    const lifeBefore = engine.getView("south").players.south.lifeCount;
++
++    northAttacksShanks(engine);
++    engine.asSouth().chooseCounter("OP17-037");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    const cost = engine.pendingDecision("effectCostRestCards", "south").steps[0];
++    if (cost?.kind !== "payCost") throw new Error("Expected the rest cost.");
++    expect(cost.candidates.map((candidate) => candidate.ref.id)).toEqual([
++      engine.leader("south"),
++      "active-don:0",
++    ]);
++    engine.resolveDecision("effectCostRestCards", { selectedIds: ["active-don:0"] }, "south");
++    engine.resolveDecision(
++      "effectTargetSelection",
++      { selectedIds: [engine.leader("south")] },
++      "south",
++    );
++
++    const view = engine.getView("south");
++    expect(view.players.south).toMatchObject({
++      activeDon: 0,
++      restedDon: 2,
++      lifeCount: lifeBefore,
++    });
++    expect(view.players.south.leader.rested).toBe(false);
++  });
++
++  test("OP14-020 Mihawk asks whether to rest the Leader or a DON!! instead of resting the Leader", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: "OP14-020",
++        character: ["OP13-014"],
++        activeDon: 1,
++        restedDon: 2,
++      },
++      {},
++    );
++    const roguId = engine.findCardInZone("south", "character", "OP13-014");
++
++    engine.activateEffect(engine.leader("south"), "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    const cost = engine.pendingDecision("effectCostRestCards", "south").steps[0];
++    if (cost?.kind !== "payCost") throw new Error("Expected the rest cost.");
++    expect(cost.candidates.map((candidate) => candidate.ref.id)).toEqual([
++      engine.leader("south"),
++      roguId,
++      "active-don:0",
++    ]);
++    engine.resolveDecision("effectCostRestCards", { selectedIds: ["active-don:0"] }, "south");
++
++    const view = engine.getView("south");
++    expect(view.players.south.leader.rested).toBe(false);
++    expect(view.players.south.characters.find((c) => c?.instanceId === roguId)?.rested).toBe(false);
++    expect(view.players.south).toMatchObject({ activeDon: 0, restedDon: 3 });
++  });
++
++  test("a DON!! id that is not one of the active DON!! cards is rejected", () => {
++    const engine = OnePieceTestEngine.create({ leaderCardId: "OP14-020", activeDon: 1 }, {});
++
++    engine.activateEffect(engine.leader("south"), "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    const promptId = engine.pendingDecision("effectCostRestCards", "south").id;
++    for (const selectedIds of [["active-don:1"], ["active-don:0", "active-don:0"], []]) {
++      engine.expectFailure({ type: "resolvePrompt", seat: "south", promptId, selectedIds });
++    }
++  });
++
++  test("with no active DON!!, the only active card is still rested without a prompt", () => {
++    const engine = OnePieceTestEngine.create({ leaderCardId: "OP14-020", restedDon: 3 }, {});
++
++    engine.activateEffect(engine.leader("south"), "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    expect(() => engine.pendingDecision("effectCostRestCards", "south")).toThrow();
++
++    expect(engine.getView("south").players.south.leader.rested).toBe(true);
++  });
++
++  test("one active DON!! cannot pay both a ① and a 'rest 1 of your cards' cost", () => {
++    const rested = (activeDon: number) =>
++      withRestedLeader(
++        OnePieceTestEngine.create(
++          {
++            character: [{ card: restDonAndRestCard, rested: true, playedOnTurn: 0 }],
++            deck: [eb01Doma005, eb01Doma005],
++            activeDon,
++          },
++          {},
++        ),
++        "south",
++      );
++    const canActivate = (engine: OnePieceTestEngine) =>
++      getLegalCommands(engine.getState(), "south").some(
++        (command) => command.type === "activateEffect",
++      );
++
++    // Leader and Character rested: only DON!! can pay the rest-1 cost.
++    expect(canActivate(rested(1))).toBe(false);
++    const engine = rested(2);
++    expect(canActivate(engine)).toBe(true);
++    const sourceId = engine.findCardInZone("south", "character", restDonAndRestCard);
++    engine.activateEffect(sourceId, "activateMain", "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++    expect(engine.getView("south").players.south).toMatchObject({
++      activeDon: 0,
++      restedDon: 2,
++      handCount: 1,
++    });
++  });
++
++  test("a filtered cost ('rest 1 of your Characters') does not take DON!!", () => {
++    // OP05-089 Saint Mjosgard: "You may rest 1 of your DON!! cards, this
++    // Character and 1 of your other Characters: ...". Without another
++    // Character the activation cannot be paid, however many DON!! are active.
++    const engine = OnePieceTestEngine.create(
++      { character: [{ cardId: "OP05-089", playedOnTurn: 0 }], activeDon: 5 },
++      {},
++    );
++    const mjosgardId = engine.findCardInZone("south", "character", "OP05-089");
++
++    const result = engine.expectFailure({
++      type: "activateEffect",
++      seat: "south",
++      sourceInstanceId: mjosgardId,
++      trigger: "activateMain",
++    });
++    expect(result.reason).toMatch(/activation costs cannot be paid/);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/index.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/index.test.ts
+index ec1235e..7f9f4f9 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/index.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/index.test.ts
+@@ -847,11 +847,12 @@ describe("@tcg/op-engine", () => {
+       selectedIds: [],
+     });
+     const triggerPrompt = findPendingPromptByIntent(resolvedCounter.state, "lifeTrigger");
++    // The prompt's own answers are "activate" and "skip"; other ids are rejected.
+     const resolvedTrigger = applyCommand(resolvedCounter.state, {
+       type: "resolvePrompt",
+       seat: "north",
+       promptId: triggerPrompt!.id,
+-      optionId: "no",
++      optionId: "skip",
+     });
+ 
+     expect(triggerPrompt).toBeDefined();
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/cost.ts b/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/cost.ts
+index 1472df7..d9d5f9a 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/cost.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/cost.ts
+@@ -24,7 +24,22 @@ export type Cost =
+   | KoCharacterCost
+   | PlayCardCost
+   | TrashCardCost
+-  | ModifyLeaderPowerCost;
++  | ModifyLeaderPowerCost
++  | ChoiceCost;
++
++/**
++ * Alternative activation costs: "You may A or B:" (OP17-020 Shanks: "trash 1
++ * card from your hand or rest 1 of your DON!! cards"). Exactly one option is
++ * paid; each option is a list of costs paid in printed order (8-3-1-1). The
++ * cost is payable when any option is (8-3-1-3 applies to the option chosen),
++ * and the controller chooses when more than one is payable (OP17 FAQ: with no
++ * cards in hand the DON!! option can still be paid). A block holds at most one
++ * choice cost, and options do not nest.
++ */
++export interface ChoiceCost {
++  cost: "choice";
++  options: Array<Array<Exclude<Cost, ChoiceCost>>>;
++}
+ 
+ export interface CardCostOption {
+   zones: Zone[];
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/index.ts b/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/index.ts
+index a66d29f..bdd0642 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/index.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/index.ts
+@@ -50,6 +50,7 @@ export type {
+ export type {
+   AddLifeToHandCost,
+   CardCostOption,
++  ChoiceCost,
+   Cost,
+   ModifyLeaderPowerCost,
+   PlayCardCost,
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/types/src/index.ts b/vendor/tcg-engines/submodules/one-piece/packages/types/src/index.ts
+index 3a41d78..55f6627 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/types/src/index.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/types/src/index.ts
+@@ -25,6 +25,7 @@ export type {
+   CannotBeKodAction,
+   CannotBeRemovedAction,
+   CardEffects,
++  ChoiceCost,
+   Comparison,
+   Condition,
+   Cost,

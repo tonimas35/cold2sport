@@ -1,0 +1,2283 @@
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+index 2a546d8..84c827a 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+@@ -172,7 +172,7 @@ reconciles catalog entries.
+ | EB04-025     | Nefeltari Vivi                                  | verified | Filtered non-Vivi hand play and opponent-chosen cross-player deck transfer                                                                                                                               |
+ | EB04-026     | Bluegrass                                       | verified | Opposing cost-1 bottom-deck boundary and attack draw-before-trash ordering                                                                                                                               |
+ | EB04-027     | Boa Hancock - EB04-027                          | verified | On Play draw 2 then trash and filtered Life Trigger hand play                                                                                                                                            |
+-| EB04-030     | Kaido                                           | verified | DON!! -2, conditional Rush, unconditional rest target, and battle K.O. replacement                                                                                                                       |
++| EB04-030     | Kaido                                           | verified | DON!! -2; Rush and the Then rest of a cost-7-or-less Character both need an Animal Kingdom Pirates Leader (4-10-2, 8-3-3), the cost is paid either way; battle K.O. replacement |
+ | EB04-031     | King                                            | verified | No-other-King gate, active/rested DON!! adds, once per turn, and battle K.O. replacement                                                                                                                 |
+ | EB04-032     | Queen                                           | verified | Included-type hand cost and draw; post-cost Leader gate and rested DON!! add                                                                                                                             |
+ | EB04-033     | Groggy Monsters                                 | verified | DON!! return cost, included Foxy Pirates count, and base-power K.O. boundary                                                                                                                             |
+@@ -1547,7 +1547,7 @@ reconciles catalog entries.
+ | OP15-070 | Fuza | verified |Name-based Shura Unblockable grant proven through unblocked 6000-power attack vs a Blocker; opponent-turn base-power 6000 swap|
+ | OP15-071 | Holly | verified |Name-based Ohm Double Attack grant proven through two-Life leader damage; opponent-turn base-power 6000 swap|
+ | OP15-072 | Hotori | verified | Printed behavior is unstructured |
+-| OP15-073 | Yama | verified |Blocker keyword; on-play cost-1 Heavenly Warriors hand play|
++| OP15-073 | Yama | verified | Blocker keyword; on-play cost-1 hand play of [Heavenly Warriors] or a {Vassals} type Character |
+ | OP15-079 | Absalom | verified |On-K.O. Thriller Bark Pirates trash-to-hand return incl. self candidate|
+ | OP15-080 | Oars | verified |Gecko-Moria-10000 and no-other-Oars gated +7000; on-K.O. three-trash-cards cost replays itself from trash (printed base power 0 flagged as upstream-unverified)|
+ | OP15-081 | Sanji | verified |Straw-Hat-Leader gated 5-card deck trash|
+@@ -1675,8 +1675,8 @@ reconciles catalog entries.
+ | OP16-112 | Boa Hancock | vanilla | Parameterized vanilla invariant batch |
+ | OP16-113 | Boa Marigold | verified | Conditional [Blocker] at 2-or-less Life intercepts and is K.O.'d; no-blocker boundary above the threshold |
+ | OP16-114 | Laffitte | verified | On K.O. K.O.s up to 1 opposing Character of cost 4 or less; Life Trigger activates the On K.O. |
+-| OP16-118 | Portgas.D.Ace | verified | Hand counters of 8000-power Characters become +2000 (counter battle save); On Play/K.O. look-5 search |
+-| OP16-119 | Marshall.D.Teach | verified | On Play look-3 adds a card face-down to the top of Life and bottom-orders the rest; decline boundary |
++| OP16-118 | Portgas.D.Ace | verified | While on the field, hand counters of 8000-power Characters become +2000: replaces a printed +1000, two Aces still +2000 (OP16 FAQ, 2-10-4), nothing from hand (2-8-2); On Play/K.O. look-5 search |
++| OP16-119 | Marshall.D.Teach | verified | On Play look-3 adds a card face-down to the top of Life and bottom-orders the rest; decline boundary; [Trigger] negates up to 1 opposing Character, then K.O.s an independent cost-5-or-less target |
+ | OP17-002 | Atmos | verified | permanent |
+ | OP17-003 | Izo | verified | RushCharacter; On Play Newgate or Land of Wano Leader gate gives a rested opposing Character -6000 this turn |
+ | OP17-004 | Inuarashi & Nekomamushi | verified | Printed behavior is unstructured |
+@@ -1708,7 +1708,7 @@ reconciles catalog entries.
+ | OP17-034 | Rockstar | verified | Opponent-leader 6000+ gate (mutation killed), DON!! set, Red-Haired Leader 6000 base with cross-turn expiry |
+ | OP17-035 | Roronoa Zoro | vanilla | Parameterized vanilla invariant batch |
+ | OP17-040 | Edward.Newgate | verified | On Play draw; once-per-turn trash-1 Leader +3000 this battle when the Rocks Leader attacks (whenYouAttack, ordered against the Leader [When Attacking]) or is attacked (before Blocker/Counter); Character attack, Character target and non-Rocks Leader do not activate |
+-| OP17-041 | Wang Zhi | verified | Blocker |
++| OP17-041 | Wang Zhi | verified | Blocker; On Play optional trash 1 bottom-decks every opposing base-cost-1 Character in the owner's chosen order; decline and empty-hand boundaries |
+ | OP17-042 | Kaido | verified | Optional 3-card Rocks Pirates reveal cost gives an opposing Character -3000 this turn (was +3000); unpayable-cost and decline boundaries |
+ | OP17-043 | Ganzui | verified | On Play Leader base power 6000 until the opponent's next End Phase; leave-the-field replacement (battle K.O. and opposing removal) trashes 2 hand cards, not offered with 1 card |
+ | OP17-044 | Captain John | verified | activateMain, permanent |
+@@ -1725,8 +1725,8 @@ reconciles catalog entries.
+ | OP17-059 | Aramaki | verified | onPlay |
+ | OP17-060 | Ulti & Page One | verified | onPlay |
+ | OP17-061 | Lead Performers | verified | onPlay, activateMain |
+-| OP17-062 | Kaido | verified | whenDonReturned |
+-| OP17-063 | Kaido | verified | activateMain |
++| OP17-062 | Kaido | verified | Your-turn once-per-turn DON!! return adds up to 1 active DON!!, then sets up to 1 DON!! active; not on the opponent's turn |
++| OP17-063 | Kaido | verified | On the field, no-Counter Character cards in hand have Counter +1000 (highest Counter applies: +2000 with OP16-118, no stacking, nothing from hand); played-this-turn DON!! -1 negates a cost-6-or-less Character and K.O.s that same Character |
+ | OP17-064 | King | verified | onOpponentAttack |
+ | OP17-065 | Queen | verified | onPlay |
+ | OP17-066 | Kurozumi Orochi | verified | onPlay |
+@@ -1737,7 +1737,7 @@ reconciles catalog entries.
+ | OP17-071 | Who's.Who | verified | onPlay, Life Trigger |
+ | OP17-072 | Black Maria | verified | onOpponentAttack |
+ | OP17-073 | Basil Hawkins | verified | Printed behavior is unstructured |
+-| OP17-074 | Yamato | verified | Blocker |
++| OP17-074 | Yamato | verified | Blocker; On Play adds up to 1 rested DON!! (0 allowed, no prompt with an empty DON!! deck) |
+ | OP17-075 | X.Drake | verified | onPlay |
+ | OP17-080 | Usopp | verified | onPlay, permanent |
+ | OP17-081 | Gerd | verified | onPlay, permanent |
+@@ -1758,8 +1758,8 @@ reconciles catalog entries.
+ | OP17-100 | Capone"Gang"Bege | vanilla | Parameterized vanilla invariant batch |
+ | OP17-101 | Caribou | verified | activateMain, Life Trigger |
+ | OP17-102 | Charlotte Oven | verified | onKo, Life Trigger |
+-| OP17-103 | Charlotte Katakuri | verified | onPlay, Life Trigger |
+-| OP17-104 | Charlotte Cracker | verified | onPlay; Life Trigger plays it |
++| OP17-103 | Charlotte Katakuri | verified | onPlay Big Mom Pirates Leader gate covers the Life add and the Then -3000; Life Trigger |
++| OP17-104 | Charlotte Cracker | verified | onPlay; [Trigger] plays it (no On Play on the opponent's turn); counts as a [Trigger] card for OP17-109 and OP17-112 |
+ | OP17-105 | Charlotte Chiffon | verified | onPlay |
+ | OP17-106 | Charlotte Smoothie | verified | onPlay, Life Trigger |
+ | OP17-107 | Charlotte Daifuku | verified | Life Trigger |
+@@ -1767,7 +1767,7 @@ reconciles catalog entries.
+ | OP17-109 | Charlotte Pudding | verified | onPlay, Life Trigger |
+ | OP17-110 | Charlotte Perospero | verified | onPlay, Life Trigger |
+ | OP17-111 | Charlotte Mont-d'or | verified | onPlay, Life Trigger |
+-| OP17-112 | Charlotte Linlin | verified | onPlay |
++| OP17-112 | Charlotte Linlin | verified | Your-turn static: own [Trigger] Characters with 4000 base power have 8000 base power (no longer 4000 for other effects, OP17 FAQ); onPlay draw and choose-one |
+ | OP17-113 | Streusen | verified | onPlay |
+ | OP17-114 | Sweet 3 Generals | verified | onPlay, Life Trigger |
+ | OP17-118 | Rocks.D.Xebec | verified | On Play draw + exact {Rocks Pirates} replay (Former Rocks Pirates excluded) with different names under total cost 9; over-budget picks rejected, cards over 9 alone not offered; +2000 Counter in hand only with 1+ Characters and none with a Counter (0 Characters: none, per FAQ) |
+@@ -1874,8 +1874,8 @@ reconciles catalog entries.
+ | ST30-012 | Monkey.D.Luffy | verified | Optional rest-1-DON!! On Play cost grants Rush this turn (unpayable with 0 active DON!!, ST-30 FAQ); When Attacking rests only an opposing [Blocker] Character |
+ | ST31-001 | Sanji | verified | DON!! x2 Rush on the turn played; On Play draw then play a Straw Hat Crew Character of cost 5 or less other than [Sanji] (drawn card eligible) |
+ | ST31-004 | Monkey.D.Luffy | verified | On Play per-Straw-Hat debuff via amountFromMatchingCards (trait mutation killed); Rush threshold; self-count always >=1 |
+-| ST32-002 | Kouzuki Oden | verified | onPlay |
+-| ST34-002 | Charlotte Cracker | verified | On Play action-level Big Mom Pirates Leader gate on the rested DON!! add only; Then K.O. cost 2 or less resolves with any Leader |
++| ST32-002 | Kouzuki Oden | verified | onPlay draw and cannot-be-rested lock on an opposing Character with base cost 6 or less |
++| ST34-002 | Charlotte Cracker | verified | On Play Big Mom Pirates Leader gate on both the rested DON!! add and the Then K.O. of cost 2 or less (4-10-2, 8-3-3); empty DON!! deck still K.O.s (ST34 FAQ) |
+ | ST34-003 | Charlotte Brulee | verified | On Play top-3 search reveals only Big Mom Pirates cards (Character or Event); remainder to bottom in chosen order |
+ | ST34-004 | Charlotte Linlin | verified | Optional DON!! -4 then trash-from-hand cost (trash prompt kept when DON!! sit in one pool); Life from deck top; opposing base power 0 this turn |
+ 
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
+index a5195ab..ae46510 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
+@@ -256,7 +256,7 @@ reconciles catalog entries.
+ | OP11-116 | Merman Combat Ultramarine | verified | Owner-neutral Main and opponent-only Trigger route chosen Characters to top/bottom owner Life face-up |
+ | OP12-016 | To Never Doubt--That Is Power! | verified | Main give-2-DON blocker denial; [Counter] +2000 Character save |
+ | OP12-017 | Color of Observation Haki | verified | Main give-DON look-4 red Event reveal with bottom-order |
+-| OP12-018 | Color of the Supreme King Haki | verified | [Counter] +2000 Character boost, then a separate optional rest-1-DON!! (not offered with 0 active DON!!) for the -1000 opponent board drop |
++| OP12-018 | Color of the Supreme King Haki | verified | [Counter] +2000 to a Character or a [Silvers Rayleigh] (OP12-001 Leader included), then a separate optional rest-1-DON!! (not offered with 0 active DON!!) for the -1000 opponent board drop |
+ | OP12-019 | Color of Arms Haki | verified | Main give-DON boosts [Silvers Rayleigh]; [Counter] +2000 save |
+ | OP12-037 | Demon Aura Nine Sword Style Asura Blades Drawn Dead Man's Game | verified | Optional three-DON!! cost and aggregate Character/DON!! rest choice; mandatory Leader Counter power |
+ | OP12-038 | Two-Sword Style Rashomon | verified | Optional two-DON!! cost before two rested base-cost-4 K.O.s; mandatory Leader Counter power |
+@@ -319,9 +319,9 @@ reconciles catalog entries.
+ | OP15-054 | And No One Else Can Have It! It's Our Memento of Him | verified | Lucy-gated choice: draw 2, trash 1, play Dressrosa cost-4-or-less; or return a Stage to hand |
+ | OP15-055 | Go Ahead and Use 'Em, Mr. Luffy!!! | verified | Choice: draw 2 or grant a Dressrosa Character [Blocker] |
+ | OP15-056 | Would You Let Me Eat the Flame-Flame Fruit? | verified | Main draws 2 and a [Lucy] Leader gains [Double Attack] +3000 (deals 2 damage) |
+-| OP15-074 | Varie | verified | DON!! −1 Enel-gated draw with +2 cost grant (unplayable without 1 DON!! on the field, paid from given DON!! too); [Counter] saves the Leader with +2000 |
+-| OP15-075 | El Thor | verified | DON!! −1 Enel-gated +1000 and K.O. of 3000-or-less power; unplayable without 1 DON!! on the field |
+-| OP15-076 | Lightning Beast Kiten | verified | DON!! −1 Enel-gated draw with -1000 power give; unplayable without 1 DON!! on the field |
++| OP15-074 | Varie | verified | DON!! −1; the draw and the Then +2 cost both need an [Enel] Leader (4-10-2, 8-3-3), the cost is paid either way (unplayable without 1 DON!! on the field, paid from given DON!! too); [Counter] saves the Leader with +2000 |
++| OP15-075 | El Thor | verified | DON!! −1; the +1000 and the Then K.O. of 3000-or-less power both need an [Enel] Leader, the cost is paid either way; unplayable without 1 DON!! on the field |
++| OP15-076 | Lightning Beast Kiten | verified | DON!! −1; the draw and the Then -1000 power both need an [Enel] Leader, the cost is paid either way; unplayable without 1 DON!! on the field |
+ | OP15-077 | Lightning Dragon | verified | DON!! −1 draw and freeze of a rested 6000-or-less Character through refresh (power filter checked); unplayable without 1 DON!! on the field |
+ | OP15-078 | Mamaragan | verified | DON!! −2 draw and rest of a 5000-or-less Character with power filter; unplayable with fewer than 2 DON!! on the field |
+ | OP15-095 | Gum-Gum Storm | verified | rest-DON cost with 15-trash gate gives a Straw Hat card +3000; sub-threshold boundary |
+@@ -349,13 +349,13 @@ reconciles catalog entries.
+ | OP17-017 | Ga Ha Ha Ha!! | verified | [Counter] boosts a Whitebeard card +2000 and drops an opposing card -2000 (text sign fixed) |
+ | OP17-018 | The Power to Destroy the World | verified | Main rest-2-DON K.O.s an opposing Stage; [Counter] 2x8000-base gate +4000 save |
+ | OP17-019 | I Don't Have Time to Chat with Snot-Nosed Brats | verified | Main look-5 Whitebeard Pirates reveal with bottom-order |
+-| OP17-036 | Withdraw Now and Allow Me to Save Face | verified | Main rest-6-DON rests a Character then K.O.s rested cost-6-or-less targets |
++| OP17-036 | Withdraw Now and Allow Me to Save Face | verified | Main rest-6-DON rests a Character then K.O.s rested cost-6-or-less targets; [Counter] +4000 to a [Shanks] Leader or Character |
+ | OP17-037 | Are You That Afraid of the New Era?! | verified | Main look-5 Red-Haired Pirates reveal with bottom-order |
+ | OP17-038 | I Think He's Seen an Ugly Future... | verified | Main rest-4-cards cost rests an opposing Character; [Counter] optional trash +3000 save |
+ | OP17-055 | There's No Authority in the World That Lasts Forever!!! | verified | Main rest-DON gives a [Rocks.D.Xebec] Leader or Character [Unblockable] (opposing Blocker not offered); [Counter] Rocks Pirates +2000 save |
+ | OP17-056 | Rocks Pirates | verified | Main rest-5-DON returns a cost-6-or-less Character to its owner's hand; [Counter] cost-0 +2000 for the battle to a Leader or Character whose type includes Rocks Pirates |
+ | OP17-076 | Wo Ro Ro Ro Ro... I Think I've Sobered Up | verified | [Counter] optional hand trash saves the Leader with +3000; Life Trigger optional DON!!-1 draws 2, with decline |
+-| OP17-077 | Kundali Dragon Swarm | verified | Main Animal-Kingdom-gated rest-3-DON + trash 2 hand adds 3 rested DON with DON accounting |
++| OP17-077 | Kundali Dragon Swarm | verified | Main rest-3-DON + trash 2 hand adds 3 rested DON only with an Animal Kingdom Pirates Leader (costs paid either way) with DON accounting |
+ | OP17-078 | Drunken Dragon Bagua | verified | Main rest-2-DON + trash 2 hand adds 3 rested DON for an Animal Kingdom Leader |
+ | OP17-096 | I'm Luffy!! The Man Who Will Be King of the Pirates!! | verified | [Counter] gated on a cost-12-or-more Character; no such card exists so it auto-declines |
+ | OP17-097 | I'll Feed on This Rage and Use It to Bring the World to Ruin!!! | verified | Main gives all opposing Characters +1 cost; damage lands after the uncountered attack |
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/eb04-030-kaido.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/eb04-030-kaido.ts
+index 53b3388..c45bfa0 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/eb04-030-kaido.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/eb04-030-kaido.ts
+@@ -55,6 +55,8 @@ export const op14eb04Kaido030: CharacterCard = {
+               match: "exact",
+             },
+           },
++          // "Then, rest ...": after an unresolved "if" this cannot resolve
++          // either (4-10-2, 8-3-3); the DON!! -2 cost is still paid.
+           {
+             action: "rest",
+             target: {
+@@ -72,6 +74,11 @@ export const op14eb04Kaido030: CharacterCard = {
+                 },
+               ],
+             },
++            condition: {
++              condition: "leaderTrait",
++              trait: "Animal Kingdom Pirates",
++              match: "includes",
++            },
+           },
+         ],
+         optional: true,
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-073-yama.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-073-yama.ts
+index 2e0d0e5..972f600 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-073-yama.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-073-yama.ts
+@@ -43,6 +43,9 @@ export const op15Yama073: CharacterCard = {
+               amount: 1,
+               upTo: true,
+             },
++            // "[Heavenly Warriors] with a cost of 1 or ... {Vassals} type
++            // Character card with a cost of 1". "includes" because the catalog
++            // stores some type lists as one joined string ("Sky Island Vassals").
+             filters: [
+               {
+                 filter: "cost",
+@@ -50,8 +53,14 @@ export const op15Yama073: CharacterCard = {
+                 value: 1,
+               },
+               {
+-                filter: "name",
+-                value: "Heavenly Warriors",
++                filter: "anyOf",
++                groups: [
++                  [{ filter: "name", value: "Heavenly Warriors" }],
++                  [
++                    { filter: "cardCategory", value: "character" },
++                    { filter: "trait", value: "Vassals", match: "includes" },
++                  ],
++                ],
+               },
+             ],
+           },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-119-marshall-d-teach.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-119-marshall-d-teach.ts
+index a28fef1..c41cf50 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-119-marshall-d-teach.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op16-119-marshall-d-teach.ts
+@@ -59,6 +59,43 @@ export const op16MarshallDTeach119: CharacterCard = {
+           },
+         ],
+       },
++      {
++        // The K.O. target is chosen on its own: it need not be the Character
++        // whose effect was negated.
++        trigger: "trigger",
++        actions: [
++          {
++            action: "negateEffects",
++            target: {
++              player: "opponent",
++              zones: ["character"],
++              count: {
++                amount: 1,
++                upTo: true,
++              },
++            },
++            duration: "thisTurn",
++          },
++          {
++            action: "ko",
++            target: {
++              player: "opponent",
++              zones: ["character"],
++              count: {
++                amount: 1,
++                upTo: true,
++              },
++              filters: [
++                {
++                  filter: "cost",
++                  comparison: "lte",
++                  value: 5,
++                },
++              ],
++            },
++          },
++        ],
++      },
+     ],
+   },
+   i18n: op16MarshallDTeach119I18n,
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-041-wang-zhi.i18n.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-041-wang-zhi.i18n.ts
+index 9a5493b..4422842 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-041-wang-zhi.i18n.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-041-wang-zhi.i18n.ts
+@@ -4,7 +4,7 @@ export const op17WangZhi041I18n: OPCardI18n = {
+   en: {
+     name: "Wang Zhi",
+     effect:
+-      "[Blocker]\n\n[On Play] You may trash 1 card from your hand: Place all of your opponent's Characters with a base cost of 1 at the bottom of the owner's deck in any order of the owner's choosing",
++      "[Blocker]\n[On Play] You may trash 1 card from your hand: Place all of your opponent's Characters with a base cost of 1 at the bottom of the owner's deck in any order of the owner's choosing.",
+     imageUrl: "https://www.optcgapi.com/media/static/Card_Images/OP17-041_gnId094.jpg",
+   },
+ };
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-041-wang-zhi.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-041-wang-zhi.ts
+index d63e026..dbd463a 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-041-wang-zhi.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-041-wang-zhi.ts
+@@ -25,9 +25,43 @@ export const op17WangZhi041: CharacterCard = {
+   traits: ["Rocks Pirates"],
+   attribute: "strike",
+   effect:
+-    "[Blocker]\n\n[On Play] You may trash 1 card from your hand: Place all of your opponent's Characters with a base cost of 1 at the bottom of the owner's deck in any order of the owner's choosing",
++    "[Blocker]\n[On Play] You may trash 1 card from your hand: Place all of your opponent's Characters with a base cost of 1 at the bottom of the owner's deck in any order of the owner's choosing.",
+   effects: {
+     keywords: ["blocker"],
++    effects: [
++      {
++        trigger: "onPlay",
++        costs: [
++          {
++            cost: "trashFromHand",
++            amount: 1,
++          },
++        ],
++        actions: [
++          // The owner orders its own cards at the bottom of its deck
++          // (returnToDeck prompts the owner when it places 2 or more).
++          {
++            action: "returnToDeck",
++            target: {
++              player: "opponent",
++              zones: ["character"],
++              count: {
++                amount: "all",
++              },
++              filters: [
++                {
++                  filter: "baseCost",
++                  comparison: "eq",
++                  value: 1,
++                },
++              ],
++            },
++            position: "bottom",
++          },
++        ],
++        optional: true,
++      },
++    ],
+   },
+   i18n: op17WangZhi041I18n,
+ };
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-062-kaido.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-062-kaido.ts
+index 3a17733..fb3d01f 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-062-kaido.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-062-kaido.ts
+@@ -66,6 +66,14 @@ export const op17Kaido062: CharacterCard = {
+           },
+         ],
+         actions: [
++          {
++            action: "addDon",
++            count: {
++              amount: 1,
++              upTo: true,
++            },
++            state: "active",
++          },
+           {
+             action: "setActive",
+             target: {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-063-kaido.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-063-kaido.ts
+index d3f17a6..3153bd5 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-063-kaido.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-063-kaido.ts
+@@ -37,6 +37,29 @@ export const op17Kaido063: CharacterCard = {
+   effect:
+     "All Character cards in your hand without a Counter have a +1000 Counter.\n[Activate: Main] [Once Per Turn] DON!! -1: If this Character was played on this turn, negate the effect of up to 1 of your opponent's Characters with a cost of 6 or less during this turn, and K.O. it.",
+   effects: {
++    // "All Character cards in your hand without a Counter have a +1000
++    // Counter." Only the highest Counter applies (2-10-4), so with OP16-118
++    // Ace an 8000-power card is Counter +2000, not +3000 (OP17 FAQ).
++    permanentEffects: [
++      {
++        actions: [
++          {
++            action: "modifyCounter",
++            target: {
++              player: "self",
++              zones: ["hand"],
++              count: { amount: "all" },
++              filters: [
++                { filter: "cardCategory", value: "character" },
++                { filter: "counter", comparison: "eq", value: 0 },
++              ],
++            },
++            value: 1000,
++            duration: "permanent",
++          },
++        ],
++      },
++    ],
+     effects: [
+       {
+         trigger: "activateMain",
+@@ -72,6 +95,8 @@ export const op17Kaido063: CharacterCard = {
+                 },
+                 duration: "thisTurn",
+               },
++              // "and K.O. it": the Character chosen for the negate, so
++              // choosing none K.O.s nothing.
+               {
+                 action: "ko",
+                 target: {
+@@ -81,6 +106,7 @@ export const op17Kaido063: CharacterCard = {
+                     amount: 1,
+                   },
+                 },
++                previousActionTargets: true,
+               },
+             ],
+           },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-074-yamato.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-074-yamato.ts
+index fcf35c1..e6e64fc 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-074-yamato.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-074-yamato.ts
+@@ -29,6 +29,21 @@ export const op17Yamato074: CharacterCard = {
+     "[Blocker] (After your opponent declares an attack, you may rest this card to make it the new target of the attack.)\n[On Play] Add up to 1 DON!! card as rested from your DON!! deck.",
+   effects: {
+     keywords: ["blocker"],
++    effects: [
++      {
++        trigger: "onPlay",
++        actions: [
++          {
++            action: "addDon",
++            count: {
++              amount: 1,
++              upTo: true,
++            },
++            state: "rested",
++          },
++        ],
++      },
++    ],
+   },
+   i18n: op17Yamato074I18n,
+ };
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-112-charlotte-linlin.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-112-charlotte-linlin.ts
+index cca5f31..d2e6ec7 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-112-charlotte-linlin.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-112-charlotte-linlin.ts
+@@ -46,6 +46,36 @@ export const op17CharlotteLinlin112: CharacterCard = {
+   effect:
+     "[Your Turn] The base power of all of your Characters with a [Trigger] and 4000 base power becomes 8000.\n[On Play] Draw 1 card, then choose one:\n•Add up to 1 card from the top of your deck to the top of your Life cards.\n• Add up to 1 card from the top of your opponent's Life cards to the owner's hand.",
+   effects: {
++    // "[Your Turn] The base power of all of your Characters with a [Trigger]
++    // and 4000 base power becomes 8000." The "base power" filter is read
++    // without this effect (getPermanentSetBasePower guards re-entry), and
++    // other effects then see 8000, not 4000 (OP17 FAQ).
++    permanentEffects: [
++      {
++        conditions: [
++          {
++            condition: "turn",
++            value: "your",
++          },
++        ],
++        actions: [
++          {
++            action: "setBasePower",
++            target: {
++              player: "self",
++              zones: ["character"],
++              count: { amount: "all" },
++              filters: [
++                { filter: "hasTrigger", value: true },
++                { filter: "basePower", comparison: "eq", value: 4000 },
++              ],
++            },
++            value: 8000,
++            duration: "permanent",
++          },
++        ],
++      },
++    ],
+     effects: [
+       {
+         trigger: "onPlay",
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st32-002-kouzuki-oden.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st32-002-kouzuki-oden.ts
+index 7ef6718..a4413fc 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st32-002-kouzuki-oden.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st32-002-kouzuki-oden.ts
+@@ -47,6 +47,13 @@ export const st32KouzukiOden002: CharacterCard = {
+                 amount: 1,
+                 upTo: true,
+               },
++              filters: [
++                {
++                  filter: "baseCost",
++                  comparison: "lte",
++                  value: 6,
++                },
++              ],
+             },
+             duration: "untilEndOfOpponentNextEndPhase",
+           },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.ts
+index e719489..bd1ee0c 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.ts
+@@ -34,8 +34,10 @@ export const st34CharlotteCracker002: CharacterCard = {
+       {
+         trigger: "onPlay",
+         actions: [
+-          // The "If" gates only the DON!! add; "Then, K.O." resolves whatever
+-          // the Leader is (4-10-2, 8-3-3; same convention as OP07-109).
++          // "If A, B. Then, C.": a "Then" clause after an "if" clause that is
++          // not resolved cannot be resolved either (4-10-2, 8-3-3; OP14/EB04
++          // FAQ for OP14-078 and OP14-112), so both actions carry the Leader
++          // check. An empty DON!! deck does not stop the K.O. (ST34 FAQ).
+           {
+             action: "addDon",
+             count: {
+@@ -66,6 +68,11 @@ export const st34CharlotteCracker002: CharacterCard = {
+                 },
+               ],
+             },
++            condition: {
++              condition: "leaderTrait",
++              trait: "Big Mom Pirates",
++              match: "includes",
++            },
+           },
+         ],
+       },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op12-018-color-of-the-supreme-king-haki.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op12-018-color-of-the-supreme-king-haki.ts
+index 10d8ed3..5d93bb3 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op12-018-color-of-the-supreme-king-haki.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op12-018-color-of-the-supreme-king-haki.ts
+@@ -29,15 +29,27 @@ export const op12ColorOfTheSupremeKingHaki018: EventCard = {
+       {
+         trigger: "counter",
+         actions: [
++          // "Up to 1 of your Characters or [Silvers Rayleigh]": any of your
++          // Characters, or a card named [Silvers Rayleigh] such as the OP12-001
++          // Leader.
+           {
+             action: "modifyPower",
+             target: {
+               player: "self",
+-              zones: ["character"],
++              zones: ["leader", "character"],
+               count: {
+                 amount: 1,
+                 upTo: true,
+               },
++              filters: [
++                {
++                  filter: "anyOf",
++                  filters: [
++                    { filter: "cardCategory", value: "character" },
++                    { filter: "name", value: "Silvers Rayleigh" },
++                  ],
++                },
++              ],
+             },
+             value: 2000,
+             duration: "thisBattle",
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-074-varie.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-074-varie.ts
+index 3a9e40b..d58fede 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-074-varie.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-074-varie.ts
+@@ -44,6 +44,8 @@ export const op15Varie074: EventCard = {
+               name: "Enel",
+             },
+           },
++          // "Then, ..." also needs the [Enel] Leader (4-10-2, 8-3-3); the
++          // DON!! -1 before the colon is paid either way.
+           {
+             action: "modifyCost",
+             target: {
+@@ -56,6 +58,10 @@ export const op15Varie074: EventCard = {
+             },
+             value: 2,
+             duration: "untilEndOfOpponentNextEndPhase",
++            condition: {
++              condition: "leaderName",
++              name: "Enel",
++            },
+           },
+         ],
+       },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-075-el-thor.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-075-el-thor.ts
+index 5ace3f3..af93940 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-075-el-thor.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-075-el-thor.ts
+@@ -52,6 +52,8 @@ export const op15ElThor075: EventCard = {
+               name: "Enel",
+             },
+           },
++          // "Then, K.O. ..." also needs the [Enel] Leader (4-10-2, 8-3-3);
++          // the DON!! -1 before the colon is paid either way.
+           {
+             action: "ko",
+             target: {
+@@ -69,6 +71,10 @@ export const op15ElThor075: EventCard = {
+                 },
+               ],
+             },
++            condition: {
++              condition: "leaderName",
++              name: "Enel",
++            },
+           },
+         ],
+       },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-076-lightning-beast-kiten.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-076-lightning-beast-kiten.ts
+index 7214d9b..7b4ecfc 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-076-lightning-beast-kiten.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-076-lightning-beast-kiten.ts
+@@ -53,6 +53,8 @@ export const op15LightningBeastKiten076: EventCard = {
+               name: "Enel",
+             },
+           },
++          // "Then, ..." also needs the [Enel] Leader (4-10-2, 8-3-3); the
++          // DON!! -1 before the colon is paid either way.
+           {
+             action: "modifyPower",
+             target: {
+@@ -65,6 +67,10 @@ export const op15LightningBeastKiten076: EventCard = {
+             },
+             value: -1000,
+             duration: "thisTurn",
++            condition: {
++              condition: "leaderName",
++              name: "Enel",
++            },
+           },
+         ],
+       },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-036-withdraw-now-and-allow-me-to-save-face.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-036-withdraw-now-and-allow-me-to-save-face.ts
+index b620953..d3fb6c8 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-036-withdraw-now-and-allow-me-to-save-face.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-036-withdraw-now-and-allow-me-to-save-face.ts
+@@ -71,6 +71,32 @@ export const op17WithdrawNowAndAllowMeToSaveFace036: EventCard = {
+         ],
+         optional: true,
+       },
++      {
++        // "[Counter] Up to 1 of your [Shanks] gains +4000 power during this
++        // battle." A [Shanks] Leader (OP17-020) is a legal target.
++        trigger: "counter",
++        actions: [
++          {
++            action: "modifyPower",
++            target: {
++              player: "self",
++              zones: ["leader", "character"],
++              count: {
++                amount: 1,
++                upTo: true,
++              },
++              filters: [
++                {
++                  filter: "name",
++                  value: "Shanks",
++                },
++              ],
++            },
++            value: 4000,
++            duration: "thisBattle",
++          },
++        ],
++      },
+     ],
+   },
+   i18n: op17WithdrawNowAndAllowMeToSaveFace036I18n,
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-077-kundali-dragon-swarm.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-077-kundali-dragon-swarm.ts
+index 6ab490b..4834eea 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-077-kundali-dragon-swarm.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op17-077-kundali-dragon-swarm.ts
+@@ -40,6 +40,8 @@ export const op17KundaliDragonSwarm077: EventCard = {
+         ],
+         optional: true,
+         actions: [
++          // The costs before the colon are paid with any Leader; the DON!!
++          // are added only with an {Animal Kingdom Pirates} Leader (8-3-3).
+           {
+             action: "addDon",
+             count: {
+@@ -47,6 +49,11 @@ export const op17KundaliDragonSwarm077: EventCard = {
+               upTo: true,
+             },
+             state: "rested",
++            condition: {
++              condition: "leaderTrait",
++              trait: "Animal Kingdom Pirates",
++              match: "includes",
++            },
+           },
+         ],
+       },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/characters/073-yama.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/characters/073-yama.test.ts
+index cea78d5..f667003 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/characters/073-yama.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/characters/073-yama.test.ts
+@@ -27,6 +27,44 @@ describe("OP15-073 Yama", () => {
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
++  test("[On Play] can play a cost-1 {Vassals} type Character card instead", () => {
++    // "Play up to 1 [Heavenly Warriors] with a cost of 1 or up to 1 {Vassals}
++    // type Character card with a cost of 1 from your hand."
++    const engine = OnePieceTestEngine.create(
++      {
++        hand: [
++          op15Yama073,
++          op15HeavenlyWarriors068,
++          "OP15-061", // Ohm: Vassals, cost 1
++          "OP05-106", // Shura: Vassals, cost 2
++          "OP13-013", // Higuma: cost 1, not Vassals
++        ],
++        activeDon: 4,
++      },
++      {},
++    );
++    const ohmId = engine.findCardInZone("south", "hand", "OP15-061");
++    const warriorId = engine.findCardInZone("south", "hand", op15HeavenlyWarriors068);
++
++    engine.playCard(op15Yama073);
++
++    const play = engine.pendingDecision("effectPlaySelection", "south").steps[0];
++    if (play?.kind !== "selectEntity") throw new Error("Expected Yama's play choice.");
++    const legal = play.candidates
++      .filter((candidate) => candidate.legal)
++      .map((candidate) => candidate.ref.id);
++    expect(legal.sort()).toEqual([ohmId, warriorId].sort());
++    expect(play.max).toBe(1);
++    engine.resolveDecision("effectPlaySelection", { selectedIds: [ohmId] }, "south");
++    // Ohm's own "[On Play] DON!! −1: Draw 1 card." activates; decline it.
++    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
++
++    const south = engine.getView("south").players.south;
++    expect(south.characters.some((card) => card?.instanceId === ohmId)).toBe(true);
++    expect(south.hand.map((card) => card.instanceId)).toContain(warriorId);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
+   test("[Continuous] survives the turn handoff", () => {
+     const engine = OnePieceTestEngine.create(
+       { character: [{ cardId: "OP15-073", attachedDon: 1 }], activeDon: 5 },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/074-varie.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/074-varie.test.ts
+index 528acd9..295253b 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/074-varie.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/074-varie.test.ts
+@@ -32,6 +32,27 @@ describe("OP15-074 Varie", () => {
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
++  test("[Main] with a non-[Enel] Leader pays DON!! −1 but neither draws nor gives +2 cost", () => {
++    // "If your Leader is [Enel], draw 1 card. Then, ...": the "Then" clause
++    // depends on the "if" too (4-10-2, 8-3-3; OP14/EB04 FAQ for OP14-078 and
++    // OP14-112). The DON!! −1 before the colon is still paid.
++    const engine = OnePieceTestEngine.create(
++      { hand: ["OP15-074", "EB01-005"], character: ["OP15-060"], activeDon: 5 },
++      {},
++    );
++    const enelId = engine.findCardInZone("south", "character", "OP15-060");
++    const donBefore = engine.getView("south").players.south;
++
++    engine.playCard("OP15-074");
++
++    const south = engine.getView("south").players.south;
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    expect(south.hand.map((card) => card.cardId)).toEqual(["EB01-005"]);
++    expect(south.characters.find((card) => card?.instanceId === enelId)?.cost).toBe(6);
++    expect(south.activeDon).toBe(donBefore.activeDon - 1);
++    expect(south.donDeckCount).toBe(donBefore.donDeckCount + 1);
++  });
++
+   test("[Main] cannot be played with no DON!! on the field to pay DON!! −1 (8-3-1-3)", () => {
+     const engine = OnePieceTestEngine.create(
+       {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/075-el-thor.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/075-el-thor.test.ts
+index f66ee30..e2e25e2 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/075-el-thor.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/075-el-thor.test.ts
+@@ -40,6 +40,26 @@ describe("OP15-075 El Thor", () => {
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
++  test("[Main] with a non-[Enel] Leader pays DON!! −1 but neither boosts nor K.O.s", () => {
++    // The "Then, K.O." depends on the "If your Leader is [Enel]" clause too
++    // (4-10-2, 8-3-3; OP14/EB04 FAQ for OP14-078 and OP14-112).
++    const engine = OnePieceTestEngine.create(
++      { hand: ["OP15-075"], character: ["OP16-005"], activeDon: 5 },
++      { character: ["OP13-013"] },
++    );
++    const higumaId = engine.findCardInZone("north", "character", "OP13-013");
++    const donBefore = engine.getView("south").players.south;
++
++    engine.playCard("OP15-075");
++
++    const view = engine.getView("south");
++    expect(view.prompts).toHaveLength(0);
++    expect(view.players.north.characters.map((card) => card?.instanceId)).toContain(higumaId);
++    expect(view.players.south.leader?.power).toBe(5000);
++    expect(view.players.south.activeDon).toBe(donBefore.activeDon - 1);
++    expect(view.players.south.donDeckCount).toBe(donBefore.donDeckCount + 1);
++  });
++
+   test("[Main] cannot be played with no DON!! on the field to pay DON!! −1 (8-3-1-3)", () => {
+     const engine = OnePieceTestEngine.create(
+       {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/076-lightning-beast-kiten.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/076-lightning-beast-kiten.test.ts
+index 1ea74b6..9a0f46e 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/076-lightning-beast-kiten.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/076-lightning-beast-kiten.test.ts
+@@ -30,6 +30,28 @@ describe("OP15-076 Lightning Beast Kiten", () => {
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
++  test("[Main] with a non-[Enel] Leader pays DON!! −1 but neither draws nor gives -1000", () => {
++    // The "Then" clause depends on the "If your Leader is [Enel]" clause too
++    // (4-10-2, 8-3-3; OP14/EB04 FAQ for OP14-078 and OP14-112).
++    const engine = OnePieceTestEngine.create(
++      { hand: ["OP15-076", "EB01-005"], activeDon: 5 },
++      { character: ["OP13-013"] },
++    );
++    const higumaId = engine.findCardInZone("north", "character", "OP13-013");
++    const donBefore = engine.getView("south").players.south;
++
++    engine.playCard("OP15-076");
++
++    const view = engine.getView("south");
++    expect(view.prompts).toHaveLength(0);
++    expect(view.players.south.hand.map((card) => card.cardId)).toEqual(["EB01-005"]);
++    expect(view.players.north.characters.find((card) => card?.instanceId === higumaId)?.power).toBe(
++      3000,
++    );
++    expect(view.players.south.activeDon).toBe(donBefore.activeDon - 1);
++    expect(view.players.south.donDeckCount).toBe(donBefore.donDeckCount + 1);
++  });
++
+   test("[Main] cannot be played with no DON!! on the field to pay DON!! −1 (8-3-1-3)", () => {
+     const engine = OnePieceTestEngine.create(
+       { leaderCardId: "OP15-058", hand: ["OP15-076", "EB01-005"], activeDon: 0, donDeckCount: 6 },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/118-portgas-d-ace.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/118-portgas-d-ace.test.ts
+index 1c5b052..2c90cf2 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/118-portgas-d-ace.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP16/characters/118-portgas-d-ace.test.ts
+@@ -1,23 +1,54 @@
+ import { describe, expect, test } from "vite-plus/test";
+ 
+ import { OnePieceTestEngine } from "../../../index.ts";
++import { getCardCounter } from "../../../shared.ts";
+ 
++// "The counter of all of your Character cards with 8000 power in your hand
++// becomes +2000." Like any Character text it only works while Ace is in the
++// Character area (2-8-2). The counter "becomes" +2000: it does not add to a
++// printed Counter, and two Aces still give +2000 (OP16 FAQ; 2-10-4: a card
++// with several Counters uses only the highest).
+ describe("OP16-118 Portgas.D.Ace", () => {
+-  test("the counter of 8000-power Characters in hand becomes +2000", () => {
++  test("the counter of 8000-power Characters in hand becomes +2000 while Ace is on the field", () => {
+     const engine = OnePieceTestEngine.create(
+-      { hand: ["OP16-118", "OP16-004"], activeDon: 5 },
+-      { character: ["OP16-065"], activeDon: 5 },
++      { character: ["OP16-118"], hand: ["OP16-016", "EB01-041", "OP16-004"], activeDon: 5 },
++      { activeDon: 5 },
++      { firstPlayer: "south", activeSeat: "north" },
+     );
++    const rambaId = engine.findCardInZone("south", "hand", "OP16-016");
++    const state = engine.getState();
++    // Ramba (8000, no Counter), Crocus (8000, +1000) and Curiel (8000, +2000).
++    expect(getCardCounter(state, rambaId)).toBe(2000);
++    expect(getCardCounter(state, engine.findCardInZone("south", "hand", "EB01-041"))).toBe(2000);
++    expect(getCardCounter(state, engine.findCardInZone("south", "hand", "OP16-004"))).toBe(2000);
+     const lifeBefore = engine.getView("south").players.south.lifeCount;
+ 
+-    // Sakazuki (8000) attacks the Leader (5000). With the boosted counter
+-    // 5000 + 2000 (Curiel) + 2000 (Ace's boost) = 9000 >= 8000: saved.
+-    engine.endTurn("south");
+-    engine.asNorth().attack("OP16-065", engine.asSouth().leader());
+-    engine.asSouth().chooseCounter("OP16-004");
++    // North's Leader attacks with 1 DON!! (6000). Ramba's +2000 Counter makes
++    // the Leader 7000 > 6000: saved.
++    engine.attachDon(engine.leader("north"), 1, "north");
++    engine.asNorth().attack(engine.leader("north"), engine.asSouth().leader());
++    engine.asSouth().chooseCounter(rambaId);
+     expect(engine.getView("south").players.south.lifeCount).toBe(lifeBefore);
+   });
+ 
++  test("Ace in hand changes no counter, and two Aces on the field still give +2000 (OP16 FAQ)", () => {
++    const inHand = OnePieceTestEngine.create({ hand: ["OP16-118", "OP16-016", "EB01-041"] }, {});
++    expect(
++      getCardCounter(inHand.getState(), inHand.findCardInZone("south", "hand", "OP16-016")),
++    ).toBe(0);
++    expect(
++      getCardCounter(inHand.getState(), inHand.findCardInZone("south", "hand", "EB01-041")),
++    ).toBe(1000);
++
++    const twoAces = OnePieceTestEngine.create(
++      { character: ["OP16-118", "OP16-118"], hand: ["OP16-016"] },
++      {},
++    );
++    expect(
++      getCardCounter(twoAces.getState(), twoAces.findCardInZone("south", "hand", "OP16-016")),
++    ).toBe(2000);
++  });
++
+   test("without Ace in hand the same counter no longer saves the Leader", () => {
+     const engine = OnePieceTestEngine.create(
+       { hand: ["OP16-004"], activeDon: 5 },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/103.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/103.test.ts
+index de73d2a..3f2b950 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/103.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/characters/103.test.ts
+@@ -49,6 +49,35 @@ describe("OP17-103 Charlotte Katakuri", () => {
+     );
+   });
+ 
++  test("[On Play] the Big Mom Pirates Leader check gates both the Life add and the Then −3000", () => {
++    // "If your Leader has the {Big Mom Pirates} type, A. Then, B.": B cannot be
++    // resolved when the "if" fails (4-10-2, 8-3-3; OP14/EB04 FAQ for OP14-078
++    // and OP14-112).
++    const play = (leaderCardId: string) => {
++      const engine = OnePieceTestEngine.create(
++        { leaderCardId, hand: ["OP17-103"], life: 3, activeDon: 6 },
++        { character: ["OP13-013"] },
++      );
++      engine.playCard("OP17-103");
++      return engine;
++    };
++
++    const other = play("OP13-001");
++    const otherView = other.getView("south");
++    expect(otherView.prompts).toHaveLength(0);
++    expect(otherView.players.south.lifeCount).toBe(3);
++    expect(otherView.players.north.characters[0]?.power).toBe(3000);
++
++    const bigMom = play("OP08-058");
++    bigMom.resolveDecision("effectAddToLifeFromDeck", { optionId: "1" }, "south");
++    const higumaId = bigMom.findCardInZone("north", "character", "OP13-013");
++    bigMom.resolveDecision("effectTargetSelection", { selectedIds: [higumaId] }, "south");
++    const bigMomView = bigMom.getView("south");
++    expect(bigMomView.players.south.lifeCount).toBe(4);
++    expect(bigMomView.players.north.characters[0]?.power).toBe(0);
++    expect(bigMomView.prompts).toHaveLength(0);
++  });
++
+   test("[Continuous] survives the turn handoff", () => {
+     const engine = OnePieceTestEngine.create(
+       { character: [{ cardId: "OP17-103", attachedDon: 1 }], activeDon: 5 },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/events/036-withdraw-now-and-allow-me-to-save-face.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/events/036-withdraw-now-and-allow-me-to-save-face.test.ts
+index e68594e..c7dcaf0 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/events/036-withdraw-now-and-allow-me-to-save-face.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/events/036-withdraw-now-and-allow-me-to-save-face.test.ts
+@@ -33,6 +33,48 @@ describe("OP17-036 Withdraw Now and Allow Me to Save Face", () => {
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
++  test("[Counter] up to 1 of your [Shanks], the Leader included, gains +4000 during the battle", () => {
++    // OP17-020 Shanks Leader with OP17-022 Shanks and OP17-029 Hongo on the
++    // field. North's Leader attacks with 2 DON!! (7000) against 5000.
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: "OP17-020",
++        hand: ["OP17-036"],
++        character: ["OP17-022", "OP17-029"],
++        activeDon: 1,
++      },
++      { activeDon: 5 },
++      { firstPlayer: "south", activeSeat: "north" },
++    );
++    const leaderId = engine.leader("south");
++    const shanksId = engine.findCardInZone("south", "character", "OP17-022");
++    const lifeBefore = engine.getView("south").players.south.lifeCount;
++
++    engine.attachDon(engine.leader("north"), 2, "north");
++    engine.asNorth().attack(engine.leader("north"), leaderId);
++    // Hongo is a [Blocker]; South does not block.
++    engine.asSouth().chooseBlocker();
++    const counter = engine.pendingDecision("battleCounter", "south").steps[0];
++    if (counter?.kind !== "selectEntity") throw new Error("Expected the Counter Step.");
++    const eventId = engine.findCardInZone("south", "hand", "OP17-036");
++    expect(counter.candidates.find((candidate) => candidate.ref.id === eventId)?.legal).toBe(true);
++    engine.asSouth().chooseCounter("OP17-036");
++
++    const target = engine.pendingDecision("effectTargetSelection", "south").steps[0];
++    if (target?.kind !== "selectEntity") throw new Error("Expected the [Shanks] target.");
++    expect(target.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
++      [leaderId, shanksId].sort(),
++    );
++    engine.asSouth().chooseTargets(leaderId);
++
++    // 5000 + 4000 > 7000: no damage; the event cost 1 DON!!.
++    const south = engine.getView("south").players.south;
++    expect(south.lifeCount).toBe(lifeBefore);
++    expect(south).toMatchObject({ activeDon: 0, restedDon: 1 });
++    expect(south.trash.map((card) => card.cardId)).toEqual(["OP17-036"]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
+   test("[Optional] declined leaves the board unchanged", () => {
+     const engine = OnePieceTestEngine.create({ hand: ["OP17-036"], activeDon: 3 }, {});
+ 
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/events/077-kundali-dragon-swarm.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/events/077-kundali-dragon-swarm.test.ts
+index bbc33ad..60bb711 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/events/077-kundali-dragon-swarm.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP17/events/077-kundali-dragon-swarm.test.ts
+@@ -39,6 +39,36 @@ describe("OP17-077 Kundali Dragon Swarm", () => {
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
++  test("[Main] without an Animal Kingdom Pirates Leader the costs are paid but no DON!! is added", () => {
++    // The "If your Leader has the {Animal Kingdom Pirates} type" clause gates
++    // the DON!! add (8-3-3); the costs before the colon are still paid.
++    const engine = OnePieceTestEngine.create(
++      {
++        hand: ["OP17-077", "EB01-005", "OP16-004", "OP13-013"],
++        activeDon: 5,
++        donDeckCount: 8,
++      },
++      {},
++    );
++
++    engine.playCard("OP17-077");
++    engine.acceptLeadingOptional("south");
++    const handIds = engine
++      .getView("south")
++      .players.south.hand.flatMap((card) => (card.instanceId ? [card.instanceId] : []));
++    engine.resolveDecision(
++      "effectCostTrashFromHand",
++      { selectedIds: handIds.slice(0, 2) },
++      "south",
++    );
++
++    const south = engine.getView("south").players.south;
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    // Play cost + rest-3-DON cost, and nothing from the DON!! deck.
++    expect(south).toMatchObject({ activeDon: 1, restedDon: 4, donDeckCount: 8 });
++    expect(south.hand).toHaveLength(1);
++  });
++
+   test("[Optional] declined leaves the board unchanged", () => {
+     const engine = OnePieceTestEngine.create({ hand: ["OP17-077"], activeDon: 3 }, {});
+ 
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/ST32/characters/002.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/ST32/characters/002.test.ts
+index f8a5b7a..aba1b29 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/ST32/characters/002.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/ST32/characters/002.test.ts
+@@ -19,6 +19,26 @@ describe("ST32-002", () => {
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
++  test("[On Play] only Characters with a base cost of 6 or less can be chosen", () => {
++    // "... up to 1 of your opponent's Characters with a base cost of 6 or less
++    // cannot be rested until the end of your opponent's next End Phase."
++    const engine = OnePieceTestEngine.create(
++      { hand: ["ST32-002"], activeDon: 5 },
++      { character: ["EB01-041", "EB02-043", "OP05-044"], activeDon: 5 },
++    );
++    const crocusId = engine.findCardInZone("north", "character", "EB01-041");
++
++    engine.playCard("ST32-002");
++    const mark = engine.pendingDecision("effectTargetSelection", "south").steps[0];
++    if (mark?.kind !== "selectEntity") throw new Error("Expected the cannot-be-rested target.");
++    // Crocus costs 6; Jonathan (7) and John Giant (8) are not legal choices.
++    expect(mark.candidates.map((candidate) => candidate.ref.id)).toEqual([crocusId]);
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [crocusId] }, "south");
++
++    expect(engine.getView("south").players.south.handCount).toBe(1);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
+   test("[On Play] declined marks nothing and still draws", () => {
+     const engine = OnePieceTestEngine.create(
+       { hand: ["ST32-002"], activeDon: 5 },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/permanent.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/permanent.ts
+index a3f9a66..64325a2 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/permanent.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/permanent.ts
+@@ -2,7 +2,11 @@ import { getCard } from "../../../cards/src/runtime-catalog.ts";
+ import type { Action, EffectTrigger, Keyword } from "@tcg/op-types";
+ import type { CardInstance, MatchState } from "../types.ts";
+ import { evaluateConditions } from "./conditions.ts";
+-import { candidatePoolForTarget, matchesTargetFilter } from "./targeting.ts";
++import {
++  candidatePoolForTarget,
++  matchesTargetFilter,
++  targetIncludesCandidate,
++} from "./targeting.ts";
+ 
+ const activeEvaluations = new WeakMap<MatchState, Set<string>>();
+ 
+@@ -639,6 +643,96 @@ export function getPermanentModifierTotal(
+   }
+ }
+ 
++/**
++ * The highest Counter that permanent effects give a card ("has a +1000
++ * Counter", "the counter ... becomes +2000"), or 0. `modifyCounter.value` is
++ * that Counter, not an amount to add: a card with several Counters uses only
++ * the highest one (2-10-3, 2-10-4), so these never add up with each other or
++ * with the printed Counter (OP16 FAQ for OP16-118, OP17 FAQ for OP17-063).
++ * Like any other Character text the effect works only while its card is on the
++ * field (2-8-2); the exception is text about "this card in your hand", a
++ * `target.self` modifier read while the card itself is in hand (OP17-118).
++ */
++const COUNTER_ACTION_KINDS = ["modifyCounter"] as const;
++
++export function getPermanentCounter(state: MatchState, targetInstanceId: string): number {
++  const evaluationKey = `counter:${targetInstanceId}`;
++  const active = activeEvaluations.get(state) ?? new Set<string>();
++  if (active.has(evaluationKey)) {
++    return 0;
++  }
++  activeEvaluations.set(state, active);
++  active.add(evaluationKey);
++
++  try {
++    let highest = 0;
++    for (const source of Object.values(state.cards)) {
++      if (!cardHasPermanentAction(source.cardId, COUNTER_ACTION_KINDS)) continue;
++      const selfInHand = source.instanceId === targetInstanceId && source.zone === "hand";
++      if (
++        (!selfInHand && !sourceIsInPlay(state, source.instanceId)) ||
++        sourceEffectsAreNegated(state, source.instanceId)
++      ) {
++        continue;
++      }
++      for (const effect of getCard(source.cardId).effects?.permanentEffects ?? []) {
++        const counterActions = effect.actions.filter(
++          (action): action is Extract<Action, { action: "modifyCounter" }> =>
++            action.action === "modifyCounter" &&
++            action.value > highest &&
++            (action.target.count.amount === "all" || action.target.self === true) &&
++            (!selfInHand || action.target.self === true),
++        );
++        if (counterActions.length === 0) {
++          continue;
++        }
++        const conditions = evaluateConditions(
++          state,
++          source.controller,
++          source.instanceId,
++          effect.conditions,
++        );
++        if (!conditions.supported || !conditions.matches) {
++          continue;
++        }
++        for (const action of counterActions) {
++          if (action.value <= highest) {
++            continue;
++          }
++          if (action.condition) {
++            const actionCondition = evaluateConditions(
++              state,
++              source.controller,
++              source.instanceId,
++              [action.condition],
++            );
++            if (!actionCondition.supported || !actionCondition.matches) {
++              continue;
++            }
++          }
++          if (
++            targetIncludesCandidate(
++              state,
++              source.controller,
++              source.instanceId,
++              action.target,
++              targetInstanceId,
++            )
++          ) {
++            highest = action.value;
++          }
++        }
++      }
++    }
++    return highest;
++  } finally {
++    active.delete(evaluationKey);
++    if (active.size === 0) {
++      activeEvaluations.delete(state);
++    }
++  }
++}
++
+ // 4-9-2-1: permanent effects that set a base power compete by absolute value;
+ // the highest set value wins instead of stacking as additive deltas.
+ export function getPermanentSetBasePower(
+@@ -682,13 +776,15 @@ export function getPermanentSetBasePower(
+           continue;
+         }
+         for (const action of setBaseActions) {
+-          const targetPool = candidatePoolForTarget(
+-            state,
+-            source.controller,
+-            source.instanceId,
+-            action.target,
+-          );
+-          if (!targetPool.supported || !targetPool.candidateIds.includes(targetInstanceId)) {
++          if (
++            !targetIncludesCandidate(
++              state,
++              source.controller,
++              source.instanceId,
++              action.target,
++              targetInstanceId,
++            )
++          ) {
+             continue;
+           }
+           if (action.action === "setBasePower") {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/targeting.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/targeting.ts
+index a4d20e1..96c7049 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/targeting.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/targeting.ts
+@@ -15,7 +15,7 @@ import {
+   getSetBasePower,
+   otherSeat,
+ } from "../shared.ts";
+-import type { MatchSeat, MatchState } from "../types.ts";
++import type { MatchSeat, MatchState, PlayerState } from "../types.ts";
+ 
+ function hasPrintedText(text: string | undefined): boolean {
+   const normalized = text?.trim();
+@@ -420,3 +420,71 @@ export function candidatePoolForTarget(
+ 
+   return { supported: true, candidateIds: filtered };
+ }
++
++function zoneHoldsCandidate(
++  player: PlayerState,
++  zone: Target["zones"][number],
++  candidateId: string,
++): boolean {
++  switch (zone) {
++    case "leader":
++      return player.leaderInstanceId === candidateId;
++    case "character":
++      return player.characterArea.includes(candidateId);
++    case "stage":
++      return player.stageArea === candidateId;
++    case "hand":
++    case "deck":
++    case "trash":
++    case "life":
++      return player[zone].includes(candidateId);
++    case "field":
++      return (
++        player.leaderInstanceId === candidateId ||
++        player.characterArea.includes(candidateId) ||
++        player.stageArea === candidateId
++      );
++    case "don":
++    case "donDeck":
++    case "costArea":
++      return false;
++  }
++}
++
++/**
++ * Same answer as `candidatePoolForTarget(...).candidateIds.includes(candidateId)`
++ * (with an unsupported filter counting as "not included"), but only that one
++ * card is checked. Permanent effects ask this on every power or counter query:
++ * building the whole pool there also ran every other candidate's filters, and a
++ * "base power" filter (OP17-112 Linlin) re-entered the permanent effects of each
++ * of them in turn.
++ */
++export function targetIncludesCandidate(
++  state: MatchState,
++  controller: MatchSeat,
++  sourceInstanceId: string | null,
++  target: Target,
++  candidateId: string,
++): boolean {
++  if (target.self && sourceInstanceId && candidateId !== sourceInstanceId) {
++    return false;
++  }
++  const seats =
++    target.player === "both" || target.player === "any"
++      ? ([controller, otherSeat(controller)] as const)
++      : ([target.player === "self" ? controller : otherSeat(controller)] as const);
++  const inTargetZones = seats.some((seat) => {
++    const player = getPlayer(state, seat);
++    return target.zones.some((zone) => zoneHoldsCandidate(player, zone, candidateId));
++  });
++  if (!inTargetZones) {
++    return false;
++  }
++  for (const filter of target.filters ?? []) {
++    const result = matchesTargetFilter(state, sourceInstanceId, candidateId, filter);
++    if (!result.supported || !result.matches) {
++      return false;
++    }
++  }
++  return true;
++}
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/shared.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/shared.ts
+index 4be3c20..ebcd134 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/shared.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/shared.ts
+@@ -17,6 +17,7 @@ import type {
+ } from "./types.ts";
+ import {
+   arePlayerEffectsNegatedByPermanentEffect,
++  getPermanentCounter,
+   getPermanentKeywords,
+   getPermanentModifierTotal,
+   getPermanentSetBasePower,
+@@ -87,7 +88,9 @@ export function getCardCounter(state: MatchState, instanceId: string): number {
+   if (card.cardType !== "character") {
+     return 0;
+   }
+-  return (card.counter ?? 0) + getPermanentModifierTotal(state, instanceId, "counter");
++  // 2-10-4: of the printed Counter and those given by effects, only the
++  // highest applies.
++  return Math.max(card.counter ?? 0, getPermanentCounter(state, instanceId));
+ }
+ 
+ export function leaderLife(card: OPCard): number {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/eb04-030-kaido.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/eb04-030-kaido.test.ts
+index 20192b7..e744b3d 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/eb04-030-kaido.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/eb04-030-kaido.test.ts
+@@ -43,7 +43,11 @@ describe("EB04-030 Kaido", () => {
+     ).toBe(true);
+   });
+ 
+-  test("still pays DON!! -2 and rests a target without the Leader gate, but does not gain Rush", () => {
++  test("without an Animal Kingdom Pirates Leader it pays DON!! -2 but neither gains Rush nor rests a target", () => {
++    // "If your Leader has ..., A. Then, B.": when the "if" fails, the "Then"
++    // clause cannot be resolved either (4-10-2, 8-3-3; same ruling as the
++    // OP14/EB04 FAQ for OP14-078 and OP14-112). The cost before the colon is
++    // still paid (8-3-1).
+     const engine = OnePieceTestEngine.create(
+       { hand: [op14eb04Kaido030], activeDon: 9 },
+       { character: [eb01MountainGod018] },
+@@ -60,7 +64,6 @@ describe("EB04-030 Kaido", () => {
+       { selectedIds: ["active-don:0", "active-don:1"] },
+       "south",
+     );
+-    engine.resolveDecision("effectTargetSelection", { selectedIds: [targetId] }, "south");
+ 
+     const attack = engine.expectFailure({
+       type: "declareAttack",
+@@ -70,6 +73,7 @@ describe("EB04-030 Kaido", () => {
+     });
+ 
+     const view = engine.getView("south");
++    expect(view.prompts).toHaveLength(0);
+     expect(attack.accepted).toBe(false);
+     expect(view.players.south).toMatchObject({
+       activeDon: 0,
+@@ -77,7 +81,7 @@ describe("EB04-030 Kaido", () => {
+     });
+     expect(
+       view.players.north.characters.find((card) => card?.instanceId === targetId)?.rested,
+-    ).toBe(true);
++    ).toBe(false);
+   });
+ 
+   test("may decline the DON!! -2 cost without resting a target or gaining Rush", () => {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op16-119-marshall-d-teach.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op16-119-marshall-d-teach.test.ts
+new file mode 100644
+index 0000000..b518243
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op16-119-marshall-d-teach.test.ts
+@@ -0,0 +1,86 @@
++import { describe, expect, test } from "vite-plus/test";
++import { op13Higuma013, op15Enel118, op16MarshallDTeach119 } from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// OP16-119 Marshall.D.Teach: "[Trigger] Negate the effect of up to 1 of your
++// opponent's Characters during this turn. Then, K.O. up to 1 of your
++// opponent's Characters with a cost of 5 or less." (The [On Play] is covered
++// in src/cards/OP16/characters/119-marshall-d-teach.test.ts.)
++//
++// The two targets are chosen independently. North's OP15-118 Enel (cost 6)
++// shows the negate: with 6 or less DON!! on North's field it has +2000.
++
++function takeDamageWithTeachOnTop() {
++  const engine = OnePieceTestEngine.create(
++    { life: [op16MarshallDTeach119, op13Higuma013] },
++    { character: [op15Enel118, op13Higuma013], activeDon: 5 },
++    { firstPlayer: "south", activeSeat: "north" },
++  );
++  engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++  return engine;
++}
++
++function northCharacter(engine: OnePieceTestEngine, card: { id: string }) {
++  return engine
++    .getView("south")
++    .players.north.characters.find((entry) => entry?.cardId === card.id);
++}
++
++describe("OP16-119 Marshall.D.Teach", () => {
++  test("[Trigger] negates one opposing Character, then K.O.s another with cost 5 or less", () => {
++    const engine = takeDamageWithTeachOnTop();
++    const south = engine.asSouth();
++    const enelId = engine.findCardInZone("north", "character", op15Enel118);
++    const higumaId = engine.findCardInZone("north", "character", op13Higuma013);
++    expect(northCharacter(engine, op15Enel118)?.power).toBe(10000);
++
++    south.activateLifeTrigger();
++    const negate = south.pendingDecision("effectTargetSelection").steps[0];
++    if (negate?.kind !== "selectEntity") throw new Error("Expected Teach's negate target.");
++    expect(negate).toMatchObject({ min: 0, max: 1 });
++    expect(negate.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
++      [enelId, higumaId].sort(),
++    );
++    south.chooseTargets(enelId);
++    expect(northCharacter(engine, op15Enel118)?.power).toBe(8000);
++
++    const ko = south.pendingDecision("effectTargetSelection").steps[0];
++    if (ko?.kind !== "selectEntity") throw new Error("Expected Teach's K.O. target.");
++    // Enel costs 6, so only Higuma can be K.O.'d.
++    expect(ko.candidates.map((candidate) => candidate.ref.id)).toEqual([higumaId]);
++    south.chooseTargets(higumaId);
++
++    const view = south.view();
++    expect(view.players.north.trash.map((card) => card.instanceId)).toEqual([higumaId]);
++    expect(view.players.south.trash.map((card) => card.cardId)).toEqual([op16MarshallDTeach119.id]);
++    expect(view.prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("[Trigger] both choices are optional", () => {
++    const engine = takeDamageWithTeachOnTop();
++    const south = engine.asSouth();
++
++    south.activateLifeTrigger();
++    south.chooseNoTargets();
++    south.chooseNoTargets();
++
++    const view = south.view();
++    expect(view.players.north.characters.filter(Boolean)).toHaveLength(2);
++    expect(northCharacter(engine, op15Enel118)?.power).toBe(10000);
++    expect(view.prompts).toHaveLength(0);
++  });
++
++  test("[Trigger] declined, Teach goes to the hand", () => {
++    const engine = takeDamageWithTeachOnTop();
++    const south = engine.asSouth();
++
++    south.declineLifeTrigger();
++
++    const view = south.view();
++    expect(view.players.south.hand.map((card) => card.cardId)).toEqual([op16MarshallDTeach119.id]);
++    expect(view.players.north.characters.filter(Boolean)).toHaveLength(2);
++    expect(view.prompts).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-041-wang-zhi.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-041-wang-zhi.test.ts
+new file mode 100644
+index 0000000..4c63259
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-041-wang-zhi.test.ts
+@@ -0,0 +1,78 @@
++import { describe, expect, test } from "vite-plus/test";
++import { eb01Doma005, op13Higuma013, op17WangZhi041, op17XDrake075 } from "@tcg/op-cards";
++
++import { OnePieceTestEngine, type FixtureCardEntry } from "../../../src/index.ts";
++
++// OP17-041 Wang Zhi: "[Blocker] [On Play] You may trash 1 card from your hand:
++// Place all of your opponent's Characters with a base cost of 1 at the bottom
++// of the owner's deck in any order of the owner's choosing."
++function setup(hand: FixtureCardEntry[] = [op17WangZhi041, op13Higuma013]) {
++  return OnePieceTestEngine.create(
++    { hand, activeDon: 4 },
++    { character: [op13Higuma013, op17XDrake075, eb01Doma005], deck: 3 },
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++}
++
++describe("OP17-041 Wang Zhi", () => {
++  test("[On Play] trashing 1 card places every opposing base-cost-1 Character at the bottom, in the owner's order", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++    const north = engine.asNorth();
++    const higumaId = north.findOnField(op13Higuma013);
++    const domaId = north.findOnField(eb01Doma005);
++    const drakeId = north.findOnField(op17XDrake075);
++    const discardId = engine.findCardInZone("south", "hand", op13Higuma013);
++
++    south.play(op17WangZhi041);
++    south.acceptOptional();
++
++    // The owner (North) chooses the order of its own cards.
++    const order = north.pendingDecision("effectReturnToDeckOwnerOrder").steps[0];
++    if (order?.kind !== "selectEntity" && order?.kind !== "orderItems") {
++      throw new Error("Expected North's order choice.");
++    }
++    expect(order.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
++      [higumaId, domaId].sort(),
++    );
++    north.orderCards("effectReturnToDeckOwnerOrder", [domaId, higumaId]);
++
++    const state = engine.getState();
++    expect(state.players.north.deck.slice(-2)).toEqual([domaId, higumaId]);
++    const view = south.view();
++    expect(view.players.north.characters.filter(Boolean).map((card) => card?.instanceId)).toEqual([
++      drakeId,
++    ]);
++    expect(view.players.south.trash.map((card) => card.instanceId)).toEqual([discardId]);
++    expect(view.players.south.characters.map((card) => card?.cardId)).toContain(op17WangZhi041.id);
++    expect(view.prompts).toHaveLength(0);
++    expect(state.capabilityHistory).toHaveLength(0);
++  });
++
++  test("[On Play] declining the trash keeps every Character on the field", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++
++    south.play(op17WangZhi041);
++    south.declineOptional();
++
++    const view = south.view();
++    expect(view.players.north.characters.filter(Boolean)).toHaveLength(3);
++    expect(view.players.north.deckCount).toBe(3);
++    expect(view.players.south.hand.map((card) => card.cardId)).toEqual([op13Higuma013.id]);
++    expect(view.players.south.trash).toHaveLength(0);
++    expect(view.prompts).toHaveLength(0);
++  });
++
++  test("[On Play] with no other card in hand the cost cannot be paid", () => {
++    const engine = setup([op17WangZhi041]);
++    const south = engine.asSouth();
++
++    south.play(op17WangZhi041);
++
++    const view = south.view();
++    expect(view.prompts).toHaveLength(0);
++    expect(view.players.north.characters.filter(Boolean)).toHaveLength(3);
++    expect(view.players.north.deckCount).toBe(3);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-062-kaido.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-062-kaido.test.ts
+new file mode 100644
+index 0000000..c1eb0a2
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-062-kaido.test.ts
+@@ -0,0 +1,121 @@
++import { describe, expect, test } from "vite-plus/test";
++import { op13Higuma013, op17Kaido058, op17Kaido062, op17XDrake075 } from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// OP17-062 Kaido: "[Blocker] [Your Turn] [Once Per Turn] When a DON!! card on
++// your field is returned to your DON!! deck, add up to 1 DON!! card as active
++// from your DON!! deck. Then, set up to 1 of your DON!! cards as active."
++//
++// South returns DON!! by paying X.Drake's "[On Play] DON!! −2" cost.
++function setup() {
++  return OnePieceTestEngine.create(
++    {
++      leaderCardId: op17Kaido058,
++      character: [op17Kaido062],
++      hand: [op17XDrake075, op17XDrake075],
++      activeDon: 4,
++      restedDon: 2,
++      donDeckCount: 4,
++    },
++    { hand: [op13Higuma013, op13Higuma013, op13Higuma013] },
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++}
++
++function playDrakeReturningRestedDon(engine: OnePieceTestEngine) {
++  const south = engine.asSouth();
++  south.play(op17XDrake075);
++  south.acceptOptional();
++  south.choose("effectCostReturnDon", ["rested-don:0", "rested-don:1"]);
++  // X.Drake's effect: trash 1 card from the opponent's hand, chosen face-down.
++  const trash = south.pendingDecision("effectTrashFromHandSelection").steps[0];
++  if (trash?.kind !== "selectEntity") throw new Error("Expected X.Drake's trash choice.");
++  south.choose("effectTrashFromHandSelection", [trash.candidates[0]!.ref.id]);
++}
++
++describe("OP17-062 Kaido", () => {
++  test("a returned DON!! adds 1 active DON!! from the DON!! deck, then sets 1 DON!! active", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++
++    playDrakeReturningRestedDon(engine);
++    // X.Drake rested 2 DON!! and returned 2 rested DON!! to the DON!! deck.
++    expect(south.view().players.south).toMatchObject({
++      activeDon: 2,
++      restedDon: 2,
++      donDeckCount: 6,
++    });
++
++    const addDon = south.pendingDecision("effectAddDon").steps[0];
++    if (addDon?.kind !== "chooseOption") throw new Error("Expected Kaido's DON!! add choice.");
++    expect(addDon.options.map((option) => option.id)).toEqual(["0", "1"]);
++    south.chooseAddDon(1);
++    expect(south.view().players.south).toMatchObject({
++      activeDon: 3,
++      restedDon: 2,
++      donDeckCount: 5,
++    });
++
++    south.chooseSetActiveDon(1);
++    const view = south.view();
++    expect(view.players.south).toMatchObject({ activeDon: 4, restedDon: 1, donDeckCount: 5 });
++    expect(view.prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("[Once Per Turn] a second return in the same turn does not trigger it again", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++
++    playDrakeReturningRestedDon(engine);
++    south.chooseAddDon(1);
++    south.chooseSetActiveDon(1);
++
++    south.play(op17XDrake075);
++    south.acceptOptional();
++    south.choose("effectCostReturnDon", ["active-don:0", "active-don:1"]);
++    const trash = south.pendingDecision("effectTrashFromHandSelection").steps[0];
++    if (trash?.kind !== "selectEntity") throw new Error("Expected X.Drake's trash choice.");
++    south.choose("effectTrashFromHandSelection", [trash.candidates[0]!.ref.id]);
++
++    const view = south.view();
++    expect(view.prompts).toHaveLength(0);
++    expect(view.players.south).toMatchObject({ activeDon: 0, restedDon: 3, donDeckCount: 7 });
++  });
++
++  test("[Your Turn] a DON!! returned during the opponent's turn does not trigger it", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op17Kaido058,
++        character: [op17Kaido062],
++        activeDon: 2,
++        donDeckCount: 4,
++      },
++      { character: [{ card: op13Higuma013, playedOnTurn: 0 }] },
++      { firstPlayer: "south", activeSeat: "north" },
++    );
++    const south = engine.asSouth();
++
++    // The Kaido Leader's [On Your Opponent's Attack] DON!! −1 returns a DON!!.
++    engine.asNorth().attack(op13Higuma013, engine.leader("south"));
++    south.acceptOptional();
++    south.chooseNoTargets();
++
++    expect(() => south.pendingDecision("effectAddDon")).toThrow();
++    expect(south.view().players.south).toMatchObject({ activeDon: 1, donDeckCount: 5 });
++  });
++
++  test("it can add and set nothing", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++
++    playDrakeReturningRestedDon(engine);
++    south.chooseAddDon(0);
++    south.chooseSetActiveDon(0);
++
++    const view = south.view();
++    expect(view.prompts).toHaveLength(0);
++    expect(view.players.south).toMatchObject({ activeDon: 2, restedDon: 2, donDeckCount: 6 });
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-063-kaido.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-063-kaido.test.ts
+new file mode 100644
+index 0000000..909d7ea
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-063-kaido.test.ts
+@@ -0,0 +1,180 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  op14eb04King031,
++  op16PortgasDAce118,
++  op16Ramba016,
++  op17Kaido058,
++  op17Kaido062,
++  op17Kaido063,
++  op17KundaliDragonSwarm077,
++  op17XDrake075,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine, type FixtureCardEntry } from "../../../src/index.ts";
++import { getCardCounter } from "../../../src/shared.ts";
++
++// OP17-063 Kaido: "All Character cards in your hand without a Counter have a
++// +1000 Counter.
++// [Activate: Main] [Once Per Turn] DON!! −1: If this Character was played on
++// this turn, negate the effect of up to 1 of your opponent's Characters with a
++// cost of 6 or less during this turn, and K.O. it."
++
++// North's 5000 Leader (no DON!!) attacks South's 5000 Leader, so any +1000
++// Counter repels the attack.
++function defend(character: FixtureCardEntry[], hand: FixtureCardEntry[]) {
++  return OnePieceTestEngine.create(
++    { leaderCardId: op17Kaido058, character, hand },
++    { activeDon: 5 },
++    { firstPlayer: "south", activeSeat: "north" },
++  );
++}
++
++function counterOption(engine: OnePieceTestEngine, instanceId: string) {
++  const step = engine.pendingDecision("battleCounter", "south").steps[0];
++  if (step?.kind !== "selectEntity") throw new Error("Expected the Counter Step selection.");
++  const candidate = step.candidates.find((entry) => entry.ref.id === instanceId);
++  if (!candidate) throw new Error(`Expected ${instanceId} among the Counter Step options.`);
++  return candidate;
++}
++
++function activate({ playedThisTurn = true } = {}) {
++  return OnePieceTestEngine.create(
++    {
++      leaderCardId: op17Kaido058,
++      character: [{ card: op17Kaido063, playedOnTurn: playedThisTurn ? 1 : 0 }],
++      activeDon: 2,
++      donDeckCount: 2,
++    },
++    { character: [op17XDrake075, op17Kaido062] },
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++}
++
++describe("OP17-063 Kaido", () => {
++  test("Character cards in hand without a Counter have a +1000 Counter that repels an attack", () => {
++    const engine = defend(
++      [op17Kaido063],
++      [op14eb04King031, op17XDrake075, op17KundaliDragonSwarm077],
++    );
++    const kingId = engine.findCardInZone("south", "hand", op14eb04King031);
++    const drakeId = engine.findCardInZone("south", "hand", op17XDrake075);
++    const eventId = engine.findCardInZone("south", "hand", op17KundaliDragonSwarm077);
++    const state = engine.getState();
++    expect(getCardCounter(state, kingId)).toBe(1000);
++    // A printed Counter is kept as it is, and an Event is not a Character card.
++    expect(getCardCounter(state, drakeId)).toBe(2000);
++    expect(getCardCounter(state, eventId)).toBe(0);
++    const lifeBefore = engine.getView("south").players.south.lifeCount;
++
++    engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++    expect(counterOption(engine, kingId)).toMatchObject({ legal: true, label: "King (+1000)" });
++    engine.asSouth().chooseCounter(kingId);
++
++    // 5000 + 1000 > 5000: the attack is repelled and King goes to the trash.
++    const south = engine.getView("south").players.south;
++    expect(south.lifeCount).toBe(lifeBefore);
++    expect(south.trash.map((card) => card.instanceId)).toEqual([kingId]);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("the Counter comes only from a Kaido on the field (2-8-2) and two copies do not stack (2-10-4)", () => {
++    const inHand = defend([], [op17Kaido063, op14eb04King031]);
++    expect(
++      getCardCounter(inHand.getState(), inHand.findCardInZone("south", "hand", op14eb04King031)),
++    ).toBe(0);
++    expect(
++      getCardCounter(inHand.getState(), inHand.findCardInZone("south", "hand", op17Kaido063)),
++    ).toBe(0);
++    inHand.asNorth().attack(inHand.leader("north"), inHand.leader("south"));
++    expect(
++      counterOption(inHand, inHand.findCardInZone("south", "hand", op14eb04King031)),
++    ).toMatchObject({ legal: false });
++
++    const twoCopies = defend([op17Kaido063, op17Kaido063], [op14eb04King031]);
++    expect(
++      getCardCounter(
++        twoCopies.getState(),
++        twoCopies.findCardInZone("south", "hand", op14eb04King031),
++      ),
++    ).toBe(1000);
++  });
++
++  test("with OP16-118 Ace on the field an 8000-power card without a Counter has Counter +2000 (OP17 FAQ)", () => {
++    // OP17 FAQ (OP17-063): with "OP16-118 Portgas.D.Ace" on the field, Character
++    // cards in hand with 8000 power and no Counter are treated as Counter
++    // +2000. A card with several Counters uses only the highest (2-10-4).
++    const engine = defend([op17Kaido063, op16PortgasDAce118], [op16Ramba016, op14eb04King031]);
++    const state = engine.getState();
++    expect(getCardCounter(state, engine.findCardInZone("south", "hand", op16Ramba016))).toBe(2000);
++    // King has 7000 power, so only Kaido's +1000 applies.
++    expect(getCardCounter(state, engine.findCardInZone("south", "hand", op14eb04King031))).toBe(
++      1000,
++    );
++  });
++
++  test("[Activate: Main] DON!! −1 negates a cost-6-or-less Character and K.O.s that same Character", () => {
++    const engine = activate();
++    const south = engine.asSouth();
++    const drakeId = engine.findCardInZone("north", "character", op17XDrake075);
++    const bigKaidoId = engine.findCardInZone("north", "character", op17Kaido062);
++
++    south.activateMain(op17Kaido063);
++    south.acceptOptional();
++    const target = south.pendingDecision("effectTargetSelection").steps[0];
++    if (target?.kind !== "selectEntity") throw new Error("Expected the negate target.");
++    expect(target).toMatchObject({ min: 0, max: 1 });
++    // The cost-10 Kaido is not a legal choice.
++    expect(target.candidates.map((candidate) => candidate.ref.id)).toEqual([drakeId]);
++    south.chooseTargets(drakeId);
++
++    // "and K.O. it": the negated X.Drake is K.O.'d without a second choice.
++    const view = south.view();
++    expect(view.prompts).toHaveLength(0);
++    expect(view.players.north.trash.map((card) => card.instanceId)).toEqual([drakeId]);
++    expect(view.players.north.characters.map((card) => card?.instanceId)).toContain(bigKaidoId);
++    expect(view.players.south).toMatchObject({ activeDon: 1, donDeckCount: 3 });
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("[Activate: Main] choosing no Character to negate K.O.s nothing", () => {
++    const engine = activate();
++    const south = engine.asSouth();
++
++    south.activateMain(op17Kaido063);
++    south.acceptOptional();
++    south.chooseNoTargets();
++
++    const view = south.view();
++    expect(view.prompts).toHaveLength(0);
++    expect(view.players.north.characters.filter(Boolean)).toHaveLength(2);
++    expect(view.players.north.trash).toHaveLength(0);
++    expect(view.players.south).toMatchObject({ activeDon: 1, donDeckCount: 3 });
++  });
++
++  test("[Activate: Main] when Kaido was not played this turn it pays DON!! −1 and does nothing", () => {
++    const engine = activate({ playedThisTurn: false });
++    const south = engine.asSouth();
++
++    south.activateMain(op17Kaido063);
++    south.acceptOptional();
++
++    const view = south.view();
++    expect(view.prompts).toHaveLength(0);
++    expect(view.players.north.characters.filter(Boolean)).toHaveLength(2);
++    expect(view.players.south).toMatchObject({ activeDon: 1, donDeckCount: 3 });
++  });
++
++  test("[Activate: Main] can be declined without paying DON!! −1", () => {
++    const engine = activate();
++    const south = engine.asSouth();
++
++    south.activateMain(op17Kaido063);
++    south.declineOptional();
++
++    const view = south.view();
++    expect(view.prompts).toHaveLength(0);
++    expect(view.players.north.characters.filter(Boolean)).toHaveLength(2);
++    expect(view.players.south).toMatchObject({ activeDon: 2, donDeckCount: 2 });
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-074-yamato.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-074-yamato.test.ts
+new file mode 100644
+index 0000000..fdcebd4
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-074-yamato.test.ts
+@@ -0,0 +1,56 @@
++import { describe, expect, test } from "vite-plus/test";
++import { op17Kaido058, op17Yamato074 } from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// OP17-074 Yamato: "[Blocker] [On Play] Add up to 1 DON!! card as rested from
++// your DON!! deck."
++function setup(donDeckCount: number) {
++  return OnePieceTestEngine.create(
++    { leaderCardId: op17Kaido058, hand: [op17Yamato074], activeDon: 5, donDeckCount },
++    {},
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++}
++
++describe("OP17-074 Yamato", () => {
++  test("[On Play] adds 1 DON!! card from the DON!! deck as rested", () => {
++    const engine = setup(5);
++    const south = engine.asSouth();
++
++    south.play(op17Yamato074);
++    const addDon = south.pendingDecision("effectAddDon").steps[0];
++    if (addDon?.kind !== "chooseOption") throw new Error("Expected Yamato's DON!! add choice.");
++    expect(addDon.options.map((option) => option.id)).toEqual(["0", "1"]);
++    south.chooseAddDon(1);
++
++    // Yamato's cost rests 3 of the 5 active DON!!; the added DON!! comes in rested.
++    const view = south.view();
++    expect(view.players.south).toMatchObject({ activeDon: 2, restedDon: 4, donDeckCount: 4 });
++    expect(view.players.south.characters.map((card) => card?.cardId)).toContain(op17Yamato074.id);
++    expect(view.prompts).toHaveLength(0);
++  });
++
++  test("[On Play] may add no DON!!", () => {
++    const engine = setup(5);
++    const south = engine.asSouth();
++
++    south.play(op17Yamato074);
++    south.chooseAddDon(0);
++
++    const view = south.view();
++    expect(view.players.south).toMatchObject({ activeDon: 2, restedDon: 3, donDeckCount: 5 });
++    expect(view.prompts).toHaveLength(0);
++  });
++
++  test("[On Play] with an empty DON!! deck there is nothing to add", () => {
++    const engine = setup(0);
++    const south = engine.asSouth();
++
++    south.play(op17Yamato074);
++
++    const view = south.view();
++    expect(view.prompts).toHaveLength(0);
++    expect(view.players.south).toMatchObject({ activeDon: 2, restedDon: 3, donDeckCount: 0 });
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-104-charlotte-cracker.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-104-charlotte-cracker.test.ts
+new file mode 100644
+index 0000000..52ad985
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-104-charlotte-cracker.test.ts
+@@ -0,0 +1,111 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  op08CharlottePudding058,
++  op13Higuma013,
++  op17CharlotteCracker104,
++  op17CharlottePudding109,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// OP17-104 Charlotte Cracker: "[Your Turn] [On Play] You may rest 2 of your
++// DON!! cards: If your Leader has the {Big Mom Pirates} type, add up to 1 card
++// from the top of your deck to the top of your Life cards.
++// [Trigger] Play this card."
++
++// North's Leader attacks South's Leader, whose top Life card is Cracker.
++function takeDamageWithCrackerOnTop() {
++  const engine = OnePieceTestEngine.create(
++    {
++      leaderCardId: op08CharlottePudding058,
++      life: [op17CharlotteCracker104, op13Higuma013],
++      activeDon: 2,
++    },
++    {},
++    { firstPlayer: "south", activeSeat: "north" },
++  );
++  engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++  return engine;
++}
++
++describe("OP17-104 Charlotte Cracker", () => {
++  test("[Trigger] plays the card from Life; its [Your Turn] [On Play] does not activate", () => {
++    const engine = takeDamageWithCrackerOnTop();
++    const south = engine.asSouth();
++
++    expect(south.pendingDecision("lifeTrigger").title).toContain("[Trigger]");
++    south.activateLifeTrigger();
++
++    const view = south.view();
++    expect(view.players.south.characters.filter(Boolean).map((card) => card?.cardId)).toEqual([
++      op17CharlotteCracker104.id,
++    ]);
++    expect(view.players.south.hand).toHaveLength(0);
++    expect(view.players.south.lifeCount).toBe(1);
++    // OP17 FAQ: played during the opponent's turn, the [Your Turn] [On Play]
++    // cannot activate, so no rest-2-DON!! choice appears.
++    expect(view.prompts).toHaveLength(0);
++    expect(view.players.south).toMatchObject({ activeDon: 2, restedDon: 0 });
++  });
++
++  test("[Trigger] declined, the card goes to the hand", () => {
++    const engine = takeDamageWithCrackerOnTop();
++    const south = engine.asSouth();
++
++    south.declineLifeTrigger();
++
++    const view = south.view();
++    expect(view.players.south.hand.map((card) => card.cardId)).toEqual([
++      op17CharlotteCracker104.id,
++    ]);
++    expect(view.players.south.characters.filter(Boolean)).toHaveLength(0);
++    expect(view.prompts).toHaveLength(0);
++  });
++
++  test("it is a card with a [Trigger] for OP17-109 Pudding's trash cost", () => {
++    // "[On Play] You may trash 1 card with a [Trigger] from your hand: Draw 3
++    // cards." Higuma has no [Trigger], so Cracker is the only card that pays.
++    const engine = OnePieceTestEngine.create(
++      {
++        hand: [op17CharlottePudding109, op17CharlotteCracker104, op13Higuma013],
++        deck: 5,
++        activeDon: 3,
++      },
++      {},
++    );
++    const south = engine.asSouth();
++    const crackerId = engine.findCardInZone("south", "hand", op17CharlotteCracker104);
++
++    south.play(op17CharlottePudding109);
++    expect(south.pendingDecision("effectOptional").title).toContain("Charlotte Pudding");
++    south.acceptOptional();
++
++    const view = south.view();
++    expect(view.players.south.trash.map((card) => card.instanceId)).toEqual([crackerId]);
++    expect(view.players.south.hand.map((card) => card.cardId)).toContain(op13Higuma013.id);
++    expect(view.players.south.hand).toHaveLength(4);
++    expect(view.prompts).toHaveLength(0);
++  });
++
++  test("[On Play] resting 2 DON!! with a Big Mom Pirates Leader adds the top deck card to Life", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: op08CharlottePudding058,
++        hand: [op17CharlotteCracker104],
++        deck: 5,
++        life: 2,
++        activeDon: 5,
++      },
++      {},
++    );
++    const south = engine.asSouth();
++
++    south.play(op17CharlotteCracker104);
++    south.acceptOptional();
++    south.chooseOption("effectAddToLifeFromDeck", "1");
++
++    const view = south.view();
++    expect(view.players.south).toMatchObject({ activeDon: 0, restedDon: 5, lifeCount: 3 });
++    expect(view.prompts).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-112-charlotte-linlin.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-112-charlotte-linlin.test.ts
+new file mode 100644
+index 0000000..bed6383
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-112-charlotte-linlin.test.ts
+@@ -0,0 +1,102 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  op12Baby5112,
++  op12SilversRayleigh001,
++  op17CharlotteCracker104,
++  op17CharlotteDaifuku107,
++  op17CharlotteLinlin112,
++  op17KundaliDragonSwarm077,
++  op17Yamato074,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine, type FixtureCardEntry } from "../../../src/index.ts";
++
++// OP17-112 Charlotte Linlin: "[Your Turn] The base power of all of your
++// Characters with a [Trigger] and 4000 base power becomes 8000." (The [On Play]
++// half is covered in src/cards/OP17/characters/112-charlotte-linlin.test.ts.)
++// OP17 FAQ: a Character whose base power became 8000 this way does not also
++// count as having 4000 base power.
++
++function setup(
++  south: { leaderCardId?: typeof op12SilversRayleigh001; hand?: FixtureCardEntry[] } = {},
++) {
++  return OnePieceTestEngine.create(
++    {
++      ...south,
++      character: [
++        op17CharlotteLinlin112,
++        { card: op17CharlotteDaifuku107, playedOnTurn: 0 },
++        op17CharlotteCracker104,
++        op12Baby5112,
++        op17Yamato074,
++      ],
++      activeDon: 2,
++    },
++    { character: [op17CharlotteDaifuku107] },
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++}
++
++function southPower(engine: OnePieceTestEngine, card: { id: string }) {
++  return engine.getView("south").players.south.characters.find((entry) => entry?.cardId === card.id)
++    ?.power;
++}
++
++describe("OP17-112 Charlotte Linlin", () => {
++  test("[Your Turn] your [Trigger] Characters with 4000 base power have 8000 base power", () => {
++    const engine = setup();
++
++    expect(southPower(engine, op17CharlotteDaifuku107)).toBe(8000);
++    expect(southPower(engine, op17CharlotteCracker104)).toBe(8000);
++    // Baby 5 has a [Trigger] but 5000 base power; Yamato has no [Trigger].
++    expect(southPower(engine, op12Baby5112)).toBe(5000);
++    expect(southPower(engine, op17Yamato074)).toBe(1000);
++    // Only your own Characters change.
++    expect(engine.getView("south").players.north.characters[0]?.power).toBe(4000);
++  });
++
++  test("[Your Turn] the 8000 base power is used in battle", () => {
++    const engine = setup();
++    const lifeBefore = engine.getView("south").players.north.lifeCount;
++
++    // 8000 against the 5000 Leader (at 4000 the attack would fail). North has
++    // no hand, so there is no Counter Step choice.
++    engine.asSouth().attack(op17CharlotteDaifuku107, engine.leader("north"));
++
++    expect(engine.getView("south").players.north.lifeCount).toBe(lifeBefore - 1);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++
++  test("during the opponent's turn the base power is 4000 again", () => {
++    const engine = setup();
++    engine.asSouth().endTurn();
++
++    expect(engine.getState().activeSeat).toBe("north");
++    expect(southPower(engine, op17CharlotteDaifuku107)).toBe(4000);
++    expect(southPower(engine, op17CharlotteCracker104)).toBe(4000);
++  });
++
++  test("a Character whose base power became 8000 no longer has 4000 base power (OP17 FAQ)", () => {
++    // OP12-001 Silvers Rayleigh: "[Activate: Main] [Once Per Turn] You may
++    // reveal 2 Events from your hand: Up to 1 of your Characters with 4000 base
++    // power or less gains +2000 power during this turn."
++    const engine = setup({
++      leaderCardId: op12SilversRayleigh001,
++      hand: [op17KundaliDragonSwarm077, op17KundaliDragonSwarm077],
++    });
++    const south = engine.asSouth();
++
++    south.activateMain(engine.leader("south"));
++    south.acceptOptional();
++    const target = south.pendingDecision("effectTargetSelection").steps[0];
++    if (target?.kind !== "selectEntity") throw new Error("Expected Rayleigh's +2000 target.");
++    const candidates = target.candidates.map(
++      (candidate) => engine.getState().cards[candidate.ref.id]?.cardId,
++    );
++    expect(candidates).toEqual([op17Yamato074.id]);
++    south.chooseTargets(engine.findCardInZone("south", "character", op17Yamato074));
++
++    expect(southPower(engine, op17Yamato074)).toBe(3000);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st34-002-charlotte-cracker.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st34-002-charlotte-cracker.test.ts
+index 03d4ff7..4683622 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st34-002-charlotte-cracker.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st34-002-charlotte-cracker.test.ts
+@@ -13,13 +13,17 @@ import { OnePieceTestEngine } from "../../../src/index.ts";
+ // [On Play] If your Leader has the {Big Mom Pirates} type, add up to 1 DON!!
+ // card from your DON!! deck and rest it. Then, K.O. up to 1 of your opponent's
+ // Characters with a cost of 2 or less.
+-function setup(leaderCardId: LeaderCard) {
++//
++// The "Then" clause depends on the "if" (4-10-2, 8-3-3; OP14/EB04 FAQ for
++// OP14-078 and OP14-112), but not on the DON!! add itself: with an empty DON!!
++// deck the K.O. still happens (ST34 FAQ).
++function setup(leaderCardId: LeaderCard, donDeckCount = 3) {
+   return OnePieceTestEngine.create(
+     {
+       leaderCardId,
+       hand: [st34CharlotteCracker002],
+       activeDon: 4,
+-      donDeckCount: 3,
++      donDeckCount,
+     },
+     { character: [op13Higuma013, eb01Fourtricks025] },
+     { firstPlayer: "north", activeSeat: "south" },
+@@ -67,24 +71,33 @@ describe("ST34-002 Charlotte Cracker", () => {
+     expect(engine.getState().capabilityHistory).toHaveLength(0);
+   });
+ 
+-  test("with a non-Big Mom Pirates Leader adds no DON!!, but the Then K.O. still resolves", () => {
++  test("with a non-Big Mom Pirates Leader neither adds DON!! nor K.O.s", () => {
+     const engine = setup(op09NicoRobin062);
+     const south = engine.asSouth();
+     const cheapId = engine.asNorth().findOnField(op13Higuma013);
+ 
+     south.play(st34CharlotteCracker002);
+ 
++    const view = south.view();
++    expect(view.prompts).toHaveLength(0);
++    expect(view.players.south).toMatchObject({ activeDon: 0, restedDon: 4, donDeckCount: 3 });
++    expect(view.players.north.characters.map((card) => card?.instanceId)).toContain(cheapId);
++    expect(view.players.north.trash).toHaveLength(0);
++  });
++
++  test("with a Big Mom Pirates Leader and an empty DON!! deck the K.O. still resolves (ST34 FAQ)", () => {
++    const engine = setup(op08CharlottePudding058, 0);
++    const south = engine.asSouth();
++    const cheapId = engine.asNorth().findOnField(op13Higuma013);
++
++    south.play(st34CharlotteCracker002);
++
+     expect(() => south.pendingDecision("effectAddDon")).toThrow();
+-    expect(south.view().players.south).toMatchObject({
+-      activeDon: 0,
+-      restedDon: 4,
+-      donDeckCount: 3,
+-    });
+     south.chooseTargets(cheapId);
+ 
+     const view = south.view();
+-    expect(view.players.north.trash.map((card) => card.instanceId)).toContain(cheapId);
+-    expect(view.players.south).toMatchObject({ restedDon: 4, donDeckCount: 3 });
++    expect(view.players.north.trash.map((card) => card.instanceId)).toEqual([cheapId]);
++    expect(view.players.south).toMatchObject({ activeDon: 0, restedDon: 4, donDeckCount: 0 });
+     expect(view.prompts).toHaveLength(0);
+   });
+ 
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op12-018-color-of-the-supreme-king-haki.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op12-018-color-of-the-supreme-king-haki.test.ts
+index 5570242..aa26220 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op12-018-color-of-the-supreme-king-haki.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/events/op12-018-color-of-the-supreme-king-haki.test.ts
+@@ -4,6 +4,8 @@ import {
+   eb02Karoo001,
+   eb03Ain002,
+   op12ColorOfTheSupremeKingHaki018,
++  op12SilversRayleigh001,
++  op13MonkeyDLuffy001,
+ } from "@tcg/op-cards";
+ 
+ import { OnePieceTestEngine } from "../../../src/index.ts";
+@@ -72,6 +74,36 @@ describe("OP12-018 Color of the Supreme King Haki", () => {
+     expect(engine.getView("south").players.south).toMatchObject({ activeDon: 2, restedDon: 0 });
+   });
+ 
++  test("the +2000 can go to a [Silvers Rayleigh] Leader (OP12-001), but not to another Leader", () => {
++    // North's 5000 Leader attacks South's 5000 Leader: the +2000 repels it.
++    const counterOnLeader = (leaderCardId: typeof op12SilversRayleigh001) => {
++      const engine = OnePieceTestEngine.create(
++        { leaderCardId, hand: [op12ColorOfTheSupremeKingHaki018], character: [eb03Ain002] },
++        { activeDon: 5 },
++        { firstPlayer: "south", activeSeat: "north" },
++      );
++      engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++      engine.asSouth().chooseCounter(op12ColorOfTheSupremeKingHaki018);
++      const target = engine.asSouth().pendingDecision("effectTargetSelection").steps[0];
++      if (target?.kind !== "selectEntity") throw new Error("Expected the +2000 target.");
++      return { engine, candidateIds: target.candidates.map((candidate) => candidate.ref.id) };
++    };
++
++    const rayleigh = counterOnLeader(op12SilversRayleigh001);
++    const rayleighId = rayleigh.engine.leader("south");
++    const ainId = rayleigh.engine.findCardInZone("south", "character", eb03Ain002);
++    expect(rayleigh.candidateIds.sort()).toEqual([rayleighId, ainId].sort());
++    const lifeBefore = rayleigh.engine.getView("south").players.south.lifeCount;
++    rayleigh.engine.asSouth().chooseTargets(rayleighId);
++    expect(rayleigh.engine.getView("south").players.south.lifeCount).toBe(lifeBefore);
++    expect(rayleigh.engine.getView("south").prompts).toHaveLength(0);
++
++    const luffy = counterOnLeader(op13MonkeyDLuffy001);
++    expect(luffy.candidateIds).toEqual([
++      luffy.engine.findCardInZone("south", "character", eb03Ain002),
++    ]);
++  });
++
+   test("resting 1 DON!! gives the opponent's Leader and Characters −1000 this turn", () => {
+     const { engine, ainId, karooId, domaId } = setup(2, 0);
+     engine.asSouth().chooseTargets(ainId);
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/rules/04-terminology.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/rules/04-terminology.test.ts
+index e70fb1d..3a16453 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/rules/04-terminology.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/rules/04-terminology.test.ts
+@@ -10,6 +10,7 @@ import {
+   op04Sasaki048,
+   op07Ain002,
+   op07MonkeyDLuffy109,
++  op08CharlottePudding058,
+   op09Bepo074,
+   op09NicoRobin062,
+   op13Higuma013,
+@@ -20,6 +21,7 @@ import {
+   op14eb04ShachiPenguin006,
+   op14eb04TrafalgarLawOp14001001,
+   op14eb04Vista053,
++  st34CharlotteCracker002,
+ } from "@tcg/op-cards";
+ 
+ import { OnePieceTestEngine } from "../../src/index.ts";
+@@ -461,6 +463,38 @@ describe("Comprehensive Rules 4: Basic Game Terminology", () => {
+     expect(view.deckCount).toBe(2);
+   });
+ 
++  test('4-10-2: a "Then" clause after an "if" clause that is not resolved cannot be resolved either', () => {
++    // ST34-002 Charlotte Cracker: "If your Leader has the {Big Mom Pirates}
++    // type, add up to 1 DON!! card from your DON!! deck and rest it. Then, K.O.
++    // up to 1 of your opponent's Characters with a cost of 2 or less."
++    // 8-3-3 and the OP14/EB04 FAQ (OP14-078 Bullet String, OP14-112 Boa
++    // Hancock: "can I use the 'Then, ...' part? No") read the same way.
++    const play = (leaderCardId: typeof op09NicoRobin062) => {
++      const engine = OnePieceTestEngine.create(
++        { leaderCardId, hand: [st34CharlotteCracker002], activeDon: 4, donDeckCount: 3 },
++        { character: [op13Higuma013] },
++        SOUTH_ATTACKS,
++      );
++      engine.asSouth().play(st34CharlotteCracker002);
++      return engine;
++    };
++
++    const ifFails = play(op09NicoRobin062);
++    expect(ifFails.asSouth().view().prompts).toHaveLength(0);
++    expect(ifFails.asSouth().view().players.north.trash).toHaveLength(0);
++
++    const ifHolds = play(op08CharlottePudding058);
++    ifHolds.asSouth().chooseAddDon(0);
++    const higumaId = ifHolds.asNorth().findOnField(op13Higuma013);
++    ifHolds.asSouth().chooseTargets(higumaId);
++    expect(
++      ifHolds
++        .asSouth()
++        .view()
++        .players.north.trash.map((card) => card.instanceId),
++    ).toEqual([higumaId]);
++  });
++
+   test("4-12-1: «Set Power to 0» reduces power by its current value at activation for the duration", () => {
+     const engine = OnePieceTestEngine.create(
+       { hand: [op07Ain002], activeDon: 7 },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/action.ts b/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/action.ts
+index a55eb34..79a85e3 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/action.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/action.ts
+@@ -138,6 +138,11 @@ export interface ModifyPowerAction {
+ export interface ModifyCounterAction {
+   action: "modifyCounter";
+   target: Target;
++  /**
++   * The Counter the targets have ("has a +1000 Counter", "the counter ...
++   * becomes +2000"). A card with several Counters uses only the highest one
++   * (2-10-4), so values from different effects do not add up.
++   */
+   value: number;
+   /** Optional for dynamic permanent modifiers evaluated live at query time. */
+   duration?: Duration;
