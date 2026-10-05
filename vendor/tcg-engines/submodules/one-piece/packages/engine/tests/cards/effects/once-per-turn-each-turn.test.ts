@@ -1,0 +1,138 @@
+import { describe, expect, test } from "vite-plus/test";
+import { eb01Doma005, op16Ramba016, op17EdwardNewgate040, op17RocksDXebec039 } from "@tcg/op-cards";
+
+import { OnePieceTestEngine } from "../../../src/index.ts";
+
+/**
+ * 10-2-13-1: "[Once Per Turn] is a keyword indicating an effect can only be
+ * activated and resolved once during that turn." Every turn is a new turn: an
+ * effect with two timings, one in each player's turn, can be used in both. The
+ * engine cleared the used marks only for the cards of the player whose turn
+ * began, so an effect used during its controller's turn stayed used through the
+ * opponent's next turn.
+ */
+
+function kaidoMatch() {
+  // South: OP17-058 Kaido Leader, "[When Attacking]/[On Your Opponent's Attack]
+  // [Once Per Turn] DON!! -1: Give up to 1 of your opponent's Characters -2000
+  // power during this turn."
+  return OnePieceTestEngine.create(
+    { leaderCardId: "OP17-058", deck: 10, activeDon: 4, donDeckCount: 6 },
+    {
+      leaderCardId: "OP17-079",
+      character: [{ cardId: "OP17-082" }],
+      deck: 10,
+      activeDon: 5,
+    },
+    { firstPlayer: "south", activeSeat: "south", turnNumber: 3 },
+  );
+}
+
+type DecisionIntent = Parameters<OnePieceTestEngine["resolveDecision"]>[0];
+
+/** Answers every remaining prompt: decline optional effects and counters, block nothing, fewest targets. */
+function settle(engine: OnePieceTestEngine) {
+  for (let i = 0; i < 12; i++) {
+    const prompt = engine.getState().promptQueue.find((p) => p.status === "pending");
+    if (!prompt) return;
+    const intent = ((prompt.resolutionContext as { intent?: string } | null)?.intent ??
+      "") as DecisionIntent;
+    const seat = prompt.seat as "north" | "south";
+    if (intent === "battleCounter" || intent === "battleBlocker") {
+      engine.resolveDecision(intent, { selectedIds: [] }, seat);
+    } else if (prompt.choiceKind === "confirm") {
+      engine.resolveDecision(intent, { optionId: "no" }, seat);
+    } else if (prompt.choiceKind === "selectTargets" || prompt.choiceKind === "selectCards") {
+      // Pick the fewest targets the prompt allows (the first ones offered).
+      const min = prompt.minSelections ?? 0;
+      const ids = prompt.options.filter((o) => o.enabled !== false).map((o) => o.id);
+      engine.resolveDecision(intent, { selectedIds: ids.slice(0, min) }, seat);
+    } else {
+      throw new Error(`Unexpected prompt ${intent}`);
+    }
+  }
+}
+
+describe("[Once Per Turn] is available again in the opponent's turn (10-2-13-1)", () => {
+  test("OP17-058 Kaido Leader: used when attacking, offered again when attacked next turn", () => {
+    const engine = kaidoMatch();
+    const south = engine.asSouth();
+
+    south.attack(engine.leader("south"), engine.leader("north"));
+    expect(engine.pendingDecision("effectOptional", "south").source?.id).toBe(
+      engine.leader("south"),
+    );
+    south.acceptOptional();
+    settle(engine);
+    expect(engine.getView("south").players.south.donDeckCount).toBe(7);
+
+    engine.endTurn("south");
+    settle(engine);
+    const state = engine.getState();
+    const sanji = state.players.north.characterArea.find(
+      (id) => id && state.cards[id]?.cardId === "OP17-082",
+    )!;
+    engine.asNorth().attack(sanji, engine.leader("south"));
+    expect(engine.pendingDecision("effectOptional", "south").source?.id).toBe(
+      engine.leader("south"),
+    );
+  });
+
+  test("still once per turn: a second attack in the same turn is not offered it", () => {
+    const engine = kaidoMatch();
+    const south = engine.asSouth();
+    south.attack(engine.leader("south"), engine.leader("north"));
+    south.acceptOptional();
+    settle(engine);
+    engine.endTurn("south");
+    settle(engine);
+
+    const north = engine.asNorth();
+    const state = engine.getState();
+    const sanji = state.players.north.characterArea.find(
+      (id) => id && state.cards[id]?.cardId === "OP17-082",
+    )!;
+    north.attack(sanji, engine.leader("south"));
+    engine.asSouth().acceptOptional();
+    settle(engine);
+
+    north.attack(engine.leader("north"), engine.leader("south"));
+    expect(() => engine.pendingDecision("effectOptional", "south")).toThrow();
+  });
+
+  test("OP17-040 Newgate: used when its Leader attacks, offered again when that Leader is attacked", () => {
+    const engine = OnePieceTestEngine.create(
+      {
+        leaderCardId: op17RocksDXebec039,
+        hand: [eb01Doma005, eb01Doma005, op16Ramba016],
+        character: [op17EdwardNewgate040],
+        deck: 10,
+      },
+      { leaderCardId: "OP17-079", character: [{ cardId: "OP17-082" }], deck: 10, activeDon: 5 },
+      { firstPlayer: "south", activeSeat: "south", turnNumber: 3 },
+    );
+    const newgateId = engine.asSouth().findOnField(op17EdwardNewgate040);
+    const leaderId = engine.leader("south");
+
+    engine.asSouth().attack(leaderId, engine.leader("north"));
+    // The Leader's own [When Attacking] and Newgate trigger together: Newgate first.
+    const order = engine.pendingDecision("effectOrderChoice", "south").steps[0];
+    if (order?.kind !== "chooseOption") throw new Error("Expected the effect order choice.");
+    const newgateFirst = order.options.find((option) => option.targetId === newgateId)!;
+    engine.asSouth().chooseOption("effectOrderChoice", newgateFirst.id);
+    engine.asSouth().acceptOptional();
+    engine
+      .asSouth()
+      .choose("effectCostTrashFromHand", [engine.findCardInZone("south", "hand", eb01Doma005)]);
+    settle(engine);
+
+    engine.endTurn("south");
+    settle(engine);
+    const state = engine.getState();
+    const sanji = state.players.north.characterArea.find(
+      (id) => id && state.cards[id]?.cardId === "OP17-082",
+    )!;
+    engine.asNorth().attack(sanji, leaderId);
+    expect(engine.pendingDecision("effectOptional", "south").source?.id).toBe(newgateId);
+  });
+});

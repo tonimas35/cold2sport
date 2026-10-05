@@ -805,6 +805,17 @@ function resetStartOfTurnState(state: MatchState, seat: MatchSeat) {
 
   for (const instance of Object.values(state.cards)) {
     if (instance.controller !== seat) {
+      // 10-2-13-1: [Once Per Turn] means once during each turn, the opponent's
+      // turn included. An effect used during its controller's turn (e.g. the
+      // OP17-058 Kaido Leader's [When Attacking]/[On Your Opponent's Attack])
+      // is available again when the next turn begins.
+      if (
+        instance.zone === "leader" ||
+        instance.zone === "character" ||
+        instance.zone === "stage"
+      ) {
+        instance.usedEffectKeys = [];
+      }
       continue;
     }
 
