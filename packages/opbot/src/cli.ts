@@ -150,7 +150,7 @@ async function main(): Promise<void> {
       const base = test.y.reduce((a, b) => a + b, 0) / test.y.length;
       console.log(`train: ${JSON.stringify(mTrain)}`);
       console.log(`test:  ${JSON.stringify(mTest)} (base rate ${base.toFixed(3)})`);
-      const out = resolve(str(args, "out", "packages/opbot/models/value.json"));
+      const out = resolve(str(args, "out", "out/value.json"));
       mkdirSync(dirname(out), { recursive: true });
       const model = {
         version: str(args, "version", `logreg-${new Date().toISOString().slice(0, 10)}`),

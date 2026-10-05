@@ -26,6 +26,7 @@ sintéticos), simulación rápida, modelo de valor `logreg-test-v1`.
 | E9 | 2026-10-05 | `3c13662` | `policy` (oráculo) | `heuristic` (oráculo) | 128 | 2/0/91/0/35 | **62,9 % [58,8–67,0]** | **+92 [62, 123]** | **Mazos del meta** (los 8 del pool), motor de este commit (antes de las correcciones de cartas en curso). SPRT(0, 35) decide H1 a los 32 pares; con `--no-stop` se completa un ciclo entero (64 emparejamientos × quién empieza). Mejora con 7 de los 8 mazos e iguala con Sabo (detalle abajo). 0 comandos rechazados. 1º: 65,6 %, 2º: 60,2 %. 2,6 ms por decisión (heurística: 2,3) |
 | E10 | 2026-10-05 | `3c13662` | `search:sims=32,h=1,cands=12` (rollouts con `policy`) | `search:sims=32,h=1,cands=12,rollout=engine` (rollouts anteriores) | 88 | 5/0/67/0/16 | **56,3 % [51,3–61,2]** | **+44 [9, 79]** | Mazos del meta, el mismo motor en los dos lados (las correcciones de cartas en curso moverán las cifras absolutas, no la comparación). Cortado a los ~95 min en una máquina compartida: 88 bloques (los 64 emparejamientos con sur empezando y 24 con norte). SPRT(0, 35): LLR 2,96, decide H1 (ya había cruzado a los 48 pares, 3,07, y bajó). 0 comandos rechazados. 1º: 54,5 %, 2º: 58,0 %. 478 ms por decisión frente a 455 ms |
 | E11 | 2026-10-05 | `4451fe9` | `search:sims=32,h=1,cands=12` (rollouts `policy`) | `heuristic` (oráculo, el bot del motor sin cambios) | 162 | 5/0/83/0/74 | **71,3 % [67,0–75,6]** | **+158 [123, 196]** | **Mazos del meta, 9 mazos, motor con los parches 0001–0007** (Rocks, Luffy, Luffy & Ace y Enel ya corregidos). Ciclo completo con `--no-stop` (81 emparejamientos × quién empieza); el SPRT ya decidía H1 a los 18 pares. 1º: 71,6 %, 2º: 71,0 %. 181 ms por decisión. Gana con los 9 mazos (detalle abajo) |
+| E12 | 2026-10-05 | `4451fe9` + modelos de `3acc997` | `search:sims=32,h=1,cands=12,model=value-mlp16-meta-v1.json` | `search:sims=32,h=1,cands=12` (modelo `logreg-test-v1`, el anterior por defecto) | 162 | 5/0/89/0/68 | **69,4 % [65,2–73,7]** | **+143 [109, 179]** | **Modelo de valor entrenado con partidas del meta** (MLP de 16 neuronas, 6.000 partidas de self-play con los 9 mazos) contra el entrenado con mazos sintéticos. 9 mazos, ciclo completo con `--no-stop`; SPRT(0, 35) H1 (LLR 18,4). Mejor con 8 mazos e igual con Enel (detalle abajo). 205 ms por decisión frente a 198. **Pasa a ser el modelo por defecto** |
 
 ## Calibración de enfrentamientos frente a resultados reales
 
@@ -90,6 +91,54 @@ siguen afectadas por sus cartas aún sin corregir.
 > el bot del motor **sin cambios**, que es la referencia del "bot que ya existe". Las filas "Solo el
 > agente", "Motor + agente" y "Final" corresponden por tanto al comportamiento que ahora tiene
 > `policy` en esas preguntas, no a `heuristic`.
+
+## E12: modelo de valor entrenado con el meta
+
+Datos: `pnpm opbot selfplay --decks decks/meta-op17-postban --games 6000 --agents
+"policy:3,policy-honest:1,heuristic:1,aggressive:1" --seed meta1` (133.444 posiciones; motor con los
+parches 0001–0007). Precisión sobre las partidas apartadas para prueba (26.788 posiciones; se
+reproduce con `bun packages/opbot/scripts/eval-models.ts <modelos>`):
+
+| Modelo | Log-loss | Acierto |
+|---|---|---|
+| Hecho a mano | 0,581 | 67,7 % |
+| `logreg-test-v1` (mazos sintéticos; era el modelo por defecto) | 0,571 | 68,2 % |
+| `mlp16-test-v1` (mazos sintéticos) | 0,504 | 72,1 % |
+| `logreg-meta-v1` | 0,467 | 75,3 % |
+| **`mlp16-meta-v1`** (ahora `models/value.json`) | **0,432** | **77,6 %** |
+| `mlp32-meta-v1` | 0,433 | 77,7 % |
+
+En la arena, % de victorias con cada mazo, con un modelo y con el otro en las mismas partidas
+(mismas semillas y rivales; 36 partidas por mazo y modelo):
+
+| Mazo | `mlp16-meta-v1` | `logreg-test-v1` | Diferencia |
+|---|---|---|---|
+| Kaido | 61,1 % | 5,6 % | +55,6 |
+| Luffy & Ace | 77,8 % | 27,8 % | +50,0 |
+| Luffy OP17-079 | 88,9 % | 38,9 % | +50,0 |
+| Rocks | 72,2 % | 27,8 % | +44,4 |
+| Pudding | 63,9 % | 22,2 % | +41,7 |
+| Shanks | 77,8 % | 38,9 % | +38,9 |
+| Sabo | 94,4 % | 55,6 % | +38,9 |
+| Robin | 69,4 % | 38,9 % | +30,6 |
+| Enel | 19,4 % | 19,4 % | 0,0 |
+
+Con Enel los dos modelos ganan lo mismo y muy poco: no es un fallo del modelo nuevo, sino que
+Enel sale débil en la simulación (en torneos reales gana el 48 %). Pendiente de revisar en la
+calibración: puede ser alguna carta aún mal implementada (la segunda ronda corrige el "si tu Líder
+es [Enel]" de Varie, El Thor y Kiten) o que el bot no sepa jugar sus costes DON!! −X.
+
+```bash
+bun packages/opbot/src/cli.ts arena \
+  --candidate "search:sims=32,h=1,cands=12,model=packages/opbot/models/value-mlp16-meta-v1.json" \
+  --baseline "search:sims=32,h=1,cands=12" --decks decks/meta-op17-postban --blocks 162 \
+  --workers 2 --batch 6 --sprt 0,35 --no-stop --engine fast --seed e12 \
+  --out out/e12-mlp16meta-vs-default.jsonl
+```
+
+Desde este cambio `models/value.json` es `mlp16-meta-v1`; el modelo anterior se conserva como
+`models/value-logreg-test-v1.json` (E1–E11 se midieron con él). `train-value` escribe por defecto en
+`out/value.json`, para no sustituir el modelo por defecto sin querer.
 
 ## E11: búsqueda contra el bot del motor en el meta (motor corregido)
 
