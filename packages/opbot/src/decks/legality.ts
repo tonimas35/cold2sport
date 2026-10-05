@@ -251,6 +251,19 @@ function inForce(entry: { from: string; until?: string }, date: string): boolean
   return entry.from <= date && (entry.until === undefined || date < entry.until);
 }
 
+/**
+ * Whether a card number (or printing id) may be played in Standard on `date`:
+ * a legal block and not banned. Pairs and restrictions are deck-level and
+ * not considered. Used to rank per-card reports, not to validate decks.
+ */
+export function isStandardCard(cardId: string, date: string = DEFAULT_LEGALITY_DATE): boolean {
+  assertSeasonDate(date);
+  const number = cardNumber(cardId);
+  const block = standardBlock(cardId);
+  if (number === null || block === null || !LEGAL_ICONS.has(block.icon)) return false;
+  return !BANNED.some((b) => b.card === number && inForce(b, date));
+}
+
 function assertSeasonDate(date: string): void {
   // Date.parse rolls impossible days over ("2026-09-31" -> Oct 1) instead of
   // failing, so the date must survive a round trip unchanged.

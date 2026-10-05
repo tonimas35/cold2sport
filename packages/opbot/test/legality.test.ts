@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { resolve } from "node:path";
 import { checkDeck, engineTestDecks, type DeckList } from "../src/decks/deck.ts";
-import { checkStandardLegality, standardBlock } from "../src/decks/legality.ts";
+import { checkStandardLegality, isStandardCard, standardBlock } from "../src/decks/legality.ts";
 import { loadDeckPool } from "../src/decks/pool.ts";
 import { allCards, getCard } from "../src/engine/internals.ts";
 
@@ -49,6 +49,15 @@ describe("block of a card number", () => {
   test("every card of the engine catalog has a known block", () => {
     const unknown = allCards.filter((c) => c.cardType !== "don" && standardBlock(c.id) === null);
     expect(unknown.map((c) => c.id)).toEqual([]);
+  });
+
+  test("isStandardCard: legal block and not banned on the date", () => {
+    expect(isStandardCard("OP17-027")).toBe(true);
+    expect(isStandardCard("OP01-016_p3")).toBe(true); // Super Parallel number
+    expect(isStandardCard("OP01-035")).toBe(false); // Block 1
+    expect(isStandardCard("OP18-001")).toBe(false); // unknown set
+    expect(isStandardCard("OP14-020", "2026-10-11")).toBe(true);
+    expect(isStandardCard("OP14-020", "2026-10-12")).toBe(false);
   });
 });
 

@@ -15,6 +15,7 @@
  *   tune         base deck vs a variant with card swaps, against a field of decks
  *   calibrate    simulated matchup matrix vs real Limitless head-to-head results
  *   import       OPTCGSim / OPBounty combat log -> position file (list moments with --list)
+ *   catalog-check  engine card catalog vs the official EN card list (decks/catalog-command.ts)
  */
 import { mkdirSync, readFileSync, writeFileSync, appendFileSync, existsSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -366,9 +367,15 @@ async function main(): Promise<void> {
       return;
     }
 
+    case "catalog-check": {
+      const { runCatalogCheckCommand } = await import("./decks/catalog-command.ts");
+      await runCatalogCheckCommand(args);
+      return;
+    }
+
     default:
       console.log(
-        "usage: opbot <selfplay|train-value|arena|bench|meta-decks|analyze|matchup|play|review|tune|calibrate|import> [--options]\n" +
+        "usage: opbot <selfplay|train-value|arena|bench|meta-decks|analyze|matchup|play|review|tune|calibrate|import|catalog-check> [--options]\n" +
           "  see packages/opbot/README.md for every option",
       );
   }

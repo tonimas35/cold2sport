@@ -64,6 +64,7 @@ pnpm opbot bench                       # velocidad del motor
 pnpm opbot selfplay --games 20000      # datos para el modelo de valor
 pnpm opbot train-value --data out/selfplay.jsonl
 pnpm opbot meta-decks                  # pool del meta desde la API de Limitless
+pnpm opbot catalog-check               # catálogo del motor frente a la lista oficial (docs/CATALOGO.md)
 ```
 
 ## Formato de mazos

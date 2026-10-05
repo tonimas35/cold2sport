@@ -274,3 +274,8 @@ Patrones de fallo que conviene buscar en cualquier carta nueva:
 4. tipos compuestos guardados como una sola cadena y filtros de tipo con `includes` donde el texto
    dice `{Tipo}` exacto;
 5. `[Nombre]` que debería incluir al Líder.
+
+Los patrones 1, 2 y 4, y los errores de datos (counter, atributo, nombre, coste, [Trigger]), los
+busca ahora `pnpm opbot catalog-check` en todo el catálogo contra la lista oficial EN
+(`docs/CATALOGO.md`). Los patrones 3 y 5, y en general un bloque que existe pero hace otra cosa,
+siguen necesitando la auditoría a mano.

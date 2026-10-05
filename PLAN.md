@@ -103,6 +103,9 @@ Decisiones clave:
       fechas), verificada contra la lista oficial de cartas.
 - [x] Informe de soporte del motor por mazo: hoy solo 5 de los 9 Líderes principales funcionan.
 - [ ] Parche del motor con las cartas y costes que faltan (ST34, ST30-001, costes OP15-074…078). En curso.
+- [x] Comprobación sistemática del catálogo contra la lista oficial EN (`pnpm opbot catalog-check`,
+      `docs/CATALOGO.md`), con la lista de arreglos de datos mecánicos en `docs/catalogo-arreglos.json`.
+- [ ] Parche con esos arreglos de datos y los bloques que faltan en cartas del meta.
 - [ ] Matriz de enfrentamientos del meta según el bot.
 
 ### Fase 3. Bot de búsqueda (en curso)
@@ -135,7 +138,8 @@ Decisiones clave:
 
 ### Mantenimiento
 - EB-05 sale el 30-oct-2026 y OP-18 el 20-nov-2026: el motor aún no los tiene. Sincronizar el motor
-  (`scripts/sync-engine.sh`) cuando upstream los añada y rehacer el pool del meta.
+  (`scripts/sync-engine.sh`) cuando upstream los añada, pasar `pnpm opbot catalog-check` (datos y
+  estructura de cada carta frente a la lista oficial, `docs/CATALOGO.md`) y rehacer el pool del meta.
 - Reglas: el motor sigue las Comprehensive Rules 1.2.0; la vigente es la 1.2.1 (28-ago-2026).
   Revisar las diferencias.
 
