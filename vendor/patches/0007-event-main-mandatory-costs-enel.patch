@@ -1,0 +1,711 @@
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+index edcb1c2..491c53b 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+@@ -1580,7 +1580,7 @@ reconciles catalog entries.
+ | OP15-112 | Raki | verified | onPlay |
+ | OP15-113 | Roronoa Zoro | verified | onPlay |
+ | OP15-114 | Wyper | verified | onPlay, activateMain |
+-| OP15-118 | Enel | verified | onPlay, permanent |
++| OP15-118 | Enel | verified | onPlay DON!! −1 search; static +2000 power and removal protection with 6 or less DON!! on the field |
+ | OP15-119 | Monkey.D.Luffy | verified | permanent |
+ | OP16-002 | Izo | verified | On Play reveal 8000 Character from hand pays for the draw 1; decline and empty-pool boundaries |
+ | OP16-003 | Edward.Newgate | verified | Your-turn Leader +2000 power; On Play reveal 2x8000 Characters pays for up-to-1 -6000 this turn with decline boundary |
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
+index 0a1e025..2b97752 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-event-inventory.md
+@@ -319,11 +319,11 @@ reconciles catalog entries.
+ | OP15-054 | And No One Else Can Have It! It's Our Memento of Him | verified | Lucy-gated choice: draw 2, trash 1, play Dressrosa cost-4-or-less; or return a Stage to hand |
+ | OP15-055 | Go Ahead and Use 'Em, Mr. Luffy!!! | verified | Choice: draw 2 or grant a Dressrosa Character [Blocker] |
+ | OP15-056 | Would You Let Me Eat the Flame-Flame Fruit? | verified | Main draws 2 and a [Lucy] Leader gains [Double Attack] +3000 (deals 2 damage) |
+-| OP15-074 | Varie | verified | DON!! 1 Enel-gated draw with +2 cost grant; [Counter] saves the Leader with +2000 |
+-| OP15-075 | El Thor | verified | DON!! 1 Enel-gated +1000 and K.O. of 3000-or-less power |
+-| OP15-076 | Lightning Beast Kiten | verified | DON!! 1 Enel-gated draw with -1000 power give |
+-| OP15-077 | Lightning Dragon | verified | DON!! 1 draw and freeze of a rested 6000-or-less Character through refresh |
+-| OP15-078 | Mamaragan | verified | DON!! 2 draw and rest of a 5000-or-less Character with power filter |
++| OP15-074 | Varie | verified | DON!! −1 Enel-gated draw with +2 cost grant (unplayable without 1 DON!! on the field, paid from given DON!! too); [Counter] saves the Leader with +2000 |
++| OP15-075 | El Thor | verified | DON!! −1 Enel-gated +1000 and K.O. of 3000-or-less power; unplayable without 1 DON!! on the field |
++| OP15-076 | Lightning Beast Kiten | verified | DON!! −1 Enel-gated draw with -1000 power give; unplayable without 1 DON!! on the field |
++| OP15-077 | Lightning Dragon | verified | DON!! −1 draw and freeze of a rested 6000-or-less Character through refresh (power filter checked); unplayable without 1 DON!! on the field |
++| OP15-078 | Mamaragan | verified | DON!! −2 draw and rest of a 5000-or-less Character with power filter; unplayable with fewer than 2 DON!! on the field |
+ | OP15-095 | Gum-Gum Storm | verified | rest-DON cost with 15-trash gate gives a Straw Hat card +3000; sub-threshold boundary |
+ | OP15-096 | Swallow Bond en Avant | verified | rest-DON cost with Straw Hat Leader trashes 5 deck cards; non-SH decline boundary |
+ | OP15-097 | I Find It Embarrassing as a Human Being | verified | Main 10-trash gate stops a base-cost-5-or-less Character attacking; cost filter boundary |
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-118-enel.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-118-enel.ts
+index 55ae5b0..e5ce539 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-118-enel.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op15-118-enel.ts
+@@ -103,6 +103,19 @@ export const op15Enel118: CharacterCard = {
+             duration: "permanent",
+             bySource: "opponentEffect",
+           },
++          {
++            action: "modifyPower",
++            target: {
++              player: "self",
++              zones: ["character"],
++              count: {
++                amount: 1,
++              },
++              self: true,
++            },
++            value: 2000,
++            duration: "permanent",
++          },
+         ],
+       },
+     ],
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-077-lightning-dragon.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-077-lightning-dragon.ts
+index e81d1c6..c4041e7 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-077-lightning-dragon.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/events/op15-077-lightning-dragon.ts
+@@ -63,6 +63,11 @@ export const op15LightningDragon077: EventCard = {
+                   filter: "state",
+                   value: "rested",
+                 },
++                {
++                  filter: "power",
++                  comparison: "lte",
++                  value: 6000,
++                },
+               ],
+             },
+           },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/characters/118.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/characters/118.test.ts
+index ea3e55c..686b0ab 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/characters/118.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/characters/118.test.ts
+@@ -110,4 +110,25 @@ describe("OP15-118", () => {
+     expect(engine.getView("south").players.south.handCount).toBe(Math.max(before.handCount - 1, 0));
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
++
++  test("gains +2000 power while its controller has 6 or less DON!! cards on the field", () => {
++    const powerOf = (engine: OnePieceTestEngine) =>
++      engine.getView("south").players.south.characters.find((c) => c?.cardId === "OP15-118")?.power;
++
++    const six = OnePieceTestEngine.create(
++      { character: ["OP15-118"], activeDon: 6 },
++      { character: ["OP13-013"], activeDon: 5 },
++    );
++    expect(powerOf(six)).toBe(10000);
++    // The static applies on the opponent's turn too.
++    six.endTurn("south");
++    expect(six.getState().activeSeat).toBe("north");
++    expect(powerOf(six)).toBe(10000);
++
++    const seven = OnePieceTestEngine.create(
++      { character: ["OP15-118"], activeDon: 7 },
++      { character: ["OP13-013"], activeDon: 5 },
++    );
++    expect(powerOf(seven)).toBe(8000);
++  });
+ });
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/074-varie.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/074-varie.test.ts
+index 97bc4ec..528acd9 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/074-varie.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/074-varie.test.ts
+@@ -1,6 +1,6 @@
+ import { describe, expect, test } from "vite-plus/test";
+ 
+-import { OnePieceTestEngine } from "../../../index.ts";
++import { getLegalCommands, OnePieceTestEngine } from "../../../index.ts";
+ 
+ describe("OP15-074 Varie", () => {
+   test("[Main] DON!! 1 with an [Enel] Leader draws and gives a Character +2 cost", () => {
+@@ -15,6 +15,8 @@ describe("OP15-074 Varie", () => {
+     );
+     const enelId = engine.findCardInZone("south", "character", "OP15-060");
+ 
++    const donBefore = engine.getView("south").players.south;
++
+     engine.playCard("OP15-074");
+     // The DON!! cost auto-pays; choose Enel for the +2 cost.
+     const costTarget = engine.pendingDecision("effectTargetSelection", "south").steps[0];
+@@ -24,9 +26,62 @@ describe("OP15-074 Varie", () => {
+     const south = engine.getView("south").players.south;
+     expect(south.hand).toHaveLength(2);
+     expect(south.characters.find((card) => card?.instanceId === enelId)?.cost).toBe(8);
++    // DON!! −1 (8-3-1-6): one DON!! card goes back to the DON!! deck.
++    expect(south.activeDon).toBe(donBefore.activeDon - 1);
++    expect(south.donDeckCount).toBe(donBefore.donDeckCount + 1);
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
++  test("[Main] cannot be played with no DON!! on the field to pay DON!! −1 (8-3-1-3)", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: "OP15-058",
++        hand: ["OP15-074", "EB01-005"],
++        character: ["OP15-060"],
++        activeDon: 0,
++        donDeckCount: 6,
++      },
++      {},
++    );
++    const varieId = engine.findCardInZone("south", "hand", "OP15-074");
++
++    expect(
++      getLegalCommands(engine.getState(), "south").some(
++        (command) => command.type === "playCard" && command.sourceId === varieId,
++      ),
++    ).toBe(false);
++    expect(
++      engine.expectFailure({ type: "playCard", seat: "south", instanceId: varieId }).reason,
++    ).toMatch(/activation cost cannot be paid/);
++    expect(engine.getState().players.south.hand).toContain(varieId);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("[Main] pays DON!! −1 with a DON!! given to a Character (8-3-1-6)", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: "OP15-058",
++        hand: ["OP15-074", "EB01-005"],
++        character: [{ cardId: "OP15-060", attachedDon: 1 }],
++        activeDon: 0,
++        donDeckCount: 5,
++      },
++      {},
++    );
++    const enelId = engine.findCardInZone("south", "character", "OP15-060");
++
++    engine.playCard("OP15-074");
++    engine.resolveDecision("effectTargetSelection", { selectedIds: [enelId] }, "south");
++
++    const south = engine.getView("south").players.south;
++    const enel = south.characters.find((card) => card?.instanceId === enelId);
++    expect(enel?.attachedDon).toBe(0);
++    expect(enel?.cost).toBe(8);
++    expect(south.donDeckCount).toBe(6);
++    expect(south.hand).toHaveLength(2);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
+   test("[Counter] an [Enel] card gains +2000 power during the battle", () => {
+     const engine = OnePieceTestEngine.create(
+       { leaderCardId: "OP15-058", hand: ["OP15-074"], activeDon: 5 },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/075-el-thor.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/075-el-thor.test.ts
+index b38dd50..f66ee30 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/075-el-thor.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/075-el-thor.test.ts
+@@ -1,6 +1,6 @@
+ import { describe, expect, test } from "vite-plus/test";
+ 
+-import { OnePieceTestEngine } from "../../../index.ts";
++import { getLegalCommands, OnePieceTestEngine } from "../../../index.ts";
+ 
+ describe("OP15-075 El Thor", () => {
+   test("[Main] DON!! 1 with an [Enel] Leader boosts a card and may K.O. 3000 power or less", () => {
+@@ -15,6 +15,8 @@ describe("OP15-075 El Thor", () => {
+     );
+     const higumaId = engine.findCardInZone("north", "character", "OP13-013");
+ 
++    const donBefore = engine.getView("south").players.south;
++
+     engine.playCard("OP15-075");
+     // The DON!! cost auto-pays from the active DON!!
+     const boost = engine.pendingDecision("effectTargetSelection", "south").steps[0];
+@@ -31,9 +33,39 @@ describe("OP15-075 El Thor", () => {
+     expect(engine.getView("south").players.north.trash.map((card) => card.instanceId)).toContain(
+       higumaId,
+     );
++    // DON!! −1 (8-3-1-6): one DON!! card goes back to the DON!! deck.
++    const south = engine.getView("south").players.south;
++    expect(south.activeDon).toBe(donBefore.activeDon - 1);
++    expect(south.donDeckCount).toBe(donBefore.donDeckCount + 1);
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
++  test("[Main] cannot be played with no DON!! on the field to pay DON!! −1 (8-3-1-3)", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        leaderCardId: "OP15-058",
++        hand: ["OP15-075"],
++        character: ["OP16-005"],
++        activeDon: 0,
++        donDeckCount: 6,
++      },
++      { character: ["OP13-013"] },
++    );
++    const elThorId = engine.findCardInZone("south", "hand", "OP15-075");
++
++    expect(
++      getLegalCommands(engine.getState(), "south").some(
++        (command) => command.type === "playCard" && command.sourceId === elThorId,
++      ),
++    ).toBe(false);
++    expect(
++      engine.expectFailure({ type: "playCard", seat: "south", instanceId: elThorId }).reason,
++    ).toMatch(/activation cost cannot be paid/);
++    expect(engine.getState().players.south.hand).toContain(elThorId);
++    expect(engine.getState().players.north.characterArea.filter(Boolean)).toHaveLength(1);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
+   test("[Counter] resolves as a battle counter", () => {
+     const engine = OnePieceTestEngine.create(
+       { hand: ["OP15-075"], activeDon: 5 },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/076-lightning-beast-kiten.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/076-lightning-beast-kiten.test.ts
+index 1015257..1ea74b6 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/076-lightning-beast-kiten.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/076-lightning-beast-kiten.test.ts
+@@ -1,6 +1,6 @@
+ import { describe, expect, test } from "vite-plus/test";
+ 
+-import { OnePieceTestEngine } from "../../../index.ts";
++import { getLegalCommands, OnePieceTestEngine } from "../../../index.ts";
+ 
+ describe("OP15-076 Lightning Beast Kiten", () => {
+   test("[Main] DON!! 1 with an [Enel] Leader draws and gives -1000 power", () => {
+@@ -10,6 +10,8 @@ describe("OP15-076 Lightning Beast Kiten", () => {
+     );
+     const higumaId = engine.findCardInZone("north", "character", "OP13-013");
+ 
++    const donBefore = engine.getView("south").players.south;
++
+     engine.playCard("OP15-076");
+     // The DON!! cost auto-pays from the active DON!!
+     const target = engine.pendingDecision("effectTargetSelection", "south").steps[0];
+@@ -18,6 +20,9 @@ describe("OP15-076 Lightning Beast Kiten", () => {
+ 
+     const south = engine.getView("south").players.south;
+     expect(south.hand).toHaveLength(2);
++    // DON!! −1 (8-3-1-6): one DON!! card goes back to the DON!! deck.
++    expect(south.activeDon).toBe(donBefore.activeDon - 1);
++    expect(south.donDeckCount).toBe(donBefore.donDeckCount + 1);
+     expect(
+       engine.getView("south").players.north.characters.find((c) => c?.instanceId === higumaId)
+         ?.power,
+@@ -25,6 +30,25 @@ describe("OP15-076 Lightning Beast Kiten", () => {
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
+ 
++  test("[Main] cannot be played with no DON!! on the field to pay DON!! −1 (8-3-1-3)", () => {
++    const engine = OnePieceTestEngine.create(
++      { leaderCardId: "OP15-058", hand: ["OP15-076", "EB01-005"], activeDon: 0, donDeckCount: 6 },
++      { character: ["OP13-013"] },
++    );
++    const kitenId = engine.findCardInZone("south", "hand", "OP15-076");
++
++    expect(
++      getLegalCommands(engine.getState(), "south").some(
++        (command) => command.type === "playCard" && command.sourceId === kitenId,
++      ),
++    ).toBe(false);
++    expect(
++      engine.expectFailure({ type: "playCard", seat: "south", instanceId: kitenId }).reason,
++    ).toMatch(/activation cost cannot be paid/);
++    expect(engine.getState().players.south.hand).toContain(kitenId);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
+   test("[Counter] resolves as a battle counter", () => {
+     const engine = OnePieceTestEngine.create(
+       { hand: ["OP15-076"], activeDon: 5 },
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/077-lightning-dragon.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/077-lightning-dragon.test.ts
+index 137409b..937106f 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/077-lightning-dragon.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/077-lightning-dragon.test.ts
+@@ -1,6 +1,6 @@
+ import { describe, expect, test } from "vite-plus/test";
+ 
+-import { OnePieceTestEngine } from "../../../index.ts";
++import { getLegalCommands, OnePieceTestEngine } from "../../../index.ts";
+ 
+ describe("OP15-077 Lightning Dragon", () => {
+   test("[Main] DON!! 1 draws and freezes a rested Character of 6000 power or less", () => {
+@@ -10,6 +10,8 @@ describe("OP15-077 Lightning Dragon", () => {
+     );
+     const higumaId = engine.findCardInZone("north", "character", "OP13-013");
+ 
++    const donBefore = engine.getView("south").players.south;
++
+     engine.playCard("OP15-077");
+     // The DON!! cost auto-pays from the active DON!!
+     const target = engine.pendingDecision("effectTargetSelection", "south").steps[0];
+@@ -19,6 +21,9 @@ describe("OP15-077 Lightning Dragon", () => {
+ 
+     const south = engine.getView("south").players.south;
+     expect(south.hand).toHaveLength(1);
++    // DON!! −1 (8-3-1-6): one DON!! card goes back to the DON!! deck.
++    expect(south.activeDon).toBe(donBefore.activeDon - 1);
++    expect(south.donDeckCount).toBe(donBefore.donDeckCount + 1);
+ 
+     engine.endTurn("south");
+     engine.endTurn("north");
+@@ -28,4 +33,43 @@ describe("OP15-077 Lightning Dragon", () => {
+     ).toBe(true);
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
++
++  test("[Main] only rested Characters with 6000 power or less can be frozen", () => {
++    const engine = OnePieceTestEngine.create(
++      { hand: ["OP15-077"], activeDon: 5 },
++      {
++        character: [
++          { cardId: "OP13-013", rested: true },
++          { cardId: "OP16-003", rested: true },
++        ],
++        activeDon: 5,
++      },
++    );
++    const higumaId = engine.findCardInZone("north", "character", "OP13-013");
++
++    engine.playCard("OP15-077");
++    const target = engine.pendingDecision("effectTargetSelection", "south").steps[0];
++    if (target?.kind !== "selectEntity") throw new Error("Expected the freeze target.");
++    // Edward.Newgate (10000 power) is rested but above the 6000 power limit.
++    expect(target.candidates.map((candidate) => candidate.ref.id)).toEqual([higumaId]);
++  });
++
++  test("[Main] cannot be played with no DON!! on the field to pay DON!! −1 (8-3-1-3)", () => {
++    const engine = OnePieceTestEngine.create(
++      { hand: ["OP15-077"], activeDon: 0, donDeckCount: 10 },
++      { character: [{ cardId: "OP13-013", rested: true }], activeDon: 5 },
++    );
++    const dragonId = engine.findCardInZone("south", "hand", "OP15-077");
++
++    expect(
++      getLegalCommands(engine.getState(), "south").some(
++        (command) => command.type === "playCard" && command.sourceId === dragonId,
++      ),
++    ).toBe(false);
++    expect(
++      engine.expectFailure({ type: "playCard", seat: "south", instanceId: dragonId }).reason,
++    ).toMatch(/activation cost cannot be paid/);
++    expect(engine.getState().players.south.hand).toContain(dragonId);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
+ });
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/078-mamaragan.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/078-mamaragan.test.ts
+index 8caf63b..f099b63 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/078-mamaragan.test.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/OP15/events/078-mamaragan.test.ts
+@@ -1,6 +1,6 @@
+ import { describe, expect, test } from "vite-plus/test";
+ 
+-import { OnePieceTestEngine } from "../../../index.ts";
++import { getLegalCommands, OnePieceTestEngine } from "../../../index.ts";
+ 
+ describe("OP15-078 Mamaragan", () => {
+   test("[Main] DON!! 2 draws and rests a Character of 5000 power or less", () => {
+@@ -10,6 +10,8 @@ describe("OP15-078 Mamaragan", () => {
+     );
+     const higumaId = engine.findCardInZone("north", "character", "OP13-013");
+ 
++    const donBefore = engine.getView("south").players.south;
++
+     engine.playCard("OP15-078");
+     // The DON!! 2 cost auto-pays from the active DON!!
+     const target = engine.pendingDecision("effectTargetSelection", "south").steps[0];
+@@ -22,6 +24,31 @@ describe("OP15-078 Mamaragan", () => {
+         ?.rested,
+     ).toBe(true);
+     expect(engine.getView("south").players.south.hand).toHaveLength(1);
++    // DON!! −2 (8-3-1-6): two DON!! cards go back to the DON!! deck.
++    const south = engine.getView("south").players.south;
++    expect(south.activeDon).toBe(donBefore.activeDon - 2);
++    expect(south.donDeckCount).toBe(donBefore.donDeckCount + 2);
+     expect(engine.getView("south").prompts).toHaveLength(0);
+   });
++
++  test("[Main] cannot be played with only 1 DON!! on the field to pay DON!! −2 (8-3-1-3)", () => {
++    const engine = OnePieceTestEngine.create(
++      { hand: ["OP15-078"], activeDon: 1, donDeckCount: 9 },
++      { character: ["OP13-013", "OP16-003"], activeDon: 5 },
++    );
++    const mamaraganId = engine.findCardInZone("south", "hand", "OP15-078");
++
++    expect(
++      getLegalCommands(engine.getState(), "south").some(
++        (command) => command.type === "playCard" && command.sourceId === mamaraganId,
++      ),
++    ).toBe(false);
++    expect(
++      engine.expectFailure({ type: "playCard", seat: "south", instanceId: mamaraganId }).reason,
++    ).toMatch(/activation cost cannot be paid/);
++    // Rejected before anything happens: no DON!! was returned (no partial payment).
++    expect(engine.getState().players.south).toMatchObject({ activeDon: 1, donDeckCount: 9 });
++    expect(engine.getState().players.south.hand).toContain(mamaraganId);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
+ });
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/legality.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/legality.ts
+index 2174aaf..85a7b9b 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/legality.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/legality.ts
+@@ -109,6 +109,54 @@ export function canEndTurn(state: MatchState, seat: MatchSeat): LegalityResult {
+   return allow();
+ }
+ 
++/**
++ * Playing an Event from hand is paying its cost and activating its [Main]
++ * effect (4-7-1, 6-5-3-1, 8-4-1), and an activation cost that cannot be paid
++ * in full cannot be paid at all, so that effect cannot be activated (8-3-1-3).
++ * An Event whose mandatory [Main] activation cost cannot be paid -- e.g.
++ * "DON!! −X" (8-3-1-6, 10-2-10) with fewer than X DON!! cards on the field --
++ * therefore cannot be played (4-7-2). A cost the text makes optional ("You
++ * may ...:", blocks marked `optional`) can be declined (8-3-1-4), so it does
++ * not block the play; the resolver then skips that block.
++ *
++ * The costs are checked against the state they are paid from: the playCard
++ * handler first rests the Event's own cost and moves the card from the hand
++ * to the trash, then resolves the [Main] blocks. Checking the current state
++ * instead would let the Event's cost DON!! or the Event itself pay for it.
++ */
++function eventMainCostsPayable(
++  state: MatchState,
++  seat: MatchSeat,
++  instanceId: string,
++  cardCost: number,
++): boolean {
++  const mandatoryCostBlocks = effectBlocksForInstance(state, instanceId, "main").filter(
++    (block) => !block.optional && block.costs?.length,
++  );
++  if (!mandatoryCostBlocks.length) {
++    return true;
++  }
++  const player = getPlayer(state, seat);
++  const instance = getInstance(state, instanceId);
++  const afterPlay: MatchState = {
++    ...state,
++    players: {
++      ...state.players,
++      [seat]: {
++        ...player,
++        activeDon: player.activeDon - cardCost,
++        restedDon: player.restedDon + cardCost,
++        hand: player.hand.filter((handId) => handId !== instanceId),
++        trash: [...player.trash, instanceId],
++      },
++    },
++    cards: { ...state.cards, [instanceId]: { ...instance, zone: "trash" } },
++  };
++  return mandatoryCostBlocks.every((block) =>
++    canPayCosts(afterPlay, seat, instanceId, block.costs, undefined),
++  );
++}
++
+ export function canPlayCard(
+   state: MatchState,
+   seat: MatchSeat,
+@@ -146,6 +194,9 @@ export function canPlayCard(
+   if (card.cardType === "event" && !effectBlocksFor(card, "main").length) {
+     return deny("This event does not have a playable [Main] effect.");
+   }
++  if (card.cardType === "event" && !eventMainCostsPayable(state, seat, instanceId, cardCost)) {
++    return deny("The [Main] activation cost cannot be paid.");
++  }
+   if (card.cardType === "leader") {
+     return deny("Leaders cannot be played from hand.");
+   }
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/event-main-activation-cost.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/event-main-activation-cost.test.ts
+new file mode 100644
+index 0000000..1ce1a35
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/event-main-activation-cost.test.ts
+@@ -0,0 +1,202 @@
++import { describe, expect, test } from "vite-plus/test";
++import { eb01Doma005, eb01Fourtricks025, op15Mamaragan078 } from "@tcg/op-cards";
++import type { EventCard } from "@tcg/op-types";
++
++import { registerCards } from "../../../../cards/src/runtime-catalog.ts";
++import {
++  getLegalCommands,
++  getPotentialCardCommands,
++  OnePieceTestEngine,
++} from "../../../src/index.ts";
++
++// Rules 4-7-1/4-7-2 and 6-5-3-1: playing an Event from hand means paying its
++// cost and activating its [Main] effect. Rule 8-3-1-3: an activation cost that
++// cannot be paid in full cannot be paid at all, so that effect cannot be
++// activated. Together: an Event whose mandatory [Main] activation cost cannot
++// be paid cannot be played. Rule 8-3-1-4: a cost the text makes optional
++// ("You may ...:") can be declined, so it does not block the play.
++
++function testEvent(id: string, overrides: Partial<EventCard>): EventCard {
++  return {
++    ...op15Mamaragan078,
++    id,
++    canonicalId: id,
++    slug: id.toLowerCase(),
++    name: id,
++    printings: [{ ...op15Mamaragan078.printings[0]!, id, artId: id }],
++    ...overrides,
++  };
++}
++
++// Cost 2 Event whose [Main] also rests 1 active DON!! (a mandatory ① cost).
++const costTwoRestDonEvent = testEvent("TEST-EVENT-MAIN-REST-DON", {
++  cost: 2,
++  effects: {
++    effects: [
++      {
++        trigger: "main",
++        costs: [{ cost: "restDon", amount: 1 }],
++        actions: [{ action: "draw", player: "self", amount: 1 }],
++      },
++    ],
++  },
++});
++
++// [Main] Trash 1 card from your hand: Draw 2 cards. (mandatory cost)
++const trashFromHandEvent = testEvent("TEST-EVENT-MAIN-TRASH-HAND", {
++  cost: 0,
++  effects: {
++    effects: [
++      {
++        trigger: "main",
++        costs: [{ cost: "trashFromHand", amount: 1 }],
++        actions: [{ action: "draw", player: "self", amount: 2 }],
++      },
++    ],
++  },
++});
++
++// [Main] You may return 1 DON!! card ...: Draw 1 card. (optional cost)
++const optionalReturnDonEvent = testEvent("TEST-EVENT-MAIN-OPTIONAL-RETURN-DON", {
++  cost: 0,
++  effects: {
++    effects: [
++      {
++        trigger: "main",
++        optional: true,
++        costs: [{ cost: "returnDon", amount: 1 }],
++        actions: [{ action: "draw", player: "self", amount: 1 }],
++      },
++    ],
++  },
++});
++
++registerCards([costTwoRestDonEvent, trashFromHandEvent, optionalReturnDonEvent]);
++
++function isListedAsLegal(engine: OnePieceTestEngine, instanceId: string): boolean {
++  return getLegalCommands(engine.getState(), "south").some(
++    (command) => command.type === "playCard" && command.sourceId === instanceId,
++  );
++}
++
++function expectUnplayable(engine: OnePieceTestEngine, instanceId: string) {
++  expect(isListedAsLegal(engine, instanceId)).toBe(false);
++  expect(
++    getPotentialCardCommands(engine.getState(), "south").find(
++      (command) => command.type === "playCard" && command.sourceId === instanceId,
++    ),
++  ).toMatchObject({ enabled: false, disabledReasonCode: "cost-unpayable" });
++  const before = engine.getState();
++  const result = engine.expectFailure({ type: "playCard", seat: "south", instanceId });
++  expect(result.reason).toMatch(/\[Main\] activation cost cannot be paid/);
++  // A rejected play changes nothing: the card stays in hand, no cost is paid
++  // and no "could not be paid automatically" capability record is written.
++  expect(engine.getState()).toBe(before);
++  expect(engine.getState().players.south.hand).toContain(instanceId);
++  expect(engine.getState().capabilityHistory).toHaveLength(0);
++}
++
++describe("Event [Main] activation costs (8-3-1-3)", () => {
++  test("an Event whose DON!! −X cost exceeds the DON!! on the field cannot be played", () => {
++    const engine = OnePieceTestEngine.create({
++      hand: [op15Mamaragan078],
++      deck: [eb01Doma005, eb01Fourtricks025],
++      activeDon: 1,
++      donDeckCount: 9,
++    });
++    const mamaraganId = engine.findCardInZone("south", "hand", op15Mamaragan078);
++
++    expectUnplayable(engine, mamaraganId);
++    expect(engine.getView("south").players.south).toMatchObject({
++      activeDon: 1,
++      donDeckCount: 9,
++    });
++  });
++
++  test("DON!! given to Leaders or Characters and rested DON!! count toward DON!! −X (8-3-1-6)", () => {
++    const engine = OnePieceTestEngine.create({
++      hand: [op15Mamaragan078],
++      deck: [eb01Doma005, eb01Fourtricks025],
++      character: [{ card: eb01Doma005, attachedDon: 1 }],
++      activeDon: 0,
++      restedDon: 1,
++      donDeckCount: 8,
++    });
++    const mamaraganId = engine.findCardInZone("south", "hand", op15Mamaragan078);
++    const domaId = engine.findCardInZone("south", "character", eb01Doma005);
++    expect(isListedAsLegal(engine, mamaraganId)).toBe(true);
++
++    engine.playCard(op15Mamaragan078, "south");
++
++    const south = engine.getView("south").players.south;
++    expect(south).toMatchObject({ activeDon: 0, restedDon: 0, donDeckCount: 10 });
++    expect(south.characters.find((card) => card?.instanceId === domaId)?.attachedDon).toBe(0);
++    expect(south.hand).toHaveLength(1);
++    expect(south.trash.map((card) => card.instanceId)).toContain(mamaraganId);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("the Event's own cost is paid before its [Main] activation cost", () => {
++    const short = OnePieceTestEngine.create({
++      hand: [costTwoRestDonEvent],
++      deck: [eb01Doma005],
++      activeDon: 2,
++    });
++    // Two active DON!! pay the printed cost of 2 but leave none for ①.
++    expectUnplayable(short, short.findCardInZone("south", "hand", costTwoRestDonEvent));
++
++    const enough = OnePieceTestEngine.create({
++      hand: [costTwoRestDonEvent],
++      deck: [eb01Doma005],
++      activeDon: 3,
++    });
++    enough.playCard(costTwoRestDonEvent, "south");
++    const south = enough.getView("south").players.south;
++    expect(south).toMatchObject({ activeDon: 0, restedDon: 3 });
++    expect(south.hand.map((card) => card.cardId)).toEqual([eb01Doma005.id]);
++    expect(enough.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("an Event cannot trash itself to pay its own trash-from-hand cost", () => {
++    const alone = OnePieceTestEngine.create({
++      hand: [trashFromHandEvent],
++      deck: [eb01Doma005, eb01Fourtricks025],
++    });
++    expectUnplayable(alone, alone.findCardInZone("south", "hand", trashFromHandEvent));
++
++    const withFodder = OnePieceTestEngine.create({
++      hand: [trashFromHandEvent, eb01Doma005],
++      deck: [eb01Fourtricks025, eb01Fourtricks025],
++    });
++    const fodderId = withFodder.findCardInZone("south", "hand", eb01Doma005);
++    withFodder.playCard(trashFromHandEvent, "south");
++    const south = withFodder.getView("south").players.south;
++    expect(south.trash.map((card) => card.instanceId)).toContain(fodderId);
++    expect(south.hand.map((card) => card.cardId)).toEqual([
++      eb01Fourtricks025.id,
++      eb01Fourtricks025.id,
++    ]);
++    expect(withFodder.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("an optional activation cost that cannot be paid does not block the play (8-3-1-4)", () => {
++    const engine = OnePieceTestEngine.create({
++      hand: [optionalReturnDonEvent],
++      deck: [eb01Doma005],
++      activeDon: 0,
++      donDeckCount: 10,
++    });
++    const eventId = engine.findCardInZone("south", "hand", optionalReturnDonEvent);
++    expect(isListedAsLegal(engine, eventId)).toBe(true);
++
++    engine.playCard(optionalReturnDonEvent, "south");
++
++    // The cost is not paid, so the effect after the colon is not activated.
++    const south = engine.getView("south").players.south;
++    expect(south.hand).toHaveLength(0);
++    expect(south.trash.map((card) => card.instanceId)).toContain(eventId);
++    expect(south.donDeckCount).toBe(10);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++});

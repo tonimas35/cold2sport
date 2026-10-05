@@ -1,0 +1,1255 @@
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+index 478b74a..551ac0b 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+@@ -1707,7 +1707,7 @@ reconciles catalog entries.
+ | OP17-033 | Lucky.Roux | verified | onPlay, onOpponentAttack |
+ | OP17-034 | Rockstar | verified | Opponent-leader 6000+ gate (mutation killed), DON!! set, Red-Haired Leader 6000 base with cross-turn expiry |
+ | OP17-035 | Roronoa Zoro | vanilla | Parameterized vanilla invariant batch |
+-| OP17-040 | Edward.Newgate | verified | onPlay |
++| OP17-040 | Edward.Newgate | verified | On Play draw; once-per-turn trash-1 Leader +3000 this battle when the Rocks Leader attacks (whenYouAttack, ordered against the Leader [When Attacking]) or is attacked (before Blocker/Counter); Character attack, Character target and non-Rocks Leader do not activate |
+ | OP17-041 | Wang Zhi | verified | Blocker |
+ | OP17-042 | Kaido | verified | onPlay |
+ | OP17-043 | Ganzui | verified | replacement |
+@@ -1770,7 +1770,7 @@ reconciles catalog entries.
+ | OP17-112 | Charlotte Linlin | verified | onPlay |
+ | OP17-113 | Streusen | verified | onPlay |
+ | OP17-114 | Sweet 3 Generals | verified | onPlay, Life Trigger |
+-| OP17-118 | Rocks.D.Xebec | verified | On Play draw + exact {Rocks Pirates} replay (Former Rocks Pirates excluded) with different names under total cost 9; over-budget picks rejected, cards over 9 alone not offered |
++| OP17-118 | Rocks.D.Xebec | verified | On Play draw + exact {Rocks Pirates} replay (Former Rocks Pirates excluded) with different names under total cost 9; over-budget picks rejected, cards over 9 alone not offered; +2000 Counter in hand only with 1+ Characters and none with a Counter (0 Characters: none, per FAQ) |
+ | OP17-119 | Loki | verified | Printed behavior is unstructured |
+ | P-014        | Koby (Jolly Roger Foil)                         | verified | Controller-owned Blocker redirection and battle result; physical self-play Life Trigger and decline-to-hand branch                                                                                    |
+ | P-029        | Bartolomeo (P-029) (Jolly Roger Foil)           | verified | Optional end-turn self-rest cost; included FILM ownership/name filtering; selected physical set-active result and decline                                                                              |
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-040-edward-newgate.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-040-edward-newgate.ts
+index 21956a8..8c15c18 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-040-edward-newgate.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-040-edward-newgate.ts
+@@ -48,6 +48,80 @@ export const op17EdwardNewgate040: CharacterCard = {
+           },
+         ],
+       },
++      // "When your Leader ... attacks": [When Attacking] timing (7-1-1-3),
++      // ordered by the turn player with the Leader's own [When Attacking].
++      {
++        trigger: "whenYouAttack",
++        eventFilter: {
++          filters: [{ filter: "cardCategory", value: "leader" }],
++        },
++        conditions: [
++          {
++            condition: "leaderTrait",
++            trait: "Rocks Pirates",
++            match: "includes",
++          },
++        ],
++        costs: [
++          {
++            cost: "trashFromHand",
++            amount: 1,
++          },
++        ],
++        actions: [
++          {
++            action: "modifyPower",
++            target: {
++              player: "self",
++              zones: ["leader"],
++              count: { amount: 1 },
++            },
++            value: 3000,
++            duration: "thisBattle",
++          },
++        ],
++        optional: true,
++        oncePerTurn: true,
++        oncePerTurnKey:
++          "shared:whenYouAttack|onOpponentAttack:your leader gains +3000 power during this battle.",
++      },
++      // "... or is attacked": OP17 FAQ, same timing as [On Your Opponent's
++      // Attack] effects, before [Blocker] or Counter.
++      {
++        trigger: "onOpponentAttack",
++        eventFilter: {
++          targetFilters: [{ filter: "cardCategory", value: "leader" }],
++        },
++        conditions: [
++          {
++            condition: "leaderTrait",
++            trait: "Rocks Pirates",
++            match: "includes",
++          },
++        ],
++        costs: [
++          {
++            cost: "trashFromHand",
++            amount: 1,
++          },
++        ],
++        actions: [
++          {
++            action: "modifyPower",
++            target: {
++              player: "self",
++              zones: ["leader"],
++              count: { amount: 1 },
++            },
++            value: 3000,
++            duration: "thisBattle",
++          },
++        ],
++        optional: true,
++        oncePerTurn: true,
++        oncePerTurnKey:
++          "shared:whenYouAttack|onOpponentAttack:your leader gains +3000 power during this battle.",
++      },
+     ],
+   },
+   i18n: op17EdwardNewgate040I18n,
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-118-rocks-d-xebec.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-118-rocks-d-xebec.ts
+index be9cf4e..cd203c4 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-118-rocks-d-xebec.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/op17-118-rocks-d-xebec.ts
+@@ -46,6 +46,42 @@ export const op17RocksDXebec118: CharacterCard = {
+   effect:
+     "If you only have Characters without a Counter, this card in your hand has a +2000 Counter.\n[On Play] Draw 1 card and play up to 2 {Rocks Pirates} type cards with different card names and a total cost of 9 or less from your hand.",
+   effects: {
++    // "If you only have Characters without a Counter, this card in your hand
++    // has a +2000 Counter." A self-targeted modifier is evaluated while this
++    // card is in hand (getPermanentModifierTotal). OP17 FAQ: with 0 Characters
++    // it does not have the Counter, so at least 1 Character is required.
++    permanentEffects: [
++      {
++        conditions: [
++          {
++            condition: "zoneCount",
++            player: "self",
++            zone: "character",
++            comparison: "gte",
++            value: 1,
++          },
++          {
++            condition: "notHasCard",
++            player: "self",
++            zone: "character",
++            filters: [{ filter: "counter", comparison: "gt", value: 0 }],
++          },
++        ],
++        actions: [
++          {
++            action: "modifyCounter",
++            target: {
++              player: "self",
++              zones: ["hand"],
++              count: { amount: 1 },
++              self: true,
++            },
++            value: 2000,
++            duration: "permanent",
++          },
++        ],
++      },
++    ],
+     effects: [
+       {
+         trigger: "onPlay",
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/battle.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/battle.ts
+index b991ae2..92881c4 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/battle.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/battle.ts
+@@ -9,6 +9,7 @@ import {
+   enqueueInPlayEffectsForTrigger,
+   enqueueKoEffectsForTrigger,
+   enqueueMirroredInPlayEffectsForTrigger,
++  enqueueSimultaneousEffects,
+   getCardForInstance,
+   getCardCounter,
+   getCardPower,
+@@ -16,10 +17,12 @@ import {
+   getKeywords,
+   getPlayer,
+   hasFlagModifier,
++  inPlayTriggeredEffectEntries,
+   isKeywordActivationPrevented,
+   nextIdentifier,
+   otherSeat,
+   restCard,
++  triggeredEffectEntries,
+ } from "./shared.ts";
+ import {
+   canAttackActiveByPermanentEffect,
+@@ -884,11 +887,21 @@ export function beginAttack(
+     effectController: seat,
+     targetInstanceId: targetId,
+   };
+-  enqueueEffectsForTrigger(state, attackerId, seat, "whenAttacking", undefined, attackEvent);
+-  // "When your opponent attacks" can only live on the defending player's
+-  // in-play cards, and the attacking (turn) player's [When Attacking] effects
+-  // enqueue above, so 8-6-1 turn-player-first ordering already holds.
+-  enqueueInPlayEffectsForTrigger(state, "onOpponentAttack", attackEvent, [otherSeat(seat)]);
++  // 7-1-1-3: [When Attacking] on the attacker and "when your Leader/Character
++  // attacks" on the attacking player's other cards activate together; the
++  // turn player orders them (8-6-1-1). "When your opponent attacks" can only
++  // live on the defending player's in-play cards and enqueues after, so 8-6-1
++  // and 10-2-16-1 turn-player-first ordering holds; the defender orders their
++  // own simultaneous [On Your Opponent's Attack] effects the same way.
++  enqueueSimultaneousEffects(state, seat, [
++    ...triggeredEffectEntries(state, [attackerId], "whenAttacking", attackEvent),
++    ...inPlayTriggeredEffectEntries(state, seat, "whenYouAttack", attackEvent),
++  ]);
++  enqueueSimultaneousEffects(
++    state,
++    otherSeat(seat),
++    inPlayTriggeredEffectEntries(state, otherSeat(seat), "onOpponentAttack", attackEvent),
++  );
+   enqueueResolution(state, { kind: "battleBlockStep", battleId: state.battle.id });
+ }
+ 
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/card-behavior-harness.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/card-behavior-harness.ts
+index 61d2bab..f308f93 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/card-behavior-harness.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/cards/card-behavior-harness.ts
+@@ -75,6 +75,7 @@ function printedTextMentionsTrigger(card: OPCard, trigger: EffectTrigger): boole
+     whenCharacterRestedByEffect: /If a Character is rested by your effect/i,
+     whenCardsTrashedFromHandByEffect: /trashed from your hand by .*card['’]s effect/i,
+     whenYouTakeDamage: /when you take damage/i,
++    whenYouAttack: /when your (?:Leader|Character)\b[^.]*\battacks/i,
+   };
+ 
+   return triggerPatterns[trigger].test(text);
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/permanent.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/permanent.ts
+index 7423596..86c893b 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/permanent.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/permanent.ts
+@@ -517,6 +517,17 @@ export function getPermanentModifierTotal(
+       const relevantActions = (card.effects?.permanentEffects ?? []).flatMap((effect) =>
+         effect.actions.filter((action) => actionIsDynamicModifier(action, type)),
+       );
++      // opbot local patch: a modifier whose every target is its own card
++      // (`target.self`, e.g. "this card in your hand has a +2000 Counter")
++      // can only change that card, so skip it for any other card before its
++      // conditions are evaluated. Same result, keeps other queries fast.
++      if (
++        source.instanceId !== targetInstanceId &&
++        relevantActions.length > 0 &&
++        relevantActions.every((action) => action.target.self === true)
++      ) {
++        continue;
++      }
+       const sourceIsHandScoped =
+         source.zone === "hand" &&
+         relevantActions.length > 0 &&
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
+index d50da86..2dfda86 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
+@@ -24,7 +24,14 @@ import {
+   getOpenCharacterSlots,
+   moveCard,
+ } from "../state.ts";
+-import type { GameCommand, MatchSeat, MatchState, PromptState, ResolutionItem } from "../types.ts";
++import type {
++  GameCommand,
++  MatchSeat,
++  MatchState,
++  PromptState,
++  ResolutionItem,
++  SimultaneousEffectEntry,
++} from "../types.ts";
+ import { completeBattleResolution } from "../battle.ts";
+ import {
+   addTopDeckCardsToLife,
+@@ -69,7 +76,7 @@ import {
+   resolveTargetCount,
+   selectionSatisfiesTotalConstraint,
+ } from "./targeting.ts";
+-import type { Cost, EffectTrigger } from "@tcg/op-types";
++import type { Cost, EffectBlock, EffectTrigger } from "@tcg/op-types";
+ 
+ /**
+  * Printed form of an effect trigger for player-facing log lines, matching the
+@@ -150,6 +157,8 @@ function triggerLabel(trigger: EffectTrigger): string {
+       return "[When a Character Is Rested by an Effect]";
+     case "whenYouTakeDamage":
+       return "[When You Take Damage]";
++    case "whenYouAttack":
++      return "[When You Attack]";
+     default: {
+       // Compile-time exhaustiveness guard: never reached at runtime.
+       const unhandled: never = trigger;
+@@ -203,7 +212,7 @@ export function processBattleEndEffects(
+ 
+ function eventFilterMatches(
+   state: MatchState,
+-  item: Extract<ResolutionItem, { kind: "effectBlock" }>,
++  item: Pick<Extract<ResolutionItem, { kind: "effectBlock" }>, "controller" | "sourceInstanceId">,
+   eventFilter: NonNullable<NonNullable<ReturnType<typeof effectBlocksFor>[number]>["eventFilter"]>,
+   event: NonNullable<Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"]>,
+ ): boolean {
+@@ -299,42 +308,46 @@ function returnDonCostNeedsChoice(
+   return options.length > minimumAmount && sourceKeys.size > 1;
+ }
+ 
+-export function processEffectBlock(
+-  state: MatchState,
+-  item: Extract<ResolutionItem, { kind: "effectBlock" }>,
+-) {
++type EffectBlockItemInput = Omit<Extract<ResolutionItem, { kind: "effectBlock" }>, "id">;
++
++/**
++ * The block an effectBlock item refers to, or null when its source changed
++ * zones, the block was already used this turn, or the triggering event does
++ * not pass the block's event or source filter.
++ */
++function liveEffectBlock(state: MatchState, item: EffectBlockItemInput): EffectBlock | null {
+   const source = getInstance(state, item.sourceInstanceId);
+   if (
+     item.sourceZoneChangeCounter !== undefined &&
+     source.zoneChangeCounter !== item.sourceZoneChangeCounter
+   ) {
+-    return;
++    return null;
+   }
+   const card = getCard(source.cardId);
+   const block = effectBlocksFor(card, item.trigger)[item.blockIndex];
+ 
+   if (!block) {
+-    return;
++    return null;
+   }
+ 
+   const effectKey = block.oncePerTurnKey ?? `${item.trigger}:${item.blockIndex}`;
+   if (block.oncePerTurn && source.usedEffectKeys.includes(effectKey)) {
+-    return;
++    return null;
+   }
+ 
+   if (block.eventFilter) {
+     const event = item.triggerEvent;
+     if (!event) {
+-      return;
++      return null;
+     }
+     if (!eventFilterMatches(state, item, block.eventFilter, event)) {
+-      return;
++      return null;
+     }
+   }
+   if (block.source) {
+     const event = item.triggerEvent;
+     if (!event?.effectController) {
+-      return;
++      return null;
+     }
+     const isOpponentEffect = event.effectController !== item.controller;
+     const isSelfEffect = event.effectController === item.controller;
+@@ -351,9 +364,120 @@ export function processEffectBlock(
+       (block.source === "opponentEffect" && (!isOpponentEffect || !isEffectKOD)) ||
+       (block.source === "opponentCharacterEffect" && !isOpponentCharacterEffect)
+     ) {
+-      return;
++      return null;
+     }
+   }
++  return block;
++}
++
++/**
++ * Whether processEffectBlock would activate this block now (same checks, in
++ * the same order): live, conditions met, and for an optional block its costs
++ * payable. A block with an unsupported condition only reaches the judge, so
++ * it does not count.
++ */
++function effectBlockWouldActivate(state: MatchState, item: EffectBlockItemInput): boolean {
++  const block = liveEffectBlock(state, item);
++  if (!block) {
++    return false;
++  }
++  const conditions = evaluateConditions(
++    state,
++    item.controller,
++    item.sourceInstanceId,
++    block.conditions,
++    [],
++    item.triggerEvent,
++  );
++  if (!conditions.supported || !conditions.matches) {
++    return false;
++  }
++  return (
++    !block.optional ||
++    canPayCosts(
++      state,
++      item.controller,
++      item.sourceInstanceId,
++      block.costs,
++      item.trashHandIds,
++      item.costPaymentIds,
++      item.costPaymentIdsByType,
++    )
++  );
++}
++
++function simultaneousEntryId(entry: SimultaneousEffectEntry): string {
++  return `${entry.sourceInstanceId}:${entry.trigger}:${entry.blockIndex}`;
++}
++
++function enqueueSimultaneousEntriesNext(
++  state: MatchState,
++  controller: MatchSeat,
++  entries: readonly SimultaneousEffectEntry[],
++) {
++  // `next` unshifts, so walk backwards to keep the given order at the front.
++  for (const entry of [...entries].reverse()) {
++    enqueueResolution(state, { kind: "effectBlock", controller, ...entry }, { next: true });
++  }
++}
++
++/**
++ * 8-6-1-1: the player whose effects (on two or more different cards) had
++ * their activation timing fulfilled together chooses which one activates
++ * first. Only effects that would actually activate are offered; if fewer
++ * than two cards remain, everything resolves in the default order with no
++ * prompt. The rest are ordered again after the chosen one has resolved.
++ */
++export function processSimultaneousEffectOrder(
++  state: MatchState,
++  item: Extract<ResolutionItem, { kind: "orderSimultaneousEffects" }>,
++) {
++  const ready = item.entries.filter((entry) =>
++    effectBlockWouldActivate(state, { kind: "effectBlock", controller: item.controller, ...entry }),
++  );
++  if (new Set(ready.map((entry) => entry.sourceInstanceId)).size < 2) {
++    enqueueSimultaneousEntriesNext(state, item.controller, item.entries);
++    return;
++  }
++  createChoicePrompt(state, {
++    choiceKind: "chooseOption",
++    seat: item.controller,
++    label: `${getPlayer(state, item.controller).playerName} chooses which effect activates first.`,
++    details: "These effects activate at the same time. Choose the one to resolve first.",
++    sourceCardId: null,
++    sourceInstanceId: null,
++    eventId: state.battle?.id ?? null,
++    options: ready.map((entry) => {
++      const id = simultaneousEntryId(entry);
++      return {
++        id,
++        label: `${cardName(getCardForInstance(state, entry.sourceInstanceId))} ${triggerLabel(entry.trigger)}`,
++        value: id,
++        targetId: entry.sourceInstanceId,
++      };
++    }),
++    minSelections: 1,
++    maxSelections: 1,
++    context: {},
++    resolutionContext: {
++      intent: "effectOrderChoice",
++      controller: item.controller,
++      entries: item.entries,
++    },
++  });
++}
++
++export function processEffectBlock(
++  state: MatchState,
++  item: Extract<ResolutionItem, { kind: "effectBlock" }>,
++) {
++  const source = getInstance(state, item.sourceInstanceId);
++  const card = getCard(source.cardId);
++  const block = liveEffectBlock(state, item);
++  if (!block) {
++    return;
++  }
++  const effectKey = block.oncePerTurnKey ?? `${item.trigger}:${item.blockIndex}`;
+ 
+   const conditions = evaluateConditions(
+     state,
+@@ -1820,6 +1944,34 @@ export function resolveEffectChoicePrompt(
+   command: Extract<GameCommand, { type: "resolvePrompt" }>,
+ ): boolean {
+   switch (prompt.resolutionContext?.intent) {
++    case "effectOrderChoice": {
++      const context = prompt.resolutionContext;
++      const chosen = context.entries.find(
++        (entry) => simultaneousEntryId(entry) === command.optionId,
++      );
++      if (
++        !chosen ||
++        !prompt.options.some((option) => option.id === command.optionId && option.enabled !== false)
++      ) {
++        return false;
++      }
++      const remaining = context.entries.filter(
++        (entry) => simultaneousEntryId(entry) !== command.optionId,
++      );
++      // The chosen effect resolves first (with any prompts of its own); the
++      // others are ordered again afterwards, still ahead of later items.
++      if (remaining.length > 1) {
++        enqueueResolution(
++          state,
++          { kind: "orderSimultaneousEffects", controller: context.controller, entries: remaining },
++          { next: true },
++        );
++      } else {
++        enqueueSimultaneousEntriesNext(state, context.controller, remaining);
++      }
++      enqueueSimultaneousEntriesNext(state, context.controller, [chosen]);
++      return true;
++    }
+     case "effectKoReplacement": {
+       const context = prompt.resolutionContext;
+       if (command.optionId !== "yes" && command.optionId !== "no") {
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/queue.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/queue.ts
+index 54e8f92..01011e5 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/queue.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/queue.ts
+@@ -10,7 +10,7 @@ import {
+   queueBattleLifeTriggerPrompt,
+ } from "../battle.ts";
+ import { processEffectBlock, processQueuedEffectAction } from "../effects.ts";
+-import { processBattleEndEffects } from "../effects/resolution.ts";
++import { processBattleEndEffects, processSimultaneousEffectOrder } from "../effects/resolution.ts";
+ import {
+   cardName,
+   enqueueResolution,
+@@ -124,6 +124,9 @@ export function drainResolutionQueue(state: MatchState) {
+       case "effectBlock":
+         processEffectBlock(state, item);
+         break;
++      case "orderSimultaneousEffects":
++        processSimultaneousEffectOrder(state, item);
++        break;
+       case "effectAction":
+         processQueuedEffectAction(state, item);
+         break;
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/shared.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/shared.ts
+index 164d9c7..249d909 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/shared.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/shared.ts
+@@ -13,6 +13,7 @@ import type {
+   ModifierState,
+   PlayerState,
+   ResolutionItem,
++  SimultaneousEffectEntry,
+ } from "./types.ts";
+ import {
+   arePlayerEffectsNegatedByPermanentEffect,
+@@ -226,17 +227,15 @@ export function enqueueResolution(
+   return nextItem;
+ }
+ 
+-export function enqueueEffectsForTrigger(
++/** Indexes of `trigger` blocks on the source whose timing is fulfilled now. */
++function triggeredBlockIndexes(
+   state: MatchState,
+   sourceInstanceId: string,
+-  controller: MatchSeat,
+   trigger: EffectBlock["trigger"],
+-  trashHandIds: string[] | undefined,
+-  triggerEvent?: Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"],
+-) {
++): number[] {
+   const source = getInstance(state, sourceInstanceId);
+   const blocks = effectBlocksForInstance(state, sourceInstanceId, trigger);
+-  let enqueued = 0;
++  const indexes: number[] = [];
+   // Within one enqueue pass, only one block may use a given oncePerTurnKey
+   // (e.g. OP12-081 Koala dual predicates for the same play event).
+   const keysQueuedThisPass = new Set<string>();
+@@ -249,6 +248,25 @@ export function enqueueEffectsForTrigger(
+     if (block.oncePerTurn && keysQueuedThisPass.has(effectKey)) {
+       continue;
+     }
++    indexes.push(index);
++    if (block.oncePerTurn) {
++      keysQueuedThisPass.add(effectKey);
++    }
++  }
++
++  return indexes;
++}
++
++export function enqueueEffectsForTrigger(
++  state: MatchState,
++  sourceInstanceId: string,
++  controller: MatchSeat,
++  trigger: EffectBlock["trigger"],
++  trashHandIds: string[] | undefined,
++  triggerEvent?: Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"],
++) {
++  const indexes = triggeredBlockIndexes(state, sourceInstanceId, trigger);
++  for (const index of indexes) {
+     enqueueResolution(state, {
+       kind: "effectBlock",
+       sourceInstanceId,
+@@ -258,13 +276,34 @@ export function enqueueEffectsForTrigger(
+       trashHandIds,
+       triggerEvent,
+     });
+-    if (block.oncePerTurn) {
+-      keysQueuedThisPass.add(effectKey);
+-    }
+-    enqueued += 1;
+   }
+ 
+-  return enqueued;
++  return indexes.length;
++}
++
++function inPlaySourceIdsFor(
++  state: MatchState,
++  seat: MatchSeat,
++  excludeInstanceIds?: readonly string[],
++): string[] {
++  const sourceIds: string[] = [];
++  for (const source of Object.values(state.cards)) {
++    if (source.controller !== seat) {
++      continue;
++    }
++    if (excludeInstanceIds?.includes(source.instanceId)) {
++      continue;
++    }
++    const player = getPlayer(state, source.controller);
++    const isInPlay =
++      (source.zone === "leader" && player.leaderInstanceId === source.instanceId) ||
++      (source.zone === "character" && player.characterArea.includes(source.instanceId)) ||
++      (source.zone === "stage" && player.stageArea === source.instanceId);
++    if (isInPlay) {
++      sourceIds.push(source.instanceId);
++    }
++  }
++  return sourceIds;
+ }
+ 
+ export function enqueueInPlayEffectsForTrigger(
+@@ -278,31 +317,58 @@ export function enqueueInPlayEffectsForTrigger(
+   // the turn player's effects resolve first.
+   const seats = sourceControllers ?? [state.activeSeat, otherSeat(state.activeSeat)];
+   for (const seat of seats) {
+-    for (const source of Object.values(state.cards)) {
+-      if (source.controller !== seat) {
+-        continue;
+-      }
+-      if (excludeInstanceIds?.includes(source.instanceId)) {
+-        continue;
+-      }
+-      const player = getPlayer(state, source.controller);
+-      const isInPlay =
+-        (source.zone === "leader" && player.leaderInstanceId === source.instanceId) ||
+-        (source.zone === "character" && player.characterArea.includes(source.instanceId)) ||
+-        (source.zone === "stage" && player.stageArea === source.instanceId);
+-      if (!isInPlay) {
+-        continue;
+-      }
+-      enqueueEffectsForTrigger(
+-        state,
+-        source.instanceId,
+-        source.controller,
+-        trigger,
+-        undefined,
+-        triggerEvent,
+-      );
++    for (const sourceInstanceId of inPlaySourceIdsFor(state, seat, excludeInstanceIds)) {
++      enqueueEffectsForTrigger(state, sourceInstanceId, seat, trigger, undefined, triggerEvent);
++    }
++  }
++}
++
++/** `trigger` blocks on `sourceInstanceIds` whose timing is fulfilled now, in enqueue order. */
++export function triggeredEffectEntries(
++  state: MatchState,
++  sourceInstanceIds: readonly string[],
++  trigger: EffectBlock["trigger"],
++  triggerEvent?: Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"],
++): SimultaneousEffectEntry[] {
++  return sourceInstanceIds.flatMap((sourceInstanceId) =>
++    triggeredBlockIndexes(state, sourceInstanceId, trigger).map((blockIndex) => ({
++      sourceInstanceId,
++      trigger,
++      blockIndex,
++      triggerEvent,
++    })),
++  );
++}
++
++/** Same as {@link triggeredEffectEntries} for every in-play card of `seat`. */
++export function inPlayTriggeredEffectEntries(
++  state: MatchState,
++  seat: MatchSeat,
++  trigger: EffectBlock["trigger"],
++  triggerEvent?: Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"],
++): SimultaneousEffectEntry[] {
++  return triggeredEffectEntries(state, inPlaySourceIdsFor(state, seat), trigger, triggerEvent);
++}
++
++/**
++ * Enqueues effects of one player whose activation timing was fulfilled at the
++ * same time. 8-6-1-1 lets that player resolve them in the order they choose,
++ * so when blocks of two or more different cards are involved the engine asks
++ * (resolution item "orderSimultaneousEffects"). Blocks of a single card keep
++ * their printed order (2-8-3) and are enqueued directly, as before.
++ */
++export function enqueueSimultaneousEffects(
++  state: MatchState,
++  controller: MatchSeat,
++  entries: SimultaneousEffectEntry[],
++) {
++  if (new Set(entries.map((entry) => entry.sourceInstanceId)).size < 2) {
++    for (const entry of entries) {
++      enqueueResolution(state, { kind: "effectBlock", controller, ...entry });
+     }
++    return;
+   }
++  enqueueResolution(state, { kind: "orderSimultaneousEffects", controller, entries });
+ }
+ 
+ // 8-6-1: one occurrence can fulfill the acting player's "when you ..." trigger
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/types.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/types.ts
+index 813660c..8918fac 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/types.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/types.ts
+@@ -243,7 +243,21 @@ export type EffectPlayReplacementContinuation =
+       };
+     };
+ 
++// One effect block whose activation timing was fulfilled at the same time as
++// other blocks of the same player (8-6-1-1); see "orderSimultaneousEffects".
++export interface SimultaneousEffectEntry {
++  sourceInstanceId: string;
++  trigger: EffectTrigger;
++  blockIndex: number;
++  triggerEvent?: Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"];
++}
++
+ export type PromptResolutionContext =
++  | {
++      intent: "effectOrderChoice";
++      controller: MatchSeat;
++      entries: SimultaneousEffectEntry[];
++    }
+   | {
+       intent: "battleAttackHandTrashCost";
+       attackerId: string;
+@@ -983,6 +997,14 @@ export interface EngineCapabilityIssue {
+ }
+ 
+ export type ResolutionItem =
++  | {
++      id: string;
++      // Effects of one player whose timing was fulfilled together; the
++      // player chooses which activates first (8-6-1-1).
++      kind: "orderSimultaneousEffects";
++      controller: MatchSeat;
++      entries: SimultaneousEffectEntry[];
++    }
+   | {
+       id: string;
+       kind: "beginTurn";
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-040-edward-newgate.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-040-edward-newgate.test.ts
+new file mode 100644
+index 0000000..70c1c97
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-040-edward-newgate.test.ts
+@@ -0,0 +1,291 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  eb01MountainGod018,
++  op03PortgasDAce001,
++  op13MonkeyDLuffy001,
++  op16Ramba016,
++  op17EdwardNewgate040,
++  op17RocksDXebec039,
++  op17RocksDXebec118,
++  op17Shiki048,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine, type FixtureCardEntry } from "../../../src/index.ts";
++
++// OP17-040 Edward.Newgate:
++// [On Play] Draw 1 card.
++// [Once Per Turn] When your Leader with a type including "Rocks Pirates"
++// attacks or is attacked, you may trash 1 card from your hand to activate this
++// effect. Your Leader gains +3000 power during this battle.
++// OP17 FAQ: the "is attacked" part activates at the same timing as [On Your
++// Opponent's Attack] effects, before [Blocker] or Counter.
++
++function defending({
++  leader = op17RocksDXebec039,
++  hand = [eb01Doma005, op16Ramba016],
++  character = [op17EdwardNewgate040],
++}: {
++  leader?: { id: string };
++  hand?: FixtureCardEntry[];
++  character?: FixtureCardEntry[];
++} = {}) {
++  const engine = OnePieceTestEngine.create(
++    { leaderCardId: leader, hand, character, deck: 10 },
++    {
++      deck: 10,
++      activeDon: 10,
++      character: [{ card: eb01MountainGod018, playedOnTurn: 0 }],
++    },
++    { firstPlayer: "south", activeSeat: "north" },
++  );
++  // North's Leader attacks with 2 DON!!: 7000 against the Rocks Leader's 5000.
++  engine.attachDon(engine.leader("north"), 2, "north");
++  return engine;
++}
++
++function attacking({
++  leader = op17RocksDXebec039,
++  hand = [eb01Doma005, op16Ramba016],
++  character = [op17EdwardNewgate040],
++  deck = [op17RocksDXebec118, eb01Doma005, eb01Doma005],
++}: {
++  leader?: { id: string };
++  hand?: FixtureCardEntry[];
++  character?: FixtureCardEntry[];
++  deck?: FixtureCardEntry[];
++} = {}) {
++  return OnePieceTestEngine.create(
++    { leaderCardId: leader, hand, character, deck },
++    { deck: 10, hand: [eb01Doma005] },
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++}
++
++function orderOptions(engine: OnePieceTestEngine, seat: "north" | "south") {
++  const step = engine.pendingDecision("effectOrderChoice", seat).steps[0];
++  if (step?.kind !== "chooseOption") throw new Error("Expected the effect order choice.");
++  return step.options;
++}
++
++function optionFor(engine: OnePieceTestEngine, seat: "north" | "south", sourceId: string) {
++  const option = orderOptions(engine, seat).find((entry) => entry.targetId === sourceId);
++  if (!option) throw new Error(`Expected an order option for ${sourceId}.`);
++  return option.id;
++}
++
++describe("OP17-040 Edward.Newgate — your Rocks Leader is attacked", () => {
++  test("trashing 1 card gives the Leader +3000 before the Counter Step, for this battle only", () => {
++    const engine = defending();
++    const newgateId = engine.asSouth().findOnField(op17EdwardNewgate040);
++    const domaId = engine.findCardInZone("south", "hand", eb01Doma005);
++    const lifeBefore = engine.getView("south").players.south.lifeCount;
++
++    engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++    const optional = engine.pendingDecision("effectOptional", "south");
++    expect(optional.source?.id).toBe(newgateId);
++    expect(() => engine.pendingDecision("battleCounter", "south")).toThrow();
++
++    engine.asSouth().acceptOptional();
++    engine.asSouth().choose("effectCostTrashFromHand", [domaId]);
++    expect(engine.getView("south").players.south.leader.power).toBe(8000);
++    expect(engine.pendingDecision("battleCounter", "south")).toBeDefined();
++
++    engine.asSouth().chooseCounter();
++    // 7000 < 8000: no damage. The +3000 ends with the battle.
++    const south = engine.getView("south").players.south;
++    expect(south.lifeCount).toBe(lifeBefore);
++    expect(south.trash.map((card) => card.instanceId)).toEqual([domaId]);
++    expect(south.leader.power).toBe(5000);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("once per turn: after it resolves, a second attack this turn is not offered it", () => {
++    const engine = defending();
++    const domaId = engine.findCardInZone("south", "hand", eb01Doma005);
++
++    engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++    engine.asSouth().acceptOptional();
++    engine.asSouth().choose("effectCostTrashFromHand", [domaId]);
++    engine.asSouth().chooseCounter();
++
++    engine.asNorth().attack(eb01MountainGod018, engine.leader("south"));
++    expect(() => engine.pendingDecision("effectOptional", "south")).toThrow();
++    expect(engine.pendingDecision("battleCounter", "south")).toBeDefined();
++    expect(engine.getView("south").players.south.leader.power).toBe(5000);
++  });
++
++  test("declining keeps it available for the next attack this turn", () => {
++    const engine = defending();
++    const ramba = engine.findCardInZone("south", "hand", op16Ramba016);
++    const lifeBefore = engine.getView("south").players.south.lifeCount;
++
++    engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++    engine.asSouth().declineOptional();
++    engine.asSouth().chooseCounter();
++    expect(engine.getView("south").players.south.lifeCount).toBe(lifeBefore - 1);
++
++    engine.asNorth().attack(eb01MountainGod018, engine.leader("south"));
++    engine.asSouth().acceptOptional();
++    // The Life card taken above is now in hand too, so the cost asks which card.
++    engine.asSouth().choose("effectCostTrashFromHand", [ramba]);
++    expect(engine.getView("south").players.south.leader.power).toBe(8000);
++  });
++
++  test("does not activate when a Character is attacked", () => {
++    const engine = defending({
++      character: [op17EdwardNewgate040, { card: op16Ramba016, rested: true }],
++    });
++    const rambaId = engine.asSouth().findOnField(op16Ramba016);
++
++    engine.asNorth().attack(engine.leader("north"), rambaId);
++    expect(() => engine.pendingDecision("effectOptional", "south")).toThrow();
++    expect(engine.pendingDecision("battleCounter", "south")).toBeDefined();
++  });
++
++  test("does not activate when the Leader's type does not include Rocks Pirates", () => {
++    const engine = defending({ leader: op13MonkeyDLuffy001 });
++
++    engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++    expect(() => engine.pendingDecision("effectOptional", "south")).toThrow();
++    expect(engine.getView("south").players.south.leader.power).toBe(5000);
++  });
++
++  test("is not offered with no card in hand to trash", () => {
++    const engine = defending({ hand: [] });
++    const lifeBefore = engine.getView("south").players.south.lifeCount;
++
++    // With an empty hand there is no Counter Step choice either, so the
++    // battle runs to damage without any prompt: 7000 against 5000.
++    engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    expect(engine.getView("south").players.south.lifeCount).toBe(lifeBefore - 1);
++  });
++});
++
++describe("OP17-040 Edward.Newgate — your Rocks Leader attacks", () => {
++  test("the turn player chooses the order against the Leader's own [When Attacking]", () => {
++    const engine = attacking();
++    const newgateId = engine.asSouth().findOnField(op17EdwardNewgate040);
++    const leaderId = engine.leader("south");
++    const domaId = engine.findCardInZone("south", "hand", eb01Doma005);
++
++    engine.asSouth().attack(leaderId, engine.leader("north"));
++    expect(orderOptions(engine, "south").map((option) => option.targetId)).toEqual(
++      expect.arrayContaining([leaderId, newgateId]),
++    );
++    expect(orderOptions(engine, "south")).toHaveLength(2);
++
++    // Newgate first: trash Doma, Leader +3000.
++    engine.asSouth().chooseOption("effectOrderChoice", optionFor(engine, "south", newgateId));
++    expect(engine.pendingDecision("effectOptional", "south").source?.id).toBe(newgateId);
++    engine.asSouth().acceptOptional();
++    engine.asSouth().choose("effectCostTrashFromHand", [domaId]);
++    expect(engine.getView("south").players.south.leader.power).toBe(8000);
++
++    // Then the Leader: trash the last card, reveal Xebec (Rocks Pirates), draw 2.
++    expect(engine.pendingDecision("effectOptional", "south").source?.id).toBe(leaderId);
++    engine.asSouth().acceptOptional();
++    const south = engine.getView("south").players.south;
++    expect(south.hand).toHaveLength(2);
++    expect(south.hand.map((card) => card.cardId)).toContain(op17RocksDXebec118.id);
++    expect(south.trash).toHaveLength(2);
++    expect(engine.pendingDecision("battleCounter", "north")).toBeDefined();
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("resolving the Leader first lets Newgate trash a card the Leader drew", () => {
++    const engine = attacking({ hand: [eb01Doma005] });
++    const newgateId = engine.asSouth().findOnField(op17EdwardNewgate040);
++    const leaderId = engine.leader("south");
++
++    engine.asSouth().attack(leaderId, engine.leader("north"));
++    engine.asSouth().chooseOption("effectOrderChoice", optionFor(engine, "south", leaderId));
++    engine.asSouth().acceptOptional();
++    // The only hand card paid the Leader's cost; the reveal drew 2.
++    expect(engine.getView("south").players.south.hand).toHaveLength(2);
++
++    expect(engine.pendingDecision("effectOptional", "south").source?.id).toBe(newgateId);
++    engine.asSouth().acceptOptional();
++    const drawnXebec = engine.findCardInZone("south", "hand", op17RocksDXebec118);
++    engine.asSouth().choose("effectCostTrashFromHand", [drawnXebec]);
++    expect(engine.getView("south").players.south.leader.power).toBe(8000);
++    expect(engine.getView("south").players.south.hand).toHaveLength(1);
++  });
++
++  test("with a single card in hand, resolving Newgate first leaves the Leader's cost unpaid", () => {
++    const engine = attacking({ hand: [eb01Doma005] });
++    const newgateId = engine.asSouth().findOnField(op17EdwardNewgate040);
++
++    engine.asSouth().attack(engine.leader("south"), engine.leader("north"));
++    engine.asSouth().chooseOption("effectOrderChoice", optionFor(engine, "south", newgateId));
++    engine.asSouth().acceptOptional();
++
++    expect(engine.getView("south").players.south.leader.power).toBe(8000);
++    expect(engine.getView("south").players.south.hand).toHaveLength(0);
++    // The Leader's optional cost can no longer be paid, so it is not offered.
++    expect(() => engine.pendingDecision("effectOptional", "south")).toThrow();
++    expect(engine.pendingDecision("battleCounter", "north")).toBeDefined();
++  });
++
++  test("does not activate when a Character attacks", () => {
++    const engine = attacking({
++      character: [op17EdwardNewgate040, { card: op16Ramba016, playedOnTurn: 0 }],
++    });
++
++    engine.asSouth().attack(op16Ramba016, engine.leader("north"));
++    expect(() => engine.pendingDecision("effectOrderChoice", "south")).toThrow();
++    expect(() => engine.pendingDecision("effectOptional", "south")).toThrow();
++    expect(engine.pendingDecision("battleCounter", "north")).toBeDefined();
++  });
++
++  test("with a non-Rocks Leader only the Leader's own [When Attacking] activates, unordered", () => {
++    const engine = attacking({ leader: op03PortgasDAce001 });
++
++    engine.asSouth().attack(engine.leader("south"), engine.leader("north"));
++    expect(() => engine.pendingDecision("effectOrderChoice", "south")).toThrow();
++    // Ace's own "When this Leader attacks" (trash Events/Stages) resolves directly.
++    expect(engine.pendingDecision("battleCounter", "north")).toBeDefined();
++    expect(engine.getView("south").players.south.leader.power).toBe(5000);
++  });
++});
++
++describe("OP17-040 Edward.Newgate — simultaneous [On Your Opponent's Attack] effects", () => {
++  test("the defending player chooses which of their cards' effects activates first", () => {
++    const engine = defending({
++      hand: [op17RocksDXebec118, eb01Doma005, op16Ramba016],
++      character: [op17EdwardNewgate040, op17Shiki048],
++    });
++    const newgateId = engine.asSouth().findOnField(op17EdwardNewgate040);
++    const shikiId = engine.asSouth().findOnField(op17Shiki048);
++    const godId = engine.asNorth().findOnField(eb01MountainGod018);
++
++    engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++    expect(
++      orderOptions(engine, "south")
++        .map((option) => option.targetId)
++        .sort((a, b) => (a ?? "").localeCompare(b ?? "")),
++    ).toEqual([newgateId, shikiId].sort((a, b) => a.localeCompare(b)));
++
++    // Shiki first: its cost needs a Rocks Pirates card, so Xebec pays it.
++    engine.asSouth().chooseOption("effectOrderChoice", optionFor(engine, "south", shikiId));
++    expect(engine.pendingDecision("effectOptional", "south").source?.id).toBe(shikiId);
++    engine.asSouth().acceptOptional();
++    engine.asSouth().chooseTargets(godId);
++    // Then Newgate, trashing one of the two cards left.
++    expect(engine.pendingDecision("effectOptional", "south").source?.id).toBe(newgateId);
++    engine.asSouth().acceptOptional();
++    engine
++      .asSouth()
++      .choose("effectCostTrashFromHand", [engine.findCardInZone("south", "hand", eb01Doma005)]);
++
++    const view = engine.getView("south");
++    expect(view.players.south.leader.power).toBe(8000);
++    expect(view.players.north.characters.find((card) => card?.instanceId === godId)?.power).toBe(
++      4000,
++    );
++    expect(view.players.south.hand.map((card) => card.cardId)).toEqual([op16Ramba016.id]);
++    expect(engine.pendingDecision("battleCounter", "south")).toBeDefined();
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-118-rocks-d-xebec-counter.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-118-rocks-d-xebec-counter.test.ts
+new file mode 100644
+index 0000000..59eb27a
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/op17-118-rocks-d-xebec-counter.test.ts
+@@ -0,0 +1,103 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  op16Ramba016,
++  op17RocksDXebec039,
++  op17RocksDXebec118,
++  op17Streusen050,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine, type FixtureCardEntry } from "../../../src/index.ts";
++import { getCardCounter } from "../../../src/shared.ts";
++
++// OP17-118 Rocks.D.Xebec: "If you only have Characters without a Counter, this
++// card in your hand has a +2000 Counter." OP17 FAQ: with 0 Characters it does
++// NOT have Counter +2000. The printed card has no Counter of its own.
++function setup(character: FixtureCardEntry[]) {
++  const engine = OnePieceTestEngine.create(
++    {
++      leaderCardId: op17RocksDXebec039,
++      hand: [op17RocksDXebec118, eb01Doma005],
++      character,
++      deck: 10,
++    },
++    { deck: 10, activeDon: 10 },
++    { firstPlayer: "south", activeSeat: "north" },
++  );
++  const xebecId = engine.findCardInZone("south", "hand", op17RocksDXebec118);
++  // North's Leader attacks with 1 DON!!: 6000 against the Rocks Leader's 5000.
++  engine.attachDon(engine.leader("north"), 1, "north");
++  return { engine, xebecId };
++}
++
++function counterOption(engine: OnePieceTestEngine, instanceId: string) {
++  const step = engine.pendingDecision("battleCounter", "south").steps[0];
++  if (step?.kind !== "selectEntity") throw new Error("Expected the Counter Step selection.");
++  const candidate = step.candidates.find((entry) => entry.ref.id === instanceId);
++  if (!candidate) throw new Error("Expected Rocks.D.Xebec among the Counter Step options.");
++  return candidate;
++}
++
++describe("OP17-118 Rocks.D.Xebec counter in hand", () => {
++  test("with only Counter-less Characters it is a +2000 Counter that saves the Leader", () => {
++    const { engine, xebecId } = setup([op16Ramba016, op17Streusen050]);
++    const lifeBefore = engine.getView("south").players.south.lifeCount;
++    expect(getCardCounter(engine.getState(), xebecId)).toBe(2000);
++
++    engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++    expect(counterOption(engine, xebecId)).toMatchObject({
++      legal: true,
++      label: "Rocks.D.Xebec (+2000)",
++    });
++    engine.asSouth().chooseCounter(xebecId);
++
++    // 5000 + 2000 = 7000 > 6000: the attack fails and Xebec is trashed.
++    const south = engine.getView("south").players.south;
++    expect(south.lifeCount).toBe(lifeBefore);
++    expect(south.trash.map((card) => card.instanceId)).toEqual([xebecId]);
++    expect(south.hand.map((card) => card.instanceId)).not.toContain(xebecId);
++    expect(engine.getView("south").prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("with 0 Characters it has no Counter (OP17 FAQ) and cannot be used", () => {
++    const { engine, xebecId } = setup([]);
++    expect(getCardCounter(engine.getState(), xebecId)).toBe(0);
++
++    engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++    expect(counterOption(engine, xebecId)).toMatchObject({ legal: false });
++    engine.expectFailure({
++      type: "resolvePrompt",
++      seat: "south",
++      promptId: engine.pendingDecision("battleCounter", "south").id,
++      selectedIds: [xebecId],
++    });
++  });
++
++  test("a Character with a Counter on the field turns the +2000 Counter off", () => {
++    const { engine, xebecId } = setup([op16Ramba016, eb01Doma005]);
++    const lifeBefore = engine.getView("south").players.south.lifeCount;
++    expect(getCardCounter(engine.getState(), xebecId)).toBe(0);
++
++    engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++    expect(counterOption(engine, xebecId)).toMatchObject({ legal: false });
++    engine.asSouth().chooseCounter();
++    expect(engine.getView("south").players.south.lifeCount).toBe(lifeBefore - 1);
++  });
++
++  test("only the copy in hand gains the Counter; other hand cards keep their own", () => {
++    const { engine, xebecId } = setup([op16Ramba016]);
++    const domaId = engine.findCardInZone("south", "hand", eb01Doma005);
++    expect(getCardCounter(engine.getState(), xebecId)).toBe(2000);
++    expect(getCardCounter(engine.getState(), domaId)).toBe(1000);
++
++    engine.asNorth().attack(engine.leader("north"), engine.leader("south"));
++    engine.asSouth().chooseCounter(xebecId, domaId);
++    // 5000 + 2000 + 1000 = 8000 > 6000.
++    const south = engine.getView("south").players.south;
++    expect(south.trash.map((card) => card.instanceId)).toHaveLength(2);
++    expect(south.trash.map((card) => card.instanceId)).toEqual(
++      expect.arrayContaining([xebecId, domaId]),
++    );
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/simultaneous-attack-effects-order.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/simultaneous-attack-effects-order.test.ts
+new file mode 100644
+index 0000000..6f404b5
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/simultaneous-attack-effects-order.test.ts
+@@ -0,0 +1,71 @@
++import { describe, expect, test } from "vite-plus/test";
++import { eb01Doma005, op09Shanks001, op16Buggy048 } from "@tcg/op-cards";
++
++import { OnePieceTestEngine, type FixtureCardEntry } from "../../../src/index.ts";
++
++// Rules 7-1-1-3 and 8-6-1-1: effects whose activation timing is fulfilled by
++// the same attack declaration activate together, and the player who owns them
++// chooses the order. OP09-001 Shanks (Leader) and OP16-048 Buggy both have an
++// optional "when your opponent attacks" effect, so the defender orders them.
++function setup(character: FixtureCardEntry[]) {
++  const engine = OnePieceTestEngine.create(
++    { deck: 10 },
++    {
++      leaderCardId: op09Shanks001,
++      character,
++      hand: [eb01Doma005],
++      deck: 10,
++    },
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++  engine.asSouth().attack(engine.leader("south"), engine.leader("north"));
++  return engine;
++}
++
++describe("simultaneous attack-declaration effects", () => {
++  test("the defending player chooses which card's [On Your Opponent's Attack] effect activates first", () => {
++    const engine = setup([op16Buggy048]);
++    const shanksId = engine.leader("north");
++    const buggyId = engine.asNorth().findOnField(op16Buggy048);
++
++    const step = engine.pendingDecision("effectOrderChoice", "north").steps[0];
++    if (step?.kind !== "chooseOption") throw new Error("Expected the effect order choice.");
++    expect(step.options.map((option) => option.targetId)).toEqual(
++      expect.arrayContaining([shanksId, buggyId]),
++    );
++    expect(step.options).toHaveLength(2);
++    // Nothing else is asked before the order is chosen.
++    expect(engine.getView("north").prompts).toHaveLength(1);
++
++    const buggyFirst = step.options.find((option) => option.targetId === buggyId)!.id;
++    engine.asNorth().chooseOption("effectOrderChoice", buggyFirst);
++    expect(engine.pendingDecision("effectOptional", "north").source?.id).toBe(buggyId);
++    engine.asNorth().declineOptional();
++
++    expect(engine.pendingDecision("effectOptional", "north").source?.id).toBe(shanksId);
++    engine.asNorth().acceptOptional();
++    engine.asNorth().chooseTargets(engine.leader("south"));
++    expect(engine.getView("north").players.south.leader.power).toBe(4000);
++    expect(engine.pendingDecision("battleCounter", "north")).toBeDefined();
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("an invalid order choice is rejected", () => {
++    const engine = setup([op16Buggy048]);
++    engine.expectFailure({
++      type: "resolvePrompt",
++      seat: "north",
++      promptId: engine.pendingDecision("effectOrderChoice", "north").id,
++      optionId: "not-an-effect",
++    });
++  });
++
++  test("a single card's effect activates directly, without an order choice", () => {
++    const engine = setup([]);
++
++    expect(() => engine.pendingDecision("effectOrderChoice", "north")).toThrow();
++    expect(engine.pendingDecision("effectOptional", "north").source?.id).toBe(
++      engine.leader("north"),
++    );
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/grade-a-checker.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/grade-a-checker.ts
+index 87d7c56..d81013f 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/grade-a-checker.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/grade-a-checker.ts
+@@ -215,6 +215,7 @@ export const OPTIONAL_TRIGGER_OPENERS: Record<string, OptionalOpener[]> = {
+   activatemain: ["activate"],
+   "activate:main": ["activate"],
+   whenattacking: ["attack"],
++  whenyouattack: ["attack"],
+   onopponentattack: ["attack"],
+   onyouropponentsattack: ["attack"],
+   whenattacked: ["attack"],
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/primitives.ts b/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/primitives.ts
+index c6ac679..ce26e9b 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/primitives.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/types/src/effect/primitives.ts
+@@ -82,4 +82,7 @@ export type EffectTrigger =
+   | "whenBecomesRested"
+   | "whenCharacterRestedByEffect"
+   | "whenCardsTrashedFromHandByEffect"
+-  | "whenYouTakeDamage";
++  | "whenYouTakeDamage"
++  // "When your Leader/Character attacks" printed on any in-play card of the
++  // attacking player (7-1-1-3). eventFilter.filters narrow the attacker.
++  | "whenYouAttack";
