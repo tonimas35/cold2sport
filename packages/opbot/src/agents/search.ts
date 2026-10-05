@@ -18,7 +18,7 @@ import { enumerateActions, sameCommand, type Action } from "../engine/actions.ts
 import { determinize } from "../engine/determinize.ts";
 import { applyInPlace } from "../engine/sim.ts";
 import { evaluate, type ValueModel } from "../eval/value.ts";
-import { rollout, rolloutCommand } from "../search/rollout.ts";
+import { rollout, rolloutCommand, type RolloutPolicy } from "../search/rollout.ts";
 import { createRng, type Rng } from "../util/rng.ts";
 import type { Agent, DecisionRequest, DecisionStats } from "./types.ts";
 
@@ -31,6 +31,8 @@ export interface SearchConfig {
   readonly model: ValueModel;
   /** Keep at most this many actions after a cheap one-step screening. */
   readonly maxCandidates?: number;
+  /** Fast policy for rollouts and for the suggested candidate (default "policy"). */
+  readonly rolloutPolicy?: RolloutPolicy;
 }
 
 export interface ActionReport {
@@ -49,11 +51,12 @@ export interface SearchReport extends DecisionStats {
 export function createSearchAgent(config: SearchConfig): Agent & { lastReport(): SearchReport | undefined } {
   const maxSteps = config.maxRolloutSteps ?? 300;
   const maxCandidates = config.maxCandidates ?? 12;
+  const policy = config.rolloutPolicy ?? "policy";
   let last: SearchReport | undefined;
 
   function heuristicSuggestion(state: MatchState, seat: MatchSeat, rng: Rng, known?: ReadonlyMap<string, string>): EngineCommand | null {
     try {
-      return rolloutCommand(determinize(state, seat, rng, known), seat, rng);
+      return rolloutCommand(determinize(state, seat, rng, known), seat, rng, { model: config.model, policy });
     } catch {
       return null;
     }
@@ -125,7 +128,7 @@ export function createSearchAgent(config: SearchConfig): Agent & { lastReport():
             s.n++; // an action that breaks in some world is penalized
             continue;
           }
-          const result = rollout(world, seat, state.turnNumber, { horizonTurns: config.horizonTurns, maxSteps, model: config.model }, worldRng);
+          const result = rollout(world, seat, state.turnNumber, { horizonTurns: config.horizonTurns, maxSteps, model: config.model, policy }, worldRng);
           if (result.broken) continue;
           s.sum += result.value;
           s.n++;

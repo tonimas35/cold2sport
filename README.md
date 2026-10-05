@@ -55,7 +55,17 @@ pnpm opbot arena --candidate "search:sims=64" --baseline heuristic --decks decks
 ```
 
 Agentes disponibles: `heuristic`, `heuristic-honest`, `aggressive`, `random`,
-`search:sims=N,h=1`, `ismcts:iters=N,h=1`.
+`policy`, `policy-honest`, `search:sims=N,h=1`, `ismcts:iters=N,h=1`.
+
+- `heuristic` es el bot del motor sin tocar (la referencia "bot existente").
+- `policy` es ese mismo bot con correcciones puntuales donde desperdicia cartas
+  (`packages/opbot/src/agents/policy.ts`): cantidades "hasta N" al máximo, −X de poder y
+  eliminación sobre las cartas rivales correctas, [Trigger] "Juega esta carta" siempre, no jugar
+  Eventos ni pagar costes opcionales cuyo efecto no haría nada, y "elige una" con una jugada de
+  anticipación y el modelo de valor. Ve todo, como `heuristic`; `policy-honest` decide sobre un
+  estado determinizado.
+- La búsqueda usa `policy` en sus rollouts; `search:...,rollout=engine` usa la política anterior
+  (la heurística del motor con dos arreglos) para comparar.
 
 ### Otros
 

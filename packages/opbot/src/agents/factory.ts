@@ -2,8 +2,16 @@
  * Agent specs for the command line:
  *
  *   heuristic | heuristic-honest | aggressive | random
- *   search:sims=200,h=1,cands=12,model=packages/opbot/models/value.json
- *   ismcts:iters=300,h=1,ms=2000,c=0.7,own=24,opp=4
+ *   policy[:model=...] | policy-honest[:model=...]
+ *   search:sims=200,h=1,cands=12,model=packages/opbot/models/value.json,rollout=policy
+ *   ismcts:iters=300,h=1,ms=2000,c=0.7,own=24,opp=4,rollout=policy
+ *
+ * `heuristic` is the unmodified engine bot (our "existing bot" baseline).
+ * `policy` is the engine bot with the overrides of agents/policy.ts (oracle,
+ * like `heuristic`); `policy-honest` decides on a determinized copy. Their
+ * `model` (default: the handcrafted model) scores "choose one" effects.
+ * `rollout=engine` makes the search use the previous rollout policy (engine
+ * heuristic plus two fixes) instead of `policy`.
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -11,6 +19,8 @@ import { createAggressiveAgent, createHeuristicAgent, createHonestHeuristicAgent
 import { createRandomAgent } from "./random.ts";
 import { createSearchAgent } from "./search.ts";
 import { createIsmctsAgent } from "./ismcts.ts";
+import { createPolicyAgent } from "./policy.ts";
+import { parseRolloutPolicy } from "../search/rollout.ts";
 import type { Agent } from "./types.ts";
 import { checkModel, HANDCRAFTED_MODEL, type ValueModel } from "../eval/value.ts";
 
@@ -46,6 +56,13 @@ export function createAgent(spec: string): Agent {
       return createAggressiveAgent();
     case "random":
       return createRandomAgent();
+    case "policy":
+    case "policy-honest":
+      // Without model=..., the policy's own default (the handcrafted model).
+      return createPolicyAgent({
+        ...(params.model !== undefined && { model: loadValueModel(params.model) }),
+        honest: kind === "policy-honest",
+      });
     case "search": {
       const model = loadValueModel(params.model);
       return createSearchAgent({
@@ -54,6 +71,7 @@ export function createAgent(spec: string): Agent {
         horizonTurns: Number(params.h ?? 1),
         maxCandidates: Number(params.cands ?? 12),
         model,
+        rolloutPolicy: parseRolloutPolicy(params.rollout),
       });
     }
     case "ismcts": {
@@ -63,6 +81,7 @@ export function createAgent(spec: string): Agent {
         iterations: Number(params.iters ?? 300),
         horizonTurns: Number(params.h ?? 1),
         model,
+        rolloutPolicy: parseRolloutPolicy(params.rollout),
         ...(params.ms !== undefined && { timeMs: Number(params.ms) }),
         ...(params.c !== undefined && { exploration: Number(params.c) }),
         ...(params.own !== undefined && { maxOwnActions: Number(params.own) }),

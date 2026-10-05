@@ -2,13 +2,26 @@
  * Rollouts: continue a (determinized, mutable) world with a fast policy for
  * both seats until the game ends or a horizon is reached, then score it.
  */
-import { heuristicAgent, resolveBotPromptCommand, getLegalCommands } from "@tcg/op-engine";
 import type { EngineCommand, MatchSeat, MatchState } from "@tcg/op-engine";
-import { takeMaxDonOption } from "../agents/heuristic.ts";
-import { actingSeat, pendingJudgePrompt, pendingPrompt, repairPromptCommand } from "../engine/actions.ts";
+import { enginePolicyCommand, policyCommand } from "../agents/policy.ts";
+import { actingSeat, pendingJudgePrompt } from "../engine/actions.ts";
 import { applyInPlace } from "../engine/sim.ts";
 import { evaluate, type ValueModel } from "../eval/value.ts";
 import type { Rng } from "../util/rng.ts";
+
+/**
+ * Fast policy played by both seats inside rollouts: "policy" is the improved
+ * policy of agents/policy.ts (default); "engine" is the previous one (engine
+ * heuristic plus the "up to N DON!!" and battle-buff fixes), kept to measure
+ * the difference (`search:...,rollout=engine`).
+ */
+export type RolloutPolicy = "policy" | "engine";
+
+export function parseRolloutPolicy(value: string | undefined): RolloutPolicy {
+  if (value === undefined || value === "policy") return "policy";
+  if (value === "engine") return "engine";
+  throw new Error(`unknown rollout policy "${value}" (expected policy or engine)`);
+}
 
 export interface RolloutConfig {
   /**
@@ -18,45 +31,19 @@ export interface RolloutConfig {
   readonly horizonTurns: number;
   readonly maxSteps: number;
   readonly model: ValueModel;
+  readonly policy?: RolloutPolicy;
 }
 
-/**
- * During a battle, a "+X power" effect that targets one card should go to the
- * card that is fighting: the defender's target when the defending seat
- * chooses, the attacker when the attacking seat chooses. The engine heuristic
- * gives buffs to its strongest card instead, which wastes the effect (and the
- * card often trashed to pay for it); with Rocks lists this alone flips
- * matchups (see docs/RESULTADOS.md, calibration).
- */
-function battleBuffTarget(world: MatchState, prompt: NonNullable<ReturnType<typeof pendingPrompt>>): EngineCommand | null {
-  const battle = world.battle;
-  if (!battle || prompt.choiceKind !== "selectTargets" || prompt.maxSelections !== 1) return null;
-  const action = (prompt.resolutionContext as { action?: { action?: string; value?: number } } | null)?.action;
-  if (action?.action !== "modifyPower" || (action.value ?? 0) <= 0) return null;
-  const fighter = prompt.seat === battle.defendingSeat ? battle.targetId : battle.attackerId;
-  if (world.cards[fighter]?.controller !== prompt.seat) return null;
-  if (!prompt.options.some((o) => o.id === fighter && o.enabled !== false)) return null;
-  return { type: "resolvePrompt", seat: prompt.seat as MatchSeat, promptId: prompt.id, selectedIds: [fighter] };
+export interface RolloutCommandOptions {
+  /** Value model for the policy's lookahead ("choose one" effects). */
+  readonly model?: ValueModel;
+  readonly policy?: RolloutPolicy;
 }
 
-/**
- * The policy used inside rollouts: the engine's heuristic bot for both seats,
- * plus the fixes above.
- */
-export function rolloutCommand(world: MatchState, seat: MatchSeat, rng: Rng): EngineCommand {
-  const context = { random: () => rng.next() };
-  const prompt = pendingPrompt(world);
-  if (prompt && prompt.seat === seat) {
-    return repairPromptCommand(
-      world,
-      battleBuffTarget(world, prompt) ??
-        heuristicAgent.resolvePrompt?.(world, prompt, context) ??
-        takeMaxDonOption(prompt) ??
-        resolveBotPromptCommand(world, prompt) ?? { type: "endTurn", seat },
-    );
-  }
-  const legal = getLegalCommands(world, seat).filter((d) => d.type !== "concede");
-  return heuristicAgent.choose(world, seat, legal, context) ?? { type: "endTurn", seat };
+/** The rollout policy's command for `seat` (see `RolloutPolicy`). */
+export function rolloutCommand(world: MatchState, seat: MatchSeat, rng: Rng, options: RolloutCommandOptions = {}): EngineCommand {
+  if (options.policy === "engine") return enginePolicyCommand(world, seat, rng);
+  return policyCommand(world, seat, rng, options.model ? { model: options.model } : {});
 }
 
 export interface RolloutResult {
@@ -96,7 +83,7 @@ export function rollout(
       ) {
         break;
       }
-      const command = rolloutCommand(world, seat, rng);
+      const command = rolloutCommand(world, seat, rng, { model: config.model, policy: config.policy ?? "policy" });
       if (!applyInPlace(world, command)) {
         return { value: 0.5, steps, terminal: false, broken: true };
       }

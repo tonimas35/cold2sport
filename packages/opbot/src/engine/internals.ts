@@ -13,9 +13,18 @@ export {
   privateChoicesForJoKenPo,
   rememberPrivateJoKenPoChoices,
 } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/commands.ts";
-export { selectionSatisfiesTotalConstraint } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/targeting.ts";
+export {
+  candidatePoolForTarget,
+  selectionSatisfiesTotalConstraint,
+} from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/targeting.ts";
+// Read-only checks the engine runs before resolving an effect block, reused by
+// the policy (agents/policy.ts) to skip plays whose effect would do nothing.
+export { canPayCosts } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/actions.ts";
+export { evaluateConditions } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/conditions.ts";
 export { drainResolutionQueue } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/queue.ts";
 export {
+  effectBlocksFor,
+  effectBlocksForInstance,
   emitEvent,
   emitLog,
   getCardCounter,

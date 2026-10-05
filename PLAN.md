@@ -115,6 +115,9 @@ Decisiones clave:
 - [x] Mejorar la política de rollout: los "hasta N DON!!" ya no se desperdician y las selecciones
       que violan restricciones ocultas se reparan.
 - [x] Registro de conocimiento: recordar cartas reveladas públicamente (el motor las olvida).
+- [x] Política rápida mejorada (`policy`): la heurística del motor con correcciones puntuales donde
+      desperdicia cartas (−X de poder, "hasta N", [Trigger], eventos sin efecto, "elige una").
+      Gana a `heuristic` con mazos del meta (E9) y es la política de los rollouts (E10).
 - [ ] ISMCTS (E3) no mejora aún a la búsqueda plana: probar un árbol solo con nuestras decisiones
       (respuestas del rival por política) y más iteraciones.
 

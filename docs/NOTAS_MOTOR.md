@@ -214,7 +214,21 @@ reproducidas por las dos vías con estados y jugadas legales idénticos tras cad
     Líder Oden se paga y no se activa nada);
   - carga todo el DON!! sobrante en un único atacante;
   - ataca con todo, todos los turnos, y casi nunca pasa;
-  - con la política equilibrada no hace counter con 4 o más vidas.
+  - con la política equilibrada no hace counter con 4 o más vidas;
+  - solo cuenta como útil un cambio de poder positivo: los "−X de poder a un Personaje rival"
+    (Kaido OP17-058, Katakuri OP17-103, Shiki OP17-048) eligen 0 objetivos, a menudo tras pagar
+    el coste; y nunca elige más de 1 objetivo opcional aunque el efecto diga "hasta 2";
+  - trata `returnToHand` como eliminación: "añade una carta de tu cementerio a tu mano"
+    (OP17-096, Gerd OP17-081) elige 0 cartas;
+  - no activa un [Trigger] de Personaje de coste 5 o más, ni siquiera "Juega esta carta";
+  - juega Eventos y usa [Activate: Main] sin mirar si el coste se puede pagar ni si hay objetivo
+    (OP17-056 con menos de 5 DON!!, Divine Departure sin DON!! dados) y acepta todo coste opcional
+    propio aunque el efecto no haga nada;
+  - en "elige una" toma siempre la primera opción.
+
+  `packages/opbot/src/agents/policy.ts` (agente `policy`) corrige estos casos de forma puntual
+  y deja el resto a la heurística; es la política de los rollouts de la búsqueda. Resultado en
+  `docs/RESULTADOS.md` (E9, E10).
 
 ### `bot-lab` (herramienta del repo original)
 

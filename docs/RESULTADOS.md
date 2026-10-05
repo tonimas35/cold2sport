@@ -23,6 +23,8 @@ sintéticos), simulación rápida, modelo de valor `logreg-test-v1`.
 | E5 | 2026-10-05 | `3254f3d` | `search:sims=256` | `search:sims=64` | 26 | 4/0/13/0/9 | 59,6 % [46,3–73,0] | +68 [−26, 172] | Detenido a mano para liberar CPU. Tendencia a favor de más cálculo, no significativa. 1,25 s frente a 0,30 s por decisión |
 | E8 | 2026-10-05 | `09952de` | `search:sims=64,h=1,cands=12` | `heuristic` (oráculo) | 64 | 7/0/41/0/16 | 57,0 % [49,8–64,2] | +49 [−1, 102] | **Mazos del meta** (Rocks, Luffy OP17-079, Sabo, Shanks), motor **antes** de corregir las cartas de Rocks. 64 pares sin decidir (LLR 1,71). Con Rocks el candidato pierde casi siempre (0 % contra Luffy y Shanks): con cartas rotas el cálculo no compensa. 1,6 s por decisión |
 | E6 | 2026-10-05 | `09952de` | `search:sims=64` con `model=value-mlp16-test-v1` | `search:sims=64` (`logreg-test-v1`) | 28 | 0/0/21/0/7 | 62,5 % [54,3–70,7] | **+89 [30, 153]** | Mazos del meta, motor antes de las correcciones. Cortado a los 28 pares por el límite de 2 h de los procesos en segundo plano. La red pequeña (MLP de 16 neuronas, entrenada con los mazos sintéticos) ya mejora la búsqueda en mazos que nunca vio; se repetirá con el motor corregido |
+| E9 | 2026-10-05 | `3c13662` | `policy` (oráculo) | `heuristic` (oráculo) | 128 | 2/0/91/0/35 | **62,9 % [58,8–67,0]** | **+92 [62, 123]** | **Mazos del meta** (los 8 del pool), motor de este commit (antes de las correcciones de cartas en curso). SPRT(0, 35) decide H1 a los 32 pares; con `--no-stop` se completa un ciclo entero (64 emparejamientos × quién empieza). Mejora con 7 de los 8 mazos e iguala con Sabo (detalle abajo). 0 comandos rechazados. 1º: 65,6 %, 2º: 60,2 %. 2,6 ms por decisión (heurística: 2,3) |
+| E10 | 2026-10-05 | `3c13662` | `search:sims=32,h=1,cands=12` (rollouts con `policy`) | `search:sims=32,h=1,cands=12,rollout=engine` (rollouts anteriores) | 88 | 5/0/67/0/16 | **56,3 % [51,3–61,2]** | **+44 [9, 79]** | Mazos del meta, el mismo motor en los dos lados (las correcciones de cartas en curso moverán las cifras absolutas, no la comparación). Cortado a los ~95 min en una máquina compartida: 88 bloques (los 64 emparejamientos con sur empezando y 24 con norte). SPRT(0, 35): LLR 2,96, decide H1 (ya había cruzado a los 48 pares, 3,07, y bajó). 0 comandos rechazados. 1º: 54,5 %, 2º: 58,0 %. 478 ms por decisión frente a 455 ms |
 
 ## Calibración de enfrentamientos frente a resultados reales
 
@@ -56,7 +58,7 @@ pnpm opbot arena --candidate "search:sims=64,h=1,cands=12" --baseline heuristic 
   --seed a2 --out out/arena-search64-vs-heuristic-144.jsonl
 ```
 
-## Enel (OP15-058) antes y después del parche `0003`
+## Enel (OP15-058) antes y después del parche `0007`
 
 Fidelidad del motor, no fuerza de un bot: `heuristic` en los dos lados, 20 partidas por rival
 (10 pares), simulación rápida. "Registros" = registros de capacidad (`capabilityHistory`), aquí
@@ -82,10 +84,89 @@ cambio del agente afecta a **todos** los mazos con esas preguntas: las cifras co
 anteriores a este commit (E8, calibración) usaban el comportamiento viejo. Las de Rocks y Luffy
 siguen afectadas por sus cartas aún sin corregir.
 
+> **Nota de integración.** La corrección "elige el máximo" se midió dentro del agente `heuristic`. Al
+> integrar la política mejorada (`policy`, E9 y E10 abajo) se ha movido allí: `heuristic` vuelve a ser
+> el bot del motor **sin cambios**, que es la referencia del "bot que ya existe". Las filas "Solo el
+> agente", "Motor + agente" y "Final" corresponden por tanto al comportamiento que ahora tiene
+> `policy` en esas preguntas, no a `heuristic`.
+
+## E9 y E10: política rápida mejorada (`policy`)
+
+`policy` (`packages/opbot/src/agents/policy.ts`) es la heurística del motor con correcciones
+puntuales donde desperdicia cartas; `heuristic` sigue siendo el bot del motor sin tocar. Ver la
+lista de correcciones en `docs/NOTAS_MOTOR.md` (§6).
+
+**E9, por mazo**: % de victorias de cada bot con ese mazo, frente a los mismos rivales, asientos y
+cartas (32 partidas por bot y mazo; muestras pequeñas, ±17 puntos):
+
+| Mazo | `policy` | `heuristic` |
+|---|---|---|
+| Luffy (OP17-079) | 90,6 % | 81,3 % |
+| Sabo | 71,9 % | 71,9 % |
+| Shanks | 71,9 % | 62,5 % |
+| Enel | 65,6 % | 9,4 % |
+| Pudding | 62,5 % | 21,9 % |
+| Robin | 62,5 % | 18,8 % |
+| Rocks | 62,5 % | 28,1 % |
+| Kaido | 15,6 % | 3,1 % |
+
+Las mayores diferencias son las esperadas: con la heurística el Líder Enel añade y da 0 DON!!,
+Divine Departure y los eventos de Rocks se juegan sin efecto, Big Mom no juega sus [Trigger]
+"Juega esta carta" de coste 5–7 y Kaido paga DON!! −1 para no elegir objetivo. Por emparejamiento
+(los dos asientos), `policy` no queda por debajo del 50 % en ninguno salvo el espejo de Sabo
+(25 %, 4 partidas).
+
+Dónde decide distinto (64 partidas `policy` contra `policy` con los 8 mazos, 7.242 decisiones;
+en cada una se pregunta también a la heurística): 16 % de las decisiones. Objetivos de efectos 307
+de 709 (sobre todo −X de poder de Kaido OP17-058, Shiki OP17-048 y Kiten OP15-076, y Gerd
+OP17-081 recuperando del cementerio); "añade hasta N DON!!" 252 de 252 (Líderes Enel, Robin y
+Pudding); Eventos que la heurística jugaría sin efecto 364 de 3.185 decisiones de fase main
+(Divine Departure 170, OP17-055/056 de Rocks 115) y [Activate: Main] sin efecto 20 (Líder
+Shanks sin Personajes rivales girados, King y Queen con el mazo de DON!! vacío); "da hasta N
+DON!!" 85 de 85; "añade hasta 1 a la vida" 49 de 49; [Trigger] 32 de 99 (Sweet 3 Generals,
+Smoothie, Katakuri y eventos cuyo DON!! ya no existe); costes opcionales rechazados por no hacer
+nada 32 de 559; "elige una" 4 de 26.
+
+**E10, por mazo** (búsqueda con rollouts `policy` frente a la misma búsqueda con los rollouts
+anteriores; 19–27 partidas por bot y mazo, solo orientativo):
+
+| Mazo | rollouts `policy` | rollouts anteriores |
+|---|---|---|
+| Shanks | 89,5 % | 47,4 % |
+| Luffy (OP17-079) | 78,9 % | 68,4 % |
+| Sabo | 74,1 % | 74,1 % |
+| Pudding | 59,3 % | 51,9 % |
+| Robin | 51,9 % | 40,7 % |
+| Enel | 42,1 % | 36,8 % |
+| Kaido | 31,6 % | 15,8 % |
+| Rocks | 15,8 % | 0,0 % |
+
+Ningún mazo empeora. Por emparejamiento (los dos asientos), solo Robin–Enel (33 %, 6 partidas) y
+Pudding–Sabo (38 %, 8) quedan por debajo del 50 %. Que la ganancia sea menor que en E9 es lo
+esperable (hipótesis, no medida): la búsqueda ya evita parte de los errores de su política al
+elegir la jugada raíz; los rollouts mejores se notan en la evaluación de las jugadas.
+
+Comandos (desde el worktree del commit `3c13662`, máquina compartida con otras tareas):
+
+```bash
+# E9 (128 bloques = un ciclo completo; el SPRT decide H1 a los 32)
+bun packages/opbot/src/cli.ts arena --candidate policy --baseline heuristic \
+  --decks decks/meta-op17-postban --blocks 128 --workers 2 --sprt 0,35 --no-stop --engine fast \
+  --seed pol1 --out out/arena-policy-vs-heuristic.jsonl
+
+# E10 (lanzado con --blocks 256 y detenido a mano tras el lote de 88 bloques, ~95 min;
+# el resumen se regenera con --resume --blocks 88)
+bun packages/opbot/src/cli.ts arena --candidate "search:sims=32,h=1,cands=12" \
+  --baseline "search:sims=32,h=1,cands=12,rollout=engine" --decks decks/meta-op17-postban \
+  --blocks 256 --workers 2 --sprt 0,35 --no-stop --engine fast --seed srch1 \
+  --out out/arena-search-rollout-policy-vs-engine.jsonl
+```
+
 ## Pendientes / en curso
 
 - Corrección de cartas del meta en el motor (parches `0003` y siguientes; ver `vendor/tcg-engines/UPSTREAM.md`).
   Tras ella: repetir E8 y E6 con el motor corregido y recalibrar con el bot de búsqueda.
+- Repetir E9 y E10 con el motor corregido (cartas del meta) y con tamaño fijo más grande.
 - E7: ISMCTS con determinización del rival (`opp=1`) contra la búsqueda plana.
 - E5 y E2 con tamaño fijo (la parada temprana del SPRT y el corte manual dejan intervalos anchos).
 

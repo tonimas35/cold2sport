@@ -21,7 +21,7 @@ import { actingSeat, enumerateActions, pendingJudgePrompt, pendingPrompt, sameCo
 import { determinize } from "../engine/determinize.ts";
 import { applyInPlace } from "../engine/sim.ts";
 import { evaluate, type ValueModel } from "../eval/value.ts";
-import { rollout, rolloutCommand } from "./rollout.ts";
+import { rollout, rolloutCommand, type RolloutPolicy } from "./rollout.ts";
 import { createRng, type Rng } from "../util/rng.ts";
 
 export interface IsmctsConfig {
@@ -36,6 +36,8 @@ export interface IsmctsConfig {
   readonly maxOwnActions?: number;
   readonly maxOpponentActions?: number;
   readonly maxRolloutSteps?: number;
+  /** Fast policy for rollouts and for the policy candidate (default "policy"). */
+  readonly rolloutPolicy?: RolloutPolicy;
 }
 
 interface Edge {
@@ -87,7 +89,7 @@ function candidates(
   let policyKey: string | null = null;
   let policy: EngineCommand | null = null;
   try {
-    policy = rolloutCommand(world, seat, rng);
+    policy = rolloutCommand(world, seat, rng, { model: config.model, policy: config.rolloutPolicy ?? "policy" });
   } catch {
     policy = null;
   }
@@ -128,7 +130,12 @@ export function runIsmcts(
   const bias = config.policyBias ?? 0.5;
   const stopTurn = state.turnNumber + config.horizonTurns;
   const root: Node = { seat: rootSeat, edges: new Map() };
-  const rolloutConfig = { horizonTurns: config.horizonTurns, maxSteps: config.maxRolloutSteps ?? 300, model: config.model };
+  const rolloutConfig = {
+    horizonTurns: config.horizonTurns,
+    maxSteps: config.maxRolloutSteps ?? 300,
+    model: config.model,
+    policy: config.rolloutPolicy ?? "policy",
+  };
   let iterations = 0;
 
   const atHorizon = (world: MatchState) =>
