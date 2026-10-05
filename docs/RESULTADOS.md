@@ -30,12 +30,21 @@ compara con los resultados reales entre esos Líderes en los torneos de Limitles
 | Fecha | Bot | Mazos | Partidas simuladas por par | Correlación con la realidad | Error medio | Mismo favorito |
 |---|---|---|---|---|---|---|
 | 2026-10-05 | `heuristic` | Rocks, Luffy (OP17-079), Sabo, Shanks | 60 | **−0,24** | 37 puntos | 2 de 5 |
+| 2026-10-05 | `heuristic` (muestra real ampliada: 44 torneos, p. ej. 139 partidas Rocks–Sabo) | ídem | 60 | **−0,23** | 33 puntos | 2 de 6 |
 
 Ejemplos: Rocks contra Shanks sale 2 % simulado frente a 75 % real (8 partidas); Rocks contra Sabo,
 18 % frente a 71 % (34). La heurística del motor juega muy mal algunos mazos (por ejemplo, con
 Rocks usa el efecto de Linlin para darse +1000 a sí misma cuando el ataque va al Líder), así que
-**una simulación con bots flojos no sirve para estudiar enfrentamientos**. Muestra real aún pequeña
-(3 torneos post-ban); se está ampliando.
+**una simulación con bots flojos no sirve para estudiar enfrentamientos**.
+
+Con el bot de búsqueda (`search:sims=32`) en los dos lados, Rocks pierde **30 de 30** contra Luffy
+(real: 30 % en 87 partidas). Como el bot de búsqueda juega mucho mejor que la heurística, esto
+apunta a **cartas mal implementadas** en alguno de los mazos: hay en marcha una auditoría carta a
+carta contra el texto oficial.
+
+Resultados reales (44 torneos Standard de la era OP-17 en Limitless): Rocks gana 67 % a Sabo (139),
+30 % a Luffy (87) y 71 % a Shanks (14); Sabo gana 62 % a Luffy (65). Es un triángulo: Rocks > Sabo >
+Luffy > Rocks.
 
 Comando E1:
 
