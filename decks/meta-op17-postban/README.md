@@ -7,14 +7,14 @@ Generated 2026-10-05 by `bun packages/opbot/src/cli.ts meta-decks` from the Limi
 
 ## Data
 
-- Window: One Piece tournaments on Limitless dated 2026-08-28 (OP-17 EN release) or later: 76 listed, 72 Standard.
+- Window: One Piece tournaments on Limitless dated 2026-08-28 (OP-17 EN release) or later: 77 listed, 73 Standard.
 - Post-ban events used: **3**, dated 2026-09-28 to 2026-10-01.
 - Entries: **274** with a known Leader (0 more without decklist or deck id, left out of the shares); 622 non-mirror matches with a result.
 - Sample size: with 274 entries a 10% share is known to about ±3.6 points (95%), and the entries of one event are not independent; win rates over fewer than ~100 games are noise. Rerun after 2026-10-12 for a sturdier pool.
 
 | Events | Classification |
 |---:|---|
-| 17 | excluded: < 32 players, ban not listed |
+| 18 | excluded: < 32 players, ban not listed |
 | 52 | excluded: before 2026-09-24, ban not listed |
 | 2 | used: >= 32 players after 2026-09-24, no OP14-020 |
 | 1 | used: bans OP14-020 |
@@ -396,15 +396,15 @@ Per deck: games it played and how they ended; rejected commands, illegal-command
 
 | Deck | Missing cards | checkDeck | Games | Rules end | Cmd cap / stall | Rejected cmds / illegal stops | Crashes | Capability records | Games with records | Bot win % | Cards behind stops and records |
 |---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---|
-| OP17-039-rocks-d-xebec | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 45% | none |
-| OP17-079-monkey-d-luffy | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 88% | none |
+| OP17-039-rocks-d-xebec | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 49% | none |
+| OP17-079-monkey-d-luffy | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 85% | none |
 | OP17-058-kaido | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 1% | none |
-| OP15-058-enel | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 33% | none |
-| ST30-001-luffy-ace | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 78% | none |
-| OP09-062-nico-robin | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 31% | none |
-| OP13-004-sabo | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 78% | none |
-| OP08-058-charlotte-pudding | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 30% | none |
-| OP17-020-shanks | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 67% | none |
+| OP15-058-enel | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 12% | none |
+| ST30-001-luffy-ace | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 82% | none |
+| OP09-062-nico-robin | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 39% | none |
+| OP13-004-sabo | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 77% | none |
+| OP08-058-charlotte-pudding | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 34% | none |
+| OP17-020-shanks | none | pass | 160 | 160 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 71% | none |
 
 ## Methodology
 
