@@ -124,10 +124,11 @@ reconciles catalog entries.
 | OP17-099 | Charlotte Linlin | verified | Printed behavior is unstructured |
 | PRB01-001    | Sanji (PRB01-001)                | verified | No-On-Play and cost-8 candidate boundary; granted Rush; same-turn public Character attack                                               |
 | ST01-001     | Monkey.D.Luffy                   | verified | Direct 0–1 rested-DON!! choice; Leader-or-Character recipient mapping; attachment and power                                             |
+| ST30-001 | Luffy & Ace | verified | Permanent -2000 while an own Character has 7000+ base power (DON!!-boosted 6000 does not count); Opponent's Turn +3000 to [Portgas.D.Ace]/[Monkey.D.Luffy] Characters only, not this Leader (ST-30 FAQ) |
 
 ## Progress
 
-- Canonical leaders: 117.
+- Canonical leaders: 118.
 - Verified: 97.
 - Structured pending: 15.
 - Printed but unstructured: 5.

@@ -39,7 +39,7 @@ export const TEST_DECKS: Record<TestDeckId, TestDeckDefinition> = {
       "OP01-016",
       "OP01-016",
       "OP01-016",
-      "OP01-016", // Nami 1/2000 +2000, Straw Hat search
+      "OP01-016", // Nami 1/2000 +1000, Straw Hat search
       "OP04-007",
       "OP04-007",
       "OP04-007",

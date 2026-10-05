@@ -20,7 +20,8 @@ export const op14eb04IHaveAPlanToTakeDownOneOfTheFourEmperors019: EventCard = {
   color: ["red"],
   rarity: "UC",
   setId: "OP14",
-  cost: 4,
+  // Official card list (series 569114) prints cost 1; the imported data said 4.
+  cost: 1,
   trigger: "Draw 1 card.",
   traits: ["Heart Pirates Supernovas The Seven Warlords of the Sea"],
   effect:

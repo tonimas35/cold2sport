@@ -42,3 +42,4 @@ export { op15DressrosaKingdom057 } from "./op15-057-dressrosa-kingdom.ts";
 export { op16Marineford078 } from "./op16-078-marineford.ts";
 export { op16MobyDick021 } from "./op16-021-moby-dick.ts";
 export { op17Fullalead057 } from "./op17-057-fullalead.ts";
+export { st31ThousandSunny005 } from "./st31-005-thousand-sunny.ts";

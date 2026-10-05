@@ -210,7 +210,7 @@ reconciles catalog entries.
 | OP01-013     | Sanji                                           | verified | Official top-Life cost, turn power, rested DON!! transfer, and once per turn                                                                                                                             |
 | OP01-014     | Jinbe                                           | verified | Blocker, attached-DON On Block timing, filtered hand play, and battle resume                                                                                                                             |
 | OP01-015     | Tony Tony.Chopper                               | verified | Attached-DON attack, hand-trash cost, and included-trait trash recovery                                                                                                                                  |
-| OP01-016     | Nami                                            | verified | Included Straw Hat search, self-name exclusion, reveal, and remainder ordering                                                                                                                           |
+| OP01-016     | Nami                                            | verified | Included Straw Hat search of any card category (2023 errata), self-name exclusion, reveal, and remainder ordering; Counter 1000                                                                                                                           |
 | OP01-017     | Nico Robin                                      | verified | DON!! x1 When Attacking; opposing current-power filter; selected Character K.O.                                                                                                                          |
 | OP01-018     | Hajrudin                                        | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
 | OP01-019     | Bartolomeo                                      | verified | Public Blocker retarget; DON!! x2 opponent-turn power and Refresh cleanup                                                                                                                                |
@@ -1127,7 +1127,7 @@ reconciles catalog entries.
 | OP11-009 | Nico Robin | verified | DON!! x2 opposing power reduction through the opponent's next turn |
 | OP11-010 | Hibari | verified | On Play opposing -2000; attack power gain and Navy Leader active-Character permission |
 | OP11-011     | Bins                                            | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
-| OP11-012 | Franky | verified | Own-turn opponent Event Counter provenance, all-Character boost, and once-per-turn limit |
+| OP11-012 | Franky | verified | Own-turn opponent Event Counter provenance, all-Character boost, and once-per-turn limit; Straw Hat Crew type (not SWORD) |
 | OP11-013 | Prince Grus | verified | Attack-time Blocker suppression for power-2000-or-less Characters |
 | OP11-014 | Borsalino | verified | Blocker; self-rest activation and included Navy active-Character attack permission |
 | OP11-015     | Mocha                                           | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
@@ -1421,7 +1421,7 @@ reconciles catalog entries.
 | OP14-028 | Johnny | verified | Self-only own-turn rest trigger, optional rested cost-2-or-less opposing K.O. filtering, ownership, selected identity, visible trash result, and decline |
 | OP14-029 | Tashigi | verified | Opponent-turn self-removal replacement with optional selected own-card rest and decline; Activate: Main optional two-card rest cost, +2000 duration through opponent next End Phase, cleanup, and once-per-turn |
 | OP14-030     | Chaka & Pell - OP14-030                         | vanilla  | Parameterized vanilla invariant batch                                                                                                                                                                    |
-| OP14-031 | Nami | verified | Blocker; On Play optional two-target cost-8 rest filtering and physical identities; independent delayed end-of-turn up-to-5 DON!! activation |
+| OP14-031 | Nami | verified | Blocker; On Play optional two-target cost-8 rest filtering and physical identities; independent delayed end-of-turn up-to-5 DON!! activation; Counter 1000 |
 | OP14-032 | Humandrill | verified | Self-only own-turn rest trigger, optional cost-4-or-less opposing Character filtering, ownership, selected rest result, and other-card-rest negative |
 | OP14-033 | Perona - OP14-033 | verified | On Play optional two-target cost-5 cannot-rest selection through opponent next End Phase and expiry; On K.O. optional own-card rest cost, filtered green cost-5 hand play, ownership, and decline |
 | OP14-034 | Monkey.D.Luffy - OP14-34 | verified | Own-turn all-green included Straw Hat base-cost-4 +1000 aura with negatives/cleanup; once-per-turn opponent-effect K.O. replacement for another matching Character, own-Character rest, decline, trait/source negatives, and battle exclusion |
@@ -1868,8 +1868,11 @@ reconciles catalog entries.
 | ST19-002     | Sengoku - ST19-002 (Pirate Foil)                | verified | Two black included-Navy hand-trash cost and included-Navy Leader-gated draw                                                                                                                              |
 | ST20-003 | Charlotte Brulee (Pirate Foil) | verified | Controller-owned Life Trigger; either-owner or skip choice; private physical top-Life placement; same Trigger card returned to hand |
 | ST21-003 | Sanji - ST21-003 (Pirate Foil) | verified | Optional own included-Straw-Hat power-6000 target; selected-attacker-only Blocker prohibition; decline leaves attack blockable |
+| ST21-014 | Monkey.D.Luffy | verified | Rush attack on the turn played; When Attacking gives 0-1 rested DON!! to the Leader or a Character |
 | ST26-005 | Monkey.D.Luffy | verified | Dual-trigger DON!!-2 set-base-power 7000 on multicolored Straw Hat Leader (opponent-DON negative; expiry via duration) |
 | ST27-005 | Marshall.D.Teach | verified | activateMain |
+| ST30-012 | Monkey.D.Luffy | verified | Optional rest-1-DON!! On Play cost grants Rush this turn (unpayable with 0 active DON!!, ST-30 FAQ); When Attacking rests only an opposing [Blocker] Character |
+| ST31-001 | Sanji | verified | DON!! x2 Rush on the turn played; On Play draw then play a Straw Hat Crew Character of cost 5 or less other than [Sanji] (drawn card eligible) |
 | ST31-004 | Monkey.D.Luffy | verified | On Play per-Straw-Hat debuff via amountFromMatchingCards (trait mutation killed); Rush threshold; self-count always >=1 |
 | ST32-002 | Kouzuki Oden | verified | onPlay |
 | ST34-002 | Charlotte Cracker | verified | On Play action-level Big Mom Pirates Leader gate on the rested DON!! add only; Then K.O. cost 2 or less resolves with any Leader |
@@ -1878,7 +1881,7 @@ reconciles catalog entries.
 
 ## Progress
 
-- Canonical characters: 1868.
+- Canonical characters: 1871.
 - Verified: 1344.
 - Structured pending: 262.
 - Printed but unstructured: 37.

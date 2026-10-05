@@ -17,9 +17,8 @@ describe("OP12-018 Color of the Supreme King Haki", () => {
     const target = engine.pendingDecision("effectTargetSelection", "south").steps[0];
     if (target?.kind !== "selectEntity") throw new Error("Expected the boost target.");
     engine.resolveDecision("effectTargetSelection", { selectedIds: [rayleighId] }, "south");
-    const restCount = engine.pendingDecision("effectRestDonCount", "south").steps[0];
-    if (restCount?.kind !== "chooseOption") throw new Error("Expected the rest count.");
-    engine.resolveDecision("effectRestDonCount", { optionId: "1" }, "south");
+    // "Then, you may rest 1 of your DON!! cards": a yes/no choice of its own.
+    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
 
     const north = engine.getView("south").players.north;
     // Opponent Leader and Characters each dropped by 1000 (6000 and 6000 base).
@@ -43,9 +42,8 @@ describe("OP12-018 Color of the Supreme King Haki", () => {
     const target = engine.pendingDecision("effectTargetSelection", "south").steps[0];
     if (target?.kind !== "selectEntity") throw new Error("Expected the boost target.");
     engine.resolveDecision("effectTargetSelection", { selectedIds: [] }, "south");
-    const restCount = engine.pendingDecision("effectRestDonCount", "south").steps[0];
-    if (restCount?.kind !== "chooseOption") throw new Error("Expected the rest count.");
-    engine.resolveDecision("effectRestDonCount", { optionId: "1" }, "south");
+    // "Then, you may rest 1 of your DON!! cards": a yes/no choice of its own.
+    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
 
     // No boost target selected; the optional rest still dropped the
     // opponent's Leader by 1000. The 9000 attacker still overpowers the

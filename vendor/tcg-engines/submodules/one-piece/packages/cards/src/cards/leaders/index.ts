@@ -115,3 +115,4 @@ export { op17Kaido058 } from "./op17-058-kaido.ts";
 export { op17MonkeyDLuffy079 } from "./op17-079-monkey-d-luffy.ts";
 export { op17RocksDXebec039 } from "./op17-039-rocks-d-xebec.ts";
 export { op17Shanks020 } from "./op17-020-shanks.ts";
+export { st30LuffyAce001 } from "./st30-001-luffy-ace.ts";
