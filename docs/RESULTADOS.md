@@ -25,6 +25,7 @@ sintéticos), simulación rápida, modelo de valor `logreg-test-v1`.
 | E6 | 2026-10-05 | `09952de` | `search:sims=64` con `model=value-mlp16-test-v1` | `search:sims=64` (`logreg-test-v1`) | 28 | 0/0/21/0/7 | 62,5 % [54,3–70,7] | **+89 [30, 153]** | Mazos del meta, motor antes de las correcciones. Cortado a los 28 pares por el límite de 2 h de los procesos en segundo plano. La red pequeña (MLP de 16 neuronas, entrenada con los mazos sintéticos) ya mejora la búsqueda en mazos que nunca vio; se repetirá con el motor corregido |
 | E9 | 2026-10-05 | `3c13662` | `policy` (oráculo) | `heuristic` (oráculo) | 128 | 2/0/91/0/35 | **62,9 % [58,8–67,0]** | **+92 [62, 123]** | **Mazos del meta** (los 8 del pool), motor de este commit (antes de las correcciones de cartas en curso). SPRT(0, 35) decide H1 a los 32 pares; con `--no-stop` se completa un ciclo entero (64 emparejamientos × quién empieza). Mejora con 7 de los 8 mazos e iguala con Sabo (detalle abajo). 0 comandos rechazados. 1º: 65,6 %, 2º: 60,2 %. 2,6 ms por decisión (heurística: 2,3) |
 | E10 | 2026-10-05 | `3c13662` | `search:sims=32,h=1,cands=12` (rollouts con `policy`) | `search:sims=32,h=1,cands=12,rollout=engine` (rollouts anteriores) | 88 | 5/0/67/0/16 | **56,3 % [51,3–61,2]** | **+44 [9, 79]** | Mazos del meta, el mismo motor en los dos lados (las correcciones de cartas en curso moverán las cifras absolutas, no la comparación). Cortado a los ~95 min en una máquina compartida: 88 bloques (los 64 emparejamientos con sur empezando y 24 con norte). SPRT(0, 35): LLR 2,96, decide H1 (ya había cruzado a los 48 pares, 3,07, y bajó). 0 comandos rechazados. 1º: 54,5 %, 2º: 58,0 %. 478 ms por decisión frente a 455 ms |
+| E11 | 2026-10-05 | `4451fe9` | `search:sims=32,h=1,cands=12` (rollouts `policy`) | `heuristic` (oráculo, el bot del motor sin cambios) | 162 | 5/0/83/0/74 | **71,3 % [67,0–75,6]** | **+158 [123, 196]** | **Mazos del meta, 9 mazos, motor con los parches 0001–0007** (Rocks, Luffy, Luffy & Ace y Enel ya corregidos). Ciclo completo con `--no-stop` (81 emparejamientos × quién empieza); el SPRT ya decidía H1 a los 18 pares. 1º: 71,6 %, 2º: 71,0 %. 181 ms por decisión. Gana con los 9 mazos (detalle abajo) |
 
 ## Calibración de enfrentamientos frente a resultados reales
 
@@ -89,6 +90,34 @@ siguen afectadas por sus cartas aún sin corregir.
 > el bot del motor **sin cambios**, que es la referencia del "bot que ya existe". Las filas "Solo el
 > agente", "Motor + agente" y "Final" corresponden por tanto al comportamiento que ahora tiene
 > `policy` en esas preguntas, no a `heuristic`.
+
+## E11: búsqueda contra el bot del motor en el meta (motor corregido)
+
+% de victorias del candidato (búsqueda) con cada mazo, contra todos los mazos del pool manejados
+por la heurística del motor, 36 partidas por mazo:
+
+| Mazo | Victorias |
+|---|---|
+| Sabo OP13-004 | 88,9 % |
+| Luffy OP17-079 | 80,6 % |
+| Rocks OP17-039 | 77,8 % |
+| Robin OP09-062 | 75,0 % |
+| Luffy & Ace ST30-001 | 75,0 % |
+| Shanks OP17-020 | 72,2 % |
+| Pudding OP08-058 | 61,1 % |
+| Enel OP15-058 | 58,3 % |
+| Kaido OP17-058 | 52,8 % |
+
+Comparado con E8 (mismo tipo de prueba, motor sin corregir): allí la búsqueda sacaba 57 % y con
+Rocks perdía casi siempre (0 % contra Luffy y Shanks); ahora gana con Rocks el 78 %. Kaido, Pudding
+y Enel son los más bajos: Kaido y los dos mazos de Big Mom aún tienen cartas por corregir (segunda
+ronda), y la heurística rival se beneficia igual que nosotros de las mismas cartas.
+
+```bash
+bun packages/opbot/src/cli.ts arena --candidate "search:sims=32,h=1,cands=12" --baseline heuristic \
+  --decks decks/meta-op17-postban --blocks 162 --workers 3 --batch 6 --sprt 0,35 --no-stop \
+  --engine fast --seed e11 --out out/e11-meta9-search32-vs-heuristic.jsonl
+```
 
 ## E9 y E10: política rápida mejorada (`policy`)
 
