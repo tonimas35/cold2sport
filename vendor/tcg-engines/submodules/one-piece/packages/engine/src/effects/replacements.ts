@@ -26,6 +26,48 @@ export function replacementEffectKey(effect: ReplacementEffect, replacementEffec
     : `replacement:${effect.replacedEvent}:${replacementEffectIndex}`;
 }
 
+/** One replacement effect of one card instance. */
+export interface ReplacementRef {
+  sourceInstanceId: string;
+  replacementEffectIndex: number;
+}
+
+/**
+ * Identifies one replacement effect of one card instance within a single
+ * removal. Two copies of the same card give different keys: each copy's
+ * replacement is a separate replacement effect (8-1-3-4-2).
+ */
+export function replacementInstanceKey(replacement: ReplacementRef): string {
+  return `${replacement.sourceInstanceId}#${replacement.replacementEffectIndex}`;
+}
+
+/**
+ * Records that a replacement was applied, for [Once Per Turn]. The check is a
+ * membership test, so one entry per key is enough; unlimited replacements
+ * (e.g. OP17-095 Roronoa Zoro) would otherwise grow the list on every use.
+ */
+export function markReplacementUsed(
+  state: MatchState,
+  sourceInstanceId: string,
+  effectKey: string,
+) {
+  const usedEffectKeys = getInstance(state, sourceInstanceId).usedEffectKeys;
+  if (!usedEffectKeys.includes(effectKey)) {
+    usedEffectKeys.push(effectKey);
+  }
+}
+
+interface RemovalReplacementScope {
+  /** Only this replacement is considered (does it also cover the target?). */
+  only?: ReplacementRef;
+  /**
+   * replacementInstanceKey()s the affected player already declined for this
+   * same removal. 8-1-3-4-1: a declined replacement is not applied, so it is
+   * not offered again for another card the same effect removes at once.
+   */
+  declinedReplacementKeys?: readonly string[];
+}
+
 export function restActionCandidateIds(
   state: MatchState,
   controller: MatchSeat,
@@ -155,8 +197,18 @@ function findRemovalReplacement(
   koCause: "battle" | "effect",
   replacedEvents: ReadonlySet<ReplacementEffect["replacedEvent"]>,
   effectSourceInstanceId?: string,
+  scope: RemovalReplacementScope = {},
 ): KoReplacementCandidate | null {
   const target = getInstance(state, targetId);
+  // K.O., rest and leave/removed-from-the-field events only happen to cards on
+  // the field. The shared removal actions also move cards between other zones
+  // (e.g. trash cards placed at the bottom of the deck to pay OP17-095's
+  // replacement); such a card does not leave the field, so a self-referencing
+  // "if this Character would leave the field" replacement printed on it (rule
+  // 2-8-2: Character text only works in the Character area) must not apply.
+  if (target.zone !== "character" && target.zone !== "stage" && target.zone !== "leader") {
+    return null;
+  }
   const targetController = target.controller;
   const player = getPlayer(state, targetController);
   const sourceIds = [
@@ -169,12 +221,23 @@ function findRemovalReplacement(
   ];
 
   for (const sourceInstanceId of sourceIds) {
-    if (effectsAreNegated(state, sourceInstanceId)) {
+    if (
+      (scope.only && scope.only.sourceInstanceId !== sourceInstanceId) ||
+      effectsAreNegated(state, sourceInstanceId)
+    ) {
       continue;
     }
     const source = getInstance(state, sourceInstanceId);
     const effects = getCardForInstance(state, sourceInstanceId).effects?.replacementEffects ?? [];
     for (const [replacementEffectIndex, effect] of effects.entries()) {
+      if (
+        (scope.only && scope.only.replacementEffectIndex !== replacementEffectIndex) ||
+        scope.declinedReplacementKeys?.includes(
+          replacementInstanceKey({ sourceInstanceId, replacementEffectIndex }),
+        )
+      ) {
+        continue;
+      }
       const effectKey = replacementEffectKey(effect, replacementEffectIndex);
       if (
         !replacedEvents.has(effect.replacedEvent) ||
@@ -265,20 +328,62 @@ function findRemovalReplacement(
   return null;
 }
 
+function koReplacedEvents(koCause: "battle" | "effect") {
+  return new Set<ReplacementEffect["replacedEvent"]>(
+    koCause === "effect" ? ["ko", "removeFromField", "leaveField"] : ["ko", "leaveField"],
+  );
+}
+
+const REMOVE_FROM_FIELD_EVENTS = new Set<ReplacementEffect["replacedEvent"]>([
+  "removeFromField",
+  "leaveField",
+]);
+
 export function findKoReplacement(
   state: MatchState,
   targetId: string,
   effectController: MatchSeat,
   koCause: "battle" | "effect",
   effectSourceInstanceId?: string,
+  declinedReplacementKeys?: readonly string[],
 ): KoReplacementCandidate | null {
   return findRemovalReplacement(
     state,
     targetId,
     effectController,
     koCause,
-    new Set(koCause === "effect" ? ["ko", "removeFromField", "leaveField"] : ["ko", "leaveField"]),
+    koReplacedEvents(koCause),
     effectSourceInstanceId,
+    { declinedReplacementKeys },
+  );
+}
+
+/**
+ * Whether this specific replacement would also replace the K.O. of targetId.
+ * Used to group the cards one effect K.O.s at the same time: one application
+ * of a replacement replaces the whole K.O. processing it covers (8-1-3-4-4).
+ * It must ask about the chosen replacement itself, not about the first
+ * replacement found for targetId, which may be another copy's (e.g. a
+ * targeted OP17-095 Roronoa Zoro finds its own replacement first).
+ */
+export function koReplacementCovers(
+  state: MatchState,
+  replacement: ReplacementRef,
+  targetId: string,
+  effectController: MatchSeat,
+  koCause: "battle" | "effect",
+  effectSourceInstanceId?: string,
+): boolean {
+  return (
+    findRemovalReplacement(
+      state,
+      targetId,
+      effectController,
+      koCause,
+      koReplacedEvents(koCause),
+      effectSourceInstanceId,
+      { only: replacement },
+    ) !== null
   );
 }
 
@@ -287,14 +392,37 @@ export function findRemoveFromFieldReplacement(
   targetId: string,
   effectController: MatchSeat,
   effectSourceInstanceId: string,
+  declinedReplacementKeys?: readonly string[],
 ): KoReplacementCandidate | null {
   return findRemovalReplacement(
     state,
     targetId,
     effectController,
     "effect",
-    new Set(["removeFromField", "leaveField"]),
+    REMOVE_FROM_FIELD_EVENTS,
     effectSourceInstanceId,
+    { declinedReplacementKeys },
+  );
+}
+
+/** koReplacementCovers() for the non-K.O. removal path (8-1-3-4-4). */
+export function removeFromFieldReplacementCovers(
+  state: MatchState,
+  replacement: ReplacementRef,
+  targetId: string,
+  effectController: MatchSeat,
+  effectSourceInstanceId: string,
+): boolean {
+  return (
+    findRemovalReplacement(
+      state,
+      targetId,
+      effectController,
+      "effect",
+      REMOVE_FROM_FIELD_EVENTS,
+      effectSourceInstanceId,
+      { only: replacement },
+    ) !== null
   );
 }
 

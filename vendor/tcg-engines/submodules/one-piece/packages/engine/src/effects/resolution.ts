@@ -55,7 +55,10 @@ import {
   koCharacterByEffect,
   playCardFromEffect,
   playCardsFromEffectSequence,
+  declinedReplacementKeysField,
+  enqueueRemainingEffectKo,
   promptForEffectCharacterReplacement,
+  promptForEffectKoReplacement,
   promptForEffectRemovalReplacement,
   promptForRearrangeDeckOrder,
   processEffectAction,
@@ -70,6 +73,7 @@ import {
 } from "./actions.ts";
 import { evaluateConditions } from "./conditions.ts";
 import { isCardPlayRestricted } from "./permanent.ts";
+import { markReplacementUsed, replacementInstanceKey } from "./replacements.ts";
 import {
   candidatePoolForTarget,
   matchesTargetFilter,
@@ -1484,6 +1488,7 @@ export function processQueuedEffectAction(
     item.skipRemovalReplacementIds,
     item.returnToDeckContinuation,
     item.setPowerFromSourceIds,
+    item.declinedReplacementKeys,
   );
   if (!completed) {
     return;
@@ -1978,31 +1983,21 @@ export function resolveEffectChoicePrompt(
         return false;
       }
       if (command.optionId === "yes") {
-        getInstance(state, context.replacementSourceInstanceId).usedEffectKeys.push(
+        markReplacementUsed(
+          state,
+          context.replacementSourceInstanceId,
           context.replacementEffectKey,
         );
         const remainingTargetIds = context.remainingTargetIds.filter(
           (targetId) => !context.replacementTargetIds.includes(targetId),
         );
         if (remainingTargetIds.length > 0) {
-          enqueueResolution(
+          enqueueRemainingEffectKo(
             state,
-            {
-              kind: "effectAction",
-              sourceInstanceId: context.koSourceInstanceId,
-              controller: context.koController,
-              action: {
-                action: "ko",
-                target: {
-                  player: "both",
-                  zones: ["character"],
-                  count: { amount: "all" },
-                },
-                previousActionTargets: true,
-              },
-              previousActionTargetIds: remainingTargetIds,
-            },
-            { next: true },
+            context.koSourceInstanceId,
+            context.koController,
+            remainingTargetIds,
+            context.declinedReplacementKeys,
           );
         }
         enqueueResolution(
@@ -2017,6 +2012,30 @@ export function resolveEffectChoicePrompt(
           { next: true },
         );
       } else {
+        // 8-1-3-4-1: a declined replacement is not applied to this K.O. at
+        // all, so it is not offered again for the other Characters the same
+        // effect K.O.s at once (OP15 FAQ Leo, OP17 FAQ Zoro: keep both or let
+        // both go). 8-1-3-4-2: another applicable replacement (e.g. a second
+        // copy) may still be applied, and it covers the same group.
+        const declinedReplacementKeys = [
+          ...(context.declinedReplacementKeys ?? []),
+          replacementInstanceKey({
+            sourceInstanceId: context.replacementSourceInstanceId,
+            replacementEffectIndex: context.replacementEffectIndex,
+          }),
+        ];
+        if (
+          promptForEffectKoReplacement(
+            state,
+            context.targetId,
+            context.koController,
+            context.koSourceInstanceId,
+            context.remainingTargetIds,
+            declinedReplacementKeys,
+          )
+        ) {
+          return true;
+        }
         koCharacterByEffect(
           state,
           context.targetId,
@@ -2024,24 +2043,12 @@ export function resolveEffectChoicePrompt(
           context.koSourceInstanceId,
         );
         if (context.remainingTargetIds.length > 0) {
-          enqueueResolution(
+          enqueueRemainingEffectKo(
             state,
-            {
-              kind: "effectAction",
-              sourceInstanceId: context.koSourceInstanceId,
-              controller: context.koController,
-              action: {
-                action: "ko",
-                target: {
-                  player: "both",
-                  zones: ["character"],
-                  count: { amount: "all" },
-                },
-                previousActionTargets: true,
-              },
-              previousActionTargetIds: context.remainingTargetIds,
-            },
-            { next: true },
+            context.koSourceInstanceId,
+            context.koController,
+            context.remainingTargetIds,
+            declinedReplacementKeys,
           );
         }
       }
@@ -2095,7 +2102,45 @@ export function resolveEffectChoicePrompt(
       if (command.optionId !== "yes" && command.optionId !== "no") {
         return false;
       }
-      if (context.remainingTargetIds.length > 0) {
+      // 8-1-3-4-1 / 8-1-3-4-2: as for an effect K.O. above, a declined
+      // replacement is not offered again within this removal, and another
+      // applicable one may still be offered for the same target.
+      const declinedReplacementKeys =
+        command.optionId === "no"
+          ? [
+              ...(context.declinedReplacementKeys ?? []),
+              replacementInstanceKey({
+                sourceInstanceId: context.replacementSourceInstanceId,
+                replacementEffectIndex: context.replacementEffectIndex,
+              }),
+            ]
+          : context.declinedReplacementKeys;
+      if (
+        command.optionId === "no" &&
+        promptForEffectRemovalReplacement(
+          state,
+          context.targetId,
+          context.removalController,
+          context.removalSourceInstanceId,
+          context.removalAction,
+          context.remainingTargetIds,
+          context.returnToDeckContinuation,
+          context.returnCharacterCostContinuation,
+          declinedReplacementKeys,
+        )
+      ) {
+        return true;
+      }
+      // 8-1-3-4-4: an applied replacement also saves the other targets it
+      // covers in this same removal, so only the rest are removed afterwards.
+      const replacementTargetIds = context.replacementTargetIds ?? [context.targetId];
+      const remainingTargetIds =
+        command.optionId === "yes"
+          ? context.remainingTargetIds.filter(
+              (targetId) => !replacementTargetIds.includes(targetId),
+            )
+          : context.remainingTargetIds;
+      if (remainingTargetIds.length > 0) {
         enqueueResolution(
           state,
           {
@@ -2103,8 +2148,9 @@ export function resolveEffectChoicePrompt(
             sourceInstanceId: context.removalSourceInstanceId,
             controller: context.removalController,
             action: context.removalAction,
-            selectedTargetIds: context.remainingTargetIds,
+            selectedTargetIds: remainingTargetIds,
             returnToDeckContinuation: context.returnToDeckContinuation,
+            ...declinedReplacementKeysField(declinedReplacementKeys),
           },
           { next: true },
         );
@@ -2133,7 +2179,9 @@ export function resolveEffectChoicePrompt(
         );
       }
       if (command.optionId === "yes") {
-        getInstance(state, context.replacementSourceInstanceId).usedEffectKeys.push(
+        markReplacementUsed(
+          state,
+          context.replacementSourceInstanceId,
           context.replacementEffectKey,
         );
         enqueueResolution(
@@ -2143,7 +2191,7 @@ export function resolveEffectChoicePrompt(
             sourceInstanceId: context.replacementSourceInstanceId,
             controller: context.controller,
             action: context.replacementAction,
-            previousActionTargetIds: [context.targetId],
+            previousActionTargetIds: replacementTargetIds,
           },
           { next: true },
         );

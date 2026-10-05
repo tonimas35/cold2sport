@@ -54,10 +54,13 @@ export const op16Thatch005: CharacterCard = {
         ],
         actions: [
           {
+            // "give this card in your hand -3 cost": the reduction exists only
+            // in hand. On the field Thatch keeps his printed cost 8, even
+            // though he satisfies the condition himself.
             action: "modifyCost",
             target: {
               player: "self",
-              zones: ["hand", "character"],
+              zones: ["hand"],
               count: {
                 amount: 1,
               },

@@ -80,10 +80,13 @@ export const op15PiratesDockingSix088: CharacterCard = {
       {
         actions: [
           {
+            // Rule 2-8-2: Character text only works in the Character area, so
+            // the +6 does not apply in hand (play cost 5) or trash (OP17 FAQ on
+            // the identical "This Character gains +12 cost." wording).
             action: "modifyCost",
             target: {
               player: "self",
-              zones: ["hand", "character"],
+              zones: ["character"],
               count: {
                 amount: 1,
               },

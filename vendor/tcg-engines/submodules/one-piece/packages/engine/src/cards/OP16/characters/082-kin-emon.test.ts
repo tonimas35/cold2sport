@@ -2,17 +2,24 @@ import { describe, expect, test } from "vite-plus/test";
 
 import { OnePieceTestEngine } from "../../../index.ts";
 
+// These tests used to apply the +3 in hand (play cost 7). "This Character
+// gains +3 cost." is Character text, which rule 2-8-2 limits to the Character
+// area; the OP17 FAQ rules the same way on the identical "+12 cost" wording.
+// So Kin'emon is played for its printed 4 and is cost 7 on the field.
 describe("OP16-082 Kin'emon", () => {
-  test("+3 cost is added to its printed cost", () => {
-    const engine = OnePieceTestEngine.create({ hand: ["OP16-082"], activeDon: 7 }, {});
+  test("is played for its printed cost 4; the +3 cost applies on the field", () => {
+    const engine = OnePieceTestEngine.create({ hand: ["OP16-082"], activeDon: 4 }, {});
+    expect(engine.getView("south").players.south.hand[0]?.cost).toBe(4);
 
     engine.playCard("OP16-082");
 
-    expect(engine.getView("south").players.south.activeDon).toBe(0);
+    const south = engine.getView("south").players.south;
+    expect(south.activeDon).toBe(0);
+    expect(south.characters.find((card) => card?.cardId === "OP16-082")?.cost).toBe(7);
   });
 
-  test("cannot be played with fewer than 7 DON!!", () => {
-    const engine = OnePieceTestEngine.create({ hand: ["OP16-082"], activeDon: 6 }, {});
+  test("cannot be played with fewer than 4 DON!!", () => {
+    const engine = OnePieceTestEngine.create({ hand: ["OP16-082"], activeDon: 3 }, {});
 
     expect(() => engine.playCard("OP16-082")).toThrow();
   });

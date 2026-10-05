@@ -52,10 +52,12 @@ export const op16MonkeyDLuffy015: CharacterCard = {
         ],
         actions: [
           {
+            // "give this card in your hand -2 cost": the reduction exists only
+            // in hand; on the field Luffy keeps his printed cost 4.
             action: "modifyCost",
             target: {
               player: "self",
-              zones: ["hand", "character"],
+              zones: ["hand"],
               count: {
                 amount: 1,
               },

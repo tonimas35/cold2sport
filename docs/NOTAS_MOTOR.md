@@ -103,7 +103,12 @@ decisión, mediana 4, p90 19, p99 64. Unas 90 decisiones por partida (45 en fase
   `resolutionContext.action.target.totalConstraint`, no en el mínimo/máximo del prompt, así que el
   motor ofrece combinaciones que luego rechaza. Los bots del motor caen en ello (en las pruebas
   con mazos del meta, el 30 % de las partidas con Loki se cortaban). `enumerateActions` filtra esas
-  combinaciones y `repairPromptCommand` corrige las respuestas de la heurística.
+  combinaciones y `repairPromptCommand` corrige las respuestas de la heurística. Desde el parche
+  `0003`, la heurística del motor ya respeta los límites superiores («coste total de 4 o menos»):
+  con Luffy OP17-079 contra los 8 mazos del meta, 31 de 64 partidas acababan en `illegal-command`
+  y ahora ninguna. El motor sigue listando en el prompt Personajes que por sí solos superan el
+  límite (un test del propio motor lo exige), así que el filtro de `enumerateActions` sigue haciendo
+  falta.
 
 ---
 
@@ -260,6 +265,10 @@ en Rocks (el 22 % del meta):
 
 Y en Luffy OP17-079: OP15-088 Pirates Docking Six aplica su "+6 de coste" también en la mano, así
 que cuesta 11 y **nunca se puede jugar**; a OP17-095 Roronoa Zoro le falta el efecto de sustitución.
+Ambas están corregidas en el parche `0003`, que además hace que una sola aplicación de una
+sustitución salve a todos los Personajes que el mismo efecto retira a la vez (también con dos
+Zoro en el campo) y que una sustitución rechazada no se vuelva a ofrecer en esa misma retirada
+(reglas 8-1-3-4-1, 8-1-3-4-2 y 8-1-3-4-4; FAQ de OP15 sobre Perona y Leo, FAQ de OP17 sobre Zoro).
 
 Con esto se explica que la calibración saliera **negativa** (Rocks perdía 30 de 30 contra Luffy con
 el bot de búsqueda, frente al 30 % real): el problema no era solo el bot, sino el motor. Las
