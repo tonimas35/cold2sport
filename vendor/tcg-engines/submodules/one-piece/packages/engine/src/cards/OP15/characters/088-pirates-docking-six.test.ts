@@ -32,15 +32,21 @@ describe("OP15-088 Pirates Docking Six", () => {
     expect(engine.getView("south").prompts).toHaveLength(0);
   });
 
-  test("costs 11 with the +6 cost modifier", () => {
+  // This test used to require 11 DON!!, applying the +6 in hand. Rule 2-8-2
+  // limits Character text to the Character area, and the OP17 FAQ rules the
+  // identical "This Character gains +12 cost." wording applies only on the
+  // field. So it is played for its printed 5 and is cost 11 once on the field.
+  test("is played for its printed cost 5; the +6 cost applies on the field", () => {
     const engine = OnePieceTestEngine.create(
-      { hand: [op15PiratesDockingSix088], activeDon: 11 },
+      { hand: [op15PiratesDockingSix088], activeDon: 5 },
       {},
     );
 
     engine.playCard("OP15-088");
 
-    expect(engine.getView("south").players.south.activeDon).toBe(0);
+    const south = engine.getView("south").players.south;
+    expect(south.activeDon).toBe(0);
+    expect(south.characters.find((card) => card?.cardId === "OP15-088")?.cost).toBe(11);
   });
 
   test("[On Play] may be declined", () => {

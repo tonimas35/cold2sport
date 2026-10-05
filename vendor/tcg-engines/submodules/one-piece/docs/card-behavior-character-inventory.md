@@ -1557,7 +1557,7 @@ reconciles catalog entries.
 | OP15-085 | Tony Tony.Chopper | verified |On-play 3-card deck trash; Straw-Hat-gated self-trash returning named-excluded Character from trash|
 | OP15-086 | Nami | verified | Printed behavior is unstructured |
 | OP15-087 | Nico Robin | verified |10-trash Blocker via battleBlocker; on-play draw-2 with hand trash|
-| OP15-088 | Pirates Docking Six | verified |Hand-zone +6 cost play gate; on-play deck-3 trash cost replaying Straw Hat <=2 from trash|
+| OP15-088 | Pirates Docking Six | verified | +6 cost on the field only (2-8-2, OP17 FAQ): played for 5, cost 11 on the field, 12 with Thousand Sunny (OP17-079 Leader Blocker), 5 in trash; on-play deck-3 trash cost replaying Straw Hat <=2 from trash |
 | OP15-089 | Franky | vanilla | Parameterized vanilla invariant batch |
 | OP15-090 | Perona | verified |Removal replacement trashing the lone hand card automatically, saving the Character|
 | OP15-091 | Margarita | verified |On-play opposing trash card to owner deck bottom|
@@ -1585,7 +1585,7 @@ reconciles catalog entries.
 | OP16-002 | Izo | verified | On Play reveal 8000 Character from hand pays for the draw 1; decline and empty-pool boundaries |
 | OP16-003 | Edward.Newgate | verified | Your-turn Leader +2000 power; On Play reveal 2x8000 Characters pays for up-to-1 -6000 this turn with decline boundary |
 | OP16-004 | Curiel | vanilla | Parameterized vanilla invariant batch |
-| OP16-005 | Thatch | verified | Conditional in-hand -3 cost gated by an 8000+ power Whitebeard Pirates Character; full-cost boundary without the condition |
+| OP16-005 | Thatch | verified | Conditional in-hand -3 cost gated by an 8000+ power Whitebeard Pirates Character; full-cost boundary without the condition; printed cost 8 on the field (out of reach of a cost-5 K.O.) |
 | OP16-006 | Shanks | verified | On Play rest-2-DON!! cost K.O.s up to 1 Character of 4000 power or less; decline keeps DON and board |
 | OP16-007 | Jozu | verified | On Play reveal 8000 Character pays for up-to-1 -1000 this turn; decline boundary |
 | OP16-008 | Squard | verified | On Play trash-own-10000-base-power cost K.O.s up to 1 Character of 8000 power or less; unpayable-cost boundary |
@@ -1595,7 +1595,7 @@ reconciles catalog entries.
 | OP16-012 | Benn.Beckman | verified | On Play rest-1 cost with Red-Haired Pirates Leader and 10 DON!! gates effect-playing a [Shanks] from hand |
 | OP16-013 | McGuy | verified | On K.O. up-to-1 K.O. of 8000 base power or less; empty selection declines |
 | OP16-014 | Marco | verified | Removal replacement K.O.s itself instead of an opposing-effect removal; allow and decline boundaries |
-| OP16-015 | Monkey.D.Luffy | verified | Printed behavior is unstructured |
+| OP16-015 | Monkey.D.Luffy | verified | In-hand -2 cost under an Ace Leader with 6+ DON!!; printed cost 4 once on the field |
 | OP16-016 | Ramba | vanilla | Parameterized vanilla invariant batch |
 | OP16-017 | LittleOars Jr. | verified | Conditional -4000 power without a cost-8+ Whitebeard Pirates Character; satisfied and unsatisfied boundaries |
 | OP16-018 | Rockstar | verified | Printed behavior is unstructured |
@@ -1645,7 +1645,7 @@ reconciles catalog entries.
 | OP16-074 | Magellan | verified | On Play Impel Down gate returns an opposing DON!!; On K.O. returns 4 |
 | OP16-075 | Monkey.D.Garp | verified | On Play Navy Leader gate adds 1 active and 1 rested DON!!; non-Navy boundary |
 | OP16-081 | Otama | verified | Activate Main rest cost with cost-8+ ally gives an opposing Character -2000; missing-ally decline boundary |
-| OP16-082 | Kin'emon | verified | +3 cost raises play cost to 7; On Play Land of Wano Leader gate look-5 takes a LoW card and trashes the rest |
+| OP16-082 | Kin'emon | verified | +3 cost on the field only (2-8-2): played for 4, cost 7 on the field; On Play Land of Wano Leader gate look-5 takes a LoW card and trashes the rest |
 | OP16-083 | Kouzuki Oden | verified | On Play trash cost-8-or-more Character cost draws 2; empty-pool boundary |
 | OP16-084 | Kouzuki Momonosuke | verified | Cost-20 gate rejects self-trash until raised; raised chain plays cost-9 Kouzuki Momonosuke from trash |
 | OP16-085 | Kouzuki Momonosuke | verified | On Play plays a Land of Wano cost-6-or-less Character from trash with decline boundary |
@@ -1754,7 +1754,7 @@ reconciles catalog entries.
 | OP17-092 | Brogy | verified | onPlay, permanent |
 | OP17-093 | Monkey.D.Luffy | verified | onPlay, permanent |
 | OP17-094 | Rodo | verified | permanent |
-| OP17-095 | Roronoa Zoro | verified | permanent |
+| OP17-095 | Roronoa Zoro | verified | +3000 with a cost-12+ Character; optional, unlimited replacement of an opponent's effect removal (K.O., trash, bottom of deck) by 3 ordered trash cards to the deck bottom, Zoro included; one payment saves Characters removed at the same time; not offered with <3 trash cards or for a battle K.O. |
 | OP17-100 | Capone"Gang"Bege | vanilla | Parameterized vanilla invariant batch |
 | OP17-101 | Caribou | verified | activateMain, Life Trigger |
 | OP17-102 | Charlotte Oven | verified | onKo, Life Trigger |

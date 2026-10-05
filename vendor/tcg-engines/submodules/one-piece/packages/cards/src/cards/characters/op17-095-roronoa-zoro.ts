@@ -61,6 +61,35 @@ export const op17RoronoaZoro095: CharacterCard = {
         ],
       },
     ],
+    // Optional and unlimited (no [Once Per Turn]). The target pool includes
+    // Zoro himself (OP17 FAQ), and one application replaces the removal of
+    // every Character the same opponent effect removes at once (OP17 FAQ;
+    // comprehensive rules 8-1-3-4-4). The "in any order" part is the engine's
+    // ordering prompt for cards placed at the bottom of the deck.
+    replacementEffects: [
+      {
+        replacedEvent: "removeFromField",
+        target: {
+          player: "self",
+          zones: ["character"],
+          count: {
+            amount: 1,
+          },
+        },
+        source: "opponentEffect",
+        replacementAction: {
+          action: "returnToDeck",
+          target: {
+            player: "self",
+            zones: ["trash"],
+            count: {
+              amount: 3,
+            },
+          },
+          position: "bottom",
+        },
+      },
+    ],
   },
   i18n: op17RoronoaZoro095I18n,
 };

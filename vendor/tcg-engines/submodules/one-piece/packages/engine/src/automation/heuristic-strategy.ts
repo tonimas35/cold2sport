@@ -18,6 +18,7 @@ import {
   getPlayer,
   otherSeat,
 } from "../shared.ts";
+import { selectionSatisfiesTotalConstraint } from "../effects/targeting.ts";
 import {
   commandFromDescriptor,
   type OnePieceBotAgent,
@@ -958,6 +959,24 @@ function resolveEffectSelection(state: MatchState, prompt: PromptState): EngineC
   if (count === 0) {
     // Optional pick: take one only when it is clearly beneficial.
     count = goodForUs ? Math.min(1, prompt.maxSelections) : 0;
+  }
+  // An upper-bound total ("K.O. ... with a total cost of 4 or less", OP17-119
+  // Loki) is checked on the whole selection, and the prompt also lists cards
+  // that break it on their own. Taking the first cards in preference order
+  // could submit a selection the engine rejects (an illegal-command loss), so
+  // skip any card that would push the running total over the bound.
+  const totalConstraint = action && "target" in action ? action.target?.totalConstraint : undefined;
+  if (totalConstraint?.comparison === "lte" || totalConstraint?.comparison === "lt") {
+    const picked: string[] = [];
+    for (const id of ordered) {
+      if (picked.length >= count) {
+        break;
+      }
+      if (selectionSatisfiesTotalConstraint(state, [...picked, id], totalConstraint)) {
+        picked.push(id);
+      }
+    }
+    return selectCommand(prompt, picked);
   }
   return selectCommand(prompt, ordered.slice(0, count));
 }

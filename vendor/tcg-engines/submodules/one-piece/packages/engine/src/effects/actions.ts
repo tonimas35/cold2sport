@@ -56,6 +56,9 @@ import {
   findKoReplacement,
   findRemoveFromFieldReplacement,
   findRestReplacement,
+  koReplacementCovers,
+  markReplacementUsed,
+  removeFromFieldReplacementCovers,
   restActionCandidateIds,
 } from "./replacements.ts";
 import type { TargetFilter } from "@tcg/op-types";
@@ -333,8 +336,15 @@ export function promptForEffectRemovalReplacement(
   remainingTargetIds: string[],
   returnToDeckContinuation?: ReturnToDeckContinuation,
   returnCharacterCostContinuation?: EffectBlockContinuation,
+  declinedReplacementKeys?: string[],
 ): boolean {
-  const replacement = findRemoveFromFieldReplacement(state, targetId, controller, sourceInstanceId);
+  const replacement = findRemoveFromFieldReplacement(
+    state,
+    targetId,
+    controller,
+    sourceInstanceId,
+    declinedReplacementKeys,
+  );
   if (!replacement) {
     return false;
   }
@@ -342,8 +352,31 @@ export function promptForEffectRemovalReplacement(
   if (replacementEvent !== "removeFromField" && replacementEvent !== "leaveField") {
     return false;
   }
+  // 8-1-3-4-4: one application of a replacement effect replaces the whole
+  // removal processing, so the other cards this same effect removes at the
+  // same time that the same replacement would also cover are saved together
+  // with one payment (OP15 FAQ on OP15-090 Perona and OP17 FAQ on OP17-095
+  // Roronoa Zoro: two Characters removed at once, one payment keeps both).
+  // This mirrors the grouping the effect K.O. path does. The test asks
+  // whether this replacement covers each other target, not which replacement
+  // is found first for it (another copy of the same card may be).
+  const replacementTargetIds = [
+    targetId,
+    ...remainingTargetIds.filter((remainingTargetId) =>
+      removeFromFieldReplacementCovers(
+        state,
+        replacement,
+        remainingTargetId,
+        controller,
+        sourceInstanceId,
+      ),
+    ),
+  ];
   if (replacement.effect.mandatory) {
-    if (remainingTargetIds.length > 0) {
+    const unreplacedTargetIds = remainingTargetIds.filter(
+      (remainingTargetId) => !replacementTargetIds.includes(remainingTargetId),
+    );
+    if (unreplacedTargetIds.length > 0) {
       enqueueResolution(
         state,
         {
@@ -351,8 +384,9 @@ export function promptForEffectRemovalReplacement(
           sourceInstanceId,
           controller,
           action,
-          selectedTargetIds: remainingTargetIds,
+          selectedTargetIds: unreplacedTargetIds,
           returnToDeckContinuation,
+          ...declinedReplacementKeysField(declinedReplacementKeys),
         },
         { next: true },
       );
@@ -370,7 +404,7 @@ export function promptForEffectRemovalReplacement(
         { next: true },
       );
     }
-    getInstance(state, replacement.sourceInstanceId).usedEffectKeys.push(replacement.effectKey);
+    markReplacementUsed(state, replacement.sourceInstanceId, replacement.effectKey);
     enqueueResolution(
       state,
       {
@@ -378,7 +412,7 @@ export function promptForEffectRemovalReplacement(
         sourceInstanceId: replacement.sourceInstanceId,
         controller: replacement.controller,
         action: replacement.effect.replacementAction,
-        previousActionTargetIds: [targetId],
+        previousActionTargetIds: replacementTargetIds,
       },
       { next: true },
     );
@@ -411,9 +445,154 @@ export function promptForEffectRemovalReplacement(
       removalSourceInstanceId: sourceInstanceId,
       removalController: controller,
       removalAction: action,
+      replacementTargetIds,
       remainingTargetIds,
       returnToDeckContinuation,
       returnCharacterCostContinuation,
+      ...declinedReplacementKeysField(declinedReplacementKeys),
+    },
+  });
+  return true;
+}
+
+/**
+ * Spread into a resolution item or prompt context: keeps the field absent
+ * (not an empty array) when nothing was declined, so states without declines
+ * keep their exact shape.
+ */
+export function declinedReplacementKeysField(declinedReplacementKeys?: string[]) {
+  return declinedReplacementKeys && declinedReplacementKeys.length > 0
+    ? { declinedReplacementKeys }
+    : {};
+}
+
+/** Re-enqueues an effect K.O. for the targets still to be processed. */
+export function enqueueRemainingEffectKo(
+  state: MatchState,
+  sourceInstanceId: string,
+  controller: MatchSeat,
+  targetIds: string[],
+  declinedReplacementKeys?: string[],
+) {
+  enqueueResolution(
+    state,
+    {
+      kind: "effectAction",
+      sourceInstanceId,
+      controller,
+      action: {
+        action: "ko",
+        target: {
+          player: "both",
+          zones: ["character"],
+          count: { amount: "all" },
+        },
+        previousActionTargets: true,
+      },
+      previousActionTargetIds: targetIds,
+      ...declinedReplacementKeysField(declinedReplacementKeys),
+    },
+    { next: true },
+  );
+}
+
+/**
+ * Offers (or, when mandatory, applies) a replacement for the effect K.O. of
+ * targetId. remainingTargetIds are the other cards the same effect K.O.s at
+ * the same time; those this replacement also covers are saved with it
+ * (8-1-3-4-4). Returns true when a replacement took over the processing.
+ */
+export function promptForEffectKoReplacement(
+  state: MatchState,
+  targetId: string,
+  controller: MatchSeat,
+  sourceInstanceId: string,
+  remainingTargetIds: string[],
+  declinedReplacementKeys?: string[],
+): boolean {
+  const replacement = findKoReplacement(
+    state,
+    targetId,
+    controller,
+    "effect",
+    sourceInstanceId,
+    declinedReplacementKeys,
+  );
+  if (!replacement) {
+    return false;
+  }
+  // Ask whether this replacement covers each other target, not which
+  // replacement is found first for it: with two OP17-095 Roronoa Zoro, each
+  // targeted Zoro finds its own copy first, yet either copy covers both.
+  const replacementTargetIds = [
+    targetId,
+    ...remainingTargetIds.filter((remainingTargetId) =>
+      koReplacementCovers(
+        state,
+        replacement,
+        remainingTargetId,
+        controller,
+        "effect",
+        sourceInstanceId,
+      ),
+    ),
+  ];
+  if (replacement.effect.mandatory) {
+    markReplacementUsed(state, replacement.sourceInstanceId, replacement.effectKey);
+    const unreplacedTargetIds = remainingTargetIds.filter(
+      (remainingTargetId) => !replacementTargetIds.includes(remainingTargetId),
+    );
+    if (unreplacedTargetIds.length > 0) {
+      enqueueRemainingEffectKo(
+        state,
+        sourceInstanceId,
+        controller,
+        unreplacedTargetIds,
+        declinedReplacementKeys,
+      );
+    }
+    enqueueResolution(
+      state,
+      {
+        kind: "effectAction",
+        sourceInstanceId: replacement.sourceInstanceId,
+        controller: replacement.controller,
+        action: replacement.effect.replacementAction,
+        previousActionTargetIds: replacementTargetIds,
+      },
+      { next: true },
+    );
+    return true;
+  }
+  createChoicePrompt(state, {
+    choiceKind: "confirm",
+    seat: replacement.controller,
+    label: `${effectSourceName(state, replacement.sourceInstanceId)} may replace the K.O.`,
+    details: "Apply the replacement effect instead of allowing the K.O.?",
+    sourceCardId: getInstance(state, replacement.sourceInstanceId).cardId,
+    sourceInstanceId: replacement.sourceInstanceId,
+    eventId: null,
+    options: [
+      { id: "no", label: "Allow K.O.", value: "no" },
+      { id: "yes", label: "Apply replacement", value: "yes" },
+    ],
+    minSelections: 1,
+    maxSelections: 1,
+    context: { action: "ko", replacement: true },
+    resolutionContext: {
+      intent: "effectKoReplacement",
+      targetId,
+      controller: replacement.controller,
+      replacementSourceInstanceId: replacement.sourceInstanceId,
+      replacementEffectIndex: replacement.replacementEffectIndex,
+      replacementEvent: replacement.effect.replacedEvent as "ko" | "removeFromField",
+      replacementEffectKey: replacement.effectKey,
+      replacementAction: replacement.effect.replacementAction,
+      koSourceInstanceId: sourceInstanceId,
+      koController: controller,
+      replacementTargetIds,
+      remainingTargetIds,
+      ...declinedReplacementKeysField(declinedReplacementKeys),
     },
   });
   return true;
@@ -1950,6 +2129,7 @@ export function processEffectAction(
   skipRemovalReplacementIds?: string[],
   returnToDeckContinuation?: ReturnToDeckContinuation,
   setPowerFromSourceIds?: string[],
+  declinedReplacementKeys?: string[],
 ): boolean {
   switch (action.action) {
     case "sequence":
@@ -2920,101 +3100,16 @@ export function processEffectAction(
           );
           continue;
         }
-        const replacement = findKoReplacement(
-          state,
-          targetId,
-          controller,
-          "effect",
-          sourceInstanceId,
-        );
-        if (replacement) {
-          const remainingTargetIds = targetIds.slice(targetIndex + 1);
-          const replacementTargetIds = [
+        if (
+          promptForEffectKoReplacement(
+            state,
             targetId,
-            ...remainingTargetIds.filter((remainingTargetId) => {
-              const remainingReplacement = findKoReplacement(
-                state,
-                remainingTargetId,
-                controller,
-                "effect",
-                sourceInstanceId,
-              );
-              return (
-                remainingReplacement?.sourceInstanceId === replacement.sourceInstanceId &&
-                remainingReplacement.replacementEffectIndex === replacement.replacementEffectIndex
-              );
-            }),
-          ];
-          if (replacement.effect.mandatory) {
-            getInstance(state, replacement.sourceInstanceId).usedEffectKeys.push(
-              replacement.effectKey,
-            );
-            if (remainingTargetIds.length > 0) {
-              enqueueResolution(
-                state,
-                {
-                  kind: "effectAction",
-                  sourceInstanceId,
-                  controller,
-                  action: {
-                    action: "ko",
-                    target: {
-                      player: "both",
-                      zones: ["character"],
-                      count: { amount: "all" },
-                    },
-                    previousActionTargets: true,
-                  },
-                  previousActionTargetIds: remainingTargetIds.filter(
-                    (remainingTargetId) => !replacementTargetIds.includes(remainingTargetId),
-                  ),
-                },
-                { next: true },
-              );
-            }
-            enqueueResolution(
-              state,
-              {
-                kind: "effectAction",
-                sourceInstanceId: replacement.sourceInstanceId,
-                controller: replacement.controller,
-                action: replacement.effect.replacementAction,
-                previousActionTargetIds: replacementTargetIds,
-              },
-              { next: true },
-            );
-            return false;
-          }
-          createChoicePrompt(state, {
-            choiceKind: "confirm",
-            seat: replacement.controller,
-            label: `${effectSourceName(state, replacement.sourceInstanceId)} may replace the K.O.`,
-            details: "Apply the replacement effect instead of allowing the K.O.?",
-            sourceCardId: getInstance(state, replacement.sourceInstanceId).cardId,
-            sourceInstanceId: replacement.sourceInstanceId,
-            eventId: null,
-            options: [
-              { id: "no", label: "Allow K.O.", value: "no" },
-              { id: "yes", label: "Apply replacement", value: "yes" },
-            ],
-            minSelections: 1,
-            maxSelections: 1,
-            context: { action: "ko", replacement: true },
-            resolutionContext: {
-              intent: "effectKoReplacement",
-              targetId,
-              controller: replacement.controller,
-              replacementSourceInstanceId: replacement.sourceInstanceId,
-              replacementEffectIndex: replacement.replacementEffectIndex,
-              replacementEvent: replacement.effect.replacedEvent as "ko" | "removeFromField",
-              replacementEffectKey: replacement.effectKey,
-              replacementAction: replacement.effect.replacementAction,
-              koSourceInstanceId: sourceInstanceId,
-              koController: controller,
-              replacementTargetIds,
-              remainingTargetIds,
-            },
-          });
+            controller,
+            sourceInstanceId,
+            targetIds.slice(targetIndex + 1),
+            declinedReplacementKeys,
+          )
+        ) {
           return false;
         }
         koCharacterByEffect(state, targetId, controller, sourceInstanceId);
@@ -3316,6 +3411,9 @@ export function processEffectAction(
             sourceInstanceId,
             action,
             targetIds.slice(targetIndex + 1),
+            undefined,
+            undefined,
+            declinedReplacementKeys,
           )
         ) {
           return false;
@@ -3470,6 +3568,9 @@ export function processEffectAction(
               sourceInstanceId,
               action,
               targetIds.slice(targetIndex + 1),
+              undefined,
+              undefined,
+              declinedReplacementKeys,
             )
           ) {
             return false;
@@ -3500,6 +3601,8 @@ export function processEffectAction(
             action,
             targetIds.slice(targetIndex + 1),
             returnToDeckContinuation,
+            undefined,
+            declinedReplacementKeys,
           )
         ) {
           return false;
@@ -4240,6 +4343,9 @@ export function processEffectAction(
             sourceInstanceId,
             action,
             targetIds.slice(targetIndex + 1),
+            undefined,
+            undefined,
+            declinedReplacementKeys,
           )
         ) {
           return false;

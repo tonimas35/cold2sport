@@ -75,10 +75,12 @@ export const op16KinEmon082: CharacterCard = {
       {
         actions: [
           {
+            // Rule 2-8-2: Character text only works in the Character area, so
+            // the +3 does not apply in hand (play cost 4).
             action: "modifyCost",
             target: {
               player: "self",
-              zones: ["hand", "character"],
+              zones: ["character"],
               count: {
                 amount: 1,
               },

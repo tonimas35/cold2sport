@@ -349,6 +349,11 @@ export type PromptResolutionContext =
       koController: MatchSeat;
       replacementTargetIds: string[];
       remainingTargetIds: string[];
+      /**
+       * Replacements (sourceInstanceId#index) the affected player declined
+       * earlier in this same removal; they are not offered again (8-1-3-4-1).
+       */
+      declinedReplacementKeys?: string[];
     }
   | {
       intent: "effectRestReplacement";
@@ -378,9 +383,20 @@ export type PromptResolutionContext =
         Action,
         { action: "returnToHand" | "returnToDeck" | "trashFromField" }
       >;
+      /**
+       * targetId plus the remaining targets that the same replacement also
+       * saves when applied (8-1-3-4-4). Absent in states saved before this
+       * field existed, which means just [targetId].
+       */
+      replacementTargetIds?: string[];
       remainingTargetIds: string[];
       returnToDeckContinuation?: ReturnToDeckContinuation;
       returnCharacterCostContinuation?: EffectBlockContinuation;
+      /**
+       * Replacements (sourceInstanceId#index) the affected player declined
+       * earlier in this same removal; they are not offered again (8-1-3-4-1).
+       */
+      declinedReplacementKeys?: string[];
     }
   | {
       intent: "effectGuessTopDeckCost";
@@ -1060,6 +1076,12 @@ export type ResolutionItem =
       skipRemovalReplacementIds?: string[];
       returnToDeckContinuation?: ReturnToDeckContinuation;
       setPowerFromSourceIds?: string[];
+      /**
+       * Replacements (sourceInstanceId#index) the affected player declined
+       * earlier in the removal this item continues; they are not offered
+       * again for its remaining targets (8-1-3-4-1).
+       */
+      declinedReplacementKeys?: string[];
     }
   | {
       id: string;
