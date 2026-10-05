@@ -40,6 +40,20 @@ describe("OP14-019 I Have a Plan to Take Down One of the Four Emperors!!", () =>
     expect(engine.getView("south").prompts).toHaveLength(0);
   });
 
+  test("costs 1: it can be played with a single active DON!!", () => {
+    const engine = OnePieceTestEngine.create({
+      hand: [op14eb04IHaveAPlanToTakeDownOneOfTheFourEmperors019],
+      deck: [op01Caribou007, eb01Doma005, eb01MountainGod018, eb01Doma005, eb01Doma005],
+      activeDon: 1,
+      restedDon: 3,
+    });
+    engine.asSouth().play(op14eb04IHaveAPlanToTakeDownOneOfTheFourEmperors019);
+    expect(engine.getView("south").players.south).toMatchObject({ activeDon: 0, restedDon: 4 });
+    expect(engine.pendingDecision("effectSearchSelection", "south").steps[0]?.kind).toBe(
+      "selectEntity",
+    );
+  });
+
   test("Life Trigger draws one without Event payment", () => {
     const engine = OnePieceTestEngine.create(
       { character: [{ card: eb01MountainGod018, playedOnTurn: 0 }] },

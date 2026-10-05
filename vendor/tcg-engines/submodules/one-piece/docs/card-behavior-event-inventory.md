@@ -256,7 +256,7 @@ reconciles catalog entries.
 | OP11-116 | Merman Combat Ultramarine | verified | Owner-neutral Main and opponent-only Trigger route chosen Characters to top/bottom owner Life face-up |
 | OP12-016 | To Never Doubt--That Is Power! | verified | Main give-2-DON blocker denial; [Counter] +2000 Character save |
 | OP12-017 | Color of Observation Haki | verified | Main give-DON look-4 red Event reveal with bottom-order |
-| OP12-018 | Color of the Supreme King Haki | verified | [Counter] +2000 Character boost with optional rest-DON -1000 opponent board drop |
+| OP12-018 | Color of the Supreme King Haki | verified | [Counter] +2000 Character boost, then a separate optional rest-1-DON!! (not offered with 0 active DON!!) for the -1000 opponent board drop |
 | OP12-019 | Color of Arms Haki | verified | Main give-DON boosts [Silvers Rayleigh]; [Counter] +2000 save |
 | OP12-037 | Demon Aura Nine Sword Style Asura Blades Drawn Dead Man's Game | verified | Optional three-DON!! cost and aggregate Character/DON!! rest choice; mandatory Leader Counter power |
 | OP12-038 | Two-Sword Style Rashomon | verified | Optional two-DON!! cost before two rested base-cost-4 K.O.s; mandatory Leader Counter power |
@@ -294,7 +294,7 @@ reconciles catalog entries.
 | OP13-117 | Gum-Gum Dawn Stamp | verified | Face-up top-Life cost before base-cost-6 K.O.; Trigger draws one without payment |
 | OP14-017 | Chambres | verified | Exactly two opposing base-power-9000-or-less Characters swap printed base power for the turn |
 | OP14-018 | Time for the Counterattack | verified | Either-field power-8000 gate before Counter power; Trigger plays a red power-2000 Character |
-| OP14-019 | I Have a Plan to Take Down One of the Four Emperors!! | verified | Alternative included Supernovas/Straw Hat Crew Character search and ordering; Trigger draws one |
+| OP14-019 | I Have a Plan to Take Down One of the Four Emperors!! | verified | Cost 1; alternative included Supernovas/Straw Hat Crew Character search and ordering; Trigger draws one |
 | OP14-036 | Strive to Surpass me, Roronoa Zoro!!! | verified | Own-card rest cost before Counter power or Trigger's opposing base-power-7000 rest |
 | OP14-037 | For Fun | verified | Controller-selected three-card rest cost before rested base-power-7000 K.O.; Leader Counter power |
 | OP14-038 | I Never Bother to Remember the Faces of Trash | verified | Controller-selected two-card rest cost, draw then opposing rest; Leader Counter power |
@@ -372,10 +372,11 @@ reconciles catalog entries.
 | ST12-017 | Plastic Surgery Shot - ST12-017 (Pirate Foil) | verified | Counter power, top-card reveal, eligible cost-2 play or controller top/bottom remainder choice |
 | ST13-019 | The Three Brothers' Bond (Pirate Foil) | verified | Trigger activates cost-5 Sabo/Ace/Luffy alternative search and ordered bottom remainder |
 | ST14-016 | I Have My Crew!! (Pirate Foil) | verified | Main draws then grants cost through opponent turn; Trigger K.O.s eligible opposing Character |
+| ST21-017 | Gum-Gum Mole Pistol | verified | Main -5000, then K.O. 2000-or-less only with an own 6000-power Character (current power; may differ from the -5000 target, ST-21 FAQ); Trigger activates Main |
 
 ## Progress
 
-- Canonical events: 365.
+- Canonical events: 366.
 - Verified: 303.
 - Structured pending: 54.
 - Printed but unstructured: 8.

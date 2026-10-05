@@ -28,7 +28,6 @@ export const op12ColorOfTheSupremeKingHaki018: EventCard = {
     effects: [
       {
         trigger: "counter",
-        optional: true,
         actions: [
           {
             action: "modifyPower",
@@ -43,21 +42,16 @@ export const op12ColorOfTheSupremeKingHaki018: EventCard = {
             value: 2000,
             duration: "thisBattle",
           },
-          {
-            action: "rest",
-            target: {
-              player: "self",
-              zones: ["costArea"],
-              count: {
-                amount: 1,
-              },
-            },
-            condition: {
-              condition: "activeDonCount",
-              comparison: "gte",
-              value: 1,
-            },
-          },
+        ],
+      },
+      {
+        // "Then, you may rest 1 of your DON!! cards. If you do, ...": modelled
+        // like a "may" cost (8-3-1-3, 8-3-1-4). With no active DON!! nothing
+        // can be rested, so the -1000 does not happen; declining the rest
+        // keeps the +2000 above (it is a separate "Then" step, 4-10-2).
+        trigger: "counter",
+        costs: [{ cost: "restDon", amount: 1 }],
+        actions: [
           {
             action: "modifyPower",
             target: {
@@ -69,14 +63,9 @@ export const op12ColorOfTheSupremeKingHaki018: EventCard = {
             },
             value: -1000,
             duration: "thisTurn",
-            condition: {
-              condition: "restedCardCount",
-              player: "self",
-              comparison: "gte",
-              value: 1,
-            },
           },
         ],
+        optional: true,
       },
     ],
   },

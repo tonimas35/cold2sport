@@ -1,4 +1,10 @@
-import { eb01Doma005, eb01MountainGod018, op01Kaido094 } from "@tcg/op-cards";
+import {
+  eb01Doma005,
+  eb01MountainGod018,
+  eb03Ain002,
+  op01Kaido094,
+  st30LuffyAce001,
+} from "@tcg/op-cards";
 import { describe, expect, test } from "vite-plus/test";
 import { op14eb04Nami031 } from "../../../../../cards/src/cards/characters/op14-031-nami.ts";
 
@@ -68,5 +74,27 @@ describe("OP14-031 Nami", () => {
     expect(view.players.south.lifeCount).toBe(lifeBefore);
     expect(view.players.south.trash.map((card) => card.instanceId)).toContain(namiId);
     expect(view.prompts).toHaveLength(0);
+  });
+
+  // Official card list (series 569114): Counter 1000 (the imported data had none).
+  test("can be used from hand as a +1000 Counter", () => {
+    const engine = OnePieceTestEngine.create(
+      { leaderCardId: st30LuffyAce001, hand: [op14eb04Nami031], life: 2 },
+      { character: [{ card: eb03Ain002, playedOnTurn: 0 }] },
+      { firstPlayer: "south", activeSeat: "north" },
+    );
+    const ainId = engine.findCardInZone("north", "character", eb03Ain002);
+    const namiId = engine.findCardInZone("south", "hand", op14eb04Nami031);
+
+    engine.declareAttack(ainId, engine.leader("south"), "north");
+    const counter = engine.pendingDecision("battleCounter", "south").steps[0];
+    if (counter?.kind !== "selectEntity") throw new Error("Expected the Counter Step choice.");
+    expect(counter.candidates.map((candidate) => candidate.ref.id)).toContain(namiId);
+    engine.resolveDecision("battleCounter", { selectedIds: [namiId] }, "south");
+
+    // 6000 Leader + 1000 = 7000 beats the 6000 attacker: no damage.
+    const south = engine.getView("south").players.south;
+    expect(south.trash.map((card) => card.instanceId)).toEqual([namiId]);
+    expect(south.lifeCount).toBe(2);
   });
 });

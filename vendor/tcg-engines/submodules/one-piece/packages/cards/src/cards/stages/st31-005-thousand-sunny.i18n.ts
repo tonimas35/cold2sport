@@ -1,0 +1,10 @@
+import type { OPCardI18n } from "@tcg/op-types";
+
+export const st31ThousandSunny005I18n: OPCardI18n = {
+  en: {
+    name: "Thousand Sunny",
+    effect:
+      "[On Play] Look at 5 cards from the top of your deck; reveal up to 1 {Straw Hat Crew} type card and add it to your hand. Then, place the rest at the bottom of your deck in any order.\n[Activate: Main] You may rest this Stage: Give up to 1 rested DON!! card to 1 of your [Monkey.D.Luffy] cards.",
+    imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST31-005.jpg",
+  },
+};

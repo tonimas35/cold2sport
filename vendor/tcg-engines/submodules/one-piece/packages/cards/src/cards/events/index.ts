@@ -363,3 +363,4 @@ export { op17ThePowerToDestroyTheWorld018 } from "./op17-018-the-power-to-destro
 export { op17ThereSNoAuthorityInTheWorldThatLastsForever055 } from "./op17-055-there-s-no-authority-in-the-world-that-lasts-forever.ts";
 export { op17WithdrawNowAndAllowMeToSaveFace036 } from "./op17-036-withdraw-now-and-allow-me-to-save-face.ts";
 export { op17WoRoRoRoRoIThinkIVeSoberedUp076 } from "./op17-076-wo-ro-ro-ro-ro-i-think-i-ve-sobered-up.ts";
+export { st21GumGumMolePistol017 } from "./st21-017-gum-gum-mole-pistol.ts";

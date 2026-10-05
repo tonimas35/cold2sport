@@ -51,10 +51,11 @@ reconciles catalog entries.
 | OP17-057 | Fullalead | verified | Opponent-attack window: rest Stage + trash hand card, Rocks-trait Leader +1000 for the battle (trait mutation killed; non-Rocks decline) |
 | ST01-017 | Thousand Sunny | verified | Stage-rest activation; inclusive Straw Hat Crew Leader-or-Character candidates; exclusion, power, and duration boundaries |
 | ST14-017 | Thousand Sunny (Pirate Foil) | verified | On Play Leader power and permanent trait-based cost modifier with canonical default duration |
+| ST31-005 | Thousand Sunny | verified | On Play top-5 search of any Straw Hat Crew card, remainder to bottom; Stage-rest activation gives 0-1 rested DON!! only to a [Monkey.D.Luffy] Leader or Character |
 
 ## Progress
 
-- Canonical stages: 44.
+- Canonical stages: 45.
 - Verified: 39.
 - Structured pending: 4.
 - Printed but unstructured: 1.

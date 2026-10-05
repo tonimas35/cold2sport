@@ -1,15 +1,18 @@
 import { describe, expect, test } from "vite-plus/test";
-import { eb01Doma005, eb03Hibari008, op11Franky012 } from "@tcg/op-cards";
+import { eb01Doma005, eb03Hibari008, op11XDrake017 } from "@tcg/op-cards";
 
 import { OnePieceTestEngine } from "../../../src/index.ts";
 
+// The SWORD recipient is OP11-017 X.Drake (Navy/SWORD/Drake Pirates). These
+// tests used OP11-012 Franky, whose imported type was wrongly "Navy SWORD":
+// the official card list gives Franky the {Straw Hat Crew} type only.
 describe("EB03-008 Hibari", () => {
   test("maps her On Play SWORD recipient, active-Character attack, and once-per-turn reduction", () => {
     const engine = OnePieceTestEngine.create(
       {
         hand: [eb03Hibari008],
         character: [
-          { card: op11Franky012, playedOnTurn: 0 },
+          { card: op11XDrake017, playedOnTurn: 0 },
           { card: eb01Doma005, playedOnTurn: 0 },
         ],
         activeDon: 3,
@@ -19,7 +22,7 @@ describe("EB03-008 Hibari", () => {
       },
       { firstPlayer: "north", activeSeat: "south" },
     );
-    const frankyId = engine.findCardInZone("south", "character", op11Franky012);
+    const swordId = engine.findCardInZone("south", "character", op11XDrake017);
     const wrongTraitId = engine.findCardInZone("south", "character", eb01Doma005);
     const opposingId = engine.findCardInZone("north", "character", eb01Doma005);
 
@@ -31,13 +34,13 @@ describe("EB03-008 Hibari", () => {
       throw new Error("Expected Hibari's SWORD attack recipient.");
     }
     expect(attackRecipient.candidates.map((candidate) => candidate.ref.id)).toEqual([
-      frankyId,
+      swordId,
       hibariId,
     ]);
     expect(attackRecipient.candidates.map((candidate) => candidate.ref.id)).not.toContain(
       wrongTraitId,
     );
-    engine.resolveDecision("effectTargetSelection", { selectedIds: [frankyId] }, "south");
+    engine.resolveDecision("effectTargetSelection", { selectedIds: [swordId] }, "south");
 
     engine.activateEffect(hibariId, "activateMain", "south");
     const reduction = engine.pendingDecision("effectTargetSelection", "south").steps[0];
@@ -53,7 +56,7 @@ describe("EB03-008 Hibari", () => {
         .getView("south")
         .players.north.characters.find((card) => card?.instanceId === opposingId)?.power,
     ).toBe(2000);
-    engine.declareAttack(frankyId, opposingId, "south");
+    engine.declareAttack(swordId, opposingId, "south");
     expect(engine.getView("south").players.north.trash.map((card) => card.instanceId)).toContain(
       opposingId,
     );
@@ -73,7 +76,7 @@ describe("EB03-008 Hibari", () => {
       {
         character: [
           { card: eb03Hibari008, playedOnTurn: 0 },
-          { card: op11Franky012, playedOnTurn: 0 },
+          { card: op11XDrake017, playedOnTurn: 0 },
         ],
       },
       {
@@ -82,7 +85,7 @@ describe("EB03-008 Hibari", () => {
       { firstPlayer: "north", activeSeat: "south" },
     );
     const hibariId = engine.findCardInZone("south", "character", eb03Hibari008);
-    const frankyId = engine.findCardInZone("south", "character", op11Franky012);
+    const swordId = engine.findCardInZone("south", "character", op11XDrake017);
     const activeTargetId = engine.findCardInZone("north", "character", eb01Doma005);
 
     engine.declareAttack(hibariId, engine.leader("north"), "south");
@@ -91,9 +94,9 @@ describe("EB03-008 Hibari", () => {
     if (recipient?.kind !== "selectEntity") {
       throw new Error("Expected Hibari's When Attacking SWORD recipient.");
     }
-    engine.resolveDecision("effectTargetSelection", { selectedIds: [frankyId] }, "south");
+    engine.resolveDecision("effectTargetSelection", { selectedIds: [swordId] }, "south");
 
-    engine.declareAttack(frankyId, activeTargetId, "south");
+    engine.declareAttack(swordId, activeTargetId, "south");
     engine.resolveDecision("battleCounter", { selectedIds: [] }, "north");
     expect(engine.getView("south").players.north.trash.map((card) => card.instanceId)).toContain(
       activeTargetId,
