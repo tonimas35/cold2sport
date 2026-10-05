@@ -1872,10 +1872,13 @@ reconciles catalog entries.
 | ST27-005 | Marshall.D.Teach | verified | activateMain |
 | ST31-004 | Monkey.D.Luffy | verified | On Play per-Straw-Hat debuff via amountFromMatchingCards (trait mutation killed); Rush threshold; self-count always >=1 |
 | ST32-002 | Kouzuki Oden | verified | onPlay |
+| ST34-002 | Charlotte Cracker | verified | On Play action-level Big Mom Pirates Leader gate on the rested DON!! add only; Then K.O. cost 2 or less resolves with any Leader |
+| ST34-003 | Charlotte Brulee | verified | On Play top-3 search reveals only Big Mom Pirates cards (Character or Event); remainder to bottom in chosen order |
+| ST34-004 | Charlotte Linlin | verified | Optional DON!! -4 then trash-from-hand cost (trash prompt kept when DON!! sit in one pool); Life from deck top; opposing base power 0 this turn |
 
 ## Progress
 
-- Canonical characters: 1865.
+- Canonical characters: 1868.
 - Verified: 1344.
 - Structured pending: 262.
 - Printed but unstructured: 37.

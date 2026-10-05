@@ -1,0 +1,864 @@
+diff --git a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+index b80525f..e906e5b 100644
+--- a/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
++++ b/vendor/tcg-engines/submodules/one-piece/docs/card-behavior-character-inventory.md
+@@ -1872,10 +1872,13 @@ reconciles catalog entries.
+ | ST27-005 | Marshall.D.Teach | verified | activateMain |
+ | ST31-004 | Monkey.D.Luffy | verified | On Play per-Straw-Hat debuff via amountFromMatchingCards (trait mutation killed); Rush threshold; self-count always >=1 |
+ | ST32-002 | Kouzuki Oden | verified | onPlay |
++| ST34-002 | Charlotte Cracker | verified | On Play action-level Big Mom Pirates Leader gate on the rested DON!! add only; Then K.O. cost 2 or less resolves with any Leader |
++| ST34-003 | Charlotte Brulee | verified | On Play top-3 search reveals only Big Mom Pirates cards (Character or Event); remainder to bottom in chosen order |
++| ST34-004 | Charlotte Linlin | verified | Optional DON!! -4 then trash-from-hand cost (trash prompt kept when DON!! sit in one pool); Life from deck top; opposing base power 0 this turn |
+ 
+ ## Progress
+ 
+-- Canonical characters: 1865.
++- Canonical characters: 1868.
+ - Verified: 1344.
+ - Structured pending: 262.
+ - Printed but unstructured: 37.
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/index.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/index.ts
+index ca6a526..764e945 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/index.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/index.ts
+@@ -1863,3 +1863,6 @@ export { st26MonkeyDLuffy005 } from "./st26-005-monkey-d-luffy.ts";
+ export { st27MarshallDTeach005 } from "./st27-005-marshall-d-teach.ts";
+ export { st31MonkeyDLuffy004 } from "./st31-004-monkey-d-luffy.ts";
+ export { st32KouzukiOden002 } from "./st32-002-kouzuki-oden.ts";
++export { st34CharlotteBrulee003 } from "./st34-003-charlotte-brulee.ts";
++export { st34CharlotteCracker002 } from "./st34-002-charlotte-cracker.ts";
++export { st34CharlotteLinlin004 } from "./st34-004-charlotte-linlin.ts";
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.i18n.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.i18n.ts
+new file mode 100644
+index 0000000..b7e500b
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.i18n.ts
+@@ -0,0 +1,10 @@
++import type { OPCardI18n } from "@tcg/op-types";
++
++export const st34CharlotteCracker002I18n: OPCardI18n = {
++  en: {
++    name: "Charlotte Cracker",
++    effect:
++      "[On Play] If your Leader has the {Big Mom Pirates} type, add up to 1 DON!! card from your DON!! deck and rest it. Then, K.O. up to 1 of your opponent's Characters with a cost of 2 or less.",
++    imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST34-002.jpg",
++  },
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.ts
+new file mode 100644
+index 0000000..82e1505
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-002-charlotte-cracker.ts
+@@ -0,0 +1,75 @@
++// Official text (EN, with errata): https://en.onepiece-cardgame.com/cardlist/?series=569034
++import type { CharacterCard } from "@tcg/op-types";
++import { st34CharlotteCracker002I18n } from "./st34-002-charlotte-cracker.i18n.ts";
++
++export const st34CharlotteCracker002: CharacterCard = {
++  id: "ST34-002",
++  canonicalId: "ST34-002",
++  slug: "charlotte-cracker/st34-002",
++  name: "Charlotte Cracker",
++  printings: [
++    {
++      id: "ST34-002",
++      artId: "ST34-002",
++      setCode: "ST34",
++      collectorNumber: "002",
++      rarity: "C",
++      imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST34-002.jpg",
++      label: "Charlotte Cracker (002)",
++    },
++  ],
++  cardType: "character",
++  color: ["purple"],
++  rarity: "C",
++  setId: "ST34",
++  cost: 4,
++  power: 5000,
++  counter: 1000,
++  traits: ["Big Mom Pirates"],
++  attribute: "slash",
++  effect:
++    "[On Play] If your Leader has the {Big Mom Pirates} type, add up to 1 DON!! card from your DON!! deck and rest it. Then, K.O. up to 1 of your opponent's Characters with a cost of 2 or less.",
++  effects: {
++    effects: [
++      {
++        trigger: "onPlay",
++        actions: [
++          // The "If" gates only the DON!! add; "Then, K.O." resolves whatever
++          // the Leader is (4-10-2, 8-3-3; same convention as OP07-109).
++          {
++            action: "addDon",
++            count: {
++              amount: 1,
++              upTo: true,
++            },
++            state: "rested",
++            condition: {
++              condition: "leaderTrait",
++              trait: "Big Mom Pirates",
++              match: "includes",
++            },
++          },
++          {
++            action: "ko",
++            target: {
++              player: "opponent",
++              zones: ["character"],
++              count: {
++                amount: 1,
++                upTo: true,
++              },
++              filters: [
++                {
++                  filter: "cost",
++                  comparison: "lte",
++                  value: 2,
++                },
++              ],
++            },
++          },
++        ],
++      },
++    ],
++  },
++  i18n: st34CharlotteCracker002I18n,
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-003-charlotte-brulee.i18n.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-003-charlotte-brulee.i18n.ts
+new file mode 100644
+index 0000000..bcde14f
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-003-charlotte-brulee.i18n.ts
+@@ -0,0 +1,10 @@
++import type { OPCardI18n } from "@tcg/op-types";
++
++export const st34CharlotteBrulee003I18n: OPCardI18n = {
++  en: {
++    name: "Charlotte Brulee",
++    effect:
++      "[On Play] Look at 3 cards from the top of your deck; reveal up to 1 {Big Mom Pirates} type card and add it to your hand. Then, place the rest at the bottom of your deck in any order.",
++    imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST34-003.jpg",
++  },
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-003-charlotte-brulee.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-003-charlotte-brulee.ts
+new file mode 100644
+index 0000000..15baccb
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-003-charlotte-brulee.ts
+@@ -0,0 +1,63 @@
++// Official text (EN, with errata): https://en.onepiece-cardgame.com/cardlist/?series=569034
++import type { CharacterCard } from "@tcg/op-types";
++import { st34CharlotteBrulee003I18n } from "./st34-003-charlotte-brulee.i18n.ts";
++
++export const st34CharlotteBrulee003: CharacterCard = {
++  id: "ST34-003",
++  canonicalId: "ST34-003",
++  slug: "charlotte-brulee/st34-003",
++  name: "Charlotte Brulee",
++  printings: [
++    {
++      id: "ST34-003",
++      artId: "ST34-003",
++      setCode: "ST34",
++      collectorNumber: "003",
++      rarity: "C",
++      imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST34-003.jpg",
++      label: "Charlotte Brulee (003)",
++    },
++  ],
++  cardType: "character",
++  color: ["purple"],
++  rarity: "C",
++  setId: "ST34",
++  cost: 1,
++  power: 2000,
++  counter: 2000,
++  traits: ["Big Mom Pirates"],
++  attribute: "special",
++  effect:
++    "[On Play] Look at 3 cards from the top of your deck; reveal up to 1 {Big Mom Pirates} type card and add it to your hand. Then, place the rest at the bottom of your deck in any order.",
++  effects: {
++    effects: [
++      {
++        trigger: "onPlay",
++        actions: [
++          {
++            action: "search",
++            lookCount: 3,
++            source: {
++              player: "self",
++              zone: "deck",
++            },
++            revealCount: {
++              amount: 1,
++              upTo: true,
++            },
++            revealFilters: [
++              {
++                filter: "trait",
++                value: "Big Mom Pirates",
++                match: "includes",
++              },
++            ],
++            revealDestination: "hand",
++            remainderPosition: "bottom",
++          },
++        ],
++      },
++    ],
++  },
++  i18n: st34CharlotteBrulee003I18n,
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-004-charlotte-linlin.i18n.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-004-charlotte-linlin.i18n.ts
+new file mode 100644
+index 0000000..a3a652f
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-004-charlotte-linlin.i18n.ts
+@@ -0,0 +1,10 @@
++import type { OPCardI18n } from "@tcg/op-types";
++
++export const st34CharlotteLinlin004I18n: OPCardI18n = {
++  en: {
++    name: "Charlotte Linlin",
++    effect:
++      "[On Play] DON!! −4, you may trash 1 card from your hand: Add up to 1 card from the top of your deck to the top of your Life cards. Then, up to 1 of your opponent's Characters' base power becomes 0 during this turn.",
++    imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST34-004.jpg",
++  },
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-004-charlotte-linlin.ts b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-004-charlotte-linlin.ts
+new file mode 100644
+index 0000000..99a7490
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/cards/src/cards/characters/st34-004-charlotte-linlin.ts
+@@ -0,0 +1,77 @@
++// Official text (EN, with errata): https://en.onepiece-cardgame.com/cardlist/?series=569034
++import type { CharacterCard } from "@tcg/op-types";
++import { st34CharlotteLinlin004I18n } from "./st34-004-charlotte-linlin.i18n.ts";
++
++export const st34CharlotteLinlin004: CharacterCard = {
++  id: "ST34-004",
++  canonicalId: "ST34-004",
++  slug: "charlotte-linlin/st34-004",
++  name: "Charlotte Linlin",
++  printings: [
++    {
++      id: "ST34-004",
++      artId: "ST34-004",
++      setCode: "ST34",
++      collectorNumber: "004",
++      rarity: "SR",
++      imageUrl: "https://www.optcgapi.com/media/static/Card_Images/ST34-004.jpg",
++      label: "Charlotte Linlin (004)",
++    },
++  ],
++  cardType: "character",
++  color: ["purple"],
++  rarity: "SR",
++  setId: "ST34",
++  cost: 10,
++  power: 12000,
++  traits: ["The Four Emperors Big Mom Pirates"],
++  attribute: "special",
++  effect:
++    "[On Play] DON!! −4, you may trash 1 card from your hand: Add up to 1 card from the top of your deck to the top of your Life cards. Then, up to 1 of your opponent's Characters' base power becomes 0 during this turn.",
++  effects: {
++    effects: [
++      {
++        trigger: "onPlay",
++        costs: [
++          {
++            cost: "returnDon",
++            amount: 4,
++          },
++          {
++            cost: "trashFromHand",
++            amount: 1,
++          },
++        ],
++        actions: [
++          {
++            action: "addToLife",
++            target: {
++              player: "self",
++              zones: ["deck"],
++              count: {
++                amount: 1,
++                upTo: true,
++              },
++            },
++            position: "top",
++          },
++          {
++            action: "setBasePower",
++            target: {
++              player: "opponent",
++              zones: ["character"],
++              count: {
++                amount: 1,
++                upTo: true,
++              },
++            },
++            value: 0,
++            duration: "thisTurn",
++          },
++        ],
++        optional: true,
++      },
++    ],
++  },
++  i18n: st34CharlotteLinlin004I18n,
++};
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
+index a88a515..068606c 100644
+--- a/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/src/effects/resolution.ts
+@@ -69,7 +69,7 @@ import {
+   resolveTargetCount,
+   selectionSatisfiesTotalConstraint,
+ } from "./targeting.ts";
+-import type { EffectTrigger } from "@tcg/op-types";
++import type { Cost, EffectTrigger } from "@tcg/op-types";
+ 
+ /**
+  * Printed form of an effect trigger for player-facing log lines, matching the
+@@ -275,6 +275,30 @@ function eventFilterMatches(
+   );
+ }
+ 
++/**
++ * Whether a DON!! −X activation cost (8-3-1-6) presents a real choice: a
++ * variable amount with spare DON!!, or a fixed amount drawn from more than one
++ * pool (active, rested, or attached to a given card). Otherwise it is paid by
++ * default without a prompt, and later ordered costs still get theirs.
++ */
++function returnDonCostNeedsChoice(
++  state: MatchState,
++  controller: MatchSeat,
++  cost: Extract<Cost, { cost: "returnDon" }>,
++): boolean {
++  const options = returnDonCostOptions(state, controller);
++  const minimumAmount = cost.minimumAmount ?? cost.amount;
++  if (cost.minimumAmount !== undefined) return options.length > minimumAmount;
++  const sourceKeys = new Set(
++    options.map((option) =>
++      option.id.startsWith("attached-don:")
++        ? option.id.slice(0, option.id.lastIndexOf(":"))
++        : option.id.slice(0, option.id.indexOf(":")),
++    ),
++  );
++  return options.length > minimumAmount && sourceKeys.size > 1;
++}
++
+ export function processEffectBlock(
+   state: MatchState,
+   item: Extract<ResolutionItem, { kind: "effectBlock" }>,
+@@ -450,11 +474,13 @@ export function processEffectBlock(
+     }
+   }
+ 
++  // Ordered costs (8-3-1-1): a DON!! −X with no real choice is paid by default,
++  // so it must not hold back the trash-from-hand prompt that follows it.
+   const pendingOrderedCost = block.costs?.find((cost) =>
+     cost.cost === "trashFromHand"
+       ? !item.trashHandIds
+       : cost.cost === "returnDon"
+-        ? !item.costPaymentIds
++        ? !item.costPaymentIds && returnDonCostNeedsChoice(state, item.controller, cost)
+         : false,
+   );
+   const trashFromHandCost = block.costs?.find((cost) => cost.cost === "trashFromHand");
+@@ -591,18 +617,7 @@ export function processEffectBlock(
+     const minimumAmount = returnDonCost.minimumAmount ?? returnDonCost.amount;
+     const maximumAmount =
+       returnDonCost.minimumAmount === undefined ? minimumAmount : options.length;
+-    const sourceKeys = new Set(
+-      options.map((option) =>
+-        option.id.startsWith("attached-don:")
+-          ? option.id.slice(0, option.id.lastIndexOf(":"))
+-          : option.id.slice(0, option.id.indexOf(":")),
+-      ),
+-    );
+-    if (
+-      returnDonCost.minimumAmount !== undefined
+-        ? options.length > minimumAmount
+-        : options.length > minimumAmount && sourceKeys.size > 1
+-    ) {
++    if (returnDonCostNeedsChoice(state, item.controller, returnDonCost)) {
+       createChoicePrompt(state, {
+         choiceKind: "costPayment",
+         seat: item.controller,
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st34-002-charlotte-cracker.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st34-002-charlotte-cracker.test.ts
+new file mode 100644
+index 0000000..03d4ff7
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st34-002-charlotte-cracker.test.ts
+@@ -0,0 +1,105 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Fourtricks025,
++  op08CharlottePudding058,
++  op09NicoRobin062,
++  op13Higuma013,
++  st34CharlotteCracker002,
++} from "@tcg/op-cards";
++import type { LeaderCard } from "@tcg/op-types";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// [On Play] If your Leader has the {Big Mom Pirates} type, add up to 1 DON!!
++// card from your DON!! deck and rest it. Then, K.O. up to 1 of your opponent's
++// Characters with a cost of 2 or less.
++function setup(leaderCardId: LeaderCard) {
++  return OnePieceTestEngine.create(
++    {
++      leaderCardId,
++      hand: [st34CharlotteCracker002],
++      activeDon: 4,
++      donDeckCount: 3,
++    },
++    { character: [op13Higuma013, eb01Fourtricks025] },
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++}
++
++describe("ST34-002 Charlotte Cracker", () => {
++  test("with a Big Mom Pirates Leader adds 1 rested DON!!, then K.O.s a cost-2-or-less Character", () => {
++    const engine = setup(op08CharlottePudding058);
++    const south = engine.asSouth();
++    const cheapId = engine.asNorth().findOnField(op13Higuma013);
++    const tooExpensiveId = engine.asNorth().findOnField(eb01Fourtricks025);
++
++    south.play(st34CharlotteCracker002);
++
++    const addDon = south.pendingDecision("effectAddDon").steps[0];
++    expect(addDon?.kind).toBe("chooseOption");
++    if (addDon?.kind !== "chooseOption") throw new Error("Expected Cracker's DON!! add choice.");
++    expect(addDon.options.map((option) => option.id)).toEqual(["0", "1"]);
++    south.chooseAddDon(1);
++    expect(south.view().players.south).toMatchObject({
++      activeDon: 0,
++      restedDon: 5,
++      donDeckCount: 2,
++    });
++
++    const target = south.pendingDecision("effectTargetSelection").steps[0];
++    expect(target?.kind).toBe("selectEntity");
++    if (target?.kind !== "selectEntity") throw new Error("Expected Cracker's K.O. target.");
++    expect(target).toMatchObject({ min: 0, max: 1 });
++    const legalIds = target.candidates
++      .filter((candidate) => candidate.legal)
++      .map((candidate) => candidate.ref.id);
++    expect(legalIds).toContain(cheapId);
++    expect(legalIds).not.toContain(tooExpensiveId);
++    south.chooseTargets(cheapId);
++
++    const view = south.view();
++    expect(view.players.north.trash.map((card) => card.instanceId)).toContain(cheapId);
++    expect(view.players.north.characters.map((card) => card?.instanceId)).toContain(tooExpensiveId);
++    expect(view.players.south.characters.map((card) => card?.cardId)).toContain(
++      st34CharlotteCracker002.id,
++    );
++    expect(view.prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("with a non-Big Mom Pirates Leader adds no DON!!, but the Then K.O. still resolves", () => {
++    const engine = setup(op09NicoRobin062);
++    const south = engine.asSouth();
++    const cheapId = engine.asNorth().findOnField(op13Higuma013);
++
++    south.play(st34CharlotteCracker002);
++
++    expect(() => south.pendingDecision("effectAddDon")).toThrow();
++    expect(south.view().players.south).toMatchObject({
++      activeDon: 0,
++      restedDon: 4,
++      donDeckCount: 3,
++    });
++    south.chooseTargets(cheapId);
++
++    const view = south.view();
++    expect(view.players.north.trash.map((card) => card.instanceId)).toContain(cheapId);
++    expect(view.players.south).toMatchObject({ restedDon: 4, donDeckCount: 3 });
++    expect(view.prompts).toHaveLength(0);
++  });
++
++  test("may add no DON!! and K.O. nothing", () => {
++    const engine = setup(op08CharlottePudding058);
++    const south = engine.asSouth();
++
++    south.play(st34CharlotteCracker002);
++    south.chooseAddDon(0);
++    south.chooseNoTargets();
++
++    const view = south.view();
++    expect(view.players.south).toMatchObject({ activeDon: 0, restedDon: 4, donDeckCount: 3 });
++    expect(view.players.north.characters.filter(Boolean)).toHaveLength(2);
++    expect(view.players.north.trash).toHaveLength(0);
++    expect(view.prompts).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st34-003-charlotte-brulee.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st34-003-charlotte-brulee.test.ts
+new file mode 100644
+index 0000000..989ee92
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st34-003-charlotte-brulee.test.ts
+@@ -0,0 +1,116 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  eb01Fourtricks025,
++  op08CountNiwatori071,
++  op11CognacMamaMash081,
++  op13Higuma013,
++  st34CharlotteBrulee003,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// [On Play] Look at 3 cards from the top of your deck; reveal up to 1
++// {Big Mom Pirates} type card and add it to your hand. Then, place the rest at
++// the bottom of your deck in any order.
++describe("ST34-003 Charlotte Brulee", () => {
++  test("adds the only Big Mom Pirates card of the top 3 to hand and puts the rest at the bottom in the chosen order", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        hand: [st34CharlotteBrulee003],
++        deck: [op08CountNiwatori071, eb01Doma005, op13Higuma013, eb01Fourtricks025],
++        activeDon: 1,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    const [niwatoriId, domaId, higumaId, untouchedId] = engine.getState().players.south.deck;
++
++    south.play(st34CharlotteBrulee003);
++
++    const search = south.pendingDecision("effectSearchSelection").steps[0];
++    expect(search?.kind).toBe("selectEntity");
++    if (search?.kind !== "selectEntity") throw new Error("Expected Brulee's search selection.");
++    expect(search).toMatchObject({ min: 0, max: 1 });
++    expect(search.candidates.map((candidate) => candidate.ref.id)).toEqual(
++      expect.arrayContaining([niwatoriId, domaId, higumaId]),
++    );
++    expect(
++      search.candidates.filter((candidate) => candidate.legal).map((candidate) => candidate.ref.id),
++    ).toEqual([niwatoriId]);
++    south.chooseSearch(niwatoriId!);
++
++    const remainder = south.pendingDecision("effectSearchRemainderOrder").steps[0];
++    expect(remainder?.kind).toBe("orderItems");
++    if (remainder?.kind !== "orderItems") throw new Error("Expected Brulee's remainder order.");
++    expect(remainder.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
++      [domaId, higumaId].sort(),
++    );
++    south.orderCards("effectSearchRemainderOrder", [higumaId!, domaId!]);
++
++    const view = south.view();
++    expect(view.players.south.hand.map((card) => card.instanceId)).toEqual([niwatoriId]);
++    expect(engine.getState().players.south.deck).toEqual([untouchedId, higumaId, domaId]);
++    expect(view.prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++  });
++
++  test("can reveal a Big Mom Pirates Event, not only a Character", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        hand: [st34CharlotteBrulee003],
++        deck: [eb01Doma005, op11CognacMamaMash081, op13Higuma013, eb01Fourtricks025],
++        activeDon: 1,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    const cognacId = engine.findCardInZone("south", "deck", op11CognacMamaMash081);
++
++    south.play(st34CharlotteBrulee003);
++
++    const search = south.pendingDecision("effectSearchSelection").steps[0];
++    if (search?.kind !== "selectEntity") throw new Error("Expected Brulee's search selection.");
++    expect(
++      search.candidates.filter((candidate) => candidate.legal).map((candidate) => candidate.ref.id),
++    ).toEqual([cognacId]);
++    south.chooseSearch(cognacId);
++    const remainder = south.pendingDecision("effectSearchRemainderOrder").steps[0];
++    if (remainder?.kind !== "orderItems") throw new Error("Expected Brulee's remainder order.");
++    south.orderCards(
++      "effectSearchRemainderOrder",
++      remainder.candidates.map((candidate) => candidate.ref.id),
++    );
++
++    expect(south.view().players.south.hand.map((card) => card.instanceId)).toEqual([cognacId]);
++    expect(south.view().prompts).toHaveLength(0);
++  });
++
++  test("with no Big Mom Pirates card in the top 3, reveals nothing and puts all 3 at the bottom", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        hand: [st34CharlotteBrulee003],
++        deck: [eb01Doma005, op13Higuma013, eb01Fourtricks025, op08CountNiwatori071],
++        activeDon: 1,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const south = engine.asSouth();
++    const [firstId, secondId, thirdId, fourthId] = engine.getState().players.south.deck;
++
++    south.play(st34CharlotteBrulee003);
++
++    const search = south.pendingDecision("effectSearchSelection").steps[0];
++    if (search?.kind !== "selectEntity") throw new Error("Expected Brulee's search selection.");
++    expect(search.candidates.filter((candidate) => candidate.legal)).toHaveLength(0);
++    south.chooseNoSearch();
++    south.orderCards("effectSearchRemainderOrder", [thirdId!, firstId!, secondId!]);
++
++    expect(south.view().players.south.hand).toHaveLength(0);
++    expect(engine.getState().players.south.deck).toEqual([fourthId, thirdId, firstId, secondId]);
++    expect(south.view().prompts).toHaveLength(0);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st34-004-charlotte-linlin.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st34-004-charlotte-linlin.test.ts
+new file mode 100644
+index 0000000..aae0c6f
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/characters/st34-004-charlotte-linlin.test.ts
+@@ -0,0 +1,157 @@
++import { describe, expect, test } from "vite-plus/test";
++import {
++  eb01Doma005,
++  eb01Fourtricks025,
++  op08CountNiwatori071,
++  op13Higuma013,
++  op17Kaido058,
++  st34CharlotteLinlin004,
++} from "@tcg/op-cards";
++
++import { OnePieceTestEngine, type FixtureCardEntry } from "../../../src/index.ts";
++
++// [On Play] DON!! −4, you may trash 1 card from your hand: Add up to 1 card
++// from the top of your deck to the top of your Life cards. Then, up to 1 of
++// your opponent's Characters' base power becomes 0 during this turn.
++function setup({
++  hand = [st34CharlotteLinlin004, eb01Doma005, op13Higuma013],
++  character = [],
++}: { hand?: FixtureCardEntry[]; character?: FixtureCardEntry[] } = {}) {
++  return OnePieceTestEngine.create(
++    {
++      leaderCardId: op17Kaido058,
++      hand,
++      character,
++      deck: [eb01Fourtricks025, eb01Doma005],
++      activeDon: 10,
++      donDeckCount: 0,
++    },
++    { character: [op08CountNiwatori071, eb01Fourtricks025] },
++    { firstPlayer: "north", activeSeat: "south" },
++  );
++}
++
++describe("ST34-004 Charlotte Linlin", () => {
++  test("returns 4 DON!!, trashes the chosen hand card, gains 1 Life and sets an opposing Character's base power to 0 this turn", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++    const keptId = engine.findCardInZone("south", "hand", eb01Doma005);
++    const trashedId = engine.findCardInZone("south", "hand", op13Higuma013);
++    const lifeTopId = engine.getState().players.south.deck[0];
++    const niwatoriId = engine.asNorth().findOnField(op08CountNiwatori071);
++    const fourtricksId = engine.asNorth().findOnField(eb01Fourtricks025);
++    const lifeBefore = south.view().players.south.lifeCount;
++
++    south.play(st34CharlotteLinlin004);
++    // Paying 10 for Linlin rests every DON!!: the DON!! −4 has no choice to make.
++    expect(south.view().players.south).toMatchObject({ activeDon: 0, restedDon: 10 });
++    south.acceptOptional();
++
++    const trash = south.pendingDecision("effectCostTrashFromHand").steps[0];
++    expect(trash).toMatchObject({ kind: "payCost", min: 1, max: 1 });
++    if (trash?.kind !== "payCost") throw new Error("Expected Linlin's hand cost.");
++    expect(trash.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
++      [keptId, trashedId].sort(),
++    );
++    south.choose("effectCostTrashFromHand", [trashedId]);
++    expect(south.view().players.south).toMatchObject({ restedDon: 6, donDeckCount: 4 });
++
++    const gainLife = south.pendingDecision("effectAddToLifeFromDeck").steps[0];
++    if (gainLife?.kind !== "chooseOption") throw new Error("Expected Linlin's Life choice.");
++    expect(gainLife.options.map((option) => option.id)).toEqual(["0", "1"]);
++    south.chooseOption("effectAddToLifeFromDeck", "1");
++
++    const target = south.pendingDecision("effectTargetSelection").steps[0];
++    expect(target).toMatchObject({ kind: "selectEntity", min: 0, max: 1 });
++    if (target?.kind !== "selectEntity") throw new Error("Expected Linlin's power target.");
++    expect(target.candidates.map((candidate) => candidate.ref.id).sort()).toEqual(
++      [niwatoriId, fourtricksId].sort(),
++    );
++    south.chooseTargets(niwatoriId);
++
++    const view = south.view();
++    const powerOf = (instanceId: string) =>
++      south.view().players.north.characters.find((card) => card?.instanceId === instanceId)?.power;
++    expect(powerOf(niwatoriId)).toBe(0);
++    expect(powerOf(fourtricksId)).toBe(5000);
++    expect(view.players.south.lifeCount).toBe(lifeBefore + 1);
++    expect(engine.getState().players.south.life[0]).toBe(lifeTopId);
++    expect(view.players.south.trash.map((card) => card.instanceId)).toEqual([trashedId]);
++    expect(view.players.south.hand.map((card) => card.instanceId)).toEqual([keptId]);
++    expect(view.players.south).toMatchObject({ activeDon: 0, restedDon: 6, donDeckCount: 4 });
++    expect(view.prompts).toHaveLength(0);
++    expect(engine.getState().capabilityHistory).toHaveLength(0);
++
++    south.endTurn();
++    expect(powerOf(niwatoriId)).toBe(7000);
++  });
++
++  test("asks which 4 DON!! to return when some are given to a Character, then which card to trash", () => {
++    const engine = setup({ character: [{ card: eb01Doma005, attachedDon: 2 }] });
++    const south = engine.asSouth();
++    const holderId = engine.asSouth().findOnField(eb01Doma005);
++    const trashedId = engine.findCardInZone("south", "hand", op13Higuma013);
++
++    south.play(st34CharlotteLinlin004);
++    south.acceptOptional();
++
++    const returnDon = south.pendingDecision("effectCostReturnDon").steps[0];
++    expect(returnDon).toMatchObject({ kind: "payCost", min: 4, max: 4 });
++    if (returnDon?.kind !== "payCost") throw new Error("Expected Linlin's DON!! −4 choice.");
++    const candidateIds = returnDon.candidates.map((candidate) => candidate.ref.id);
++    expect(candidateIds).toEqual(
++      expect.arrayContaining([`attached-don:${holderId}:0`, `attached-don:${holderId}:1`]),
++    );
++    south.choose("effectCostReturnDon", [
++      `attached-don:${holderId}:0`,
++      `attached-don:${holderId}:1`,
++      "rested-don:0",
++      "rested-don:1",
++    ]);
++    south.choose("effectCostTrashFromHand", [trashedId]);
++    south.chooseOption("effectAddToLifeFromDeck", "0");
++    south.chooseNoTargets();
++
++    const view = south.view();
++    expect(
++      view.players.south.characters.find((card) => card?.instanceId === holderId),
++    ).toMatchObject({ attachedDon: 0 });
++    expect(view.players.south).toMatchObject({ restedDon: 8, donDeckCount: 4 });
++    expect(view.players.south.trash.map((card) => card.instanceId)).toEqual([trashedId]);
++    expect(view.prompts).toHaveLength(0);
++  });
++
++  test("may decline the optional cost so nothing happens", () => {
++    const engine = setup();
++    const south = engine.asSouth();
++    const niwatoriId = engine.asNorth().findOnField(op08CountNiwatori071);
++
++    south.play(st34CharlotteLinlin004);
++    const before = south.view().players.south;
++    engine.resolveDecision("effectOptional", { optionId: "no" }, "south");
++
++    const after = south.view().players.south;
++    expect(after.restedDon).toBe(before.restedDon);
++    expect(after.donDeckCount).toBe(before.donDeckCount);
++    expect(after.hand.length).toBe(before.hand.length);
++    expect(after.lifeCount).toBe(before.lifeCount);
++    expect(after.trash).toHaveLength(0);
++    expect(
++      south.view().players.north.characters.find((card) => card?.instanceId === niwatoriId)?.power,
++    ).toBe(7000);
++    expect(south.view().prompts).toHaveLength(0);
++  });
++
++  test("with no other card in hand the cost cannot be paid, so the effect is not offered", () => {
++    const engine = setup({ hand: [st34CharlotteLinlin004] });
++    const south = engine.asSouth();
++    const lifeBefore = south.view().players.south.lifeCount;
++
++    south.play(st34CharlotteLinlin004);
++
++    const view = south.view();
++    expect(view.prompts).toHaveLength(0);
++    expect(view.players.south).toMatchObject({ restedDon: 10, donDeckCount: 0 });
++    expect(view.players.south.lifeCount).toBe(lifeBefore);
++  });
++});
+diff --git a/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/return-don-then-trash-cost-order.test.ts b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/return-don-then-trash-cost-order.test.ts
+new file mode 100644
+index 0000000..3f7caf5
+--- /dev/null
++++ b/vendor/tcg-engines/submodules/one-piece/packages/engine/tests/cards/effects/return-don-then-trash-cost-order.test.ts
+@@ -0,0 +1,72 @@
++import { describe, expect, test } from "vite-plus/test";
++import { eb01Doma005, op08CharlotteLinlin069, op13Higuma013 } from "@tcg/op-cards";
++
++import { OnePieceTestEngine } from "../../../src/index.ts";
++
++// Rule 8-3-1-1: a compound activation cost is paid in printed order. When the
++// DON!! −X part has no real choice (every DON!! on the field sits in one pool),
++// it is paid by default, but the following "trash 1 card from your hand" part
++// must still let the player choose which card to trash.
++describe("DON!! −X then trash-from-hand activation cost", () => {
++  test("still asks which hand card to trash when every DON!! is rested in the cost area", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        hand: [op08CharlotteLinlin069, eb01Doma005, op13Higuma013],
++        deck: [eb01Doma005, eb01Doma005],
++        activeDon: 9,
++        donDeckCount: 0,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const firstHandCardId = engine.findCardInZone("south", "hand", eb01Doma005);
++    const chosenId = engine.findCardInZone("south", "hand", op13Higuma013);
++
++    engine.playCard(op08CharlotteLinlin069, "south");
++    expect(engine.getView("south").players.south).toMatchObject({ activeDon: 0, restedDon: 9 });
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++
++    const trash = engine.pendingDecision("effectCostTrashFromHand", "south").steps[0];
++    expect(trash).toMatchObject({ kind: "payCost", min: 1, max: 1 });
++    if (trash?.kind !== "payCost") throw new Error("Expected the trash-from-hand cost choice.");
++    expect(trash.candidates.map((candidate) => candidate.ref.id)).toEqual(
++      expect.arrayContaining([firstHandCardId, chosenId]),
++    );
++    engine.resolveDecision("effectCostTrashFromHand", { selectedIds: [chosenId] }, "south");
++
++    const view = engine.getView("south");
++    expect(view.players.south.trash.map((card) => card.instanceId)).toContain(chosenId);
++    expect(view.players.south.hand.map((card) => card.instanceId)).toContain(firstHandCardId);
++    expect(view.players.south).toMatchObject({ restedDon: 8, donDeckCount: 1 });
++  });
++
++  test("asks for the DON!! to return first, then the hand card, when DON!! sit in several pools", () => {
++    const engine = OnePieceTestEngine.create(
++      {
++        hand: [op08CharlotteLinlin069, eb01Doma005, op13Higuma013],
++        deck: [eb01Doma005, eb01Doma005],
++        activeDon: 10,
++        donDeckCount: 0,
++      },
++      {},
++      { firstPlayer: "north", activeSeat: "south" },
++    );
++    const firstHandCardId = engine.findCardInZone("south", "hand", eb01Doma005);
++    const chosenId = engine.findCardInZone("south", "hand", op13Higuma013);
++
++    engine.playCard(op08CharlotteLinlin069, "south");
++    engine.resolveDecision("effectOptional", { optionId: "yes" }, "south");
++
++    const returnDon = engine.pendingDecision("effectCostReturnDon", "south").steps[0];
++    expect(returnDon).toMatchObject({ kind: "payCost", min: 1, max: 1 });
++    expect(() => engine.pendingDecision("effectCostTrashFromHand", "south")).toThrow();
++    engine.resolveDecision("effectCostReturnDon", { selectedIds: ["active-don:0"] }, "south");
++
++    engine.resolveDecision("effectCostTrashFromHand", { selectedIds: [chosenId] }, "south");
++
++    const view = engine.getView("south");
++    expect(view.players.south.trash.map((card) => card.instanceId)).toContain(chosenId);
++    expect(view.players.south.hand.map((card) => card.instanceId)).toContain(firstHandCardId);
++    expect(view.players.south).toMatchObject({ activeDon: 0, restedDon: 9, donDeckCount: 1 });
++  });
++});

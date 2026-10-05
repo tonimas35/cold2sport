@@ -69,7 +69,7 @@ import {
   resolveTargetCount,
   selectionSatisfiesTotalConstraint,
 } from "./targeting.ts";
-import type { EffectTrigger } from "@tcg/op-types";
+import type { Cost, EffectTrigger } from "@tcg/op-types";
 
 /**
  * Printed form of an effect trigger for player-facing log lines, matching the
@@ -275,6 +275,30 @@ function eventFilterMatches(
   );
 }
 
+/**
+ * Whether a DON!! −X activation cost (8-3-1-6) presents a real choice: a
+ * variable amount with spare DON!!, or a fixed amount drawn from more than one
+ * pool (active, rested, or attached to a given card). Otherwise it is paid by
+ * default without a prompt, and later ordered costs still get theirs.
+ */
+function returnDonCostNeedsChoice(
+  state: MatchState,
+  controller: MatchSeat,
+  cost: Extract<Cost, { cost: "returnDon" }>,
+): boolean {
+  const options = returnDonCostOptions(state, controller);
+  const minimumAmount = cost.minimumAmount ?? cost.amount;
+  if (cost.minimumAmount !== undefined) return options.length > minimumAmount;
+  const sourceKeys = new Set(
+    options.map((option) =>
+      option.id.startsWith("attached-don:")
+        ? option.id.slice(0, option.id.lastIndexOf(":"))
+        : option.id.slice(0, option.id.indexOf(":")),
+    ),
+  );
+  return options.length > minimumAmount && sourceKeys.size > 1;
+}
+
 export function processEffectBlock(
   state: MatchState,
   item: Extract<ResolutionItem, { kind: "effectBlock" }>,
@@ -450,11 +474,13 @@ export function processEffectBlock(
     }
   }
 
+  // Ordered costs (8-3-1-1): a DON!! −X with no real choice is paid by default,
+  // so it must not hold back the trash-from-hand prompt that follows it.
   const pendingOrderedCost = block.costs?.find((cost) =>
     cost.cost === "trashFromHand"
       ? !item.trashHandIds
       : cost.cost === "returnDon"
-        ? !item.costPaymentIds
+        ? !item.costPaymentIds && returnDonCostNeedsChoice(state, item.controller, cost)
         : false,
   );
   const trashFromHandCost = block.costs?.find((cost) => cost.cost === "trashFromHand");
@@ -591,18 +617,7 @@ export function processEffectBlock(
     const minimumAmount = returnDonCost.minimumAmount ?? returnDonCost.amount;
     const maximumAmount =
       returnDonCost.minimumAmount === undefined ? minimumAmount : options.length;
-    const sourceKeys = new Set(
-      options.map((option) =>
-        option.id.startsWith("attached-don:")
-          ? option.id.slice(0, option.id.lastIndexOf(":"))
-          : option.id.slice(0, option.id.indexOf(":")),
-      ),
-    );
-    if (
-      returnDonCost.minimumAmount !== undefined
-        ? options.length > minimumAmount
-        : options.length > minimumAmount && sourceKeys.size > 1
-    ) {
+    if (returnDonCostNeedsChoice(state, item.controller, returnDonCost)) {
       createChoicePrompt(state, {
         choiceKind: "costPayment",
         seat: item.controller,

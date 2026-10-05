@@ -33,12 +33,12 @@ Events used:
 |---:|---|---|---:|---:|---:|---:|---|
 | 1 | OP17-039 | Rocks.D.Xebec | 61 | 22.3% | 48.9% | 231 | yes |
 | 2 | OP17-079 | Monkey.D.Luffy | 31 | 11.3% | 57.1% | 154 | yes |
-| 3 | OP17-058 | Kaido | 21 | 7.7% | 49.5% | 101 | yes, unsupported: cards missing from the engine: ST34-004 |
+| 3 | OP17-058 | Kaido | 21 | 7.7% | 49.5% | 101 | yes |
 | 4 | OP15-058 | Enel | 19 | 6.9% | 48.2% | 85 | yes |
 | 5 | ST30-001 | Luffy & Ace | 18 | 6.6% | 53.4% | 103 | skipped: Leader not in the engine catalog |
-| 6 | OP09-062 | Nico Robin | 15 | 5.5% | 46.5% | 71 | yes, unsupported: cards missing from the engine: ST34-003 |
+| 6 | OP09-062 | Nico Robin | 15 | 5.5% | 46.5% | 71 | yes |
 | 7 | OP13-004 | Sabo | 15 | 5.5% | 46.3% | 67 | yes |
-| 8 | OP08-058 | Charlotte Pudding | 14 | 5.1% | 54.1% | 74 | yes, unsupported: cards missing from the engine: ST34-002, ST34-003 |
+| 8 | OP08-058 | Charlotte Pudding | 14 | 5.1% | 54.1% | 74 | yes |
 | 9 | OP17-020 | Shanks | 12 | 4.4% | 40.0% | 55 | yes |
 | 10 | OP12-061 | Donquixote Rosinante | 11 | 4.0% | 70.0% | 50 |  |
 | 11 | OP14-041 | Boa Hancock | 6 | 2.2% | 60.0% | 30 |  |
@@ -76,17 +76,17 @@ Events used:
 
 ## Pool
 
-The 8 most played Leaders that have a representative list; 5 of them are playable by the engine and form the pool, the others are in `unsupported/`.
+The 8 most played Leaders that have a representative list; 8 of them are playable by the engine and form the pool, the others are in `unsupported/`.
 
 | File | Leader | Share | Win rate (games) | Representative list | Engine |
 |---|---|---:|---|---|---|
 | `OP17-039-rocks-d-xebec.txt` | OP17-039 Rocks.D.Xebec | 22.3% | 48.9% (231) | PolGoFo (polgofo), 1/128 at [[OP17] ChinoizeCup #115 Monday](https://play.limitlesstcg.com/tournament/6ab4e5b8f127b1b52c28101c) 2026-09-28 | playable |
 | `OP17-079-monkey-d-luffy.txt` | OP17-079 Monkey.D.Luffy | 11.3% | 57.1% (154) | snorlax1cynda (snorlax1cynda), 1/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
-| `unsupported/OP17-058-kaido.txt` | OP17-058 Kaido | 7.7% | 49.5% (101) | HalfJimmy (halfjimmy), 7/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | cards missing from the engine: ST34-004 |
+| `OP17-058-kaido.txt` | OP17-058 Kaido | 7.7% | 49.5% (101) | HalfJimmy (halfjimmy), 7/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
 | `OP15-058-enel.txt` | OP15-058 Enel | 6.9% | 48.2% (85) | Martix (martix), 6/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
-| `unsupported/OP09-062-nico-robin.txt` | OP09-062 Nico Robin | 5.5% | 46.5% (71) | krabbys (krabbys), 13/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | cards missing from the engine: ST34-003 |
+| `OP09-062-nico-robin.txt` | OP09-062 Nico Robin | 5.5% | 46.5% (71) | krabbys (krabbys), 13/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
 | `OP13-004-sabo.txt` | OP13-004 Sabo | 5.5% | 46.3% (67) | Willerd7 (willerd7), 4/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
-| `unsupported/OP08-058-charlotte-pudding.txt` | OP08-058 Charlotte Pudding | 5.1% | 54.1% (74) | Simpiii (simpiii), 9/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | cards missing from the engine: ST34-002, ST34-003 |
+| `OP08-058-charlotte-pudding.txt` | OP08-058 Charlotte Pudding | 5.1% | 54.1% (74) | Simpiii (simpiii), 9/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
 | `OP17-020-shanks.txt` | OP17-020 Shanks | 4.4% | 40.0% (55) | zockerdima (zockerdima), 30/119 at [[OP17] ChinoizeCup #116 Tuesday](https://play.limitlesstcg.com/tournament/6ab4e651e905c1db687493fe) 2026-09-29 | playable |
 
 Skipped Leaders (the next most played Leader takes the slot):
@@ -356,20 +356,20 @@ For each pool Leader, every complete post-ban list (all event sizes): the share 
 
 ## Engine support
 
-200 heuristic-vs-heuristic games on the fast simulator, 20 per pair of pool decks (seats and first player alternate). Overall: 200 finished by the rules, 0 hit the 1500-command cap, 0 stalled, 0 stopped on an illegal command with no legal fallback, 0 crashed; 0 commands rejected by the engine (each replaced by a legal fallback, the game went on); 225 capability records in total (`state.capabilityHistory`: effects the engine could not execute).
+560 heuristic-vs-heuristic games on the fast simulator, 20 per pair of pool decks (seats and first player alternate). Overall: 560 finished by the rules, 0 hit the 1500-command cap, 0 stalled, 0 stopped on an illegal command with no legal fallback, 0 crashed; 0 commands rejected by the engine (each replaced by a legal fallback, the game went on); 478 capability records in total (`state.capabilityHistory`: effects the engine could not execute).
 
 Per deck: games it played and how they ended; rejected commands, illegal-command stops and capability records are those caused by the deck's own seat, with the cards behind them. "Bot win %" is heuristic vs heuristic and only flags decks the engine cannot really play.
 
 | Deck | Missing cards | checkDeck | Games | Rules end | Cmd cap / stall | Rejected cmds / illegal stops | Crashes | Capability records | Games with records | Bot win % | Cards behind stops and records |
 |---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---|
-| OP17-039-rocks-d-xebec | none | pass | 80 | 80 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 34% | none |
-| OP17-079-monkey-d-luffy | none | pass | 80 | 80 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 84% | none |
-| OP17-058-kaido | ST34-004 | Unknown cards: ST34-004 | not played | | | | | | | | |
-| OP15-058-enel | none | pass | 80 | 80 | 0 / 0 | 0 / 0 | 0 | 225 | 74 | 1% | OP15-078 Mamaragan (cost:main:0) ×93; OP15-077 Lightning Dragon (cost:main:0) ×39; OP15-076 Lightning Beast Kiten (cost:main:0) ×38; OP15-075 El Thor (cost:main:0) ×35; OP15-074 Varie (cost:main:0) ×20 |
-| OP09-062-nico-robin | ST34-003 | Unknown cards: ST34-003 | not played | | | | | | | | |
-| OP13-004-sabo | none | pass | 80 | 80 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 66% | none |
-| OP08-058-charlotte-pudding | ST34-002, ST34-003 | Unknown cards: ST34-003, ST34-002 | not played | | | | | | | | |
-| OP17-020-shanks | none | pass | 80 | 80 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 65% | none |
+| OP17-039-rocks-d-xebec | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 51% | none |
+| OP17-079-monkey-d-luffy | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 91% | none |
+| OP17-058-kaido | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 16 | 13 | 1% | OP15-078 Mamaragan (cost:main:0) ×16 |
+| OP15-058-enel | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 449 | 137 | 18% | OP15-078 Mamaragan (cost:main:0) ×157; OP15-075 El Thor (cost:main:0) ×92; OP15-077 Lightning Dragon (cost:main:0) ×90; OP15-076 Lightning Beast Kiten (cost:main:0) ×67; OP15-074 Varie (cost:main:0) ×43 |
+| OP09-062-nico-robin | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 44% | none |
+| OP13-004-sabo | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 78% | none |
+| OP08-058-charlotte-pudding | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 13 | 11 | 39% | OP15-078 Mamaragan (cost:main:0) ×13 |
+| OP17-020-shanks | none | pass | 140 | 140 | 0 / 0 | 0 / 0 | 0 | 0 | 0 | 79% | none |
 
 ## Methodology
 

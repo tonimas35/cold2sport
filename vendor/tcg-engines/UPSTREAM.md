@@ -35,6 +35,7 @@ Not vendored: the other games, the browser simulator, `tools/bot-lab` and
 | Patch | What | Why | Verified |
 |---|---|---|---|
 | `0001-permanent-effects-action-prefilter.patch` | `effects/permanent.ts`: every scan over permanent effects first checks a static, per-card index of the action kinds printed on that card's permanent effects, and skips cards that cannot contribute | The scans ran the in-play / negation / condition checks for every card on every power, cost or keyword query, which was quadratic and dominated the profile. Same results, about 2x faster `applyCommand` and 9x faster `getLegalCommands` | Full upstream suite (`pnpm run engine:check`): 10/10 tasks green. `packages/opbot/test/sim-differential.test.ts` (300 games) |
+| `0002-st34-big-mom-cards-and-don-cost-order.patch` | Cards ST34-002 Charlotte Cracker, ST34-003 Charlotte Brulee, ST34-004 Charlotte Linlin (with tests and inventory rows). `effects/resolution.ts`: a DON!! −X cost with no real choice (8-3-1-6) is paid by default and no longer blocks the trash-from-hand cost that follows it (8-3-1-1) | Three meta decks (Kaido, Robin, Pudding) play these cards and were left out of the pool as unsupported; Linlin's "DON!! −4, trash 1" never asked for the trash | Full upstream suite (`pnpm run engine:check`, no cache): 10/10 tasks green. `sim-differential.test.ts` (120 games) |
 
 Rules:
 
