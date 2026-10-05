@@ -20,6 +20,22 @@ sintéticos), simulación rápida, modelo de valor `logreg-test-v1`.
 | E2 | 2026-10-04 | `3254f3d` | `search:sims=64,h=1,cands=12` | `aggressive` (oráculo) | 12 | 0/0/4/0/8 | 83,3 % [69,4–97,3] | +280 [142, 620] | SPRT(0, 35) decide H1 tras 12 pares (parada temprana: intervalo ancho). 249 ms por decisión |
 | E3 | 2026-10-04 | `3254f3d` | `ismcts:iters=150,h=1,c=0.3` | `search:sims=64` | 8 | 3/0/3/0/2 | 43,8 % [14,8–72,7] | −44 [−304, 170] | Detenido a mano: no concluyente y 2,6× más lento. ISMCTS no mejora aún a la búsqueda plana con este presupuesto |
 | E4 | 2026-10-04 | `3254f3d` | `heuristic-honest` | `heuristic` (oráculo) | 360 | 0/0/360/0/0 | 50,0 % | 0 | Las 720 partidas son idénticas por pares: la heurística **no usa** su acceso oráculo, así que la ventaja de E1 no se debe a que el rival haga trampa ni a que deje de hacerla |
+| E5 | 2026-10-05 | `3254f3d` | `search:sims=256` | `search:sims=64` | 26 | 4/0/13/0/9 | 59,6 % [46,3–73,0] | +68 [−26, 172] | Detenido a mano para liberar CPU. Tendencia a favor de más cálculo, no significativa. 1,25 s frente a 0,30 s por decisión |
+
+## Calibración de enfrentamientos frente a resultados reales
+
+`pnpm opbot calibrate`: simula cada par de mazos del pool con el mismo bot en los dos lados y lo
+compara con los resultados reales entre esos Líderes en los torneos de Limitless (caché local).
+
+| Fecha | Bot | Mazos | Partidas simuladas por par | Correlación con la realidad | Error medio | Mismo favorito |
+|---|---|---|---|---|---|---|
+| 2026-10-05 | `heuristic` | Rocks, Luffy (OP17-079), Sabo, Shanks | 60 | **−0,24** | 37 puntos | 2 de 5 |
+
+Ejemplos: Rocks contra Shanks sale 2 % simulado frente a 75 % real (8 partidas); Rocks contra Sabo,
+18 % frente a 71 % (34). La heurística del motor juega muy mal algunos mazos (por ejemplo, con
+Rocks usa el efecto de Linlin para darse +1000 a sí misma cuando el ataque va al Líder), así que
+**una simulación con bots flojos no sirve para estudiar enfrentamientos**. Muestra real aún pequeña
+(3 torneos post-ban); se está ampliando.
 
 Comando E1:
 
