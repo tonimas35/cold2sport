@@ -4,23 +4,25 @@
  */
 import type { EngineCommand, MatchSeat, MatchState } from "@tcg/op-engine";
 import { enginePolicyCommand, policyCommand } from "../agents/policy.ts";
-import { actingSeat, pendingJudgePrompt } from "../engine/actions.ts";
+import { actingSeat, pendingJudgePrompt, pendingPrompt } from "../engine/actions.ts";
 import { applyInPlace } from "../engine/sim.ts";
 import { evaluate, type ValueModel } from "../eval/value.ts";
 import type { Rng } from "../util/rng.ts";
 
 /**
  * Fast policy played by both seats inside rollouts: "policy" is the improved
- * policy of agents/policy.ts (default); "engine" is the previous one (engine
- * heuristic plus the "up to N DON!!" and battle-buff fixes), kept to measure
- * the difference (`search:...,rollout=engine`).
+ * policy of agents/policy.ts (default); "policy0" is that policy without its
+ * DON!! rules (`policy:tempo=0`) and the search exactly as it was before them
+ * (no `ruleCountAnswer`); "engine" is the older one (engine heuristic plus the
+ * "up to N DON!!" and battle-buff fixes). The last two are kept to measure the
+ * difference (`search:...,rollout=policy0`, `search:...,rollout=engine`).
  */
-export type RolloutPolicy = "policy" | "engine";
+export type RolloutPolicy = "policy" | "policy0" | "engine";
 
 export function parseRolloutPolicy(value: string | undefined): RolloutPolicy {
   if (value === undefined || value === "policy") return "policy";
-  if (value === "engine") return "engine";
-  throw new Error(`unknown rollout policy "${value}" (expected policy or engine)`);
+  if (value === "policy0" || value === "engine") return value;
+  throw new Error(`unknown rollout policy "${value}" (expected policy, policy0 or engine)`);
 }
 
 export interface RolloutConfig {
@@ -43,7 +45,52 @@ export interface RolloutCommandOptions {
 /** The rollout policy's command for `seat` (see `RolloutPolicy`). */
 export function rolloutCommand(world: MatchState, seat: MatchSeat, rng: Rng, options: RolloutCommandOptions = {}): EngineCommand {
   if (options.policy === "engine") return enginePolicyCommand(world, seat, rng);
-  return policyCommand(world, seat, rng, options.model ? { model: options.model } : {});
+  return policyCommand(world, seat, rng, {
+    ...(options.model && { model: options.model }),
+    ...(options.policy === "policy0" && { tempo: false }),
+  });
+}
+
+/**
+ * Count prompts whose policy answer is a rule rather than a judgement: "add /
+ * give / set active up to N DON!!" take the most, "add up to N cards from your
+ * deck to your Life" and "draw up to N" take the most that leaves a card in
+ * the deck (agents/policy.ts, countChoice).
+ */
+const RULE_COUNT_INTENTS = new Set([
+  "effectAddDon",
+  "effectGiveDonCount",
+  "effectSetActiveDon",
+  "effectAddToLifeFromDeck",
+  "effectDrawCount",
+]);
+
+/** Whether `seat` has to answer one of the RULE_COUNT_INTENTS prompts and the policy decides it (rollout policy "policy"). */
+export function isRuleCountPrompt(world: MatchState, seat: MatchSeat, policy: RolloutPolicy | undefined): boolean {
+  if ((policy ?? "policy") !== "policy") return false;
+  const prompt = pendingPrompt(world);
+  const intent = prompt?.resolutionContext?.intent;
+  return !!prompt && prompt.seat === seat && prompt.choiceKind === "chooseOption" && !!intent && RULE_COUNT_INTENTS.has(intent);
+}
+
+/**
+ * The search's answer to a rule count prompt (`isRuleCountPrompt`): the
+ * policy's, without rollouts. More DON!!, Life or cards is never worse there
+ * (the policy already keeps a card in the deck), and the rollouts cannot tell:
+ * at the Enel OP15-058 Leader's "add up to 1 DON!!" the value model scored
+ * 0.117 for 0 and 0.235 for 1, but 32 rollouts to the end of the turn gave
+ * 0.170 and 0.164 and the search added none. With 32 simulations over up to 5
+ * options the noise of a mean (about ±0.1) is far above the real difference,
+ * so keeping one alternative and asking for a significant difference would
+ * spend simulations and still return the policy's answer. Null if the
+ * policy's command is not one of the prompt's numeric options.
+ */
+export function ruleCountAnswer(world: MatchState, seat: MatchSeat, rng: Rng, options: RolloutCommandOptions = {}): EngineCommand | null {
+  if (!isRuleCountPrompt(world, seat, options.policy)) return null;
+  const command = rolloutCommand(world, seat, rng, options);
+  if (command.type !== "resolvePrompt" || command.optionId === undefined || !/^\d+$/.test(command.optionId)) return null;
+  const prompt = pendingPrompt(world)!;
+  return prompt.options.some((o) => o.id === command.optionId && o.enabled !== false) ? command : null;
 }
 
 export interface RolloutResult {

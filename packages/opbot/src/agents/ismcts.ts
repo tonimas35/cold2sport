@@ -1,6 +1,8 @@
 /** Playing agent on top of ISMCTS (search/ismcts.ts). Honest: it only sees determinized worlds. */
 import { enumerateActions } from "../engine/actions.ts";
+import { determinize } from "../engine/determinize.ts";
 import { runIsmcts, type IsmctsConfig, type IsmctsResult } from "../search/ismcts.ts";
+import { isRuleCountPrompt, ruleCountAnswer } from "../search/rollout.ts";
 import type { Agent } from "./types.ts";
 import { createSearchAgent } from "./search.ts";
 
@@ -12,6 +14,15 @@ export function createIsmctsAgent(config: IsmctsConfig & { id?: string }): Agent
     id: config.id ?? `ismcts-i${config.iterations}-h${config.horizonTurns}`,
     honest: true,
     decide({ state, seat, rng, knowledge }) {
+      // Rule count prompts ("add up to N DON!!"...): the policy's answer, as in the flat search.
+      if (isRuleCountPrompt(state, seat, config.rolloutPolicy)) {
+        const world = determinize(state, seat, rng, knowledge);
+        const answer = ruleCountAnswer(world, seat, rng, { model: config.model, policy: config.rolloutPolicy ?? "policy" });
+        if (answer) {
+          last = undefined;
+          return answer;
+        }
+      }
       const actions = enumerateActions(state, seat);
       if (actions.length === 0) return { type: "endTurn", seat };
       if (actions.length === 1) {

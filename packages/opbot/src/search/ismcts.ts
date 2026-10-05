@@ -21,7 +21,7 @@ import { actingSeat, enumerateActions, pendingJudgePrompt, pendingPrompt, sameCo
 import { determinize } from "../engine/determinize.ts";
 import { applyInPlace } from "../engine/sim.ts";
 import { evaluate, type ValueModel } from "../eval/value.ts";
-import { rollout, rolloutCommand, type RolloutPolicy } from "./rollout.ts";
+import { isRuleCountPrompt, rollout, rolloutCommand, type RolloutPolicy } from "./rollout.ts";
 import { createRng, type Rng } from "../util/rng.ts";
 
 export interface IsmctsConfig {
@@ -100,6 +100,16 @@ function candidates(
       policyKey = `policy:${JSON.stringify(policy)}`;
       actions = [{ key: policyKey, command: policy }, ...actions];
     }
+  }
+  // "Add / give up to N DON!!" and similar counts (search/rollout.ts,
+  // ruleCountAnswer): only the policy's answer, for both seats.
+  if (
+    policyKey &&
+    policy?.type === "resolvePrompt" &&
+    /^\d+$/.test(policy.optionId ?? "") &&
+    isRuleCountPrompt(world, seat, config.rolloutPolicy)
+  ) {
+    return { actions: actions.filter((a) => a.key === policyKey), policyKey };
   }
   const cap = seat === rootSeat ? (config.maxOwnActions ?? 24) : (config.maxOpponentActions ?? 4);
   if (actions.length > cap) {

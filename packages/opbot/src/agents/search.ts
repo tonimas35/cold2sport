@@ -18,7 +18,7 @@ import { enumerateActions, sameCommand, type Action } from "../engine/actions.ts
 import { determinize } from "../engine/determinize.ts";
 import { applyInPlace } from "../engine/sim.ts";
 import { evaluate, type ValueModel } from "../eval/value.ts";
-import { rollout, rolloutCommand, type RolloutPolicy } from "../search/rollout.ts";
+import { isRuleCountPrompt, rollout, rolloutCommand, ruleCountAnswer, type RolloutPolicy } from "../search/rollout.ts";
 import { createRng, type Rng } from "../util/rng.ts";
 import type { Agent, DecisionRequest, DecisionStats } from "./types.ts";
 
@@ -81,6 +81,18 @@ export function createSearchAgent(config: SearchConfig): Agent & { lastReport():
 
   function decide({ state, seat, rng, knowledge }: DecisionRequest): EngineCommand {
     const started = performance.now();
+    // "Add / give up to N DON!!" and similar counts: the policy's rule, not
+    // rollout noise (see ruleCountAnswer). The prompt is our own, so checking
+    // it on the true state reveals nothing; the answer is computed on a
+    // determinized world like any other policy call.
+    if (isRuleCountPrompt(state, seat, policy)) {
+      const answer = ruleCountAnswer(determinize(state, seat, rng, knowledge), seat, rng, { model: config.model, policy });
+      if (answer?.type === "resolvePrompt") {
+        const key = `opt:${answer.optionId}`;
+        last = { chosen: key, heuristicKey: key, actions: [], iterations: 0, millis: performance.now() - started };
+        return answer;
+      }
+    }
     let actions = enumerateActions(state, seat);
     if (actions.length === 0) {
       last = undefined;

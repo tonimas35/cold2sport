@@ -61,11 +61,15 @@ Agentes disponibles: `heuristic`, `heuristic-honest`, `aggressive`, `random`,
 - `policy` es ese mismo bot con correcciones puntuales donde desperdicia cartas
   (`packages/opbot/src/agents/policy.ts`): cantidades "hasta N" al máximo, −X de poder y
   eliminación sobre las cartas rivales correctas, [Trigger] "Juega esta carta" siempre, no jugar
-  Eventos ni pagar costes opcionales cuyo efecto no haría nada, y "elige una" con una jugada de
-  anticipación y el modelo de valor. Ve todo, como `heuristic`; `policy-honest` decide sobre un
-  estado determinizado.
-- La búsqueda usa `policy` en sus rollouts; `search:...,rollout=engine` usa la política anterior
-  (la heurística del motor con dos arreglos) para comparar.
+  Eventos ni pagar costes opcionales cuyo efecto no haría nada, "elige una" con una jugada de
+  anticipación y el modelo de valor, y reglas para usar bien el DON!! (qué DON!! se devuelven en un
+  DON!! −X, a quién se dan, cuándo compensa un DON!! −X y en qué orden van eventos, ataques y
+  recargas de DON!!). Ve todo, como `heuristic`; `policy-honest` decide sobre un estado
+  determinizado. `policy:tempo=0` es la misma política sin las reglas de DON!!, para comparar.
+- La búsqueda usa `policy` en sus rollouts y contesta las cantidades "añade/da hasta N DON!!" con
+  la regla de la política, sin simular. `search:...,rollout=policy0` es la búsqueda tal como era
+  antes de las reglas de DON!! y `search:...,rollout=engine` usa la política más antigua (la
+  heurística del motor con dos arreglos).
 
 ### Otros
 

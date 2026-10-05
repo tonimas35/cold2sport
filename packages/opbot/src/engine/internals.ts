@@ -24,8 +24,15 @@ export { evaluateConditions } from "../../../../vendor/tcg-engines/submodules/on
 export { drainResolutionQueue } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/engine/queue.ts";
 // The engine's own check of a Counter Step selection (Event costs, and their
 // mandatory [Counter] activation costs such as DON!! −X), used to enumerate
-// only counter subsets the engine accepts.
-export { counterSelectionIsPayable } from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/battle.ts";
+// only counter subsets the engine accepts. `canAttackWith` and
+// `legalAttackTargets` are the engine's attack rules (rested, first turn,
+// Rush / Rush: Character, "cannot attack" effects), used by the policy to tell
+// which cards can still attack this turn when it gives or returns DON!!.
+export {
+  canAttackWith,
+  counterSelectionIsPayable,
+  legalAttackTargets,
+} from "../../../../vendor/tcg-engines/submodules/one-piece/packages/engine/src/battle.ts";
 export {
   effectBlocksFor,
   effectBlocksForInstance,

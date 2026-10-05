@@ -2,16 +2,20 @@
  * Agent specs for the command line:
  *
  *   heuristic | heuristic-honest | aggressive | random
- *   policy[:model=...] | policy-honest[:model=...]
+ *   policy[:model=...,tempo=0] | policy-honest[:model=...,tempo=0]
  *   search:sims=200,h=1,cands=12,model=packages/opbot/models/value.json,rollout=policy
  *   ismcts:iters=300,h=1,ms=2000,c=0.7,own=24,opp=4,rollout=policy
  *
  * `heuristic` is the unmodified engine bot (our "existing bot" baseline).
  * `policy` is the engine bot with the overrides of agents/policy.ts (oracle,
  * like `heuristic`); `policy-honest` decides on a determinized copy. Their
- * `model` (default: the handcrafted model) scores "choose one" effects.
- * `rollout=engine` makes the search use the previous rollout policy (engine
- * heuristic plus two fixes) instead of `policy`.
+ * `model` (default: the handcrafted model) scores "choose one" effects, and
+ * `tempo=0` turns off the DON!! rules (override 8), giving back the policy as
+ * it was before them.
+ * `rollout=policy0` makes the search use that policy without the DON!! rules
+ * and answer "up to N DON!!" counts by rollouts again: the search exactly as
+ * it was before them. `rollout=engine` uses the older rollout policy (engine
+ * heuristic plus two fixes).
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -59,8 +63,12 @@ export function createAgent(spec: string): Agent {
     case "policy":
     case "policy-honest":
       // Without model=..., the policy's own default (the handcrafted model).
+      if (params.tempo !== undefined && params.tempo !== "0" && params.tempo !== "1") {
+        throw new Error(`bad tempo "${params.tempo}" in "${spec}" (expected 0 or 1)`);
+      }
       return createPolicyAgent({
         ...(params.model !== undefined && { model: loadValueModel(params.model) }),
+        ...(params.tempo === "0" && { tempo: false }),
         honest: kind === "policy-honest",
       });
     case "search": {
