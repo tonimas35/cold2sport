@@ -148,6 +148,35 @@ Decisiones clave:
 
 ---
 
+### Futuro posible (siguiente paso, no empezado): app de simulador para el móvil
+
+Idea surgida al hablar con otros jugadores: la app de OPTCGSim para el móvil es mala y mucha gente
+solo practica en el PC. Una app para el móvil con un rival fuerte (nuestro bot) tendría público.
+**No está planificada todavía**; se decidirá cuando el motor y el bot estén terminados para el meta.
+
+Cómo se haría:
+
+- **Partir del simulador web de upstream** (`TheCardGoat/tcg-engines`, `agnostic-simulator`,
+  licencia MIT): ya juega a One Piece y tiene diseño para móvil en vertical y táctil. No está
+  vendorizado; habría que traerlo con el mismo método que el motor (`vendor/`, parches).
+- **El bot se ejecuta en el propio teléfono** (Web Worker en el navegador). Así no hace falta
+  servidor y basta un alojamiento estático. Hoy tarda ~0,2 s por decisión con 32 simulaciones en
+  el servidor; en el iPhone habrá que medirlo y ajustar el número de simulaciones.
+- **Web instalable** (se añade a la pantalla de inicio), no App Store: Apple rechazaría una app con
+  cartas de Bandai.
+- Primera versión: jugar contra el bot con los mazos del pool del meta y revisar la partida al
+  acabar (`review`). Juego online entre personas: fuera de alcance (servidores, emparejamiento).
+
+Condiciones y riesgos:
+
+- **Derechos de Bandai**: empezar como beta privada (enlace solo para amigos); decidir qué hacer
+  con las imágenes de las cartas antes de abrirla a más gente (ver sección 6).
+- **Nada de asistente en directo**: las partidas online de torneo se juegan en simuladores; la app
+  no debe decir qué jugar en una partida en curso ajena (mismo principio que el resto del
+  proyecto). Solo rival y revisión posterior.
+- **Fidelidad del motor**: solo los mazos auditados (pool del meta y lo que cubra
+  `pnpm opbot catalog-check`) son fiables; el resto de cartas puede fallar.
+
 ## 5. Cómo trabajar con Claude Code
 
 - Una sesión por bloque de trabajo, sobre este repo. Las sesiones en la nube instalan todo solas
