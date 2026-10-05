@@ -40,8 +40,27 @@ function takeMaxOption(prompt: NonNullable<ReturnType<typeof pendingPrompt>>): E
 }
 
 /**
+ * During a battle, a "+X power" effect that targets one card should go to the
+ * card that is fighting: the defender's target when the defending seat
+ * chooses, the attacker when the attacking seat chooses. The engine heuristic
+ * gives buffs to its strongest card instead, which wastes the effect (and the
+ * card often trashed to pay for it); with Rocks lists this alone flips
+ * matchups (see docs/RESULTADOS.md, calibration).
+ */
+function battleBuffTarget(world: MatchState, prompt: NonNullable<ReturnType<typeof pendingPrompt>>): EngineCommand | null {
+  const battle = world.battle;
+  if (!battle || prompt.choiceKind !== "selectTargets" || prompt.maxSelections !== 1) return null;
+  const action = (prompt.resolutionContext as { action?: { action?: string; value?: number } } | null)?.action;
+  if (action?.action !== "modifyPower" || (action.value ?? 0) <= 0) return null;
+  const fighter = prompt.seat === battle.defendingSeat ? battle.targetId : battle.attackerId;
+  if (world.cards[fighter]?.controller !== prompt.seat) return null;
+  if (!prompt.options.some((o) => o.id === fighter && o.enabled !== false)) return null;
+  return { type: "resolvePrompt", seat: prompt.seat as MatchSeat, promptId: prompt.id, selectedIds: [fighter] };
+}
+
+/**
  * The policy used inside rollouts: the engine's heuristic bot for both seats,
- * plus the fix above.
+ * plus the fixes above.
  */
 export function rolloutCommand(world: MatchState, seat: MatchSeat, rng: Rng): EngineCommand {
   const context = { random: () => rng.next() };
@@ -49,7 +68,8 @@ export function rolloutCommand(world: MatchState, seat: MatchSeat, rng: Rng): En
   if (prompt && prompt.seat === seat) {
     return repairPromptCommand(
       world,
-      heuristicAgent.resolvePrompt?.(world, prompt, context) ??
+      battleBuffTarget(world, prompt) ??
+        heuristicAgent.resolvePrompt?.(world, prompt, context) ??
         takeMaxOption(prompt) ??
         resolveBotPromptCommand(world, prompt) ?? { type: "endTurn", seat },
     );

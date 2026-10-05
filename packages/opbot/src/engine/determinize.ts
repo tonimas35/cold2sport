@@ -7,7 +7,7 @@
  * in that seat's own hand. Every other card (opponent hand, both decks, face-down
  * Life, including your own Life) is hidden. On top of that, cards listed in a
  * pending prompt of the seat (for example the top cards it is looking at) are
- * known to it, and cards referenced by the resolution queue are pinned.
+ * known to it, and its own cards referenced by the resolution queue are pinned.
  *
  * Known limitation: the engine forgets public reveals (a searched card revealed
  * and added to hand, a bounced Character) once the card is back in a hidden
@@ -44,23 +44,27 @@ function collectIds(value: unknown, state: MatchState, into: Set<string>): void 
 }
 
 /**
- * Instance ids whose identity must not change: cards shown to the seat in its
- * own pending prompts, and cards referenced by effects that are mid-resolution
- * (their contents were computed from the real identities).
+ * Instance ids whose identity must not change:
+ * - cards shown to the seat in its own pending prompts, i.e. options that name
+ *   a real instance (a search showing the top of its deck). Concealed choices
+ *   use opaque "hidden-card:N" option ids and are NOT pinned, and neither is
+ *   `resolutionContext.candidateIds`, which for a blind choice lists the
+ *   opponent's concealed hand: pinning those would leak the opponent's hand;
+ * - the seat's own cards referenced by effects that are mid-resolution (their
+ *   contents were computed from the real identities). Opponent cards there are
+ *   re-dealt like any other hidden card.
  */
 function promptKnownIds(state: MatchState, seat: MatchSeat): Set<string> {
   const known = new Set<string>();
-  collectIds(state.resolutionQueue, state, known);
+  const queued = new Set<string>();
+  collectIds(state.resolutionQueue, state, queued);
+  for (const id of queued) if (state.cards[id]!.owner === seat) known.add(id);
   for (const prompt of state.promptQueue) {
     if (prompt.status !== "pending" || prompt.seat !== seat) continue;
     for (const option of prompt.options) {
       for (const id of [option.id, option.value, option.targetId]) {
         if (id && state.cards[id]) known.add(id);
       }
-    }
-    const ctx = prompt.resolutionContext as { candidateIds?: unknown } | null;
-    if (ctx && Array.isArray(ctx.candidateIds)) {
-      for (const id of ctx.candidateIds) if (typeof id === "string" && state.cards[id]) known.add(id);
     }
   }
   return known;
