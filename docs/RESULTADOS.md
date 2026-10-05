@@ -39,14 +39,29 @@ compara con los resultados reales entre esos Líderes en los torneos de Limitles
 | 2026-10-05 | `heuristic` | Rocks, Luffy (OP17-079), Sabo, Shanks | 60 | **−0,24** | 37 puntos | 2 de 5 |
 | 2026-10-05 | `heuristic` (muestra real ampliada: 44 torneos, p. ej. 139 partidas Rocks–Sabo) | ídem | 60 | **−0,23** | 33 puntos | 2 de 6 |
 | 2026-10-05 | `policy` (heurística mejorada), motor con los parches 0001–0012 | los 9 del pool | 60 | **0,07** | 30,8 puntos | 18 de 36 |
+| 2026-10-05 | `search:sims=32` (modelo `mlp16-meta-v1`), motor 0001–0012 | ídem | 20 (680 de 720 partidas: cortada por el límite de 2,5 h; 34 enfrentamientos completos) | **−0,02** | 31,6 puntos | 15 de 34 |
 
 **Calibración con el motor corregido (parches 0001–0012) y `policy`** (36 enfrentamientos con al
 menos 5 partidas reales): la correlación sube de −0,23 a 0,07, pero la simulación sigue sin
 parecerse a la realidad. Los dos casos más extremos son **Kaido** (0 % contra Luffy simulado, 49 %
 real; pierde casi todo salvo contra Pudding y Enel) y **Enel** (3–10 % contra Shanks, Luffy y
-Luffy & Ace, frente a 48–71 % reales). Se está investigando si queda algún fallo del motor en esos
-mazos o si es que los bots no saben jugar mazos de rampa de DON!!. En marcha: la misma calibración
-con el bot de búsqueda.
+Luffy & Ace, frente a 48–71 % reales). Con el bot de búsqueda la calibración **no mejora** (correlación −0,02): un
+bot más fuerte no basta, hay sesgos sistemáticos. Diferencia media simulado − real por mazo (puntos;
+enfrentamientos con al menos 5 partidas reales, búsqueda):
+
+| Sabo | Luffy | Robin | Pudding | Rocks | Shanks | Kaido | Luffy & Ace | Enel |
+|---|---|---|---|---|---|---|---|---|
+| +32,8 | +29,5 | +16,8 | +14,2 | −1,5 | −2,6 | −22,1 | −24,1 | −45,4 |
+
+Un diagnóstico de Kaido y Enel (partidas instrumentadas y comprobación de todas sus cartas contra el
+texto oficial) encontró que **el motor no es la causa principal**: las cartas son correctas, salvo un
+fallo de reglas de "[Once Per Turn]" que afectaba sobre todo a Rocks (corregido en el parche
+`0013`). La causa principal es cómo juegan los bots con el DON!! como recurso: Kaido gasta en
+efectos el DON!! que necesita para crecer, Enel da sus 4 DON!! a un personaje que no puede atacar y
+juega sus eventos DON!! −X justo después de reponer el DON!!; la búsqueda hereda esos fallos porque
+simula con la misma política. Con esas correcciones en memoria Enel pasaba del 24 % al 57–60 % y
+Kaido del 3 % al 22 % (política contra política). En marcha: llevarlas a la política como reglas
+generales y volver a calibrar.
 
 ```bash
 bun packages/opbot/src/cli.ts calibrate --decks decks/meta-op17-postban --agent policy --games 60 \
