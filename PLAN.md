@@ -10,10 +10,39 @@ documento sustituye al plan original; la sección 8 lista qué estaba mal en él
 
 ---
 
-## 1. Estado actual (resumen)
+## 1. Estado actual (resumen, 5 de octubre de 2026 por la noche)
 
 | Fase | Estado | Resultado |
 |---|---|---|
+| 0. Puesta en marcha | ✅ | Node 24, pnpm 10.33, Bun. CI de One Piece en verde |
+| 1. Entender el motor | ✅ | `docs/NOTAS_MOTOR.md`. Motor 9–13× más rápido para simulación (parche + simulador propio verificado) |
+| 2. Banco de pruebas | ✅ | Arena emparejada con SPRT; pool de 9 mazos del meta post-ban (`decks/meta-op17-postban`) que el motor juega sin errores; calibración contra resultados reales de Limitless |
+| Fidelidad del motor | ✅ (en curso para sets nuevos) | Parches `0001`–`0013` (`vendor/tcg-engines/UPSTREAM.md`): cartas del meta auditadas una a una, catálogo entero contrastado con la lista oficial (`pnpm opbot catalog-check`: 0 diferencias de datos o estructura) y fallos de reglas corregidos |
+| 3. Bot de búsqueda | ✅ | Búsqueda plana honesta + política mejorada (`policy`, con reglas de DON!!) + modelo de valor `mlp16-meta-v1`. Gana al bot del motor 71 % (E11) y cada mejora posterior se ha medido en la arena: modelo del meta +143 Elo (E12), reglas de DON!! +65 Elo (E14). ISMCTS no mejora a la búsqueda plana (E7) |
+| 4. Herramientas | ✅ | Analizar jugadas (también desde un log de OPTCGSim), jugar contra el bot y revisar la partida, enfrentamientos, ajuste de mazos (`docs/GUIA.md`) |
+| 5. Aprendizaje | 🟡 | Modelos de valor entrenados con self-play del meta; el reentrenado con la política nueva (`mlp16-meta-v2`) predice mejor pero no juega mejor (E15) |
+| Web para jugar contra el bot | 🟡 | `packages/web`, `docs/WEB.md`: funciona en móvil y PC (probada en navegador automático); **falta probarla en un iPhone real y publicarla en privado** |
+
+**Lo que todavía no es fiable**: los porcentajes de enfrentamientos simulados entre mazos. La
+calibración contra torneos reales ha mejorado (error medio de 31 a 20 puntos) pero sigue lejos:
+Luffy sale sobrestimado (+18) y Kaido (−22) y Rocks (−17) infravalorados (`docs/RESULTADOS.md`).
+
+### Siguientes pasos (por orden)
+
+1. **Web**: probarla en un iPhone de verdad (`pnpm web:dev` en el PC y abrir la dirección local
+   desde el móvil, o publicarla) y publicarla con enlace privado (Cloudflare Pages + Access; pasos en
+   `docs/WEB.md`; la cuenta y la publicación las hace el usuario). Pendientes de pulido: textos del
+   registro de partida en inglés, modo sin conexión.
+2. **Defensa de los bots** (la causa probable de que Luffy salga sobrestimado): counters solo con
+   3 vidas o menos, bloqueadores que se guardan, Kaido sin DON!! activo para sus counters en el turno
+   rival. Diagnóstico como el de Kaido/Enel, reglas generales, medir en la arena y recalibrar.
+3. **Medir el bot final** contra el del motor (búsqueda + política nueva + modelo v1) y recalibrar
+   con la búsqueda (repartiendo el trabajo para no chocar con el límite de 2,5 h de los procesos).
+4. **Sets nuevos**: EB-05 (30-oct) y OP-18 (20-nov): sincronizar el motor y pasar
+   `pnpm opbot catalog-check`; a partir del 12-oct (ban de OP14-020 en vigor) regenerar el pool del
+   meta con más torneos.
+
+---|---|---|
 | 0. Puesta en marcha | ✅ | Node 24, pnpm 10.33, Bun. CI de One Piece en verde, `play-cli` y `bot-lab doctor` OK |
 | 1. Entender el motor | ✅ | `docs/NOTAS_MOTOR.md`. Motor 9–13× más rápido para simulación (parche + simulador propio verificado con 300 partidas) |
 | 2. Banco de pruebas | 🟡 | Arena emparejada con SPRT lista. Pool de mazos del meta post-ban en construcción (`decks/`) |
