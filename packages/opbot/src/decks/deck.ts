@@ -64,6 +64,17 @@ export function parseDeckText(name: string, text: string, source?: string): Deck
   return { name, leader: leader!, main, ...(source !== undefined && { source }) };
 }
 
+/**
+ * A deck file (`decks/**.txt`): the name is the file name without `.txt` and
+ * the provenance comes from an optional `# source: URL` line. Same result as
+ * `loadDeckFile` in decks/pool.ts, without touching the file system (the web
+ * app bundles the files as text).
+ */
+export function parseDeckFile(fileName: string, text: string): DeckList {
+  const source = /^#\s*source:\s*(.+)$/m.exec(text)?.[1]?.trim();
+  return parseDeckText(fileName.replace(/^.*[\\/]/, "").replace(/\.txt$/, ""), text, source);
+}
+
 export function deckToText(deck: DeckList): string {
   const counts = new Map<string, number>();
   for (const id of deck.main) counts.set(id, (counts.get(id) ?? 0) + 1);
