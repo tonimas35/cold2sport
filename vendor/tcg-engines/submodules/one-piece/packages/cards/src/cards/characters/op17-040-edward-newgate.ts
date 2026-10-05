@@ -48,6 +48,80 @@ export const op17EdwardNewgate040: CharacterCard = {
           },
         ],
       },
+      // "When your Leader ... attacks": [When Attacking] timing (7-1-1-3),
+      // ordered by the turn player with the Leader's own [When Attacking].
+      {
+        trigger: "whenYouAttack",
+        eventFilter: {
+          filters: [{ filter: "cardCategory", value: "leader" }],
+        },
+        conditions: [
+          {
+            condition: "leaderTrait",
+            trait: "Rocks Pirates",
+            match: "includes",
+          },
+        ],
+        costs: [
+          {
+            cost: "trashFromHand",
+            amount: 1,
+          },
+        ],
+        actions: [
+          {
+            action: "modifyPower",
+            target: {
+              player: "self",
+              zones: ["leader"],
+              count: { amount: 1 },
+            },
+            value: 3000,
+            duration: "thisBattle",
+          },
+        ],
+        optional: true,
+        oncePerTurn: true,
+        oncePerTurnKey:
+          "shared:whenYouAttack|onOpponentAttack:your leader gains +3000 power during this battle.",
+      },
+      // "... or is attacked": OP17 FAQ, same timing as [On Your Opponent's
+      // Attack] effects, before [Blocker] or Counter.
+      {
+        trigger: "onOpponentAttack",
+        eventFilter: {
+          targetFilters: [{ filter: "cardCategory", value: "leader" }],
+        },
+        conditions: [
+          {
+            condition: "leaderTrait",
+            trait: "Rocks Pirates",
+            match: "includes",
+          },
+        ],
+        costs: [
+          {
+            cost: "trashFromHand",
+            amount: 1,
+          },
+        ],
+        actions: [
+          {
+            action: "modifyPower",
+            target: {
+              player: "self",
+              zones: ["leader"],
+              count: { amount: 1 },
+            },
+            value: 3000,
+            duration: "thisBattle",
+          },
+        ],
+        optional: true,
+        oncePerTurn: true,
+        oncePerTurnKey:
+          "shared:whenYouAttack|onOpponentAttack:your leader gains +3000 power during this battle.",
+      },
     ],
   },
   i18n: op17EdwardNewgate040I18n,

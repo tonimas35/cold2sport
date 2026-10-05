@@ -9,6 +9,7 @@ import {
   enqueueInPlayEffectsForTrigger,
   enqueueKoEffectsForTrigger,
   enqueueMirroredInPlayEffectsForTrigger,
+  enqueueSimultaneousEffects,
   getCardForInstance,
   getCardCounter,
   getCardPower,
@@ -16,10 +17,12 @@ import {
   getKeywords,
   getPlayer,
   hasFlagModifier,
+  inPlayTriggeredEffectEntries,
   isKeywordActivationPrevented,
   nextIdentifier,
   otherSeat,
   restCard,
+  triggeredEffectEntries,
 } from "./shared.ts";
 import {
   canAttackActiveByPermanentEffect,
@@ -884,11 +887,21 @@ export function beginAttack(
     effectController: seat,
     targetInstanceId: targetId,
   };
-  enqueueEffectsForTrigger(state, attackerId, seat, "whenAttacking", undefined, attackEvent);
-  // "When your opponent attacks" can only live on the defending player's
-  // in-play cards, and the attacking (turn) player's [When Attacking] effects
-  // enqueue above, so 8-6-1 turn-player-first ordering already holds.
-  enqueueInPlayEffectsForTrigger(state, "onOpponentAttack", attackEvent, [otherSeat(seat)]);
+  // 7-1-1-3: [When Attacking] on the attacker and "when your Leader/Character
+  // attacks" on the attacking player's other cards activate together; the
+  // turn player orders them (8-6-1-1). "When your opponent attacks" can only
+  // live on the defending player's in-play cards and enqueues after, so 8-6-1
+  // and 10-2-16-1 turn-player-first ordering holds; the defender orders their
+  // own simultaneous [On Your Opponent's Attack] effects the same way.
+  enqueueSimultaneousEffects(state, seat, [
+    ...triggeredEffectEntries(state, [attackerId], "whenAttacking", attackEvent),
+    ...inPlayTriggeredEffectEntries(state, seat, "whenYouAttack", attackEvent),
+  ]);
+  enqueueSimultaneousEffects(
+    state,
+    otherSeat(seat),
+    inPlayTriggeredEffectEntries(state, otherSeat(seat), "onOpponentAttack", attackEvent),
+  );
   enqueueResolution(state, { kind: "battleBlockStep", battleId: state.battle.id });
 }
 

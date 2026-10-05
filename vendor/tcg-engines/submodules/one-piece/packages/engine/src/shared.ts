@@ -13,6 +13,7 @@ import type {
   ModifierState,
   PlayerState,
   ResolutionItem,
+  SimultaneousEffectEntry,
 } from "./types.ts";
 import {
   arePlayerEffectsNegatedByPermanentEffect,
@@ -226,17 +227,15 @@ export function enqueueResolution(
   return nextItem;
 }
 
-export function enqueueEffectsForTrigger(
+/** Indexes of `trigger` blocks on the source whose timing is fulfilled now. */
+function triggeredBlockIndexes(
   state: MatchState,
   sourceInstanceId: string,
-  controller: MatchSeat,
   trigger: EffectBlock["trigger"],
-  trashHandIds: string[] | undefined,
-  triggerEvent?: Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"],
-) {
+): number[] {
   const source = getInstance(state, sourceInstanceId);
   const blocks = effectBlocksForInstance(state, sourceInstanceId, trigger);
-  let enqueued = 0;
+  const indexes: number[] = [];
   // Within one enqueue pass, only one block may use a given oncePerTurnKey
   // (e.g. OP12-081 Koala dual predicates for the same play event).
   const keysQueuedThisPass = new Set<string>();
@@ -249,6 +248,25 @@ export function enqueueEffectsForTrigger(
     if (block.oncePerTurn && keysQueuedThisPass.has(effectKey)) {
       continue;
     }
+    indexes.push(index);
+    if (block.oncePerTurn) {
+      keysQueuedThisPass.add(effectKey);
+    }
+  }
+
+  return indexes;
+}
+
+export function enqueueEffectsForTrigger(
+  state: MatchState,
+  sourceInstanceId: string,
+  controller: MatchSeat,
+  trigger: EffectBlock["trigger"],
+  trashHandIds: string[] | undefined,
+  triggerEvent?: Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"],
+) {
+  const indexes = triggeredBlockIndexes(state, sourceInstanceId, trigger);
+  for (const index of indexes) {
     enqueueResolution(state, {
       kind: "effectBlock",
       sourceInstanceId,
@@ -258,13 +276,34 @@ export function enqueueEffectsForTrigger(
       trashHandIds,
       triggerEvent,
     });
-    if (block.oncePerTurn) {
-      keysQueuedThisPass.add(effectKey);
-    }
-    enqueued += 1;
   }
 
-  return enqueued;
+  return indexes.length;
+}
+
+function inPlaySourceIdsFor(
+  state: MatchState,
+  seat: MatchSeat,
+  excludeInstanceIds?: readonly string[],
+): string[] {
+  const sourceIds: string[] = [];
+  for (const source of Object.values(state.cards)) {
+    if (source.controller !== seat) {
+      continue;
+    }
+    if (excludeInstanceIds?.includes(source.instanceId)) {
+      continue;
+    }
+    const player = getPlayer(state, source.controller);
+    const isInPlay =
+      (source.zone === "leader" && player.leaderInstanceId === source.instanceId) ||
+      (source.zone === "character" && player.characterArea.includes(source.instanceId)) ||
+      (source.zone === "stage" && player.stageArea === source.instanceId);
+    if (isInPlay) {
+      sourceIds.push(source.instanceId);
+    }
+  }
+  return sourceIds;
 }
 
 export function enqueueInPlayEffectsForTrigger(
@@ -278,31 +317,58 @@ export function enqueueInPlayEffectsForTrigger(
   // the turn player's effects resolve first.
   const seats = sourceControllers ?? [state.activeSeat, otherSeat(state.activeSeat)];
   for (const seat of seats) {
-    for (const source of Object.values(state.cards)) {
-      if (source.controller !== seat) {
-        continue;
-      }
-      if (excludeInstanceIds?.includes(source.instanceId)) {
-        continue;
-      }
-      const player = getPlayer(state, source.controller);
-      const isInPlay =
-        (source.zone === "leader" && player.leaderInstanceId === source.instanceId) ||
-        (source.zone === "character" && player.characterArea.includes(source.instanceId)) ||
-        (source.zone === "stage" && player.stageArea === source.instanceId);
-      if (!isInPlay) {
-        continue;
-      }
-      enqueueEffectsForTrigger(
-        state,
-        source.instanceId,
-        source.controller,
-        trigger,
-        undefined,
-        triggerEvent,
-      );
+    for (const sourceInstanceId of inPlaySourceIdsFor(state, seat, excludeInstanceIds)) {
+      enqueueEffectsForTrigger(state, sourceInstanceId, seat, trigger, undefined, triggerEvent);
     }
   }
+}
+
+/** `trigger` blocks on `sourceInstanceIds` whose timing is fulfilled now, in enqueue order. */
+export function triggeredEffectEntries(
+  state: MatchState,
+  sourceInstanceIds: readonly string[],
+  trigger: EffectBlock["trigger"],
+  triggerEvent?: Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"],
+): SimultaneousEffectEntry[] {
+  return sourceInstanceIds.flatMap((sourceInstanceId) =>
+    triggeredBlockIndexes(state, sourceInstanceId, trigger).map((blockIndex) => ({
+      sourceInstanceId,
+      trigger,
+      blockIndex,
+      triggerEvent,
+    })),
+  );
+}
+
+/** Same as {@link triggeredEffectEntries} for every in-play card of `seat`. */
+export function inPlayTriggeredEffectEntries(
+  state: MatchState,
+  seat: MatchSeat,
+  trigger: EffectBlock["trigger"],
+  triggerEvent?: Extract<ResolutionItem, { kind: "effectBlock" }>["triggerEvent"],
+): SimultaneousEffectEntry[] {
+  return triggeredEffectEntries(state, inPlaySourceIdsFor(state, seat), trigger, triggerEvent);
+}
+
+/**
+ * Enqueues effects of one player whose activation timing was fulfilled at the
+ * same time. 8-6-1-1 lets that player resolve them in the order they choose,
+ * so when blocks of two or more different cards are involved the engine asks
+ * (resolution item "orderSimultaneousEffects"). Blocks of a single card keep
+ * their printed order (2-8-3) and are enqueued directly, as before.
+ */
+export function enqueueSimultaneousEffects(
+  state: MatchState,
+  controller: MatchSeat,
+  entries: SimultaneousEffectEntry[],
+) {
+  if (new Set(entries.map((entry) => entry.sourceInstanceId)).size < 2) {
+    for (const entry of entries) {
+      enqueueResolution(state, { kind: "effectBlock", controller, ...entry });
+    }
+    return;
+  }
+  enqueueResolution(state, { kind: "orderSimultaneousEffects", controller, entries });
 }
 
 // 8-6-1: one occurrence can fulfill the acting player's "when you ..." trigger

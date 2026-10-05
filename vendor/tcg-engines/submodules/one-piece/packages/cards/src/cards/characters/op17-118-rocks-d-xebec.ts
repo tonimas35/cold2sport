@@ -46,6 +46,42 @@ export const op17RocksDXebec118: CharacterCard = {
   effect:
     "If you only have Characters without a Counter, this card in your hand has a +2000 Counter.\n[On Play] Draw 1 card and play up to 2 {Rocks Pirates} type cards with different card names and a total cost of 9 or less from your hand.",
   effects: {
+    // "If you only have Characters without a Counter, this card in your hand
+    // has a +2000 Counter." A self-targeted modifier is evaluated while this
+    // card is in hand (getPermanentModifierTotal). OP17 FAQ: with 0 Characters
+    // it does not have the Counter, so at least 1 Character is required.
+    permanentEffects: [
+      {
+        conditions: [
+          {
+            condition: "zoneCount",
+            player: "self",
+            zone: "character",
+            comparison: "gte",
+            value: 1,
+          },
+          {
+            condition: "notHasCard",
+            player: "self",
+            zone: "character",
+            filters: [{ filter: "counter", comparison: "gt", value: 0 }],
+          },
+        ],
+        actions: [
+          {
+            action: "modifyCounter",
+            target: {
+              player: "self",
+              zones: ["hand"],
+              count: { amount: 1 },
+              self: true,
+            },
+            value: 2000,
+            duration: "permanent",
+          },
+        ],
+      },
+    ],
     effects: [
       {
         trigger: "onPlay",

@@ -517,6 +517,17 @@ export function getPermanentModifierTotal(
       const relevantActions = (card.effects?.permanentEffects ?? []).flatMap((effect) =>
         effect.actions.filter((action) => actionIsDynamicModifier(action, type)),
       );
+      // opbot local patch: a modifier whose every target is its own card
+      // (`target.self`, e.g. "this card in your hand has a +2000 Counter")
+      // can only change that card, so skip it for any other card before its
+      // conditions are evaluated. Same result, keeps other queries fast.
+      if (
+        source.instanceId !== targetInstanceId &&
+        relevantActions.length > 0 &&
+        relevantActions.every((action) => action.target.self === true)
+      ) {
+        continue;
+      }
       const sourceIsHandScoped =
         source.zone === "hand" &&
         relevantActions.length > 0 &&

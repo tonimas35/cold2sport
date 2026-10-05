@@ -1707,7 +1707,7 @@ reconciles catalog entries.
 | OP17-033 | Lucky.Roux | verified | onPlay, onOpponentAttack |
 | OP17-034 | Rockstar | verified | Opponent-leader 6000+ gate (mutation killed), DON!! set, Red-Haired Leader 6000 base with cross-turn expiry |
 | OP17-035 | Roronoa Zoro | vanilla | Parameterized vanilla invariant batch |
-| OP17-040 | Edward.Newgate | verified | onPlay |
+| OP17-040 | Edward.Newgate | verified | On Play draw; once-per-turn trash-1 Leader +3000 this battle when the Rocks Leader attacks (whenYouAttack, ordered against the Leader [When Attacking]) or is attacked (before Blocker/Counter); Character attack, Character target and non-Rocks Leader do not activate |
 | OP17-041 | Wang Zhi | verified | Blocker |
 | OP17-042 | Kaido | verified | onPlay |
 | OP17-043 | Ganzui | verified | replacement |
@@ -1770,7 +1770,7 @@ reconciles catalog entries.
 | OP17-112 | Charlotte Linlin | verified | onPlay |
 | OP17-113 | Streusen | verified | onPlay |
 | OP17-114 | Sweet 3 Generals | verified | onPlay, Life Trigger |
-| OP17-118 | Rocks.D.Xebec | verified | On Play draw + exact {Rocks Pirates} replay (Former Rocks Pirates excluded) with different names under total cost 9; over-budget picks rejected, cards over 9 alone not offered |
+| OP17-118 | Rocks.D.Xebec | verified | On Play draw + exact {Rocks Pirates} replay (Former Rocks Pirates excluded) with different names under total cost 9; over-budget picks rejected, cards over 9 alone not offered; +2000 Counter in hand only with 1+ Characters and none with a Counter (0 Characters: none, per FAQ) |
 | OP17-119 | Loki | verified | Printed behavior is unstructured |
 | P-014        | Koby (Jolly Roger Foil)                         | verified | Controller-owned Blocker redirection and battle result; physical self-play Life Trigger and decline-to-hand branch                                                                                    |
 | P-029        | Bartolomeo (P-029) (Jolly Roger Foil)           | verified | Optional end-turn self-rest cost; included FILM ownership/name filtering; selected physical set-active result and decline                                                                              |
